@@ -11,6 +11,7 @@ public record AppointmentResponse(
         String channel,
         LocalDateTime scheduledAt,
         String status,
+        String zoomJoinUrl,
         String note
 ) {
 }

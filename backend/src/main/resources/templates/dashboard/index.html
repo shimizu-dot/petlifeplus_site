@@ -33,11 +33,27 @@
         </div>
       </div>
 
+      <div class="card" th:if="${currentUser != null and !currentUser.isAdmin()}">
+        <div class="card-title">ご利用プラン</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="badge badge-blue" th:text="${planLabel}">ライト</span>
+          <span style="color:#64748B;font-size:13px;">プランに応じて使える機能が変わります</span>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title">クイックアクセス</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
           <a th:href="@{/app/pets}" class="btn btn-secondary">🐶 ペット一覧</a>
           <a th:href="@{/app/pets/new}" class="btn btn-primary">＋ ペット登録</a>
+          <a th:href="@{/app/pets}" class="btn btn-secondary">📝 健康記録</a>
+          <a th:if="${canUseAiSymptom}" th:href="@{/app/pets}" class="btn btn-secondary">🤖 AI症状チェック（ペット詳細から）</a>
+          <a th:if="${canUseAiSymptom}" th:href="@{/app/consult/chatbot}" class="btn btn-secondary">💬 相談導線</a>
+          <a th:if="${canUsePrioritySupport}" th:href="@{/app/premium/online-care}" class="btn btn-secondary">⭐ 優先サポート</a>
+          <span th:if="${!canUseAiSymptom and currentUser != null and !currentUser.isAdmin()}"
+                style="font-size:13px;color:#64748B;">AI症状チェック・相談導線はスタンダード以上で利用できます</span>
+          <span th:if="${!canUsePrioritySupport and currentUser != null and !currentUser.isAdmin()}"
+                style="font-size:13px;color:#64748B;">優先サポートはプレミアムで利用できます</span>
           <a th:if="${currentUser != null and currentUser.isAdmin()}"
              th:href="@{/app/admin/users}" class="btn btn-secondary">👥 ユーザー管理</a>
         </div>

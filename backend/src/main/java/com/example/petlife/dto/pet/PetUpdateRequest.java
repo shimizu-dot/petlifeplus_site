@@ -13,6 +13,7 @@ public record PetUpdateRequest(
         @Size(max = 100) String breed,
         @Size(max = 10) String sex,
         @PastOrPresent LocalDate birthDate,
-        BigDecimal weightBaselineKg
+        BigDecimal weightBaselineKg,
+        @Size(max = 500) String imagePath
 ) {
 }

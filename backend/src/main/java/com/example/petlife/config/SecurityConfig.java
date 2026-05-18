@@ -18,8 +18,9 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/", "/index.html", "/webapp.html",
                     "/f_contact.html", "/f_flow.html", "/f_info.html", "/f_service.html",
-                    "/css/**", "/js/**", "/assets/**", "/images/**"
+                    "/css/**", "/js/**", "/assets/**", "/images/**", "/uploads/**"
                 ).permitAll()
+                .requestMatchers("/api/slack/events").permitAll()
                 .requestMatchers("/app/login").permitAll()
                 .requestMatchers("/app/admin/**").hasRole("ADMIN")
                 .requestMatchers("/app/**").authenticated()

@@ -22,6 +22,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found: " + email);
         }
-        return new LoginUser(user.id(), user.roleId(), user.name(), user.email(), user.passwordHash());
+
+        boolean statusActive = "ACTIVE".equalsIgnoreCase(user.status());
+        boolean subscriptionActive = user.roleId() != null && user.roleId() == 2L
+                ? authMapper.countEffectiveSubscriptions(user.id()) > 0
+                : true;
+        boolean enabled = statusActive && subscriptionActive;
+
+        return new LoginUser(
+                user.id(),
+                user.roleId(),
+                user.name(),
+                user.email(),
+                user.passwordHash(),
+                enabled
+        );
     }
 }

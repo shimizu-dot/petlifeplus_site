@@ -11,6 +11,7 @@ public record PetResponse(
         String breed,
         String sex,
         LocalDate birthDate,
-        BigDecimal weightBaselineKg
+        BigDecimal weightBaselineKg,
+        String imagePath
 ) {
 }

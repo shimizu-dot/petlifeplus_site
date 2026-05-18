@@ -11,6 +11,7 @@ public record AppointmentEntity(
         String channel,
         LocalDateTime scheduledAt,
         String status,
+        String zoomJoinUrl,
         String note,
         LocalDateTime deletedAt,
         LocalDateTime createdAt,

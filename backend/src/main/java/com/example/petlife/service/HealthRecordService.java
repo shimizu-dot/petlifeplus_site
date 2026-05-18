@@ -11,6 +11,7 @@ import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.HealthRecordMapper;
 import com.example.petlife.mapper.PetMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,10 +21,13 @@ public class HealthRecordService {
 
     private final HealthRecordMapper healthRecordMapper;
     private final PetMapper petMapper;
+    private final HealthRecordImageStorageService healthRecordImageStorageService;
 
-    public HealthRecordService(HealthRecordMapper healthRecordMapper, PetMapper petMapper) {
+    public HealthRecordService(HealthRecordMapper healthRecordMapper, PetMapper petMapper,
+                               HealthRecordImageStorageService healthRecordImageStorageService) {
         this.healthRecordMapper = healthRecordMapper;
         this.petMapper = petMapper;
+        this.healthRecordImageStorageService = healthRecordImageStorageService;
     }
 
     // ---- 一覧（ペット別・オーナー確認済み） ----
@@ -56,12 +60,15 @@ public class HealthRecordService {
 
     // ---- 作成 ----
 
-    public HealthRecordResponse create(Long petId, HealthRecordCreateRequest req, LoginUser currentUser) {
+    public HealthRecordResponse create(Long petId, HealthRecordCreateRequest req, MultipartFile imageFile, LoginUser currentUser) {
         verifyPetAccess(petId, currentUser);
+        String imagePath = healthRecordImageStorageService.store(imageFile);
         HealthRecordEntity row = new HealthRecordEntity(
                 null, petId, currentUser.id(),
                 req.recordDate(), req.weightKg(), req.mealMemo(),
-                req.exerciseMinutes(), req.note(),
+                req.exerciseMinutes(), req.mealScore(), req.exerciseScore(), req.sleepScore(), req.moodScore(),
+                req.overallScore(),
+                imagePath, req.note(),
                 null, null, null
         );
         Long newId = healthRecordMapper.insertReturningId(row);
@@ -70,12 +77,17 @@ public class HealthRecordService {
 
     // ---- 更新 ----
 
-    public HealthRecordResponse update(Long id, Long petId, HealthRecordUpdateRequest req, LoginUser currentUser) {
+    public HealthRecordResponse update(Long id, Long petId, HealthRecordUpdateRequest req, MultipartFile imageFile, LoginUser currentUser) {
         HealthRecordEntity existing = getEntity(id, petId, currentUser);
+        String imagePath = existing.imagePath();
+        String uploaded = healthRecordImageStorageService.store(imageFile);
+        if (uploaded != null) imagePath = uploaded;
         HealthRecordEntity row = new HealthRecordEntity(
                 id, petId, existing.recordedByUserId(),
                 req.recordDate(), req.weightKg(), req.mealMemo(),
-                req.exerciseMinutes(), req.note(),
+                req.exerciseMinutes(), req.mealScore(), req.exerciseScore(), req.sleepScore(), req.moodScore(),
+                req.overallScore(),
+                imagePath, req.note(),
                 existing.deletedAt(), existing.createdAt(), existing.updatedAt()
         );
         healthRecordMapper.update(row);
@@ -102,6 +114,7 @@ public class HealthRecordService {
 
     public HealthRecordResponse toResponse(HealthRecordEntity row) {
         return new HealthRecordResponse(row.id(), row.petId(), row.recordedByUserId(),
-                row.recordDate(), row.weightKg(), row.mealMemo(), row.exerciseMinutes(), row.note());
+                row.recordDate(), row.weightKg(), row.mealMemo(), row.exerciseMinutes(),
+                row.mealScore(), row.exerciseScore(), row.sleepScore(), row.moodScore(), row.overallScore(), row.imagePath(), row.note());
     }
 }

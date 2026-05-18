@@ -1,15 +1,20 @@
 package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
+import com.example.petlife.dto.pet.PetCareRecordForm;
 import com.example.petlife.dto.pet.PetForm;
 import com.example.petlife.dto.pet.PetResponse;
+import com.example.petlife.dto.symptom.SymptomCheckForm;
 import com.example.petlife.entity.PetEntity;
+import com.example.petlife.service.PetCareRecordService;
 import com.example.petlife.service.PetService;
+import com.example.petlife.service.SymptomCheckService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -18,9 +23,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PetController {
 
     private final PetService petService;
+    private final PetCareRecordService petCareRecordService;
+    private final SymptomCheckService symptomCheckService;
 
-    public PetController(PetService petService) {
+    public PetController(PetService petService, PetCareRecordService petCareRecordService, SymptomCheckService symptomCheckService) {
         this.petService = petService;
+        this.petCareRecordService = petCareRecordService;
+        this.symptomCheckService = symptomCheckService;
     }
 
     @GetMapping
@@ -41,6 +50,7 @@ public class PetController {
 
     @PostMapping
     public String create(@Valid @ModelAttribute("form") PetForm form,
+                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          BindingResult result,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
@@ -49,7 +59,7 @@ public class PetController {
             model.addAttribute("editMode", false);
             return "pets/form";
         }
-        PetResponse pet = petService.create(form.toCreateRequest(currentUser.id()), currentUser);
+        PetResponse pet = petService.create(form.toCreateRequest(currentUser.id()), imageFile, currentUser);
         ra.addFlashAttribute("success", "ペットを登録しました");
         return "redirect:/app/pets/" + pet.id();
     }
@@ -59,7 +69,42 @@ public class PetController {
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser) {
         model.addAttribute("pet", petService.get(id, currentUser));
+        model.addAttribute("careForm", new PetCareRecordForm());
+        model.addAttribute("symptomForm", new SymptomCheckForm());
+        model.addAttribute("careRecords", petCareRecordService.listByPet(id, currentUser));
+        model.addAttribute("upcomingCareNotices", petCareRecordService.listUpcomingNotices(id, currentUser));
+        model.addAttribute("symptomChecks", symptomCheckService.recentByPet(id, currentUser));
         return "pets/detail";
+    }
+
+    @PostMapping("/{id}/symptom-check")
+    public String symptomCheck(@PathVariable Long id,
+                               @Valid @ModelAttribute("symptomForm") SymptomCheckForm form,
+                               BindingResult result,
+                               Model model,
+                               @AuthenticationPrincipal LoginUser currentUser,
+                               RedirectAttributes ra) {
+        if (result.hasErrors()) {
+            model.addAttribute("pet", petService.get(id, currentUser));
+            model.addAttribute("careForm", new PetCareRecordForm());
+            model.addAttribute("careRecords", petCareRecordService.listByPet(id, currentUser));
+            model.addAttribute("upcomingCareNotices", petCareRecordService.listUpcomingNotices(id, currentUser));
+            model.addAttribute("symptomChecks", symptomCheckService.recentByPet(id, currentUser));
+            return "pets/detail";
+        }
+        symptomCheckService.runCheck(id, form, currentUser);
+        ra.addFlashAttribute("success", "AI症状チェックを実行しました");
+        return "redirect:/app/pets/" + id;
+    }
+
+    @PostMapping("/{id}/care-records")
+    public String addCareRecord(@PathVariable Long id,
+                                @ModelAttribute("careForm") PetCareRecordForm form,
+                                @AuthenticationPrincipal LoginUser currentUser,
+                                RedirectAttributes ra) {
+        petCareRecordService.addRecord(id, form, currentUser);
+        ra.addFlashAttribute("success", "ワクチン・診療記録を追加しました");
+        return "redirect:/app/pets/" + id;
     }
 
     @GetMapping("/{id}/edit")
@@ -75,6 +120,7 @@ public class PetController {
         form.setBirthDate(entity.birthDate());
         form.setWeightBaselineKg(entity.weightBaselineKg());
         model.addAttribute("form", form);
+        model.addAttribute("petImagePath", entity.imagePath());
         model.addAttribute("petId", id);
         model.addAttribute("editMode", true);
         return "pets/form";
@@ -83,6 +129,7 @@ public class PetController {
     @PatchMapping("/{id}")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("form") PetForm form,
+                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          BindingResult result,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
@@ -92,7 +139,8 @@ public class PetController {
             model.addAttribute("editMode", true);
             return "pets/form";
         }
-        petService.update(id, form.toUpdateRequest(), currentUser);
+        String currentImagePath = petService.getEntity(id, currentUser).imagePath();
+        petService.update(id, form.toUpdateRequest(currentImagePath), imageFile, currentUser);
         ra.addFlashAttribute("success", "ペット情報を更新しました");
         return "redirect:/app/pets/" + id;
     }

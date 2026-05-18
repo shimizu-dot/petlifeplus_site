@@ -15,7 +15,8 @@ public interface HealthRecordMapper {
     // ---- 全件（管理者用） ----
     @Select("""
         SELECT id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo,
-               exercise_minutes, note, deleted_at, created_at, updated_at
+               exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, image_path,
+               note, deleted_at, created_at, updated_at
         FROM health_records WHERE deleted_at IS NULL ORDER BY record_date DESC, id DESC
         LIMIT #{limit} OFFSET #{offset}
         """)
@@ -27,7 +28,8 @@ public interface HealthRecordMapper {
     // ---- ペット別（オーナーのペット絞り込み済み前提） ----
     @Select("""
         SELECT id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo,
-               exercise_minutes, note, deleted_at, created_at, updated_at
+               exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, image_path,
+               note, deleted_at, created_at, updated_at
         FROM health_records WHERE pet_id = #{petId} AND deleted_at IS NULL
         ORDER BY record_date DESC, id DESC
         LIMIT #{limit} OFFSET #{offset}
@@ -42,7 +44,8 @@ public interface HealthRecordMapper {
     // ---- 単件 ----
     @Select("""
         SELECT id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo,
-               exercise_minutes, note, deleted_at, created_at, updated_at
+               exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, image_path,
+               note, deleted_at, created_at, updated_at
         FROM health_records WHERE id = #{id} AND deleted_at IS NULL
         """)
     HealthRecordEntity findById(@Param("id") Long id);
@@ -50,9 +53,11 @@ public interface HealthRecordMapper {
     // ---- 更新系 ----
     @Select("""
         INSERT INTO health_records(pet_id, recorded_by_user_id, record_date, weight_kg,
-                                   meal_memo, exercise_minutes, note, created_at, updated_at)
+                                   meal_memo, exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score,
+                                   image_path, note, created_at, updated_at)
         VALUES(#{petId}, #{recordedByUserId}, #{recordDate}, #{weightKg}, #{mealMemo},
-               #{exerciseMinutes}, #{note}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+               #{exerciseMinutes}, #{mealScore}, #{exerciseScore}, #{sleepScore}, #{moodScore}, #{overallScore},
+               #{imagePath}, #{note}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING id
         """)
     Long insertReturningId(HealthRecordEntity row);
@@ -60,7 +65,9 @@ public interface HealthRecordMapper {
     @Update("""
         UPDATE health_records
         SET record_date = #{recordDate}, weight_kg = #{weightKg}, meal_memo = #{mealMemo},
-            exercise_minutes = #{exerciseMinutes}, note = #{note}, updated_at = CURRENT_TIMESTAMP
+            exercise_minutes = #{exerciseMinutes}, meal_score = #{mealScore}, exercise_score = #{exerciseScore},
+            sleep_score = #{sleepScore}, mood_score = #{moodScore}, overall_score = #{overallScore}, image_path = #{imagePath},
+            note = #{note}, updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id} AND deleted_at IS NULL
         """)
     int update(HealthRecordEntity row);

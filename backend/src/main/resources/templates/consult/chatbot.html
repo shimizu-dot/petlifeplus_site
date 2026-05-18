@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>相談チャット | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">相談チャットボット</span></div>
+    <div class="content">
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="card">
+        <div class="card-title">相談履歴</div>
+        <div style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;">
+          <div th:if="${#lists.isEmpty(messages)}" style="color:#64748B;">まだメッセージはありません。</div>
+          <div th:each="m : ${messages}"
+               th:style="${m.senderType == 'USER'} ? 'align-self:flex-end;background:#DBEAFE;color:#1E3A8A;border-radius:12px;padding:10px 12px;max-width:80%;' : 'align-self:flex-start;background:#F1F5F9;color:#0F172A;border-radius:12px;padding:10px 12px;max-width:80%;'">
+            <div style="font-size:12px;font-weight:700;margin-bottom:4px;"
+                 th:text="${m.senderType == 'USER' ? 'あなた' : 'ボット'}">ボット</div>
+            <div th:text="${m.message}">メッセージ</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">メッセージ送信</div>
+        <form th:action="@{/app/consult/chatbot}" method="post" th:object="${form}">
+          <div class="form-group">
+            <label class="form-label" for="message">相談内容<span class="required">*</span></label>
+            <textarea id="message" th:field="*{message}" class="form-control"
+                      th:classappend="${#fields.hasErrors('message')} ? 'is-invalid'"
+                      rows="4" maxlength="1000" placeholder="例: 昨日から食欲がなく、朝に少し吐きました"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></div>
+          </div>
+          <button type="submit" class="btn btn-primary">送信</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -12,7 +12,8 @@ public record LoginUser(
         Long roleId,
         String displayName,
         String email,
-        String passwordHash
+        String passwordHash,
+        boolean enabled
 ) implements UserDetails {
 
     @Override
@@ -28,6 +29,7 @@ public record LoginUser(
 
     @Override public String getPassword() { return passwordHash; }
     @Override public String getUsername() { return email; }
+    @Override public boolean isEnabled() { return enabled; }
 
     public boolean isAdmin() { return roleId == 1L; }
 }

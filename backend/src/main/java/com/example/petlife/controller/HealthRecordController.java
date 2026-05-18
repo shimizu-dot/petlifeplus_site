@@ -2,7 +2,6 @@ package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.health.HealthRecordForm;
-import com.example.petlife.dto.health.HealthRecordResponse;
 import com.example.petlife.entity.HealthRecordEntity;
 import com.example.petlife.service.HealthRecordService;
 import com.example.petlife.service.PetService;
@@ -11,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -50,6 +50,7 @@ public class HealthRecordController {
     @PostMapping
     public String create(@PathVariable Long petId,
                          @Valid @ModelAttribute("form") HealthRecordForm form,
+                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          BindingResult result,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
@@ -59,8 +60,8 @@ public class HealthRecordController {
             model.addAttribute("editMode", false);
             return "health/form";
         }
-        HealthRecordResponse record = healthRecordService.create(
-                petId, form.toCreateRequest(petId, currentUser.id()), currentUser);
+        healthRecordService.create(
+                petId, form.toCreateRequest(petId, currentUser.id(), null), imageFile, currentUser);
         ra.addFlashAttribute("success", "健康記録を登録しました");
         return "redirect:/app/pets/" + petId + "/health-records";
     }
@@ -76,9 +77,15 @@ public class HealthRecordController {
         form.setWeightKg(entity.weightKg());
         form.setMealMemo(entity.mealMemo());
         form.setExerciseMinutes(entity.exerciseMinutes());
+        form.setMealScore(entity.mealScore());
+        form.setExerciseScore(entity.exerciseScore());
+        form.setSleepScore(entity.sleepScore());
+        form.setMoodScore(entity.moodScore());
+        form.setOverallScore(entity.overallScore());
         form.setNote(entity.note());
         model.addAttribute("pet",      petService.get(petId, currentUser));
         model.addAttribute("form",     form);
+        model.addAttribute("recordImagePath", entity.imagePath());
         model.addAttribute("recordId", id);
         model.addAttribute("editMode", true);
         return "health/form";
@@ -88,6 +95,7 @@ public class HealthRecordController {
     public String update(@PathVariable Long petId,
                          @PathVariable Long id,
                          @Valid @ModelAttribute("form") HealthRecordForm form,
+                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          BindingResult result,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
@@ -98,7 +106,8 @@ public class HealthRecordController {
             model.addAttribute("editMode", true);
             return "health/form";
         }
-        healthRecordService.update(id, petId, form.toUpdateRequest(), currentUser);
+        String currentImagePath = healthRecordService.getEntity(id, petId, currentUser).imagePath();
+        healthRecordService.update(id, petId, form.toUpdateRequest(currentImagePath), imageFile, currentUser);
         ra.addFlashAttribute("success", "健康記録を更新しました");
         return "redirect:/app/pets/" + petId + "/health-records";
     }

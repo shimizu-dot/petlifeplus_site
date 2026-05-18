@@ -1,7 +1,6 @@
 package com.example.petlife.controller;
 
 import com.example.petlife.dto.user.UserForm;
-import com.example.petlife.dto.user.UserResponse;
 import com.example.petlife.entity.UserEntity;
 import com.example.petlife.service.UserService;
 import jakarta.validation.Valid;
@@ -45,7 +44,7 @@ public class UserController {
             model.addAttribute("editMode", false);
             return "admin/users/form";
         }
-        UserResponse user = userService.create(form.toCreateRequest());
+        userService.create(form.toCreateRequest());
         ra.addFlashAttribute("success", "ユーザーを登録しました");
         return "redirect:/app/admin/users";
     }
@@ -59,6 +58,10 @@ public class UserController {
         form.setEmail(entity.email());
         form.setPhone(entity.phone());
         form.setStatus(entity.status());
+        if (entity.roleId() != null && entity.roleId() == 2L) {
+            String plan = userService.findActivePlanNameByUserId(entity.id());
+            form.setPlanTier(plan != null ? plan : "LIGHT");
+        }
         model.addAttribute("form",     form);
         model.addAttribute("userId",   id);
         model.addAttribute("editMode", true);

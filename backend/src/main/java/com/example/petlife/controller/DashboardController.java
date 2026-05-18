@@ -5,6 +5,7 @@ import com.example.petlife.entity.PetEntity;
 import com.example.petlife.mapper.HealthRecordMapper;
 import com.example.petlife.mapper.PetMapper;
 import com.example.petlife.mapper.UserMapper;
+import com.example.petlife.service.PlanAccessService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,11 +21,14 @@ public class DashboardController {
     private final PetMapper petMapper;
     private final HealthRecordMapper healthRecordMapper;
     private final UserMapper userMapper;
+    private final PlanAccessService planAccessService;
 
-    public DashboardController(PetMapper petMapper, HealthRecordMapper healthRecordMapper, UserMapper userMapper) {
+    public DashboardController(PetMapper petMapper, HealthRecordMapper healthRecordMapper, UserMapper userMapper,
+                               PlanAccessService planAccessService) {
         this.petMapper = petMapper;
         this.healthRecordMapper = healthRecordMapper;
         this.userMapper = userMapper;
+        this.planAccessService = planAccessService;
     }
 
     @GetMapping("/dashboard")
@@ -46,6 +50,9 @@ public class DashboardController {
             model.addAttribute("recordCount", myRecords);
             model.addAttribute("userCount",   0L);
         }
+        model.addAttribute("planLabel", planAccessService.planLabel(currentUser));
+        model.addAttribute("canUseAiSymptom", planAccessService.canUseAiSymptom(currentUser));
+        model.addAttribute("canUsePrioritySupport", planAccessService.canUsePrioritySupport(currentUser));
         return "dashboard/index";
     }
 }

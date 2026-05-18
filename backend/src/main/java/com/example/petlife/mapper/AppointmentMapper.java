@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface AppointmentMapper {
     @Select("""
-        SELECT id, pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, note, deleted_at, created_at, updated_at
+        SELECT id, pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, zoom_join_url, note, deleted_at, created_at, updated_at
         FROM appointments WHERE deleted_at IS NULL ORDER BY scheduled_at DESC, id DESC
         LIMIT #{limit} OFFSET #{offset}
         """)
@@ -19,14 +19,14 @@ public interface AppointmentMapper {
     long countAll();
 
     @Select("""
-        SELECT id, pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, note, deleted_at, created_at, updated_at
+        SELECT id, pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, zoom_join_url, note, deleted_at, created_at, updated_at
         FROM appointments WHERE id = #{id} AND deleted_at IS NULL
         """)
     AppointmentEntity findById(@Param("id") Long id);
 
     @Insert("""
-        INSERT INTO appointments(pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, note, created_at, updated_at)
-        VALUES(#{petId}, #{ownerUserId}, #{staffUserId}, #{appointmentType}, #{channel}, #{scheduledAt}, #{status}, #{note}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        INSERT INTO appointments(pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, zoom_join_url, note, created_at, updated_at)
+        VALUES(#{petId}, #{ownerUserId}, #{staffUserId}, #{appointmentType}, #{channel}, #{scheduledAt}, #{status}, #{zoomJoinUrl}, #{note}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(AppointmentEntity row);
@@ -34,7 +34,7 @@ public interface AppointmentMapper {
     @Update("""
         UPDATE appointments
         SET staff_user_id = #{staffUserId}, appointment_type = #{appointmentType}, channel = #{channel},
-            scheduled_at = #{scheduledAt}, status = #{status}, note = #{note}, updated_at = CURRENT_TIMESTAMP
+            scheduled_at = #{scheduledAt}, status = #{status}, zoom_join_url = #{zoomJoinUrl}, note = #{note}, updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id} AND deleted_at IS NULL
         """)
     int update(AppointmentEntity row);

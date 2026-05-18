@@ -1,1 +1,4 @@
-C:\Projects\petlifeplus-site\backend\src\test\java\com\example\petlife\PetlifeApplicationTests.java
+/Users/academia/src/petlifeplus_site/backend/src/test/java/com/example/petlife/PetlifeApplicationTests.java
+/Users/academia/src/petlifeplus_site/backend/src/test/java/com/example/petlife/controller/slack/SlackEventControllerTest.java
+/Users/academia/src/petlifeplus_site/backend/src/test/java/com/example/petlife/service/ZoomLinkServiceTest.java
+/Users/academia/src/petlifeplus_site/backend/src/test/java/com/example/petlife/service/slack/SlackRequestVerifierTest.java

@@ -14,6 +14,14 @@
        th:classappend="${requestURI.contains('/pets') ? 'active' : ''}">
       🐶 ペット管理
     </a>
+    <a th:if="${canUseAiSymptom}" th:href="@{/app/consult/chatbot}"
+       th:classappend="${requestURI.contains('/consult/chatbot') ? 'active' : ''}">
+      💬 相談チャット
+    </a>
+    <a th:if="${canUsePrioritySupport}" th:href="@{/app/premium/online-care}"
+       th:classappend="${requestURI.contains('/premium/online-care') ? 'active' : ''}">
+      ⭐ Zoom診療
+    </a>
   </nav>
 
   <!-- 管理者メニュー -->
@@ -26,6 +34,9 @@
   </nav>
 
   <div class="sidebar-footer">
+    <div class="sidebar-user" th:if="${planLabel != null and currentUser != null and !currentUser.isAdmin()}">
+      プラン: <span th:text="${planLabel}">ライト</span>
+    </div>
     <div class="sidebar-user" th:text="${currentUser != null ? currentUser.displayName() : ''}"></div>
     <form th:action="@{/app/logout}" method="post">
       <button type="submit" class="btn-link" style="color:rgba(255,255,255,.7);">ログアウト</button>

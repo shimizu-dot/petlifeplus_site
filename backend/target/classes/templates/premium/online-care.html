@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>プレミアム優先サポート | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">プレミアム優先サポート（Zoom診療）</span></div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${zoomFallbackWarning}" class="alert alert-error" th:text="${zoomFallbackWarning}"></div>
+      <div th:if="${zoomJoinUrl}" class="alert alert-success">
+        Zoom参加リンク: <a th:href="${zoomJoinUrl}" th:text="${zoomJoinUrl}" target="_blank" rel="noopener"></a>
+      </div>
+
+      <div class="card" style="max-width:720px;">
+        <div class="card-title">オンライン診療を予約</div>
+        <form th:action="@{/app/premium/online-care}" method="post" th:object="${form}">
+          <div class="form-group">
+            <label class="form-label" for="petId">対象ペット<span class="required">*</span></label>
+            <select id="petId" th:field="*{petId}" class="form-control"
+                    th:classappend="${#fields.hasErrors('petId')} ? 'is-invalid'">
+              <option value="">選択してください</option>
+              <option th:each="p : ${pets}" th:value="${p.id}" th:text="${p.name}"></option>
+            </select>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('petId')}" th:errors="*{petId}"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="scheduledAt">予約日時<span class="required">*</span></label>
+            <input id="scheduledAt" type="datetime-local" th:field="*{scheduledAt}" class="form-control"
+                   th:classappend="${#fields.hasErrors('scheduledAt')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduledAt')}" th:errors="*{scheduledAt}"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="note">相談内容</label>
+            <textarea id="note" th:field="*{note}" class="form-control" rows="4" maxlength="500"
+                      placeholder="症状、経過、相談したい内容を入力"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Zoom診療を予約する</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -14,7 +14,7 @@ public interface PetMapper {
 
     // ---- 全件（管理者用） ----
     @Select("""
-        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg,
+        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
                deleted_at, created_at, updated_at
         FROM pets WHERE deleted_at IS NULL ORDER BY id
         LIMIT #{limit} OFFSET #{offset}
@@ -26,7 +26,7 @@ public interface PetMapper {
 
     // ---- オーナー別（一般ユーザー用） ----
     @Select("""
-        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg,
+        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
                deleted_at, created_at, updated_at
         FROM pets WHERE owner_user_id = #{ownerUserId} AND deleted_at IS NULL ORDER BY id
         LIMIT #{limit} OFFSET #{offset}
@@ -40,14 +40,14 @@ public interface PetMapper {
 
     // ---- 単件取得 ----
     @Select("""
-        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg,
+        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
                deleted_at, created_at, updated_at
         FROM pets WHERE id = #{id} AND deleted_at IS NULL
         """)
     PetEntity findById(@Param("id") Long id);
 
     @Select("""
-        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg,
+        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
                deleted_at, created_at, updated_at
         FROM pets WHERE id = #{id} AND owner_user_id = #{ownerUserId} AND deleted_at IS NULL
         """)
@@ -55,10 +55,10 @@ public interface PetMapper {
 
     // ---- 更新系 ----
     @Select("""
-        INSERT INTO pets(owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg,
+        INSERT INTO pets(owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
                          created_at, updated_at)
         VALUES(#{ownerUserId}, #{name}, #{species}, #{breed}, #{sex}, #{birthDate},
-               #{weightBaselineKg}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+               #{weightBaselineKg}, #{imagePath}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING id
         """)
     Long insertReturningId(PetEntity pet);
@@ -67,6 +67,7 @@ public interface PetMapper {
         UPDATE pets
         SET name = #{name}, species = #{species}, breed = #{breed}, sex = #{sex},
             birth_date = #{birthDate}, weight_baseline_kg = #{weightBaselineKg},
+            image_path = #{imagePath},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id} AND deleted_at IS NULL
         """)

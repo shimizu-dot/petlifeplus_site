@@ -25,7 +25,7 @@
         <div class="card-title" th:text="${editMode ? 'ペット情報を編集' : '新しいペットを登録'}">新しいペットを登録</div>
 
         <form th:action="${editMode ? '/app/pets/' + petId : '/app/pets'}"
-              method="post" th:object="${form}">
+              method="post" enctype="multipart/form-data" th:object="${form}">
           <input th:if="${editMode}" type="hidden" name="_method" value="PATCH">
 
           <div class="form-row">
@@ -76,6 +76,16 @@
               <label class="form-label" for="weightBaselineKg">基準体重 (kg)</label>
               <input id="weightBaselineKg" type="number" th:field="*{weightBaselineKg}" class="form-control"
                      step="0.01" min="0" placeholder="例：8.50">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="imageFile">ペット画像</label>
+            <input id="imageFile" type="file" name="imageFile" class="form-control" accept="image/*">
+            <div class="form-hint">jpeg / png / webp / gif（任意）</div>
+            <div th:if="${editMode and petImagePath != null}" style="margin-top:8px;">
+              <img th:src="${petImagePath}" alt="current-pet-image"
+                   style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid #CBD5E1;">
             </div>
           </div>
 

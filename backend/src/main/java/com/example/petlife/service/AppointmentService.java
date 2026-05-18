@@ -1,5 +1,6 @@
 package com.example.petlife.service;
 
+import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.appointment.AppointmentCreateRequest;
 import com.example.petlife.dto.appointment.AppointmentResponse;
 import com.example.petlife.dto.appointment.AppointmentUpdateRequest;
@@ -8,6 +9,7 @@ import com.example.petlife.entity.AppointmentEntity;
 import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.AppointmentMapper;
+import com.example.petlife.mapper.PetMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,9 +18,18 @@ import java.util.List;
 @Service
 public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
+    private final PlanAccessService planAccessService;
+    private final ZoomLinkService zoomLinkService;
+    private final PetMapper petMapper;
 
-    public AppointmentService(AppointmentMapper appointmentMapper) {
+    public AppointmentService(AppointmentMapper appointmentMapper,
+                              PlanAccessService planAccessService,
+                              ZoomLinkService zoomLinkService,
+                              PetMapper petMapper) {
         this.appointmentMapper = appointmentMapper;
+        this.planAccessService = planAccessService;
+        this.zoomLinkService = zoomLinkService;
+        this.petMapper = petMapper;
     }
 
     public PageResponse<AppointmentResponse> list(int page, int size) {
@@ -38,7 +49,7 @@ public class AppointmentService {
     public AppointmentResponse create(AppointmentCreateRequest req) {
         ensureNoDuplicate(req.staffUserId(), req.scheduledAt(), null);
         AppointmentEntity row = new AppointmentEntity(null, req.petId(), req.ownerUserId(), req.staffUserId(), req.appointmentType(), req.channel(),
-                req.scheduledAt(), req.status(), req.note(), null, null, null);
+                req.scheduledAt(), req.status(), null, req.note(), null, null, null);
         appointmentMapper.insert(row);
         return get(row.id());
     }
@@ -48,9 +59,43 @@ public class AppointmentService {
         if (existing == null) throw new NotFoundException("Appointment not found: " + id);
         ensureNoDuplicate(req.staffUserId(), req.scheduledAt(), id);
         AppointmentEntity row = new AppointmentEntity(id, existing.petId(), existing.ownerUserId(), req.staffUserId(), req.appointmentType(), req.channel(),
-                req.scheduledAt(), req.status(), req.note(), existing.deletedAt(), existing.createdAt(), existing.updatedAt());
+                req.scheduledAt(), req.status(), existing.zoomJoinUrl(), req.note(), existing.deletedAt(), existing.createdAt(), existing.updatedAt());
         appointmentMapper.update(row);
         return get(id);
+    }
+
+    public PremiumOnlineCareResult createPremiumOnlineCare(Long petId,
+                                                            LocalDateTime scheduledAt,
+                                                            String note,
+                                                            LoginUser currentUser) {
+        if (!planAccessService.canUsePrioritySupport(currentUser)) {
+            throw new BadRequestException("この機能はプレミアムプランで利用できます");
+        }
+        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null) {
+            throw new NotFoundException("Pet not found: " + petId);
+        }
+        ZoomLinkService.ZoomMeetingResult zoomResult = zoomLinkService.createMeetingOrFallback(
+                scheduledAt,
+                "Pet Life Plus Premium Online Care"
+        );
+        AppointmentEntity row = new AppointmentEntity(
+                null,
+                petId,
+                currentUser.id(),
+                null,
+                "MEDICAL",
+                "ONLINE",
+                scheduledAt,
+                "REQUESTED",
+                zoomResult.joinUrl(),
+                note,
+                null,
+                null,
+                null
+        );
+        appointmentMapper.insert(row);
+        AppointmentResponse created = get(row.id());
+        return new PremiumOnlineCareResult(created, zoomResult.fallbackUsed(), zoomResult.fallbackReason());
     }
 
     public void delete(Long id) {
@@ -66,6 +111,12 @@ public class AppointmentService {
 
     private AppointmentResponse toResponse(AppointmentEntity row) {
         return new AppointmentResponse(row.id(), row.petId(), row.ownerUserId(), row.staffUserId(), row.appointmentType(),
-                row.channel(), row.scheduledAt(), row.status(), row.note());
+                row.channel(), row.scheduledAt(), row.status(), row.zoomJoinUrl(), row.note());
     }
+
+    public record PremiumOnlineCareResult(
+            AppointmentResponse appointment,
+            boolean zoomFallbackUsed,
+            String zoomFallbackReason
+    ) {}
 }

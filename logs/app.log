@@ -1,0 +1,188 @@
+2026-05-18 15:53:06.998 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 15:53:06.999 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 15:53:07.107 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 15:53:07.107 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 15:53:07.107 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 15:53:07.112 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 112 ms
+2026-05-18 15:53:07.127 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-100 - Starting...
+2026-05-18 15:53:07.137 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-100 - Added connection org.postgresql.jdbc.PgConnection@7e420447
+2026-05-18 15:53:07.137 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-100 - Start completed.
+2026-05-18 15:53:07.190 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 15:53:07.202 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 15:53:07.218 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 15:53:07.219 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.316 seconds (process running for 10680.702)
+2026-05-18 15:53:08.214 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 15:53:56.210 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 5 class path changes (1 addition, 0 deletions, 4 modifications)
+2026-05-18 15:53:56.216 INFO  [Thread-392] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 15:53:56.218 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 15:53:56.228 INFO  [Thread-392] com.zaxxer.hikari.HikariDataSource - HikariPool-100 - Shutdown initiated...
+2026-05-18 15:53:56.234 INFO  [Thread-392] com.zaxxer.hikari.HikariDataSource - HikariPool-100 - Shutdown completed.
+2026-05-18 15:53:56.341 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 15:53:56.342 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 15:53:56.426 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 15:53:56.426 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 15:53:56.426 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 15:53:56.434 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 91 ms
+2026-05-18 15:53:56.446 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-101 - Starting...
+2026-05-18 15:53:56.465 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-101 - Added connection org.postgresql.jdbc.PgConnection@1425366b
+2026-05-18 15:53:56.466 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-101 - Start completed.
+2026-05-18 15:53:56.521 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 15:53:56.533 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 15:53:56.552 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 15:53:56.553 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.229 seconds (process running for 10730.035)
+2026-05-18 15:53:57.542 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 15:54:08.115 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 4 class path changes (1 addition, 0 deletions, 3 modifications)
+2026-05-18 15:54:08.121 INFO  [Thread-396] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 15:54:08.126 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 15:54:08.128 INFO  [Thread-396] com.zaxxer.hikari.HikariDataSource - HikariPool-101 - Shutdown initiated...
+2026-05-18 15:54:08.131 INFO  [Thread-396] com.zaxxer.hikari.HikariDataSource - HikariPool-101 - Shutdown completed.
+2026-05-18 15:54:08.245 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 15:54:08.245 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 15:54:08.339 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 15:54:08.340 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 15:54:08.340 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 15:54:08.345 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 99 ms
+2026-05-18 15:54:08.362 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-102 - Starting...
+2026-05-18 15:54:08.375 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-102 - Added connection org.postgresql.jdbc.PgConnection@489fe56c
+2026-05-18 15:54:08.376 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-102 - Start completed.
+2026-05-18 15:54:08.425 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 15:54:08.436 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 15:54:08.452 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 15:54:08.453 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.223 seconds (process running for 10741.935)
+2026-05-18 15:54:09.426 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 15:54:16.964 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-05-18 15:54:16.967 INFO  [Thread-400] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 15:54:16.971 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 15:54:16.974 INFO  [Thread-400] com.zaxxer.hikari.HikariDataSource - HikariPool-102 - Shutdown initiated...
+2026-05-18 15:54:16.975 INFO  [Thread-400] com.zaxxer.hikari.HikariDataSource - HikariPool-102 - Shutdown completed.
+2026-05-18 15:54:17.044 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 15:54:17.044 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 15:54:17.121 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 15:54:17.122 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 15:54:17.122 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 15:54:17.134 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 89 ms
+2026-05-18 15:54:17.151 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-103 - Starting...
+2026-05-18 15:54:17.158 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-103 - Added connection org.postgresql.jdbc.PgConnection@7a6ee4b
+2026-05-18 15:54:17.158 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-103 - Start completed.
+2026-05-18 15:54:17.213 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 15:54:17.226 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 15:54:17.241 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 15:54:17.242 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.213 seconds (process running for 10750.724)
+2026-05-18 15:54:18.221 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 15:54:22.702 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-05-18 15:54:22.705 INFO  [Thread-404] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 15:54:22.707 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 15:54:22.709 INFO  [Thread-404] com.zaxxer.hikari.HikariDataSource - HikariPool-103 - Shutdown initiated...
+2026-05-18 15:54:22.710 INFO  [Thread-404] com.zaxxer.hikari.HikariDataSource - HikariPool-103 - Shutdown completed.
+2026-05-18 15:54:22.768 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 15:54:22.768 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 15:54:22.843 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 15:54:22.844 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 15:54:22.844 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 15:54:22.849 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 81 ms
+2026-05-18 15:54:22.861 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-104 - Starting...
+2026-05-18 15:54:22.871 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-104 - Added connection org.postgresql.jdbc.PgConnection@3dd3815a
+2026-05-18 15:54:22.871 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-104 - Start completed.
+2026-05-18 15:54:22.917 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 15:54:22.928 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 15:54:22.944 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 15:54:22.945 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.19 seconds (process running for 10756.427)
+2026-05-18 15:54:23.919 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 16:04:02.166 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat-5].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-18 16:04:02.169 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-05-18 16:04:02.191 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 21 ms
+2026-05-18 16:27:18.748 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-05-18 16:27:18.769 INFO  [Thread-408] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 16:27:18.772 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 16:27:18.776 INFO  [Thread-408] com.zaxxer.hikari.HikariDataSource - HikariPool-104 - Shutdown initiated...
+2026-05-18 16:27:18.777 INFO  [Thread-408] com.zaxxer.hikari.HikariDataSource - HikariPool-104 - Shutdown completed.
+2026-05-18 16:27:18.903 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 16:27:18.903 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 16:27:19.172 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 16:27:19.173 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 16:27:19.173 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 16:27:19.181 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 276 ms
+2026-05-18 16:27:19.228 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-105 - Starting...
+2026-05-18 16:27:19.237 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-105 - Added connection org.postgresql.jdbc.PgConnection@27152c9e
+2026-05-18 16:27:19.238 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-105 - Start completed.
+2026-05-18 16:27:19.359 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 16:27:19.405 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 16:27:19.450 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 16:27:19.453 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.602 seconds (process running for 12732.986)
+2026-05-18 16:27:20.475 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 16:27:27.627 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat-5].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-18 16:27:27.628 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-05-18 16:27:27.632 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-05-18 16:27:33.008 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-05-18 16:27:33.013 INFO  [Thread-412] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 16:27:33.016 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 16:27:33.019 INFO  [Thread-412] com.zaxxer.hikari.HikariDataSource - HikariPool-105 - Shutdown initiated...
+2026-05-18 16:27:33.021 INFO  [Thread-412] com.zaxxer.hikari.HikariDataSource - HikariPool-105 - Shutdown completed.
+2026-05-18 16:27:33.126 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 16:27:33.126 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 16:27:33.254 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 16:27:33.254 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 16:27:33.254 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 16:27:33.260 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 133 ms
+2026-05-18 16:27:33.280 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-106 - Starting...
+2026-05-18 16:27:33.290 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-106 - Added connection org.postgresql.jdbc.PgConnection@435fcaa
+2026-05-18 16:27:33.291 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-106 - Start completed.
+2026-05-18 16:27:33.355 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 16:27:33.368 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 16:27:33.389 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 16:27:33.391 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.288 seconds (process running for 12746.924)
+2026-05-18 16:27:34.374 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 16:27:45.941 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-05-18 16:27:45.949 INFO  [Thread-416] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 16:27:45.974 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 16:27:45.980 INFO  [Thread-416] com.zaxxer.hikari.HikariDataSource - HikariPool-106 - Shutdown initiated...
+2026-05-18 16:27:45.982 INFO  [Thread-416] com.zaxxer.hikari.HikariDataSource - HikariPool-106 - Shutdown completed.
+2026-05-18 16:27:46.088 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 39494 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 16:27:46.088 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 16:27:46.201 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 16:27:46.201 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 16:27:46.202 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 16:27:46.207 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 118 ms
+2026-05-18 16:27:46.223 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-107 - Starting...
+2026-05-18 16:27:46.236 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-107 - Added connection org.postgresql.jdbc.PgConnection@1d71fae7
+2026-05-18 16:27:46.236 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-107 - Start completed.
+2026-05-18 16:27:46.312 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 16:27:46.328 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 16:27:46.350 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 16:27:46.351 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 0.282 seconds (process running for 12759.885)
+2026-05-18 16:27:47.388 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-05-18 16:28:24.533 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat-5].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-18 16:28:24.534 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-05-18 16:28:24.539 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-05-18 16:28:24.625 WARN  [http-nio-8080-exec-1] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [1] in public java.lang.String com.example.petlife.controller.HealthRecordController.create(java.lang.Long,com.example.petlife.dto.health.HealthRecordForm,org.springframework.web.multipart.MultipartFile,org.springframework.validation.BindingResult,org.springframework.ui.Model,com.example.petlife.config.LoginUser,org.springframework.web.servlet.mvc.support.RedirectAttributes): [Field error in object 'form' on field 'recordDate': rejected value [null]; codes [NotNull.form.recordDate,NotNull.recordDate,NotNull.java.time.LocalDate,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [form.recordDate,recordDate]; arguments []; default message [recordDate]]; default message [null は許可されていません]] ]
+2026-05-18 16:29:14.051 INFO  [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 16:29:14.056 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 16:29:14.061 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-107 - Shutdown initiated...
+2026-05-18 16:29:14.064 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-107 - Shutdown completed.
+2026-05-18 16:29:48.058 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Starting PetlifeApplication using Java 21.0.10 with PID 62283 (/Users/academia/src/petlifeplus_site/backend/target/classes started by academia in /Users/academia/src/petlifeplus_site)
+2026-05-18 16:29:48.060 INFO  [restartedMain] c.example.petlife.PetlifeApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-18 16:29:48.100 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-05-18 16:29:48.101 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-05-18 16:29:48.210 INFO  [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.0.1.Final
+2026-05-18 16:29:48.858 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-05-18 16:29:48.869 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-05-18 16:29:48.870 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-05-18 16:29:48.871 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-05-18 16:29:48.893 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 792 ms
+2026-05-18 16:29:49.019 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-05-18 16:29:49.158 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@af8fa49
+2026-05-18 16:29:49.159 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-05-18 16:29:49.356 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-05-18 16:29:49.462 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: URL [file:frontend/public/index.html]
+2026-05-18 16:29:49.615 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-05-18 16:29:49.625 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-05-18 16:29:49.632 INFO  [restartedMain] c.example.petlife.PetlifeApplication - Started PetlifeApplication in 1.935 seconds (process running for 2.361)
+2026-05-18 16:30:20.258 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-18 16:30:20.259 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-05-18 16:30:20.263 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+2026-05-18 16:30:20.474 WARN  [http-nio-8080-exec-1] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [1] in public java.lang.String com.example.petlife.controller.HealthRecordController.create(java.lang.Long,com.example.petlife.dto.health.HealthRecordForm,org.springframework.web.multipart.MultipartFile,org.springframework.validation.BindingResult,org.springframework.ui.Model,com.example.petlife.config.LoginUser,org.springframework.web.servlet.mvc.support.RedirectAttributes): [Field error in object 'form' on field 'recordDate': rejected value [null]; codes [NotNull.form.recordDate,NotNull.recordDate,NotNull.java.time.LocalDate,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [form.recordDate,recordDate]; arguments []; default message [recordDate]]; default message [null は許可されていません]] ]
+2026-05-18 16:30:25.419 WARN  [http-nio-8080-exec-5] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [1] in public java.lang.String com.example.petlife.controller.HealthRecordController.create(java.lang.Long,com.example.petlife.dto.health.HealthRecordForm,org.springframework.web.multipart.MultipartFile,org.springframework.validation.BindingResult,org.springframework.ui.Model,com.example.petlife.config.LoginUser,org.springframework.web.servlet.mvc.support.RedirectAttributes): [Field error in object 'form' on field 'recordDate': rejected value [null]; codes [NotNull.form.recordDate,NotNull.recordDate,NotNull.java.time.LocalDate,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [form.recordDate,recordDate]; arguments []; default message [recordDate]]; default message [null は許可されていません]] ]
+2026-05-18 16:31:06.371 INFO  [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-05-18 16:31:06.383 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-05-18 16:31:06.393 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-05-18 16:31:06.397 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

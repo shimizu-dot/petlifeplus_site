@@ -18,10 +18,10 @@ public class PetForm {
                                private BigDecimal weightBaselineKg;
 
     public PetCreateRequest toCreateRequest(Long ownerUserId) {
-        return new PetCreateRequest(ownerUserId, name, species, breed, sex, birthDate, weightBaselineKg);
+        return new PetCreateRequest(ownerUserId, name, species, breed, sex, birthDate, weightBaselineKg, null);
     }
 
-    public PetUpdateRequest toUpdateRequest() {
-        return new PetUpdateRequest(name, species, breed, sex, birthDate, weightBaselineKg);
+    public PetUpdateRequest toUpdateRequest(String imagePath) {
+        return new PetUpdateRequest(name, species, breed, sex, birthDate, weightBaselineKg, imagePath);
     }
 }

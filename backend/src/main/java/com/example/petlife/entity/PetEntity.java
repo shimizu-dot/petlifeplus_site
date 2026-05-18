@@ -13,6 +13,7 @@ public record PetEntity(
         String sex,
         LocalDate birthDate,
         BigDecimal weightBaselineKg,
+        String imagePath,
         LocalDateTime deletedAt,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

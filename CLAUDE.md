@@ -39,6 +39,11 @@ Schema and seed data (`schema.sql`, `data.sql`) are applied automatically on eve
 | owner1@petlifeplus.local | user123 | USER |
 | vet1@petlifeplus.local | vet123 | VET |
 | staff1@petlifeplus.local | staff123 | STAFF |
+｜owner2@petlifeplus.local	｜　user123	｜　USER |
+｜owner.light@petlifeplus.local	｜　light123　｜ USER |
+｜owner.standard@petlifeplus.local	｜standard123　｜ USER |
+｜owner.premium@petlifeplus.local　｜	premium123	｜ USER |
+
 
 ## Backend Architecture
 

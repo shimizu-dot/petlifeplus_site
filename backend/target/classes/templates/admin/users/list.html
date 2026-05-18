@@ -49,10 +49,10 @@
                 <td>
                   <span th:class="${user.roleId == 1 ? 'badge badge-red' :
                                     user.roleId == 3 ? 'badge badge-blue' :
-                                    user.roleId == 4 ? 'badge badge-yellow' : 'badge badge-green'}"
-                        th:text="${user.roleId == 1 ? '管理者' :
-                                   user.roleId == 3 ? '獣医師' :
-                                   user.roleId == 4 ? 'スタッフ' : '一般ユーザー'}">一般</span>
+                                    user.roleId == 4 ? 'badge badge-yellow' :
+                                    user.roleDisplay == 'Premium' ? 'badge badge-red' :
+                                    user.roleDisplay == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
+                        th:text="${user.roleDisplay}">Light</span>
                 </td>
                 <td>
                   <span th:class="${user.status == 'ACTIVE' ? 'badge badge-green' : 'badge badge-gray'}"

@@ -15,12 +15,13 @@ public class UserForm {
     @Size(min = 8, max = 64)                     private String password;
     @Pattern(regexp = "^[0-9-]{10,13}$|^$")     private String phone;
     private String status = "ACTIVE";
+    private String planTier = "LIGHT";
 
     public UserCreateRequest toCreateRequest() {
         return new UserCreateRequest(roleId, name, email, password, phone);
     }
 
     public UserUpdateRequest toUpdateRequest() {
-        return new UserUpdateRequest(name, email, phone, status);
+        return new UserUpdateRequest(roleId, planTier, name, email, phone, status);
     }
 }

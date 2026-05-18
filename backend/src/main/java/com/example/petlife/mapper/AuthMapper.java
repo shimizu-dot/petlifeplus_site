@@ -14,4 +14,15 @@ public interface AuthMapper {
         WHERE email = #{email} AND deleted_at IS NULL
         """)
     UserEntity findByEmail(@Param("email") String email);
+
+    @Select("""
+        SELECT COUNT(*)
+        FROM subscriptions
+        WHERE user_id = #{userId}
+          AND deleted_at IS NULL
+          AND status = 'ACTIVE'
+          AND start_date <= CURRENT_DATE
+          AND (end_date IS NULL OR end_date >= CURRENT_DATE)
+        """)
+    long countEffectiveSubscriptions(@Param("userId") Long userId);
 }

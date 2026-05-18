@@ -39,8 +39,95 @@ SELECT 3, 3, u.id, '2026-05-11', 5.25, '通常', 25, '元気'
 FROM users u WHERE u.email = 'owner2@petlifeplus.local'
   AND NOT EXISTS (SELECT 1 FROM health_records WHERE id = 3);
 
+INSERT INTO pet_care_records (id, pet_id, recorded_by_user_id, care_type, administered_on, next_due_on, memo)
+SELECT 1, 1, u.id, 'RABIES', '2025-08-01', '2026-08-01', '狂犬病予防接種'
+FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+  AND NOT EXISTS (SELECT 1 FROM pet_care_records WHERE id = 1);
+
+INSERT INTO pet_care_records (id, pet_id, recorded_by_user_id, care_type, administered_on, next_due_on, memo)
+SELECT 2, 1, u.id, 'HEARTWORM', '2025-07-15', '2026-07-15', 'フィラリア予防薬'
+FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+  AND NOT EXISTS (SELECT 1 FROM pet_care_records WHERE id = 2);
+
+INSERT INTO pet_care_records (id, pet_id, recorded_by_user_id, care_type, administered_on, next_due_on, memo)
+SELECT 3, 1, u.id, 'COMBO_VACCINE', '2025-09-01', '2026-09-01', '混合ワクチン接種'
+FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+  AND NOT EXISTS (SELECT 1 FROM pet_care_records WHERE id = 3);
+
 INSERT INTO plans (id, name, monthly_fee, features_json, is_active)
 VALUES
-(1, 'Basic',   980.00,  '{"aiCheck": true, "notifications": true}'::jsonb, true),
-(2, 'Premium', 1980.00, '{"aiCheck": true, "notifications": true, "prioritySupport": true}'::jsonb, true)
-ON CONFLICT DO NOTHING;
+(1, 'LIGHT',    980.00,  '{"healthRecord": true, "basicNotification": true}'::jsonb, true),
+(2, 'STANDARD', 1980.00, '{"healthRecord": true, "basicNotification": true, "aiSymptomCheck": true, "consultationLead": true}'::jsonb, true),
+(3, 'PREMIUM',  2980.00, '{"healthRecord": true, "basicNotification": true, "aiSymptomCheck": true, "consultationLead": true, "prioritySupport": true}'::jsonb, true)
+ON CONFLICT (id) DO UPDATE
+SET name = EXCLUDED.name,
+    monthly_fee = EXCLUDED.monthly_fee,
+    features_json = EXCLUDED.features_json,
+    is_active = EXCLUDED.is_active,
+    updated_at = CURRENT_TIMESTAMP;
+
+INSERT INTO pets (owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
+SELECT u.id, 'ライト犬', 'DOG', '柴犬', 'MALE', '2022-01-01', 7.40
+FROM users u
+WHERE u.email = 'owner.light@petlifeplus.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM pets p WHERE p.owner_user_id = u.id AND p.name = 'ライト犬' AND p.deleted_at IS NULL
+  );
+
+INSERT INTO pets (owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
+SELECT u.id, '標準猫', 'CAT', '雑種', 'FEMALE', '2021-06-10', 4.10
+FROM users u
+WHERE u.email = 'owner.standard@petlifeplus.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM pets p WHERE p.owner_user_id = u.id AND p.name = '標準猫' AND p.deleted_at IS NULL
+  );
+
+INSERT INTO pets (owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
+SELECT u.id, '上位プー', 'DOG', 'トイプードル', 'MALE', '2020-04-20', 5.60
+FROM users u
+WHERE u.email = 'owner.premium@petlifeplus.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM pets p WHERE p.owner_user_id = u.id AND p.name = '上位プー' AND p.deleted_at IS NULL
+  );
+
+INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, end_date, status, auto_renew)
+SELECT u.id, p.id, 1, CURRENT_DATE - INTERVAL '30 days', NULL, 'ACTIVE', true
+FROM users u
+JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ライト犬' AND p.deleted_at IS NULL
+WHERE u.email = 'owner.light@petlifeplus.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM subscriptions s
+      WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 1 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+  );
+
+INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, end_date, status, auto_renew)
+SELECT u.id, p.id, 2, CURRENT_DATE - INTERVAL '30 days', NULL, 'ACTIVE', true
+FROM users u
+JOIN pets p ON p.owner_user_id = u.id AND p.name = '標準猫' AND p.deleted_at IS NULL
+WHERE u.email = 'owner.standard@petlifeplus.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM subscriptions s
+      WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 2 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+  );
+
+INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, end_date, status, auto_renew)
+SELECT u.id, p.id, 3, CURRENT_DATE - INTERVAL '30 days', NULL, 'ACTIVE', true
+FROM users u
+JOIN pets p ON p.owner_user_id = u.id AND p.name = '上位プー' AND p.deleted_at IS NULL
+WHERE u.email = 'owner.premium@petlifeplus.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM subscriptions s
+      WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 3 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+  );
+
+-- 明示ID投入したテーブルのシーケンスを補正
+SELECT setval(
+  pg_get_serial_sequence('pet_care_records', 'id'),
+  COALESCE((SELECT MAX(id) FROM pet_care_records), 1),
+  true
+);
+
+SELECT setval(pg_get_serial_sequence('pets', 'id'), COALESCE((SELECT MAX(id) FROM pets), 1), true);
+SELECT setval(pg_get_serial_sequence('health_records', 'id'), COALESCE((SELECT MAX(id) FROM health_records), 1), true);
+SELECT setval(pg_get_serial_sequence('plans', 'id'), COALESCE((SELECT MAX(id) FROM plans), 1), true);
+SELECT setval(pg_get_serial_sequence('subscriptions', 'id'), COALESCE((SELECT MAX(id) FROM subscriptions), 1), true);

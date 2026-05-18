@@ -82,6 +82,16 @@
             </select>
           </div>
 
+          <div class="form-group" th:if="${editMode}">
+            <label class="form-label" for="planTier">一般ユーザープラン</label>
+            <select id="planTier" th:field="*{planTier}" class="form-control">
+              <option value="LIGHT">Light</option>
+              <option value="STANDARD">Standard</option>
+              <option value="PREMIUM">Premium</option>
+            </select>
+            <div class="form-hint">ロールが一般ユーザーの場合に適用されます。</div>
+          </div>
+
           <div class="form-actions">
             <button type="submit" class="btn btn-primary" th:text="${editMode ? '更新する' : '登録する'}">登録する</button>
             <a th:href="@{/app/admin/users}" class="btn btn-secondary">キャンセル</a>

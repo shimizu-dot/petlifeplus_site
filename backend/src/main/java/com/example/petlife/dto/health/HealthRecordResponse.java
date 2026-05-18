@@ -11,6 +11,12 @@ public record HealthRecordResponse(
         BigDecimal weightKg,
         String mealMemo,
         Integer exerciseMinutes,
+        Integer mealScore,
+        Integer exerciseScore,
+        Integer sleepScore,
+        Integer moodScore,
+        Integer overallScore,
+        String imagePath,
         String note
 ) {
 }

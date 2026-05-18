@@ -31,18 +31,24 @@ public class DataInitializer implements CommandLineRunner {
         upsertUser(1L, "管理 太郎",  "admin@petlifeplus.local",  "admin123", "090-1111-1111");
         upsertUser(2L, "飼主 花子",  "owner1@petlifeplus.local", "user123",  "090-2222-2222");
         upsertUser(2L, "飼主 次郎",  "owner2@petlifeplus.local", "user123",  "090-3333-3333");
+        upsertUser(2L, "ライト会員", "owner.light@petlifeplus.local", "light123", "090-6666-0001");
+        upsertUser(2L, "標準会員",   "owner.standard@petlifeplus.local", "standard123", "090-6666-0002");
+        upsertUser(2L, "上位会員",   "owner.premium@petlifeplus.local", "premium123", "090-6666-0003");
         upsertUser(3L, "獣医 三郎",  "vet1@petlifeplus.local",   "vet123",   "090-4444-4444");
         upsertUser(4L, "受付 四郎",  "staff1@petlifeplus.local", "staff123", "090-5555-5555");
     }
 
     private void upsertUser(Long roleId, String name, String email, String rawPassword, String phone) {
+        String passwordHash = encoder.encode(rawPassword);
         if (authMapper.findByEmail(email) == null) {
             UserEntity u = new UserEntity(
                     null, roleId, name, email,
-                    encoder.encode(rawPassword),
+                    passwordHash,
                     phone, "ACTIVE", null, null, null, null
             );
             userMapper.insertReturningId(u);
+            return;
         }
+        userMapper.updateSeedUserByEmail(roleId, name, email, passwordHash, phone);
     }
 }

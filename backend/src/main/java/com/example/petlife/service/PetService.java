@@ -9,6 +9,7 @@ import com.example.petlife.entity.PetEntity;
 import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.PetMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,9 +18,11 @@ import java.util.List;
 public class PetService {
 
     private final PetMapper petMapper;
+    private final PetImageStorageService petImageStorageService;
 
-    public PetService(PetMapper petMapper) {
+    public PetService(PetMapper petMapper, PetImageStorageService petImageStorageService) {
         this.petMapper = petMapper;
+        this.petImageStorageService = petImageStorageService;
     }
 
     // ---- 一覧（ロール別） ----
@@ -51,11 +54,12 @@ public class PetService {
 
     // ---- 作成 ----
 
-    public PetResponse create(PetCreateRequest req, LoginUser currentUser) {
+    public PetResponse create(PetCreateRequest req, MultipartFile imageFile, LoginUser currentUser) {
         Long ownerId = currentUser.isAdmin() ? req.ownerUserId() : currentUser.id();
+        String imagePath = petImageStorageService.store(imageFile);
         PetEntity row = new PetEntity(
                 null, ownerId, req.name(), req.species(), req.breed(),
-                req.sex(), req.birthDate(), req.weightBaselineKg(),
+                req.sex(), req.birthDate(), req.weightBaselineKg(), imagePath,
                 null, null, null
         );
         Long newId = petMapper.insertReturningId(row);
@@ -64,11 +68,16 @@ public class PetService {
 
     // ---- 更新 ----
 
-    public PetResponse update(Long id, PetUpdateRequest req, LoginUser currentUser) {
+    public PetResponse update(Long id, PetUpdateRequest req, MultipartFile imageFile, LoginUser currentUser) {
         PetEntity existing = resolvePet(id, currentUser);
+        String imagePath = existing.imagePath();
+        String uploadedPath = petImageStorageService.store(imageFile);
+        if (uploadedPath != null) {
+            imagePath = uploadedPath;
+        }
         PetEntity row = new PetEntity(
                 id, existing.ownerUserId(), req.name(), req.species(), req.breed(),
-                req.sex(), req.birthDate(), req.weightBaselineKg(),
+                req.sex(), req.birthDate(), req.weightBaselineKg(), imagePath,
                 existing.deletedAt(), existing.createdAt(), existing.updatedAt()
         );
         petMapper.update(row);
@@ -96,6 +105,6 @@ public class PetService {
 
     public PetResponse toResponse(PetEntity row) {
         return new PetResponse(row.id(), row.ownerUserId(), row.name(), row.species(),
-                row.breed(), row.sex(), row.birthDate(), row.weightBaselineKg());
+                row.breed(), row.sex(), row.birthDate(), row.weightBaselineKg(), row.imagePath());
     }
 }
