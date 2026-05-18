@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>デザインガイドライン - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .doc-header .doc-category,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .fill-hint {
+      color: #64748b;
+    }
+
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #cfe0f7;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+    }
+
+    .doc-table thead th {
+      background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 45%, #93c5fd 100%);
+      color: #0b2545;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      border-bottom: 1px solid #c5d7f1;
+      padding: 11px 12px;
+    }
+
+    .doc-table tbody td {
+      border-bottom: 1px solid #e7eef8;
+      padding: 10px 12px;
+    }
+
+    .doc-table tbody tr:nth-child(odd) td {
+      background: #ffffff;
+    }
+
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+
+    .doc-table tbody tr td:first-child {
+      background: linear-gradient(90deg, #f3f7ff 0%, #ffffff 85%);
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .doc-table tbody tr:hover td {
+      background: #ecfeff;
+      transition: background-color .18s ease;
+    }
+
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 06</div>
+        <h1 class="doc-title">デザインガイドライン</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-13</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細なデザインガイドラインは以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" value="design_guideline_document.xlsx" id="external-link-06"
+              style="color:#0f172a; opacity:1;">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-06').value || 'design_guideline_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">デザインコンセプト</a></li>
+            <li><a href="#sec2">カラーパレット</a></li>
+            <li><a href="#sec3">タイポグラフィ</a></li>
+            <li><a href="#sec4">UIコンポーネント</a></li>
+            <li><a href="#sec5">レイアウトルール</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> デザインコンセプト</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">デザインキーワード <span class="required">必須</span></div>
+            <div class="fill-hint">デザインの方向性を表すキーワード3つとその説明</div>
+            <div class="fill-content">
+              <p><strong>1. 信頼感</strong><br>
+                理由：健康管理・診療導線を扱うため、安心して情報入力・相談できる印象を最優先する必要がある。<br>
+                表現方法：青・白を基調にした配色、十分な余白、見出し階層の明確化、実績や監修情報を上部に配置する。</p>
+              <p><strong>2. 伴走感</strong><br>
+                理由：忙しい飼い主が「ひとりで判断しなくてよい」と感じる体験が継続利用につながるため。<br>
+                表現方法：ミント系の補助色、ガイド文・次アクションの明示、ステップ表示で進行状況を可視化する。</p>
+              <p><strong>3. 俊敏性</strong><br>
+                理由：体調不安時は素早い判断・予約が必要で、迷うUIは離脱や不安増大につながるため。<br>
+                表現方法：主CTAを目立たせる、1画面1目的の構成、入力項目の最小化、検索/予約導線を固定配置する。</p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> カラーパレット</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">カラーパレット <span class="required">必須</span></div>
+            <div class="fill-hint">各色のHEXコード・使用場面を記載し、実際の色見本も表示してください</div>
+
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>色の種類</th>
+                  <th>カラーコード</th>
+                  <th>色見本</th>
+                  <th>使用場面</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>メインカラー</td>
+                  <td>#FF8FB1</td>
+                  <td><span
+                      style="display:inline-block;width:32px;height:16px;border-radius:4px;background:#FF8FB1;border:1px solid #cbd5e1;"></span>
+                  </td>
+                  <td>主要CTA、強調ラベル、ブランド訴求</td>
+                </tr>
+                <tr>
+                  <td>サブカラー</td>
+                  <td>#8C6EE6</td>
+                  <td><span
+                      style="display:inline-block;width:32px;height:16px;border-radius:4px;background:#8C6EE6;border:1px solid #cbd5e1;"></span>
+                  </td>
+                  <td>補助強調、バナー、アクセント導線</td>
+                </tr>
+                <tr>
+                  <td>アクセントカラー</td>
+                  <td>#C9F7EF</td>
+                  <td><span
+                      style="display:inline-block;width:32px;height:16px;border-radius:4px;background:#C9F7EF;border:1px solid #cbd5e1;"></span>
+                  </td>
+                  <td>背景ハイライト、補助カード、安心感の演出</td>
+                </tr>
+                <tr>
+                  <td>背景色</td>
+                  <td>#FFF9FB</td>
+                  <td><span
+                      style="display:inline-block;width:32px;height:16px;border-radius:4px;background:#FFF9FB;border:1px solid #cbd5e1;"></span>
+                  </td>
+                  <td>ページ背景、余白領域</td>
+                </tr>
+                <tr>
+                  <td>テキスト色（メイン）</td>
+                  <td>#4A2D3C</td>
+                  <td><span
+                      style="display:inline-block;width:32px;height:16px;border-radius:4px;background:#4A2D3C;border:1px solid #cbd5e1;"></span>
+                  </td>
+                  <td>本文、重要情報</td>
+                </tr>
+                <tr>
+                  <td>テキスト色（サブ）</td>
+                  <td>#7A6170</td>
+                  <td><span
+                      style="display:inline-block;width:32px;height:16px;border-radius:4px;background:#7A6170;border:1px solid #cbd5e1;"></span>
+                  </td>
+                  <td>補助説明、注釈、ヒント文</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="fill-content" style="margin-top:10px;">
+              <p><strong>選定理由（色彩心理を考慮）</strong></p>
+              <p>・メインカラー（#FF8FB1）：親しみと行動喚起を両立し、相談導線を見つけやすくするため。</p>
+              <p>・サブカラー（#8C6EE6）：情報の区切りや補助強調に使い、視線誘導を安定させるため。</p>
+              <p>・アクセントカラー（#C9F7EF）：安心感のある補助背景として、医療系の緊張を和らげるため。</p>
+              <p>・背景色（#FFF9FB）：高明度でやわらかい背景にし、長時間閲覧でも疲れにくくするため。</p>
+              <p>・テキスト色（#4A2D3C / #7A6170）：コントラストを確保しつつ、全体トーンを統一するため。</p>
+              <p>実装では「安心感」と「行動しやすさ」を両立するため、やわらかい配色の中でCTAを明確に目立たせる設計とする。</p>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> タイポグラフィ</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">フォント設定 <span class="required">必須</span></div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>要素</th>
+                  <th>フォント名</th>
+                  <th>サイズ</th>
+                  <th>太さ</th>
+                  <th>行間</th>
+                  <th>用途</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>h1（大見出し）</td>
+                  <td>Fredoka</td>
+                  <td>30px</td>
+                  <td>700</td>
+                  <td>1.18</td>
+                  <td>ページタイトル、ヒーロー見出し</td>
+                </tr>
+                <tr>
+                  <td>h2（中見出し）</td>
+                  <td>Fredoka</td>
+                  <td>22px</td>
+                  <td>600</td>
+                  <td>1.3</td>
+                  <td>セクション見出し</td>
+                </tr>
+                <tr>
+                  <td>h3（小見出し）</td>
+                  <td>Fredoka</td>
+                  <td>16px</td>
+                  <td>600</td>
+                  <td>1.3</td>
+                  <td>サブセクション見出し</td>
+                </tr>
+                <tr>
+                  <td>本文</td>
+                  <td>M PLUS Rounded 1c</td>
+                  <td>16px</td>
+                  <td>400</td>
+                  <td>1.6</td>
+                  <td>通常テキスト、説明文</td>
+                </tr>
+                <tr>
+                  <td>キャプション</td>
+                  <td>M PLUS Rounded 1c</td>
+                  <td>13px</td>
+                  <td>600</td>
+                  <td>1.5</td>
+                  <td>注釈、画像説明、補助情報</td>
+                </tr>
+                <tr>
+                  <td>ボタン</td>
+                  <td>M PLUS Rounded 1c</td>
+                  <td>14px</td>
+                  <td>700</td>
+                  <td>1.2</td>
+                  <td>ボタンテキスト</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="fill-content" style="margin-top:10px;">
+              <p><strong>Google Fonts 運用方針（日本語対応）</strong><br>
+                見出しフォント：Fredoka<br>
+                本文フォント：M PLUS Rounded 1c</p>
+              <p><strong>letter-spacing 推奨値</strong><br>
+                h1：0.01em / h2：0em / h3：0em / 本文：0em / キャプション：0em / ボタン：0.01em</p>
+              <p>見出しは親しみやすい丸み、本文は可読性を重視し、モバイルでも読みやすい字面を優先する。</p>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> UIコンポーネント</h2>
+
+
+          <div class="fill-block">
+            <div class="fill-label">ボタン <span class="required">必須</span></div>
+            <div class="fill-hint">プライマリ・セカンダリ・デンジャーの3種類のボタンスタイル（実物のHTMLサンプル付き）</div>
+            <div class="fill-content">
+              <p><strong>デザイン条件</strong><br>
+                メインカラー：#FF8FB1 / フォント：M PLUS Rounded 1c / 角丸：999px</p>
+
+              <p><strong>HTML</strong></p>
+              <pre><code>&lt;div class=&quot;btn-demo&quot;&gt;
+  &lt;button class=&quot;btn btn-primary&quot;&gt;保存する&lt;/button&gt;
+  &lt;button class=&quot;btn btn-secondary&quot;&gt;戻る&lt;/button&gt;
+  &lt;button class=&quot;btn btn-danger&quot;&gt;削除する&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+              <p><strong>CSS</strong></p>
+              <pre><code>.btn {
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  border-radius: 14px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .1s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: #FF8FB1;
+  color: #FFFFFF;
+  border-color: #FF8FB1;
+}
+.btn-primary:hover {
+  background: #FF6E9A;
+  border-color: #FF6E9A;
+}
+
+.btn-secondary {
+  background: #FFFFFF;
+  color: #FF8FB1;
+  border-color: #FF8FB1;
+}
+.btn-secondary:hover {
+  background: #EFF6FF;
+}
+
+.btn-danger {
+  background: #FFFFFF;
+  color: #DC2626;
+  border-color: #DC2626;
+}
+.btn-danger:hover {
+  background: #FEE2E2;
+  color: #B91C1C;
+  border-color: #B91C1C;
+}</code></pre>
+
+              <p><strong>表示サンプル</strong></p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button
+                  style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;font-weight:600;letter-spacing:.02em;line-height:1.2;border-radius:14px;padding:10px 16px;border:1px solid #FF8FB1;background:#FF8FB1;color:#fff;cursor:pointer;">保存する</button>
+                <button
+                  style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;font-weight:600;letter-spacing:.02em;line-height:1.2;border-radius:14px;padding:10px 16px;border:1px solid #FF8FB1;background:#fff;color:#FF8FB1;cursor:pointer;">戻る</button>
+                <button
+                  style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;font-weight:600;letter-spacing:.02em;line-height:1.2;border-radius:14px;padding:10px 16px;border:1px solid #DC2626;background:#fff;color:#DC2626;cursor:pointer;">削除する</button>
+              </div>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">フォーム要素 <span class="required">必須</span></div>
+            <div class="fill-hint">テキスト入力・セレクト・テキストエリア・チェックボックス・ラジオボタン（実物のHTMLサンプル付き）</div>
+            <div class="fill-content">
+              <p><strong>HTML</strong></p>
+              <pre><code>&lt;form class=&quot;form-demo&quot;&gt;
+  &lt;label class=&quot;field&quot;&gt;
+    &lt;span class=&quot;field-label&quot;&gt;テキスト入力&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;control&quot; placeholder=&quot;例：佐藤 美咲&quot; /&gt;
+  &lt;/label&gt;
+
+  &lt;label class=&quot;field&quot;&gt;
+    &lt;span class=&quot;field-label&quot;&gt;セレクトボックス&lt;/span&gt;
+    &lt;select class=&quot;control&quot;&gt;
+      &lt;option&gt;選択してください&lt;/option&gt;
+      &lt;option&gt;有効&lt;/option&gt;
+      &lt;option&gt;停止&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/label&gt;
+
+  &lt;label class=&quot;field&quot;&gt;
+    &lt;span class=&quot;field-label&quot;&gt;テキストエリア&lt;/span&gt;
+    &lt;textarea class=&quot;control&quot; placeholder=&quot;備考を入力&quot;&gt;&lt;/textarea&gt;
+  &lt;/label&gt;
+
+  &lt;div class=&quot;field&quot;&gt;
+    &lt;span class=&quot;field-label&quot;&gt;チェックボックス&lt;/span&gt;
+    &lt;label class=&quot;check-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;check&quot; /&gt; 利用規約に同意する&lt;/label&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;field&quot;&gt;
+    &lt;span class=&quot;field-label&quot;&gt;ラジオボタン&lt;/span&gt;
+    &lt;label class=&quot;check-item&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;type&quot; class=&quot;check&quot; /&gt; 個人&lt;/label&gt;
+    &lt;label class=&quot;check-item&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;type&quot; class=&quot;check&quot; /&gt; 法人&lt;/label&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;field&quot;&gt;
+    &lt;span class=&quot;field-label&quot;&gt;トグルスイッチ&lt;/span&gt;
+    &lt;label class=&quot;switch&quot;&gt;
+      &lt;input type=&quot;checkbox&quot; class=&quot;switch-input&quot; /&gt;
+      &lt;span class=&quot;switch-slider&quot;&gt;&lt;/span&gt;
+      &lt;span class=&quot;switch-text&quot;&gt;通知を有効にする&lt;/span&gt;
+    &lt;/label&gt;
+  &lt;/div&gt;
+
+  &lt;label class=&quot;field&quot;&gt;
+    &lt;span class=&quot;field-label&quot;&gt;エラー表示例&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;control is-error&quot; value=&quot;入力エラー&quot; /&gt;
+    &lt;span class=&quot;error-text&quot;&gt;メールアドレスの形式が正しくありません。&lt;/span&gt;
+  &lt;/label&gt;
+&lt;/form&gt;</code></pre>
+
+              <p><strong>CSS</strong></p>
+              <pre><code>.form-demo {
+  display: grid;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field-label {
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FF8FB1;
+  letter-spacing: 0.01em;
+}
+
+.control {
+  width: 100%;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4A2D3C;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+textarea.control {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.control:focus {
+  outline: none;
+  border-color: #FF8FB1;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.18);
+  background: #F8FAFF;
+}
+
+.control.is-error {
+  border-color: #DC2626;
+  background: #FEF2F2;
+}
+
+.control.is-error:focus {
+  border-color: #B91C1C;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.16);
+}
+
+.error-text {
+  font-size: 12px;
+  color: #DC2626;
+}
+
+.check-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 14px;
+  font-size: 14px;
+  color: #4A2D3C;
+}
+
+.check {
+  accent-color: #FF8FB1;
+  width: 16px;
+  height: 16px;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.switch-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  position: relative;
+  transition: background-color .2s ease;
+}
+
+.switch-slider::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.25);
+  transition: transform .2s ease;
+}
+
+.switch-input:checked + .switch-slider {
+  background: #FF8FB1;
+}
+
+.switch-input:checked + .switch-slider::after {
+  transform: translateX(20px);
+}
+
+.switch-input:focus + .switch-slider {
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.18);
+}
+
+.switch-text {
+  font-size: 14px;
+  color: #4A2D3C;
+}</code></pre>
+
+              <p><strong>表示サンプル</strong></p>
+              <form style="display:grid; gap:12px;">
+                <label style="display:grid; gap:6px;">
+                  <span
+                    style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;font-weight:600;color:#FF8FB1;letter-spacing:.01em;">テキスト入力</span>
+                  <input type="text" placeholder="例：佐藤 美咲"
+                    style="width:100%;font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;line-height:1.5;color:#4A2D3C;background:#fff;border:1px solid #CBD5E1;border-radius:10px;padding:10px 12px;">
+                </label>
+                <label style="display:grid; gap:6px;">
+                  <span
+                    style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;font-weight:600;color:#FF8FB1;letter-spacing:.01em;">セレクトボックス</span>
+                  <select
+                    style="width:100%;font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;line-height:1.5;color:#4A2D3C;background:#fff;border:1px solid #CBD5E1;border-radius:10px;padding:10px 12px;">
+                    <option>選択してください</option>
+                    <option>有効</option>
+                    <option>停止</option>
+                  </select>
+                </label>
+                <label style="display:grid; gap:6px;">
+                  <span
+                    style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;font-weight:600;color:#FF8FB1;letter-spacing:.01em;">テキストエリア</span>
+                  <textarea
+                    style="width:100%;min-height:90px;resize:vertical;font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;line-height:1.5;color:#4A2D3C;background:#fff;border:1px solid #CBD5E1;border-radius:10px;padding:10px 12px;">備考を入力</textarea>
+                </label>
+                <div style="display:grid; gap:6px;">
+                  <span
+                    style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;font-weight:600;color:#FF8FB1;letter-spacing:.01em;">チェックボックス
+                    / ラジオボタン</span>
+                  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                    <label style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#4A2D3C;"><input
+                        type="checkbox" style="accent-color:#FF8FB1;"> 利用規約に同意する</label>
+                    <label style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#4A2D3C;"><input
+                        type="radio" name="demo-kind" style="accent-color:#FF8FB1;"> 個人</label>
+                    <label style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#4A2D3C;"><input
+                        type="radio" name="demo-kind" style="accent-color:#FF8FB1;"> 法人</label>
+                  </div>
+                </div>
+                <div style="display:grid; gap:6px;">
+                  <span
+                    style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;font-weight:600;color:#FF8FB1;letter-spacing:.01em;">トグルスイッチ</span>
+                  <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;">
+                    <input type="checkbox" checked style="position:absolute;opacity:0;width:0;height:0;">
+                    <span
+                      style="display:inline-block;width:44px;height:24px;border-radius:999px;background:#FF8FB1;position:relative;">
+                      <span
+                        style="position:absolute;top:3px;left:23px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.25);"></span>
+                    </span>
+                    <span style="font-size:14px;color:#4A2D3C;">通知を有効にする</span>
+                  </label>
+                </div>
+                <label style="display:grid; gap:6px;">
+                  <span
+                    style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;font-weight:600;color:#FF8FB1;letter-spacing:.01em;">エラー表示例</span>
+                  <input type="text" value="入力エラー"
+                    style="width:100%;font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;line-height:1.5;color:#4A2D3C;background:#FEF2F2;border:1px solid #DC2626;border-radius:10px;padding:10px 12px;">
+                  <span style="font-size:12px;color:#DC2626;">メールアドレスの形式が正しくありません。</span>
+                </label>
+              </form>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">カード・テーブル・その他 <span class="required">必須</span></div>
+            <div class="fill-hint">カードコンポーネント・テーブルスタイル・アラート等（実物のHTMLサンプル付き）</div>
+            <div class="fill-content">
+              <p><strong>HTML</strong></p>
+              <pre><code>&lt;!-- カード --&gt;
+&lt;article class=&quot;ui-card&quot;&gt;
+  &lt;img class=&quot;ui-card-image&quot; src=&quot;../img/top.html.png&quot; alt=&quot;カード画像&quot; /&gt;
+  &lt;div class=&quot;ui-card-body&quot;&gt;
+    &lt;h3 class=&quot;ui-card-title&quot;&gt;サービス紹介カード&lt;/h3&gt;
+    &lt;p class=&quot;ui-card-text&quot;&gt;健康記録・AI症状チェック・オンライン診療を一体化した導線を提供します。&lt;/p&gt;
+    &lt;a class=&quot;btn btn-primary&quot; href=&quot;#&quot;&gt;詳細を見る&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/article&gt;
+
+&lt;!-- テーブル --&gt;
+&lt;table class=&quot;ui-table&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;ID&lt;/th&gt;&lt;th&gt;氏名&lt;/th&gt;&lt;th&gt;ステータス&lt;/th&gt;&lt;th&gt;更新日&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;U-001&lt;/td&gt;&lt;td&gt;佐藤 美咲&lt;/td&gt;&lt;td&gt;有効&lt;/td&gt;&lt;td&gt;2026-05-13&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;U-002&lt;/td&gt;&lt;td&gt;田中 亮&lt;/td&gt;&lt;td&gt;有効&lt;/td&gt;&lt;td&gt;2026-05-12&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;!-- アラート --&gt;
+&lt;div class=&quot;ui-alert info&quot;&gt;情報：プロフィールが更新されました。&lt;/div&gt;
+&lt;div class=&quot;ui-alert success&quot;&gt;成功：登録処理が完了しました。&lt;/div&gt;
+&lt;div class=&quot;ui-alert warning&quot;&gt;警告：未入力項目があります。&lt;/div&gt;
+&lt;div class=&quot;ui-alert error&quot;&gt;エラー：通信に失敗しました。&lt;/div&gt;</code></pre>
+
+              <p><strong>CSS</strong></p>
+              <pre><code>.ui-card {
+  width: min(360px, 100%);
+  border: 1px solid #d9e4f5;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.08);
+  overflow: hidden;
+}
+.ui-card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+.ui-card-body { padding: 14px; }
+.ui-card-title {
+  margin: 0 0 8px;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.ui-card-text {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #64748b;
+}
+
+.ui-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #d9e4f5;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.ui-table th, .ui-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  font-size: 14px;
+}
+.ui-table thead th {
+  background: linear-gradient(135deg, #eaf2ff 0%, #e8faf6 100%);
+  color: #0f172a;
+  font-weight: 700;
+}
+.ui-table tbody tr:nth-child(even) td {
+  background: #f8fbff;
+}
+.ui-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ui-alert {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.ui-alert.info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+.ui-alert.success {
+  background: #ecfdf3;
+  border-color: #86efac;
+  color: #166534;
+}
+.ui-alert.warning {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #92400e;
+}
+.ui-alert.error {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}</code></pre>
+
+              <p><strong>表示サンプル</strong></p>
+              <div style="display:grid; gap:14px;">
+                <article
+                  style="width:min(360px,100%);border:1px solid #d9e4f5;border-radius:14px;background:#fff;box-shadow:0 10px 20px rgba(37,99,235,.08);overflow:hidden;">
+                  <img src="../img/top.html.png" alt="カード画像サンプル"
+                    style="width:100%;height:180px;object-fit:cover;display:block;">
+                  <div style="padding:14px;">
+                    <h3
+                      style="margin:0 0 8px;font-family:'M PLUS Rounded 1c',sans-serif;font-size:18px;font-weight:700;color:#0f172a;">
+                      サービス紹介カード</h3>
+                    <p style="margin:0 0 12px;font-size:14px;line-height:1.7;color:#64748b;">
+                      健康記録・AI症状チェック・オンライン診療を一体化した導線を提供します。</p>
+                    <button
+                      style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:14px;font-weight:600;letter-spacing:.02em;line-height:1.2;border-radius:14px;padding:10px 16px;border:1px solid #FF8FB1;background:#FF8FB1;color:#fff;cursor:pointer;">詳細を見る</button>
+                  </div>
+                </article>
+
+                <table
+                  style="width:100%;border-collapse:separate;border-spacing:0;border:1px solid #d9e4f5;border-radius:12px;overflow:hidden;">
+                  <thead>
+                    <tr>
+                      <th
+                        style="padding:10px 12px;background:linear-gradient(135deg,#eaf2ff 0%,#e8faf6 100%);color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">
+                        ID</th>
+                      <th
+                        style="padding:10px 12px;background:linear-gradient(135deg,#eaf2ff 0%,#e8faf6 100%);color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">
+                        氏名</th>
+                      <th
+                        style="padding:10px 12px;background:linear-gradient(135deg,#eaf2ff 0%,#e8faf6 100%);color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">
+                        ステータス</th>
+                      <th
+                        style="padding:10px 12px;background:linear-gradient(135deg,#eaf2ff 0%,#e8faf6 100%);color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">
+                        更新日</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;">U-001</td>
+                      <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;">佐藤 美咲</td>
+                      <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;">有効</td>
+                      <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;">2026-05-13</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 12px;background:#f8fbff;">U-002</td>
+                      <td style="padding:10px 12px;background:#f8fbff;">田中 亮</td>
+                      <td style="padding:10px 12px;background:#f8fbff;">有効</td>
+                      <td style="padding:10px 12px;background:#f8fbff;">2026-05-12</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div
+                  style="border-radius:10px;padding:10px 12px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e40af;font-size:14px;">
+                  情報：プロフィールが更新されました。</div>
+                <div
+                  style="border-radius:10px;padding:10px 12px;border:1px solid #86efac;background:#ecfdf3;color:#166534;font-size:14px;">
+                  成功：登録処理が完了しました。</div>
+                <div
+                  style="border-radius:10px;padding:10px 12px;border:1px solid #fcd34d;background:#fffbeb;color:#92400e;font-size:14px;">
+                  警告：未入力項目があります。</div>
+                <div
+                  style="border-radius:10px;padding:10px 12px;border:1px solid #fca5a5;background:#fef2f2;color:#b91c1c;font-size:14px;">
+                  エラー：通信に失敗しました。</div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec5">
+          <h2 class="section-title"><span class="section-icon">5</span> レイアウトルール</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">レイアウト基本ルール <span class="required">必須</span></div>
+            <div class="fill-hint">グリッド・余白・角丸・シャドウ等の数値ルール</div>
+            <div class="fill-content">
+              <p><strong>デザインコンセプト：</strong>信頼感 / 伴走感 / 俊敏性</p>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目</th>
+                    <th>提案値</th>
+                    <th>意図</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>コンテンツ最大幅</td>
+                    <td>min(960px, 82vw)</td>
+                    <td>視認性と可読性を維持しつつ、カードUIの密度を安定させる。</td>
+                  </tr>
+                  <tr>
+                    <td>グリッドシステム</td>
+                    <td>基本1カラム。PC（768px以上）で hero: 1.2fr / 0.8fr、card/stats: 3列</td>
+                    <td>同一コンポーネントを保ったまま、画面幅で情報量のみを調整する。</td>
+                  </tr>
+                  <tr>
+                    <td>セクション間の余白</td>
+                    <td>36px（`.section`）</td>
+                    <td>縦スクロール時のテンポを保ち、連続閲覧時の疲労を抑える。</td>
+                  </tr>
+                  <tr>
+                    <td>要素間の余白</td>
+                    <td>space-token基準：14px / 22px（tight / block）</td>
+                    <td>カードUIの視線移動を短くし、必要情報にすぐ到達できるようにする。</td>
+                  </tr>
+                  <tr>
+                    <td>角丸</td>
+                    <td>カード系：26px / 画像：18〜20px / ボタン：999px</td>
+                    <td>親しみやすさを出しつつ、情報ブロック境界を明確にする。</td>
+                  </tr>
+                  <tr>
+                    <td>シャドウ（box-shadow）</td>
+                    <td>カード：0 10px 20px rgba(221, 136, 170, 0.12)</td>
+                    <td>背景からカードを浮かせ、タップ可能領域を直感的に示す。</td>
+                  </tr>
+                  <tr>
+                    <td>ブレークポイント</td>
+                    <td>単一主要BP：768px（未満=モバイル / 以上=PC）</td>
+                    <td>実装複雑度を抑えつつ、ナビ・カード列・CTA配置を明確に切替する。</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p><strong>実装補足（CSS変数例）</strong></p>
+              <pre><code>:root {
+  --space-section: 36px;
+  --space-block: 22px;
+  --space-tight: 14px;
+}
+.container { width: 82vw; max-width: 960px; }
+.card { border-radius: 26px; box-shadow: 0 10px 20px rgba(221, 136, 170, 0.12); }
+@media (min-width: 768px) {
+  .hero-grid { grid-template-columns: 1.2fr .8fr; gap: 24px; }
+  .card-grid, .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}</code></pre>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

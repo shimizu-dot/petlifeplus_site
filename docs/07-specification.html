@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仕様書（機能仕様書） - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .doc-header .doc-category,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+      color: #0f172a;
+      opacity: 1;
+    }
+
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .fill-hint {
+      color: #64748b;
+    }
+
+    .purpose-highlight {
+      background: linear-gradient(180deg, #f8fbff 0%, #f0fdfa 100%);
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .purpose-meta {
+      margin: 0 0 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #e6f0ff;
+      border-left: 4px solid #3b82f6;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .purpose-meta:last-of-type {
+      margin-bottom: 10px;
+    }
+
+    .purpose-point {
+      margin: 0 0 6px;
+      color: #0f172a;
+    }
+
+    .purpose-point:last-child {
+      margin-bottom: 0;
+    }
+
+    .system-meta {
+      margin: 0 0 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #e6f0ff;
+      border-left: 4px solid #3b82f6;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .system-meta:last-of-type {
+      margin-bottom: 10px;
+    }
+
+    .system-chart {
+      margin-top: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .system-chart-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .system-chart-node {
+      flex: 1 1 180px;
+      min-width: 180px;
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.08);
+      padding: 14px;
+    }
+
+    .system-chart-node-title {
+      margin: 0 0 8px;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .system-chart-node p {
+      margin: 0;
+      color: #0f172a;
+      line-height: 1.6;
+    }
+
+    .system-chart-arrow {
+      flex: 0 0 auto;
+      color: #1d4ed8;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .system-chart-note {
+      margin: 0;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .screen-flow-chart {
+      margin-top: 14px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .screen-flow-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screen-flow-card {
+      min-width: 170px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid #cfe0f7;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+      color: #0f172a;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .screen-flow-card.sub {
+      min-width: 150px;
+      font-weight: 600;
+      background: linear-gradient(180deg, #f8fbff 0%, #f0fdfa 100%);
+    }
+
+    .screen-flow-arrow {
+      color: #1d4ed8;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .screen-flow-branch {
+      border: 1px dashed #93c5fd;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 14px;
+    }
+
+    .security-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .security-list li {
+      margin: 0;
+      padding: 8px 10px;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      background: #f8fbff;
+      color: #0f172a;
+      line-height: 1.7;
+    }
+
+    #f001-core {
+      border: 2px solid #93c5fd;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    #f002-core {
+      border: 2px solid #93c5fd;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    #f003-core {
+      border: 2px solid #93c5fd;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    #f004-core {
+      border: 2px solid #93c5fd;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    #f001-core .fill-content {
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 10px;
+    }
+
+    #f002-core .fill-content {
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 10px;
+    }
+
+    #f003-core .fill-content {
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 10px;
+    }
+
+    #f004-core .fill-content {
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 10px;
+    }
+
+    #f005-core,
+    #f006-core,
+    #f007-core,
+    #f008-core,
+    #f009-core,
+    #f010-core,
+    #f011-core,
+    #f011-core,
+    #f012-core,
+    #f013-core,
+    #f014-core {
+      border: 2px solid #93c5fd;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    #f005-core .fill-content,
+    #f006-core .fill-content,
+    #f007-core .fill-content,
+    #f008-core .fill-content,
+    #f009-core .fill-content,
+    #f010-core .fill-content,
+    #f011-core .fill-content,
+    #f011-core .fill-content,
+    #f012-core .fill-content,
+    #f013-core .fill-content,
+    #f014-core .fill-content {
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .system-chart-flow {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .system-chart-arrow {
+        text-align: center;
+      }
+
+      .screen-flow-row {
+        flex-direction: column;
+      }
+
+      .screen-flow-arrow {
+        text-align: center;
+      }
+    }
+
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #cfe0f7;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+    }
+
+    .doc-table thead th {
+      background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 45%, #93c5fd 100%);
+      color: #0b2545;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      border-bottom: 1px solid #c5d7f1;
+      padding: 11px 12px;
+    }
+
+    .doc-table tbody td {
+      border-bottom: 1px solid #e7eef8;
+      padding: 10px 12px;
+    }
+
+    .doc-table tbody tr:nth-child(odd) td {
+      background: #ffffff;
+    }
+
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+
+    .doc-table tbody tr td:first-child {
+      background: linear-gradient(90deg, #f3f7ff 0%, #ffffff 85%);
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .doc-table tbody tr:hover td {
+      background: #ecfeff;
+      transition: background-color .18s ease;
+    }
+
+    .function-list-table .template-row td {
+      color: #0f172a;
+      font-style: normal;
+    }
+
+    .function-list-table thead th:first-child,
+    .function-list-table tbody td:first-child {
+      white-space: nowrap;
+    }
+
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 07</div>
+        <h1 class="doc-title">仕様書（機能仕様書）</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-14</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細な仕様書は以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" value="specification_document.xlsx" id="external-link-07"
+              style="color:#0f172a; opacity:1;">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-07').value || 'specification_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">システム概要</a></li>
+            <li><a href="#sec2">機能一覧</a></li>
+            <li><a href="#sec3">画面遷移図</a></li>
+            <li><a href="#sec4">機能詳細仕様</a></li>
+            <li><a href="#sec5">非機能要件</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> システム概要</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">システムの目的 <span class="required">必須</span></div>
+            <div class="fill-hint">このシステムが解決する課題と提供する価値</div>
+            <div class="fill-content purpose-highlight">
+              <p class="purpose-meta"><strong>サービス名　:</strong> ペットライフプラス（Pet Life Plus）</p>
+              <p class="purpose-meta"><strong>利　用　者　:</strong> 管理者、一般ユーザー</p>
+              <p class="purpose-meta"><strong>目　　的　　:</strong> ペットの健康記録、AI症状チェック、予約、診療・相談履歴を一元管理し、次の価値を提供する。</p>
+              <p class="purpose-point">・早期異変の発見</p>
+              <p class="purpose-point">・受診判断の支援</p>
+              <p class="purpose-point">・継続的な健康管理の実現</p>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">システム構成図 <span class="required">必須</span></div>
+            <div class="fill-hint">フロントエンド ↔ バックエンド ↔ データベースの関係を図示</div>
+            <div class="fill-content">
+              <p class="system-meta">フロントエンド: HTML / CSS / JavaScript（Thymeleaf）</p>
+              <p class="system-meta">バックエンド: Spring Boot（Controller → Service → Repository）</p>
+              <p class="system-meta">データベース: PostgreSQL / H2 / MySQL</p>
+              <div class="system-chart">
+                <div class="system-chart-flow">
+                  <div class="system-chart-node">
+                    <div class="system-chart-node-title">フロントエンド</div>
+                    <p>HTML / CSS / JavaScript</p>
+                    <p>Thymeleaf テンプレート</p>
+                  </div>
+                  <div class="system-chart-arrow">HTTPリクエスト ↔ レスポンス</div>
+                  <div class="system-chart-node">
+                    <div class="system-chart-node-title">バックエンド</div>
+                    <p>Spring Boot</p>
+                    <p>Controller → Service → Repository</p>
+                  </div>
+                  <div class="system-chart-arrow">データ永続化</div>
+                  <div class="system-chart-node">
+                    <div class="system-chart-node-title">データベース</div>
+                    <p>H2 / MySQL</p>
+                    <p>ユーザー・ペット・健康記録を管理</p>
+                  </div>
+                </div>
+                <p class="system-chart-note">利用者はフロントエンド画面を操作し、バックエンドで業務処理を行い、永続データはデータベースに保存する構成です。</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> 機能一覧</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">機能一覧表 <span class="required">必須</span></div>
+            <table class="doc-table function-list-table">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>機能名</th>
+                  <th>概要</th>
+                  <th>対応画面</th>
+                  <th>優先度</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="template-row">
+                  <td>F-001</td>
+                  <td>ログイン認証</td>
+                  <td>管理者・一般ユーザー認証と権限制御</td>
+                  <td>ログイン画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-002</td>
+                  <td>ダッシュボード表示</td>
+                  <td>KPI・予定・通知の集約表示と導線提供</td>
+                  <td>ダッシュボード画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-003</td>
+                  <td>ユーザー管理（CRUD）</td>
+                  <td>ユーザー情報の登録/参照/更新/削除</td>
+                  <td>ユーザー管理画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-004</td>
+                  <td>ペット管理（CRUD）</td>
+                  <td>ペット情報の登録/参照/更新/削除</td>
+                  <td>ペット管理画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-005</td>
+                  <td>健康記録管理（CRUD）</td>
+                  <td>体重/食事/運動などの記録管理</td>
+                  <td>健康記録管理画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-006</td>
+                  <td>予約管理（CRUD）</td>
+                  <td>診療・相談予約の登録/変更/キャンセル</td>
+                  <td>予約管理画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-007</td>
+                  <td>診療・相談履歴管理（CRUD）</td>
+                  <td>履歴の登録/参照/更新/削除</td>
+                  <td>診療・相談履歴画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-008</td>
+                  <td>入力バリデーション</td>
+                  <td>必須・形式・文字数・範囲などの検証</td>
+                  <td>各登録/編集画面</td>
+                  <td><span class="badge badge-must">Must</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-009</td>
+                  <td>AI症状チェック</td>
+                  <td>症状解析と推奨対応提示</td>
+                  <td>症状チェック画面</td>
+                  <td><span class="badge badge-should">Should</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-010</td>
+                  <td>検索・ソート・ページネーション</td>
+                  <td>一覧表示の検索性/閲覧性向上</td>
+                  <td>各一覧画面</td>
+                  <td><span class="badge badge-should">Should</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-011</td>
+                  <td>通知・リマインド配信</td>
+                  <td>通知作成、配信設定、履歴管理</td>
+                  <td>通知配信管理画面</td>
+                  <td><span class="badge badge-should">Should</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-012</td>
+                  <td>PDF出力</td>
+                  <td>レポート/一覧のPDF出力</td>
+                  <td>レポート画面 / 各一覧画面</td>
+                  <td><span class="badge badge-could">Could</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-013</td>
+                  <td>ファイルアップロード</td>
+                  <td>添付ファイルの登録・管理</td>
+                  <td>診療・相談履歴画面</td>
+                  <td><span class="badge badge-could">Could</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-014</td>
+                  <td>メール通知</td>
+                  <td>予約・重要情報のメール配信</td>
+                  <td>通知配信管理画面</td>
+                  <td><span class="badge badge-could">Could</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> 画面遷移図</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">画面遷移図 <span class="required">必須</span></div>
+            <div class="fill-hint">各画面間の遷移関係を図示</div>
+            <div class="fill-content">
+              <p>ログイン認証後、ダッシュボード画面へ遷移し、ユーザー管理、ペット管理、健康記録管理、予約管理、診療・相談履歴、通知配信、レポート画面へ移動できる。</p>
+              <p>各管理画面では一覧、詳細、編集、登録画面を相互遷移し、保存後は対象一覧へ戻る。AI症状チェック結果からは予約管理画面への導線を持つ。</p>
+              <div class="screen-flow-chart">
+                <div class="screen-flow-row">
+                  <div class="screen-flow-card">ログイン画面</div>
+                  <div class="screen-flow-arrow">→</div>
+                  <div class="screen-flow-card">ダッシュボード画面</div>
+                </div>
+                <div class="screen-flow-branch">
+                  <div class="screen-flow-row">
+                    <div class="screen-flow-card sub">ユーザー管理画面</div>
+                    <div class="screen-flow-card sub">ペット管理画面</div>
+                    <div class="screen-flow-card sub">健康記録管理画面</div>
+                    <div class="screen-flow-card sub">予約管理画面</div>
+                  </div>
+                  <div class="screen-flow-row" style="margin-top:12px;">
+                    <div class="screen-flow-card sub">診療・相談履歴画面</div>
+                    <div class="screen-flow-card sub">通知配信管理画面</div>
+                    <div class="screen-flow-card sub">レポート画面</div>
+                    <div class="screen-flow-card sub">症状チェック画面</div>
+                  </div>
+                </div>
+                <div class="screen-flow-row">
+                  <div class="screen-flow-card sub">症状チェック結果画面</div>
+                  <div class="screen-flow-arrow">→</div>
+                  <div class="screen-flow-card sub">予約管理画面</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> 機能詳細仕様</h2>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-001 ログイン認証</h3>
+
+            <div id="f001-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-001</div>
+                <div class="fill-content">
+                  <p>メールアドレス/パスワードで認証し、成功時にセッションを発行してダッシュボードへ遷移する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>メールアドレス入力、パスワード入力、ログインボタン、再設定リンクを配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 認証情報を入力する。</p>
+                  <p>2. ログインボタン押下で認証処理を実行する。</p>
+                  <p>3. 認証結果に応じて遷移またはエラー表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>認証成功でセッションを作成し、ダッシュボードへ遷移する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 未入力・形式不正を項目下に表示。</p>
+                  <p>システム: 認証処理失敗時に汎用エラーメッセージを表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>ダッシュボード画面</p>
+                  <p>パスワード再設定画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>メールアドレス</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / メール形式 / 255文字以内</td>
+                    <td>ログインID</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>パスワード</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / 8〜64文字</td>
+                    <td>マスク表示</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-002 ダッシュボード表示</h3>
+
+            <div id="f002-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-002</div>
+                <div class="fill-content">
+                  <p>KPI・通知・本日の予定を表示し、各管理画面への導線を提供する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>KPIカード、本日の予定、通知一覧、メニュー導線を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 画面表示時にKPI・予定・通知を取得する。</p>
+                  <p>2. 各ウィジェットへ表示する。</p>
+                  <p>3. メニュー選択で対象画面へ遷移する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>最新データを表示し、各機能に遷移できる。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 期間条件不正を表示。</p>
+                  <p>システム: 一部データ取得失敗時は該当領域のみエラー表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>各管理画面</p>
+                  <p>症状チェック画面</p>
+                  <p>通知配信管理画面</p>
+                  <p>レポート画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>期間フィルタ（開始日）</td>
+                    <td>Date</td>
+                    <td>—</td>
+                    <td>日付形式</td>
+                    <td>任意検索</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>期間フィルタ（終了日）</td>
+                    <td>Date</td>
+                    <td>—</td>
+                    <td>日付形式 / 開始日以降</td>
+                    <td>任意検索</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-003 ユーザー管理（CRUD）</h3>
+
+            <div id="f003-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-003</div>
+                <div class="fill-content">
+                  <p>ユーザー情報の一覧表示、登録、詳細表示、編集、削除を行う。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>一覧テーブル、検索欄、登録ボタン、詳細/編集/削除操作を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 検索または対象ユーザーを選択する。</p>
+                  <p>2. 登録/更新/削除を実行する。</p>
+                  <p>3. 保存後に一覧を再表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>操作結果を保存し、一覧へ反映する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 必須・形式・重複エラーを表示。</p>
+                  <p>システム: 競合/保存失敗時に警告表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>ユーザー詳細画面</p>
+                  <p>ユーザー編集画面</p>
+                  <p>ユーザー管理画面（一覧）</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>氏名</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / 1〜50文字</td>
+                    <td>全角半角可</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>メールアドレス</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / メール形式 / 重複不可</td>
+                    <td>一意制約</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>電話番号</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>数字・ハイフン / 10〜13桁</td>
+                    <td>任意</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-004 ペット管理（CRUD）</h3>
+
+            <div id="f004-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-004</div>
+                <div class="fill-content">
+                  <p>ペット情報の登録、参照、更新、削除を行い、飼い主情報と紐付ける。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>ペット一覧、飼い主紐付け項目、登録/編集フォームを配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 対象データを選択する。</p>
+                  <p>2. 登録/更新/削除を実行する。</p>
+                  <p>3. 保存後に一覧へ反映する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>ペット情報と飼い主紐付けを更新する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 必須・日付不正を表示。</p>
+                  <p>システム: 紐付け整合エラー時に保存中止。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>ペット詳細画面</p>
+                  <p>ペット編集画面</p>
+                  <p>健康記録管理画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>ペット名</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / 1〜40文字</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>種別</td>
+                    <td>Enum</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>犬 / 猫 など</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>生年月日</td>
+                    <td>Date</td>
+                    <td>—</td>
+                    <td>日付形式 / 未来日不可</td>
+                    <td>任意</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-005 健康記録管理（CRUD）</h3>
+
+            <div id="f005-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-005</div>
+                <div class="fill-content">
+                  <p>体重・食事・運動などの健康記録を登録し、時系列で管理する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>記録一覧、期間フィルタ、記録フォームを配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 記録内容を入力する。</p>
+                  <p>2. 入力値を検証する。</p>
+                  <p>3. 保存後に履歴へ反映する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>時系列一覧と関連表示を更新する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 数値範囲外・日付不正を表示。</p>
+                  <p>システム: 保存失敗時に再試行案内を表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>健康記録詳細画面</p>
+                  <p>健康記録編集画面</p>
+                  <p>ペット詳細画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>記録日</td>
+                    <td>Date</td>
+                    <td>○</td>
+                    <td>必須チェック / 日付形式</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>体重</td>
+                    <td>Decimal</td>
+                    <td>—</td>
+                    <td>数値 / 0.1〜200.0</td>
+                    <td>任意</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>食事メモ</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>300文字以内</td>
+                    <td>任意</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-006 予約管理（CRUD）</h3>
+
+            <div id="f006-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-006</div>
+                <div class="fill-content">
+                  <p>診療・相談予約の登録、変更、キャンセルを管理し、空き枠チェックを行う。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>予約一覧、日付フィルタ、予約フォーム、変更/キャンセル操作を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 予約条件を入力する。</p>
+                  <p>2. 空き枠と重複をチェックする。</p>
+                  <p>3. 成功時に一覧へ反映する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>予約確定し最新状態を表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 過去日時・必須漏れを表示。</p>
+                  <p>システム: 競合時に警告表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>予約詳細画面</p>
+                  <p>予約編集画面</p>
+                  <p>通知配信管理画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>予約日時</td>
+                    <td>DateTime</td>
+                    <td>○</td>
+                    <td>必須チェック / 過去日時不可</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>予約種別</td>
+                    <td>Enum</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>診療 / 相談</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>備考</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>500文字以内</td>
+                    <td>任意</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-007 診療・相談履歴管理（CRUD）</h3>
+
+            <div id="f007-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-007</div>
+                <div class="fill-content">
+                  <p>診療・相談履歴の登録、検索、編集、削除と添付管理を行う。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>履歴一覧、検索欄、履歴フォーム、添付欄を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 履歴情報を入力する。</p>
+                  <p>2. 入力値とファイルを検証する。</p>
+                  <p>3. 保存後に一覧へ反映する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>履歴を対象データに紐付け保存する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 文字数超過・形式不正を表示。</p>
+                  <p>システム: 保存失敗時に通知表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>履歴詳細画面</p>
+                  <p>履歴編集画面</p>
+                  <p>ペット管理画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>実施日</td>
+                    <td>Date</td>
+                    <td>○</td>
+                    <td>必須チェック / 日付形式</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>対応内容</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / 1000文字以内</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>添付ファイル</td>
+                    <td>File</td>
+                    <td>—</td>
+                    <td>拡張子チェック / 5MB以内</td>
+                    <td>PDF・画像</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-008 入力バリデーション</h3>
+
+            <div id="f008-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-008</div>
+                <div class="fill-content">
+                  <p>全フォームの必須・形式・範囲・重複チェックを共通ルールで実行する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>各入力欄下にエラー表示領域を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 送信時に共通検証を実行する。</p>
+                  <p>2. エラー一覧を作成する。</p>
+                  <p>3. 保存続行または差し戻しする。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>検証通過時のみ保存処理へ進む。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 項目単位でエラーを表示。</p>
+                  <p>システム: 検証処理失敗時に汎用エラー表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>同一画面（エラー時）</p>
+                  <p>対象遷移先（正常時）</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>必須項目検証</td>
+                    <td>Boolean</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>共通処理</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>形式検証</td>
+                    <td>Boolean</td>
+                    <td>○</td>
+                    <td>メール/電話形式チェック</td>
+                    <td>共通処理</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>範囲検証</td>
+                    <td>Boolean</td>
+                    <td>○</td>
+                    <td>文字数/数値範囲チェック</td>
+                    <td>共通処理</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-009 AI症状チェック</h3>
+
+            <div id="f009-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-009</div>
+                <div class="fill-content">
+                  <p>症状入力を解析し、重症度と推奨対応（経過観察/相談/受診）を提示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>症状入力フォーム、実行ボタン、結果カードを配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 症状を入力する。</p>
+                  <p>2. AI解析を実行する。</p>
+                  <p>3. 判定結果を表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>重症度と推奨アクションを表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 入力不足を表示。</p>
+                  <p>システム: 解析失敗時に再試行案内を表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>症状チェック結果画面</p>
+                  <p>予約管理画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>症状種別</td>
+                    <td>Enum</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>複数選択可</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>発症時期</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / 100文字以内</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>補足メモ</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>500文字以内</td>
+                    <td>任意</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-010 検索・ソート・ページネーション</h3>
+
+            <div id="f010-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-010</div>
+                <div class="fill-content">
+                  <p>一覧画面で条件検索、並び替え、ページ分割表示を提供する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>検索欄、ソートヘッダー、ページャーを配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 条件を入力する。</p>
+                  <p>2. 一覧を再取得する。</p>
+                  <p>3. ページ情報を更新表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>条件一致データを指定順で表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: ページ番号不正を補正。</p>
+                  <p>システム: 一覧取得失敗時にエラー表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>同一一覧画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>キーワード</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>100文字以内</td>
+                    <td>任意</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>ソートキー</td>
+                    <td>Enum</td>
+                    <td>—</td>
+                    <td>定義済み項目のみ</td>
+                    <td>任意</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>ページ番号</td>
+                    <td>Integer</td>
+                    <td>—</td>
+                    <td>1以上</td>
+                    <td>任意</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="subsection">
+            <h3 class="subsection-title">F-011 通知・リマインド配信</h3>
+
+            <div id="f011-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-011</div>
+                <div class="fill-content">
+                  <p>通知作成、配信対象設定、配信実行、配信履歴管理を行う。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>通知フォーム、対象選択、配信履歴を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 通知内容と対象を設定する。</p>
+                  <p>2. 配信実行または予約登録する。</p>
+                  <p>3. 配信結果を履歴記録する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>配信成功ステータスを保存する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 件名/本文不備を表示。</p>
+                  <p>システム: 配信失敗時に再送導線を表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>通知詳細画面</p>
+                  <p>ダッシュボード画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>件名</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / 100文字以内</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>本文</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / 2000文字以内</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>配信日時</td>
+                    <td>DateTime</td>
+                    <td>—</td>
+                    <td>日時形式 / 現在以降</td>
+                    <td>予約配信</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-012 PDF出力</h3>
+
+            <div id="f012-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-012</div>
+                <div class="fill-content">
+                  <p>指定条件でレポートや一覧データをPDFとして生成・出力する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>条件フォーム、出力ボタン、出力履歴を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 条件を指定する。</p>
+                  <p>2. 帳票生成を実行する。</p>
+                  <p>3. 完了後にダウンロードを表示する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>PDFを生成しダウンロード可能にする。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 期間不整合を表示。</p>
+                  <p>システム: 生成失敗時に再試行案内。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>レポート画面（同一画面）</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>対象期間（開始日）</td>
+                    <td>Date</td>
+                    <td>○</td>
+                    <td>必須チェック / 日付形式</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>対象期間（終了日）</td>
+                    <td>Date</td>
+                    <td>○</td>
+                    <td>必須チェック / 開始日以降</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>出力種別</td>
+                    <td>Enum</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>月次 / 顧客別</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-013 ファイルアップロード</h3>
+
+            <div id="f013-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-013</div>
+                <div class="fill-content">
+                  <p>関連ファイルを検証後に保存し、対象データへ紐付けて管理する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>ファイル選択、実行ボタン、添付一覧を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. ファイルを選択する。</p>
+                  <p>2. 形式/容量を検証する。</p>
+                  <p>3. 保存して一覧更新する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>添付一覧に反映し参照可能とする。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 拡張子不正・容量超過表示。</p>
+                  <p>システム: 保存失敗時に通知表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>診療・相談履歴詳細画面（同一画面再表示）</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>添付ファイル</td>
+                    <td>File</td>
+                    <td>—</td>
+                    <td>拡張子チェック / 10MB以内</td>
+                    <td>PDF・JPG・PNG</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>説明</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>200文字以内</td>
+                    <td>任意</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-014 メール通知</h3>
+
+            <div id="f014-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-014</div>
+                <div class="fill-content">
+                  <p>テンプレートに基づき即時/予約でメール送信し、送信結果を記録する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>テンプレート選択、送信先設定、送信履歴を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. 送信条件を設定する。</p>
+                  <p>2. 即時/予約送信を実行する。</p>
+                  <p>3. 送信結果を記録する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">正常時の動作</div>
+                <div class="fill-content">
+                  <p>送信成功件数を表示し履歴更新する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 必須漏れ・形式不正を表示。</p>
+                  <p>システム: 送信失敗時に再送対象として保持。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>通知配信管理画面</p>
+                  <p>予約管理画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>テンプレートID</td>
+                    <td>Enum</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>登録済みテンプレート</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>送信先メール</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>必須チェック / メール形式</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>送信タイミング</td>
+                    <td>DateTime</td>
+                    <td>—</td>
+                    <td>日時形式</td>
+                    <td>即時/予約</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec5">
+          <h2 class="section-title"><span class="section-icon">5</span> 非機能要件</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">セキュリティ要件 <span class="required">必須</span></div>
+            <div class="fill-hint">認証・認可・データ保護に関する要件</div>
+            <div class="fill-content">
+              <ul class="security-list">
+                <li><strong>認証方式（Spring Security）:</strong> フォームログインを基本にSpring Securityで認証・認可を実装し、URL単位でアクセス制御する。</li>
+                <li><strong>パスワードの暗号化方式:</strong> BCryptPasswordEncoderでハッシュ化して保存し、平文保存は行わない。</li>
+                <li><strong>CSRF対策:</strong> Spring SecurityのCSRF保護を有効化し、フォーム送信時にCSRFトークンを検証する。</li>
+                <li><strong>XSS対策:</strong> 入力値バリデーションと出力時エスケープ（Thymeleaf自動エスケープ）を実施する。</li>
+                <li><strong>SQLインジェクション対策:</strong> JPA/Repositoryおよびバインド変数を使用し、SQL文字列連結を禁止する。</li>
+                <li><strong>セッション管理:</strong> ログイン時のセッションID再生成、セッションタイムアウト設定、ログアウト時のセッション破棄を実施する。</li>
+              </ul>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">対応環境 <span class="required">必須</span></div>
+            <div class="fill-hint">対応ブラウザ・デバイス</div>
+            <div class="fill-content">
+              <ul class="security-list">
+                <li><strong>対応ブラウザ:</strong> Chrome（最新版）/ Firefox（最新版）/ Edge（最新版）</li>
+                <li><strong>対応デバイス:</strong> PC / タブレット / スマートフォン</li>
+              </ul>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

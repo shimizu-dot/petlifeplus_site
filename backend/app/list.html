@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理画面 | 一覧</title>
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h1>管理メニュー</h1>
+      <a class="active" href="./list.html">ユーザー一覧</a>
+      <a href="./create.html">新規登録</a>
+      <a href="./detail.html">詳細</a>
+      <a href="./edit.html">編集</a>
+    </aside>
+    <main class="main">
+      <div class="topbar"><strong>ユーザー管理</strong><a class="btn" href="./login.html">ログアウト</a></div>
+      <div class="card">
+        <h2>一覧画面</h2>
+        <div class="search-row">
+          <input placeholder="キーワード（名前/メール）" value="佐藤" />
+          <select><option>ステータス: すべて</option><option>有効</option><option>停止</option></select>
+          <select><option>並び順: 更新日(新しい順)</option><option>更新日(古い順)</option><option>名前昇順</option></select>
+          <a class="btn alt" href="#">検索</a>
+          <a class="btn" href="#">クリア</a>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>氏名</th><th>メールアドレス</th><th>ペット数</th><th>ステータス</th><th>更新日</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>U-0012</td><td>佐藤 美咲</td><td>misaki@example.com</td><td>1</td><td><span class="badge">有効</span></td><td>2026-05-12</td><td><a class="btn" href="./detail.html">詳細</a> <a class="btn" href="./edit.html">編集</a></td></tr>
+              <tr><td>U-0011</td><td>田中 亮</td><td>ryo@example.com</td><td>2</td><td><span class="badge">有効</span></td><td>2026-05-11</td><td><a class="btn" href="./detail.html">詳細</a> <a class="btn" href="./edit.html">編集</a></td></tr>
+              <tr><td>U-0010</td><td>鈴木 愛</td><td>ai@example.com</td><td>1</td><td><span class="badge">有効</span></td><td>2026-05-10</td><td><a class="btn" href="./detail.html">詳細</a> <a class="btn" href="./edit.html">編集</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span>全 128 件 / 1ページ 20件</span>
+          <div class="btn-row"><a class="btn" href="#">前へ</a><a class="btn">1</a><a class="btn" href="#">2</a><a class="btn" href="#">次へ</a></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px;"><a class="btn primary" href="./create.html">新規登録</a></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

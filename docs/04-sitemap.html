@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サイトマップ - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .doc-header .doc-category,
+    .doc-header .doc-title,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .fill-hint {
+      color: #64748b;
+    }
+
+    .fill-content pre {
+      background: #f8fafc;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      padding: 10px;
+      overflow: auto;
+    }
+
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #d9e4f5;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.07);
+    }
+
+    .doc-table thead th {
+      background: linear-gradient(135deg, #eaf2ff 0%, #e8faf6 100%);
+      color: #0f172a;
+      font-weight: 700;
+      border-bottom: 1px solid #d6e2f3;
+    }
+
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+
+    .doc-table tbody tr:hover td {
+      background: #eef6ff;
+    }
+
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 04</div>
+        <h1 class="doc-title">サイトマップ</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-5-13</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：Hiromi SHIMIZU</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細なサイトマップは以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" value="sitemap_document.xlsx" id="external-link-04" style="color:#0f172a; opacity:1;">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-04').value || 'sitemap_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+          <div class="external-link-input" style="margin-top:8px;">
+            <input type="text" value="sitemap-to-url-design.html" id="external-link-04-html" readonly
+              style="color:#0f172a; opacity:1;">
+            <a href="./sitemap-to-url-design.html" class="link-btn" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined">open_in_new</span>
+              HTML版を開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">サイト構造図</a></li>
+            <li><a href="#sec2">ページ一覧</a></li>
+            <li><a href="#sec3">ユーザーフロー</a></li>
+            <li><a href="#sec4">URL設計</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> サイト構造図</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">Webサイト構造図 <span class="required">必須</span></div>
+            <div class="fill-hint">トップページから下層ページまでの階層構造をツリー形式で記載</div>
+            <div class="fill-content">
+              <pre>トップページ
+├── サービス紹介（f_service）
+│   ├── 健康管理機能
+│   ├── AI症状チェック
+│   └── オンライン診療・訪問ケア
+├── ご利用の流れ（f_flow）
+│   ├── 登録手順
+│   ├── 初期設定
+│   └── 利用開始フロー
+├── 運営情報（f_info）
+│   ├── コンセプト
+│   ├── ミッション
+│   └── 利用規約・プライバシー
+├── お問い合わせ（f_contact）
+│   ├── 問い合わせフォーム
+│   └── 返信目安
+└── Webアプリ紹介（webapp）
+    ├── 機能概要
+    └── 主要画面導線</pre>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">Webアプリケーション構造図 <span class="required">必須</span></div>
+            <div class="fill-hint">Spring Bootアプリケーションの画面構造をツリー形式で記載</div>
+            <div class="fill-content">
+              <pre>ログイン前
+├── ログイン
+│   ├── メールアドレス/パスワード入力
+│   ├── ログイン実行
+│   └── パスワードを忘れた場合
+├── パスワード再設定
+│   ├── 再設定メール送信
+│   └── 新パスワード登録
+└── お知らせ/メンテナンス情報
+
+ログイン後
+├── ダッシュボード
+├── ユーザー管理（CRUD）
+├── ペット管理（CRUD）
+├── 健康記録管理（CRUD）
+├── 契約・プラン管理（CRUD）
+├── 予約管理（CRUD）
+├── 診療・相談履歴管理（CRUD）
+├── 通知管理
+├── レポート
+└── システム設定</pre>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> ページ一覧</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">Webサイト ページ一覧 <span class="required">必須</span></div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>ページ名</th>
+                  <th>ページの目的</th>
+                  <th>主要コンテンツ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>トップページ</td>
+                  <td>サービス全体の価値を短時間で伝え、主要導線へ誘導する</td>
+                  <td>キャッチコピー、課題提起、特徴、CTA（無料相談/申込み）、運営者情報（About）</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>サービス紹介（f_service）</td>
+                  <td>提供機能と利用メリットを具体的に説明する</td>
+                  <td>健康管理機能、AI症状チェック、オンライン診療、訪問ケアの説明</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>ご利用の流れ（f_flow）</td>
+                  <td>利用開始までの手順を可視化する</td>
+                  <td>登録手順、初期設定、利用開始フロー、サポート案内</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>運営情報（f_info）</td>
+                  <td>運営体制と方針を明示し、安心感を与える</td>
+                  <td>運営情報、コンセプト、ミッション、利用規約・プライバシー案内</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>お問い合わせ（f_contact）</td>
+                  <td>導入相談・機能質問を受け付ける</td>
+                  <td>問い合わせフォーム、連絡先、返信目安</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Webアプリ紹介（webapp）</td>
+                  <td>Webアプリの機能と主要画面を案内する</td>
+                  <td>機能概要、主要画面導線、ログイン導線</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">Webアプリ 画面一覧 <span class="required">必須</span></div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>画面名</th>
+                  <th>画面の目的</th>
+                  <th>主要機能</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>ログイン画面</td>
+                  <td>利用者認証を行い安全にシステムへアクセスさせる</td>
+                  <td>メール/パスワード入力、ログイン、パスワード再設定導線</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>ダッシュボード画面</td>
+                  <td>全体状況をひと目で把握し次の操作へ誘導する</td>
+                  <td>KPI表示、予約予定、通知一覧、未対応タスク表示</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>ユーザー管理画面</td>
+                  <td>飼い主ユーザー情報を管理する</td>
+                  <td>一覧表示、検索、詳細表示、新規登録、編集、削除（CRUD）</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>ペット管理画面</td>
+                  <td>ペット情報を一元管理する</td>
+                  <td>一覧表示、絞り込み検索、詳細表示、登録・編集・削除（CRUD）</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>健康記録管理画面</td>
+                  <td>日々の健康データを管理・確認する</td>
+                  <td>体重/食事/運動記録の登録、履歴表示、期間検索、編集・削除</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>症状チェック結果管理画面</td>
+                  <td>AI症状チェック結果を確認し対応判断を支援する</td>
+                  <td>結果一覧、重症度フィルタ、詳細確認、対応ステータス更新</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>予約管理画面</td>
+                  <td>診療・相談予約を管理する</td>
+                  <td>予約一覧、日付検索、新規予約、変更、キャンセル、リマインド設定</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>診療・相談履歴画面</td>
+                  <td>診療/相談内容を記録し継続対応に活用する</td>
+                  <td>履歴一覧、キーワード検索、詳細記録、添付、編集</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>通知配信管理画面</td>
+                  <td>ユーザー向け通知を作成・配信する</td>
+                  <td>通知作成、一斉配信、セグメント配信、配信履歴確認</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> ユーザーフロー</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">メインシナリオ <span class="required">必須</span></div>
+            <div class="fill-hint">ペルソナがサイトに訪問してから目的を達成するまでの動線（メインの行動パターン）</div>
+            <div class="fill-content">
+              <p>ペルソナ：佐藤 美咲、32歳、ITベンチャー企業のマーケティング担当</p>
+              <p>目的：忙しい日常でも、愛犬の健康状態を一元管理し、必要時にオンライン相談・診療までスムーズに利用する</p>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>ステップ</th>
+                    <th>行動</th>
+                    <th>表示ページ</th>
+                    <th>次のアクション</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>SNS/検索で「ペット 健康管理 アプリ」を調べる</td>
+                    <td>記事LP・検索結果</td>
+                    <td>公式サイトを開く</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>サービス概要と特徴を確認する</td>
+                    <td>トップページ</td>
+                    <td>サービス詳細へ進む</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>機能（健康記録・AI症状チェック・オンライン診療）を確認する</td>
+                    <td>サービス紹介ページ</td>
+                    <td>利用の流れを確認する</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>登録〜利用開始までの手順を確認する</td>
+                    <td>ご利用の流れページ</td>
+                    <td>運営情報を確認する</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>運営体制・利用方針を確認する</td>
+                    <td>運営情報ページ</td>
+                    <td>問い合わせ/相談へ進む</td>
+                  </tr>
+                  <tr>
+                    <td>6</td>
+                    <td>不明点を問い合わせる</td>
+                    <td>お問い合わせページ</td>
+                    <td>Webアプリ詳細を確認する</td>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>新規登録を行う（アカウント作成）</td>
+                    <td>申込み・登録ページ</td>
+                    <td>初期設定を開始する</td>
+                  </tr>
+                  <tr>
+                    <td>8</td>
+                    <td>ペット情報を登録し、体重/食事/運動の記録を開始する</td>
+                    <td>初期設定・ペット情報登録ページ</td>
+                    <td>日常利用を継続する</td>
+                  </tr>
+                  <tr>
+                    <td>9</td>
+                    <td>体調が気になる日にAI症状チェックを実施する</td>
+                    <td>症状チェックページ</td>
+                    <td>必要ならオンライン相談を予約する</td>
+                  </tr>
+                  <tr>
+                    <td>10</td>
+                    <td>オンライン相談/診療を受け、履歴を確認する</td>
+                    <td>予約ページ・診療履歴ページ</td>
+                    <td>継続利用へ移行する</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">サブシナリオ <span class="optional">任意</span></div>
+            <div class="fill-hint">その他の行動パターン（1〜2パターン）</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>ステップ</th>
+                    <th>行動</th>
+                    <th>表示ページ</th>
+                    <th>次のアクション</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>夜間に愛犬の軽い不調（食欲低下）に気づく</td>
+                    <td>-</td>
+                    <td>すぐに公式サイトへアクセス</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>緊急時対応の可否を確認する</td>
+                    <td>トップページ</td>
+                    <td>医療サポート詳細へ進む</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>AI症状チェックとオンライン相談の流れを確認する</td>
+                    <td>サービス紹介ページ（医療サポート）</td>
+                    <td>利用の流れを確認する</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>利用開始手順と必要情報を確認する</td>
+                    <td>ご利用の流れページ</td>
+                    <td>不安点を問い合わせる</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>夜間相談可否や受診目安を問い合わせる</td>
+                    <td>お問い合わせページ</td>
+                    <td>相談申込みへ進む</td>
+                  </tr>
+                  <tr>
+                    <td>6</td>
+                    <td>最短でアカウント登録しペット情報を入力する</td>
+                    <td>申込み・登録ページ</td>
+                    <td>症状チェックを開始する</td>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>症状を入力して受診推奨度を確認する</td>
+                    <td>AI症状チェックページ</td>
+                    <td>オンライン相談予約へ進む</td>
+                  </tr>
+                  <tr>
+                    <td>8</td>
+                    <td>直近枠でオンライン相談を予約する</td>
+                    <td>予約ページ</td>
+                    <td>問診情報を事前送信する</td>
+                  </tr>
+                  <tr>
+                    <td>9</td>
+                    <td>オンライン相談で対応方針（自宅経過観察/受診）を確認する</td>
+                    <td>オンライン相談画面</td>
+                    <td>必要時は訪問ケア/病院受診を手配する</td>
+                  </tr>
+                  <tr>
+                    <td>10</td>
+                    <td>相談内容と今後のケアを履歴で確認し、通知設定を有効化する</td>
+                    <td>診療履歴ページ・通知設定ページ</td>
+                    <td>継続的な健康記録運用へ移行する</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> URL設計</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">Webアプリ URL一覧 <span class="required">必須</span></div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>URL</th>
+                  <th>HTTPメソッド</th>
+                  <th>画面/機能</th>
+                  <th>説明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>/app/login</td>
+                  <td>GET</td>
+                  <td>ログイン画面</td>
+                  <td>ログインフォーム表示</td>
+                </tr>
+                <tr>
+                  <td>/app/sessions</td>
+                  <td>POST</td>
+                  <td>ログイン処理</td>
+                  <td>認証してセッション作成</td>
+                </tr>
+                <tr>
+                  <td>/app/sessions/current</td>
+                  <td>DELETE</td>
+                  <td>ログアウト</td>
+                  <td>現在セッション削除</td>
+                </tr>
+                <tr>
+                  <td>/app/dashboard</td>
+                  <td>GET</td>
+                  <td>ダッシュボード</td>
+                  <td>KPI・通知・予定表示</td>
+                </tr>
+                <tr>
+                  <td>/app/users</td>
+                  <td>GET</td>
+                  <td>ユーザー一覧/検索</td>
+                  <td>一覧、条件検索</td>
+                </tr>
+                <tr>
+                  <td>/app/pets</td>
+                  <td>GET</td>
+                  <td>ペット一覧/検索</td>
+                  <td>一覧、条件検索</td>
+                </tr>
+                <tr>
+                  <td>/app/pets/{petId}/health-records</td>
+                  <td>GET</td>
+                  <td>健康記録一覧</td>
+                  <td>体重/食事/運動履歴表示</td>
+                </tr>
+                <tr>
+                  <td>/app/symptom-checks</td>
+                  <td>POST</td>
+                  <td>AI症状チェック実行</td>
+                  <td>入力症状を診断ロジックへ送信</td>
+                </tr>
+                <tr>
+                  <td>/app/appointments</td>
+                  <td>GET</td>
+                  <td>予約一覧/検索</td>
+                  <td>日付・種別で検索</td>
+                </tr>
+                <tr>
+                  <td>/app/consultations</td>
+                  <td>GET</td>
+                  <td>診療/相談履歴一覧</td>
+                  <td>履歴検索・一覧表示</td>
+                </tr>
+                <tr>
+                  <td>/app/notifications</td>
+                  <td>GET</td>
+                  <td>通知一覧</td>
+                  <td>配信履歴表示</td>
+                </tr>
+                <tr>
+                  <td>/app/reports/monthly</td>
+                  <td>GET</td>
+                  <td>月次レポート</td>
+                  <td>月次集計表示</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

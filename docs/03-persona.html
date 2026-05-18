@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ペルソナシート - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .doc-header .doc-category,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .fill-hint {
+      color: #64748b;
+    }
+
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #d9e4f5;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.07);
+    }
+
+    .doc-table thead th {
+      background: linear-gradient(135deg, #eaf2ff 0%, #e8faf6 100%);
+      color: #0f172a;
+      font-weight: 700;
+      border-bottom: 1px solid #d6e2f3;
+    }
+
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+
+    .doc-table tbody tr:hover td {
+      background: #eef6ff;
+    }
+
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 03</div>
+        <h1 class="doc-title">ペルソナシート</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-03-24</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水 宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細なペルソナシートは以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" placeholder="marketingFormat_document.xlsx" id="external-link-03">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-03').value || 'marketingFormat_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">基本プロフィール</a></li>
+            <li><a href="#sec2">ライフスタイル</a></li>
+            <li><a href="#sec3">デジタル行動</a></li>
+            <li><a href="#sec4">課題とニーズ</a></li>
+            <li><a href="#sec5">カスタマージャーニーマップ</a></li>
+          </ol>
+        </div>
+
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> 基本プロフィール</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">ペルソナ基本情報 <span class="required">必須</span></div>
+            <div class="fill-hint">架空の人物として具体的に設定してください</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>ペルソナ名</strong></td>
+                  <td>佐藤 美咲（たなか みさき）</td>
+                </tr>
+                <tr>
+                  <td><strong>年齢</strong></td>
+                  <td>32歳</td>
+                </tr>
+                <tr>
+                  <td><strong>性別</strong></td>
+                  <td>女性</td>
+                </tr>
+                <tr>
+                  <td><strong>居住地</strong></td>
+                  <td>東京都世田谷区（都市部マンション）</td>
+                </tr>
+                <tr>
+                  <td><strong>職業</strong></td>
+                  <td>ITベンチャー企業のマーケティング担当</td>
+                </tr>
+                <tr>
+                  <td><strong>年収</strong></td>
+                  <td>520万円</td>
+                </tr>
+                <tr>
+                  <td><strong>家族構成</strong></td>
+                  <td>独身・一人暮らし（実家は地方）</td>
+                </tr>
+                <tr>
+                  <td><strong>ペット</strong></td>
+                  <td>トイプードル（4歳・メス）</td>
+                </tr>
+                <tr>
+                  <td><strong>住環境</strong></td>
+                  <td>ペット可マンション、在宅勤務あり</td>
+                </tr>
+                <tr>
+                  <td><strong>ペットとの関係</strong></td>
+                  <td>家族同然の存在。生活の中心に近い存在</td>
+                </tr>
+                <tr>
+                  <td><strong>飼育歴</strong></td>
+                  <td>約4年</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> ライフスタイル</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">平日のタイムスケジュール <span class="required">必須</span></div>
+            <div class="fill-hint">朝起きてから寝るまでの1日の流れ</div>
+            <div class="fill-content">
+              <p>朝は散歩 → 出勤または在宅勤務。</p>
+              <p>日中は仕事中心で、ペットの留守番時間が長くなりやすい。</p>
+              <p>夜は散歩をしながら、SNS閲覧や動画視聴で情報収集を行う。</p>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">休日の過ごし方 <span class="required">必須</span></div>
+            <div class="fill-hint">休日にどのように過ごしているか</div>
+            <div class="fill-content">
+              <p>朝晩の散歩に加え、休日はペット同伴で外出する時間を確保する。</p>
+              <p>健康状態の確認や記録の見直しなど、平日に後回しになった管理をまとめて行う。</p>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">趣味・関心事 <span class="required">必須</span></div>
+            <div class="fill-hint">興味のある分野・趣味</div>
+            <div class="fill-content">
+              <p>趣味はカフェ巡り・読書・ヨガ・SNS閲覧。</p>
+              <p>ペット関連ではプレミアムフード、健康サプリ、保険に関心が高い。</p>
+              <p>価値観として「ペットは家族」「予防医療を重視」「時間効率を重視」が強い。</p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> デジタル行動</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">使用デバイス・サービス <span class="required">必須</span></div>
+            <div class="fill-hint">日常的に使用するデバイス、SNS、Webサービス</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>よく使うデバイス</strong></td>
+                  <td>iPhone、MacBook、iPad</td>
+                </tr>
+                <tr>
+                  <td><strong>よく使うアプリ・サービス</strong></td>
+                  <td>健康アプリ・家計アプリ・ネット診療サービス</td>
+                </tr>
+                <tr>
+                  <td><strong>情報収集方法</strong></td>
+                  <td>Instagram・YouTube・ペット系ブログ・口コミサイト</td>
+                </tr>
+                <tr>
+                  <td><strong>主な利用シーン</strong></td>
+                  <td>散歩後の記録入力、体調が気になる時の症状チェック、夜のオンライン相談</td>
+                </tr>
+                <tr>
+                  <td><strong>利用頻度</strong></td>
+                  <td>日常 + 緊急時</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> 課題とニーズ</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">抱えている課題・悩み <span class="required">必須</span></div>
+            <div class="fill-hint">このペルソナが日常で抱えている課題（サービスに関連するもの）</div>
+            <div class="fill-content">
+              <p>体調変化に気づけているか不安で、急変時の判断に自信が持てない。</p>
+              <p>健康記録が紙メモ・カレンダー・複数アプリに分散し、継続管理しづらい。</p>
+              <p>ネット情報が多すぎて、どの情報を信じるべきか判断しにくい。</p>
+              <p>平日は仕事が忙しく、通院や相談の時間を確保しにくい。</p>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">サービスに期待すること <span class="required">必須</span></div>
+            <div class="fill-hint">このペルソナが（サービス名）に期待する価値</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>期待項目</th>
+                  <th>内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>理想の状態</strong></td>
+                  <td>ペットの健康データを一元管理し、日常状態を可視化できること。</td>
+                </tr>
+                <tr>
+                  <td><strong>相談体験</strong></td>
+                  <td>症状を簡単に相談でき、通院前にも判断支援を受けられること。</td>
+                </tr>
+                <tr>
+                  <td><strong>利用開始の決め手</strong></td>
+                  <td>健康記録 + 診療 + 相談が一体化していること。</td>
+                </tr>
+                <tr>
+                  <td><strong>期待する効果</strong></td>
+                  <td>忙しくても健康管理を継続でき、状態把握による安心感が得られること。</td>
+                </tr>
+                <tr>
+                  <td><strong>支払い許容</strong></td>
+                  <td>月額1,000〜3,000円程度。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec5">
+          <h2 class="section-title"><span class="section-icon">5</span> カスタマージャーニーマップ</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">カスタマージャーニーマップ <span class="required">必須</span></div>
+            <div class="fill-hint">ペルソナがサービスを認知してから利用・共有するまでの行動を時系列で記載</div>
+
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th style="background:#f8f9fb;">分析項目</th>
+                  <th style="background:#eef6ff;">① 認知<br>(Awareness)</th>
+                  <th style="background:#eefcf6;">② 興味・関心<br>(Interest)</th>
+                  <th style="background:#fff8e9;">③ 導線確認・検討<br>(Consideration)</th>
+                  <th style="background:#fff0f0;">④ 行動<br>(Trial)</th>
+                  <th style="background:#f3f1ff;">⑤ 継続<br>(Retention)</th>
+                  <th style="background:#f0fbff;">⑥ 共有<br>(Advocacy)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>顧客行動</strong></td>
+                  <td>SNSや検索でペット健康管理アプリの記事を見る<br>動物病院や知人からサービスを聞く</td>
+                  <td>公式サイトやLPを閲覧<br>健康記録・症状チェックAIの機能を見る</td>
+                  <td>サービス紹介ページで機能を確認<br>ご利用の流れ・運営情報・お問い合わせを確認</td>
+                  <td>アプリ登録<br>ペット情報登録<br>健康記録や症状チェック機能を試す</td>
+                  <td>日々の健康記録を継続<br>体調チェックやワクチン管理を利用<br>オンライン相談を活用</td>
+                  <td>SNSや口コミで紹介<br>同じペットオーナーに勧める<br>レビュー投稿</td>
+                </tr>
+                <tr>
+                  <td><strong>思考・感情</strong></td>
+                  <td>「ペットの健康管理アプリがあるんだ」<br>「忙しくても管理できるのかな」</td>
+                  <td>「健康記録をまとめて管理できそう」<br>「体調チェックができるのは安心」</td>
+                  <td>「他のアプリと何が違うの？」<br>「本当に役立つのかな」</td>
+                  <td>「登録は簡単だった」<br>「健康管理が見える化されて便利」</td>
+                  <td>「毎日の健康管理が楽になった」<br>「体調変化に早く気づける」</td>
+                  <td>「同じ悩みの飼い主にも教えたい」<br>「便利だからおすすめしたい」</td>
+                </tr>
+                <tr>
+                  <td><strong>タッチポイント（接点）</strong></td>
+                  <td>SNS広告<br>検索結果<br>ペット関連メディア</td>
+                  <td>LP<br>サービス紹介ページ<br>紹介記事や動画</td>
+                  <td>サービス紹介ページ<br>ご利用の流れページ<br>運営情報ページ<br>お問い合わせページ</td>
+                  <td>アプリ登録画面<br>チュートリアル<br>初期設定画面</td>
+                  <td>アプリ通知<br>メール通知<br>健康レポート</td>
+                  <td>SNSシェア機能<br>紹介プログラム<br>コミュニティ</td>
+                </tr>
+                <tr>
+                  <td><strong>課題・ペインポイント</strong></td>
+                  <td>サービスの存在を知らない<br>信頼できるサービスかわからない</td>
+                  <td>機能が多く理解しづらい<br>実際の利用イメージが湧きにくい</td>
+                  <td>機能と導線の違いが分かりにくい<br>利用開始までの手順が判断しにくい</td>
+                  <td>登録や初期設定が面倒<br>使い方がわかりにくい</td>
+                  <td>利用を習慣化できない<br>必要性を感じなくなる</td>
+                  <td>紹介するメリットが少ない<br>共有方法が分かりにくい</td>
+                </tr>
+                <tr>
+                  <td><strong>改善機会（施策案）</strong></td>
+                  <td>SNS広告配信<br>ペットメディア掲載<br>SEO記事</td>
+                  <td>分かりやすいLP<br>機能紹介動画<br>利用シーン紹介</td>
+                  <td>機能比較表の提示<br>利用フローの明確化<br>運営情報と問い合わせ導線の強化</td>
+                  <td>簡単登録フロー<br>チュートリアル<br>初回特典</td>
+                  <td>健康レポート配信<br>リマインド通知<br>継続利用特典</td>
+                  <td>紹介キャンペーン<br>口コミ投稿特典<br>SNSシェア導線</td>
+                </tr>
+                <tr>
+                  <td><strong>提供価値（この段階で）</strong></td>
+                  <td>ペット健康管理をデジタルで行えるという発見</td>
+                  <td>忙しくても健康管理ができる期待</td>
+                  <td>他サービスより便利で安心できるという確信</td>
+                  <td>簡単に健康管理を始められる手軽さ</td>
+                  <td>ペットの健康状態を継続的に把握できる安心</td>
+                  <td>他の飼い主にも役立つサービスという共感</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

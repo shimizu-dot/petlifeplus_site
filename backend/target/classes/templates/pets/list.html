@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ペット管理 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">ペット管理</span></div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="page-header">
+        <h1 class="page-title">ペット一覧</h1>
+        <a th:href="@{/app/pets/new}" class="btn btn-primary">＋ ペット登録</a>
+      </div>
+
+      <div class="card" style="padding:0;">
+        <div th:if="${page.items.isEmpty()}" class="empty-state">
+          <div class="empty-state-icon">🐾</div>
+          <div class="empty-state-text">まだペットが登録されていません</div>
+          <a th:href="@{/app/pets/new}" class="btn btn-primary">最初のペットを登録する</a>
+        </div>
+
+        <div th:if="${!page.items.isEmpty()}" class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>名前</th>
+                <th>種別</th>
+                <th>品種</th>
+                <th>性別</th>
+                <th>生年月日</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="pet : ${page.items}">
+                <td>
+                  <a th:href="@{/app/pets/{id}(id=${pet.id})}"
+                     style="color:var(--primary);font-weight:600;text-decoration:none;"
+                     th:text="${pet.name}">ポチ</a>
+                </td>
+                <td>
+                  <span th:class="${pet.species == 'DOG' ? 'badge badge-blue' : pet.species == 'CAT' ? 'badge badge-green' : 'badge badge-gray'}"
+                        th:text="${pet.species == 'DOG' ? '犬' : pet.species == 'CAT' ? '猫' : pet.species}">犬</span>
+                </td>
+                <td th:text="${pet.breed ?: '—'}">柴犬</td>
+                <td th:text="${pet.sex == 'MALE' ? 'オス' : pet.sex == 'FEMALE' ? 'メス' : '—'}">オス</td>
+                <td th:text="${pet.birthDate ?: '—'}">2021-03-01</td>
+                <td>
+                  <div class="table-actions">
+                    <a th:href="@{/app/pets/{id}(id=${pet.id})}" class="btn btn-secondary btn-sm">詳細</a>
+                    <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary btn-sm">健康記録</a>
+                    <form th:action="@{/app/pets/{id}(id=${pet.id})}" method="post" style="display:inline;"
+                          onsubmit="return confirm('削除しますか？')">
+                      <input type="hidden" name="_method" value="DELETE">
+                      <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ページネーション -->
+      <div class="pagination" th:if="${page.total > page.size}">
+        <a th:if="${page.page > 1}" th:href="@{/app/pets(page=${page.page - 1})}">‹</a>
+        <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}"
+              th:class="${i == page.page ? 'current' : ''}"
+              th:text="${i}">1</span>
+        <a th:if="${page.page * page.size < page.total}" th:href="@{/app/pets(page=${page.page + 1})}">›</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

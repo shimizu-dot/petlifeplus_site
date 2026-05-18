@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<body>
+<aside th:fragment="sidebar" class="sidebar">
+  <a href="/app/dashboard" class="sidebar-logo">🐾 Pet Life Plus</a>
+
+  <div class="sidebar-section">メニュー</div>
+  <nav class="sidebar-nav">
+    <a th:href="@{/app/dashboard}"
+       th:classappend="${requestURI.contains('/dashboard') ? 'active' : ''}">
+      📊 ダッシュボード
+    </a>
+    <a th:href="@{/app/pets}"
+       th:classappend="${requestURI.contains('/pets') ? 'active' : ''}">
+      🐶 ペット管理
+    </a>
+  </nav>
+
+  <!-- 管理者メニュー -->
+  <div th:if="${currentUser != null and currentUser.isAdmin()}" class="sidebar-section">管理者</div>
+  <nav th:if="${currentUser != null and currentUser.isAdmin()}" class="sidebar-nav">
+    <a th:href="@{/app/admin/users}"
+       th:classappend="${requestURI.contains('/admin/users') ? 'active' : ''}">
+      👥 ユーザー管理
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user" th:text="${currentUser != null ? currentUser.displayName() : ''}"></div>
+    <form th:action="@{/app/logout}" method="post">
+      <button type="submit" class="btn-link" style="color:rgba(255,255,255,.7);">ログアウト</button>
+    </form>
+  </div>
+</aside>
+</body>
+</html>

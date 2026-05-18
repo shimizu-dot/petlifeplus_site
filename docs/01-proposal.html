@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>企画提案書 - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .doc-header .doc-category,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+      color: #0f172a;
+      opacity: 1;
+    }
+
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .fill-hint {
+      color: #64748b;
+    }
+
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #cfe0f7;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+    }
+
+    .doc-table thead th {
+      background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 45%, #93c5fd 100%);
+      color: #0b2545;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      border-bottom: 1px solid #c5d7f1;
+      padding: 11px 12px;
+    }
+
+    .doc-table tbody td {
+      border-bottom: 1px solid #e7eef8;
+      padding: 10px 12px;
+    }
+
+    .doc-table tbody tr:nth-child(odd) td {
+      background: #ffffff;
+    }
+
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+
+    .doc-table tbody tr td:first-child {
+      background: linear-gradient(90deg, #f3f7ff 0%, #ffffff 85%);
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .doc-table tbody tr:hover td {
+      background: #ecfeff;
+      transition: background-color .18s ease;
+    }
+
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    #sec5 .template-row td {
+      font-style: normal;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 01</div>
+        <h1 class="doc-title">企画提案書</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-03-24</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水 宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細な企画提案書は以下のリンクからご確認ください。
+          </div>
+
+          <div class="external-link-input">
+            <input type="text" placeholder="MarketingFormat_document.xlsx" id="external-link-01">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-01').value || 'MarketingFormat_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">プロジェクト概要</a></li>
+            <li><a href="#sec2">背景と課題</a></li>
+            <li><a href="#sec3">提案するソリューション</a></li>
+            <li><a href="#sec4">制作範囲</a></li>
+            <li><a href="#sec5">使用技術</a></li>
+            <li><a href="#sec6">スケジュール</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> プロジェクト概要</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">サービス名 <span class="required">必須</span></div>
+            <div class="fill-hint">制作するWebサービスの名前</div>
+            <div class="fill-content">
+              <p>ペット健康管理プラットホーム（ペットライフプラス）</p>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">コンセプト <span class="required">必須</span></div>
+            <div class="fill-hint">サービスを一言で表す説明（キャッチコピー＋1〜2文の説明）</div>
+            <div class="fill-content">
+              <p>日々の健康管理に不安を感じる多忙な飼い主が抱える健康問題をAIチェック、オンライン診療、訪問ケア等で解決するサービス</p>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">ターゲットユーザー <span class="required">必須</span></div>
+            <div class="fill-hint">このサービスを使う主なユーザー像（概要レベル）</div>
+            <div class="fill-content">
+              <p>都市部で働く20〜40代の共働き・単身の犬猫の飼い主。<br>仕事が忙しく通院や日々の健康管理の時間が取りにくいが、ペットの健康意識が高くスマホアプリやオンライン診療を積極的に利用する層。</p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> 背景と課題</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">市場の現状 <span class="required">必須</span></div>
+            <div class="fill-hint">このサービスが存在する市場の現状と課題</div>
+            <div class="fill-content">
+              <p>【背景】：ペットの家族化により健康管理への関心が高まっているが、日常の体調変化に気づきにくく、健康情報も分散している。<br><br>
+                【市場の現状】：ペット関連市場は拡大傾向にあり、健康管理・予防医療・オンライン相談などのサービス需要が増加している。一方で健康記録や体調管理を日常的にサポートする統合サービスは少なく、デジタル化の余地</p>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">解決すべき課題 <span class="required">必須</span></div>
+            <div class="fill-hint">本プロジェクトで解決を目指す具体的な課題（3つ程度）</div>
+            <div class="fill-content">
+              <p>①ペットの健康状態を日常的に記録・管理できる仕組みが整っておらず、体調変化に気づきにくい。<br> ②体調に異変を感じた際に受診すべきか判断するための情報やサポートが不足している。<br>
+                ③健康記録、症状確認、相談、診療予約などのサービスが分断されており、一貫した健康管理が難しい。 </p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> 提案するソリューション</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">サービスの特長 <span class="required">必須</span></div>
+            <div class="fill-hint">競合と差別化するサービスの特長を3つ</div>
+            <div class="fill-content">
+              <p>①日常の健康データ管理　ペットの体重・食事・運動などの健康データ、ワクチン・通院履歴を一元管理し、日々の健康状態を記録・可視化することで体調変化に早く気づける環境を提供する。<br><br>
+                ②AIによる症状チェックと受診判断支援　症状チェックAIを通じてペットの体調異変を確認し、受診の必要性や対応の目安を判断できる仕組みを提供する。<br><br>③オンライン診療・訪問ケアによる医療アクセス　オンライン診療（サブスク）や訪問ケア（月額）を通じて、忙しい飼い主でも自宅からペットの医療相談やケアを受けられる環境を提供する。
+              </p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> 制作範囲</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">Webサイト（フロントエンド）の範囲 <span class="required">必須</span></div>
+            <div class="fill-hint">制作するWebサイトのページ一覧と概要</div>
+            <div class="fill-content purpose-highlight">
+              <p class="purpose-meta"><strong>対象ページ数:</strong> 6ページ（公開プロトタイプ）</p>
+              <p class="purpose-meta"><strong>目的:</strong> サービス理解から機能体験、問い合わせ導線までを最短で確認できる構成にする。</p>
+              <ul>
+                <li>トップページ（index）<br>主要コンテンツ：キャッチコピー、サービス概要、課題提起、主要機能への導線、CTA</li>
+                <li>サービス紹介（f_service）<br>主要コンテンツ：健康管理、AI症状チェック、オンライン診療、訪問ケアの説明</li>
+                <li>ご利用の流れ（f_flow）<br>主要コンテンツ：利用開始手順、登録〜利用までのフロー、サポート導線</li>
+                <li>運営情報（f_info）<br>主要コンテンツ：運営者情報、コンセプト、ミッション、提供方針</li>
+                <li>お問い合わせ（f_contact）<br>主要コンテンツ：問い合わせフォーム、連絡先、返信目安</li>
+                <li>Webアプリ紹介（webapp）<br>主要コンテンツ：アプリ機能概要、主要画面への導線、利用イメージ</li>
+              </ul>
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">Webアプリケーション（サーバーサイド）の範囲 <span class="required">必須</span></div>
+            <div class="fill-hint">制作するWebアプリケーションの機能概要</div>
+            <div class="fill-content purpose-highlight">
+              <p class="purpose-meta"><strong>対象機能数:</strong> 10機能（管理/会員アプリ）</p>
+              <p class="purpose-meta"><strong>目的:</strong> 記録 → 分析 → 相談 → 診療までを一元管理し、継続利用を支援する。</p>
+              <ul>
+                <li>【機能名】：ユーザー認証（ログイン/ログアウト）<br>概要：メールアドレスとパスワードで利用者を認証し、安全に管理画面へアクセスさせる。<br>優先度：Must</li>
+                <li>【機能名】：飼い主ユーザー管理（CRUD）<br>概要：飼い主情報の登録・一覧・検索・編集・削除を行い、契約や履歴と紐づけて管理する。<br>優先度：Must</li>
+                <li>【機能名】：ペット情報管理（CRUD）<br>概要：ペットの基本情報（名前、種類、年齢、既往歴など）を登録・更新し、健康記録の基盤データとして利用する。<br>優先度：Must</li>
+                <li>【機能名】：健康記録管理（CRUD）<br>概要：体重・食事・運動などの日次データを登録・参照し、時系列で健康状態を可視化する。<br>優先度：Must</li>
+                <li>【機能名】：AI症状チェック<br>概要：入力された症状情報から受診目安や推奨アクションを提示し、初期判断を支援する。<br>優先度：Must</li>
+                <li>【機能名】：予約管理（相談/診療）<br>概要：オンライン相談・診療の予約作成、変更、キャンセルを行い、利用者と運営側の予定を管理する。<br>優先度：Must</li>
+                <li>【機能名】：診療・相談履歴管理<br>概要：相談内容、対応結果、次回アクションを履歴として保存し、継続的なケアに活用する。<br>優先度：Should</li>
+                <li>【機能名】：通知・リマインド配信<br>概要：予約前通知、記録入力促進、ワクチン時期案内などを配信し、継続利用を促進する。<br>優先度：Should</li>
+                <li>【機能名】：レポート出力（PDF）<br>概要：健康記録や運用実績を月次・顧客別に集計し、CSV/PDFで出力できるようにする。<br>優先度：Could</li>
+              </ul>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec5">
+          <h2 class="section-title"><span class="section-icon">5</span> 使用技術</h2>
+
+          <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">※ 自分の実際の使用技術に合わせて編集してください</p>
+          <table class="doc-table tech-table">
+            <thead>
+              <tr>
+                <th>区分</th>
+                <th>技術</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="template-row">
+                <td>フロントエンド</td>
+                <td>HTML / CSS / JavaScript</td>
+                <td>Webサイト構築</td>
+              </tr>
+              <tr class="template-row">
+                <td>CSSフレームワーク</td>
+                <td>（Tailwind CSS 等）</td>
+                <td>スタイリング効率化</td>
+              </tr>
+              <tr class="template-row">
+                <td>バックエンド</td>
+                <td>Java / Spring Boot</td>
+                <td>Webアプリケーション</td>
+              </tr>
+              <tr class="template-row">
+                <td>テンプレートエンジン</td>
+                <td>Thymeleaf</td>
+                <td>画面表示</td>
+              </tr>
+              <tr class="template-row">
+                <td>O/Rマッピング</td>
+                <td>MyBatis</td>
+                <td>データベース操作</td>
+              </tr>
+              <tr class="template-row">
+                <td>データベース</td>
+                <td>（MySQL / H2 等）</td>
+                <td>データ永続化</td>
+              </tr>
+              <tr class="template-row">
+                <td>デザインツール</td>
+                <td>Figma</td>
+                <td>ワイヤーフレーム・モックアップ</td>
+              </tr>
+              <tr class="template-row">
+                <td>バージョン管理</td>
+                <td>Git / GitHub</td>
+                <td>ソースコード管理・公開</td>
+              </tr>
+              <tr class="template-row">
+                <td>AI活用</td>
+                <td>ChatGPT / Gemini</td>
+                <td>プロンプトプログラミング</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </section>
+
+        <section class="section" id="sec6">
+          <h2 class="section-title"><span class="section-icon">6</span> スケジュール</h2>
+
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>期間</th>
+                <th>フェーズ</th>
+                <th>内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="template-row">
+                <td>Day 1〜3</td>
+                <td>企画</td>
+                <td>マーケットリサーチ・企画立案</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 4〜5</td>
+                <td>設計</td>
+                <td>ペルソナ・サイトマップ設計</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 6〜7</td>
+                <td>デザイン</td>
+                <td>ワイヤーフレーム・デザインガイドライン</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 8〜12</td>
+                <td>フロント実装</td>
+                <td>HTML/CSS/JavaScript によるWebサイト構築</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 13〜14</td>
+                <td>プロジェクトアーカイブ構築</td>
+                <td>プロジェクトアーカイブサイト・ドキュメント配置</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 15〜16</td>
+                <td>前半完了</td>
+                <td>GitHub Pages 公開・前半振り返り</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 17〜19</td>
+                <td>バックエンド設計</td>
+                <td>仕様書・DB設計書作成</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 20〜24</td>
+                <td>バックエンド実装</td>
+                <td>Spring Boot アプリケーション開発</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 25〜27</td>
+                <td>追加機能</td>
+                <td>検索・認証・追加機能の実装</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 28〜29</td>
+                <td>テスト</td>
+                <td>テスト実施・バグ修正</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 30〜31</td>
+                <td>ドキュメント</td>
+                <td>振り返り・技術記事・最終調整</td>
+              </tr>
+              <tr class="template-row">
+                <td>Day 32</td>
+                <td>最終提出</td>
+                <td>プロジェクトアーカイブ最終版公開</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

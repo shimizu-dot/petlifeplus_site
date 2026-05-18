@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ワイヤーフレーム - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+    .doc-header .doc-category,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+    }
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+    .fill-hint {
+      color: #64748b;
+    }
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #d9e4f5;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.07);
+    }
+    .doc-table thead th {
+      background: linear-gradient(135deg, #eaf2ff 0%, #e8faf6 100%);
+      color: #0f172a;
+      font-weight: 700;
+      border-bottom: 1px solid #d6e2f3;
+    }
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+    .doc-table tbody tr:hover td {
+      background: #eef6ff;
+    }
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 05</div>
+        <h1 class="doc-title">ワイヤーフレーム</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-13</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細なワイヤーフレームは以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" value="wireframe_document.xlsx" id="external-link-05" style="color:#0f172a; opacity:1;">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-05').value || 'wireframe_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">ワイヤーフレーム作成方法</a></li>
+            <li><a href="#sec2">トップページ</a></li>
+            <li><a href="#sec3">下層ページ</a></li>
+            <li><a href="#sec4">Webアプリケーション画面</a></li>
+            <li><a href="#sec5">スマートフォン版</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> ワイヤーフレーム作成方法</h2>
+
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> トップページ</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">トップページ ワイヤーフレーム（PC版） <span class="required">必須</span></div>
+            <div class="fill-hint">Figmaで作成したワイヤーフレームのスクリーンショットを配置</div>
+            <div class="fill-content">
+              <p>【PCワイヤー（12カラム基準）】</p>
+              <p>・コンテナ幅：min(960px, 82vw)<br>
+                ・PC切替：768px以上<br>
+                ・セクション間余白：36px<br>
+                ・構成：2カラム + 3カラムカードの組み合わせ</p>
+              <p>1. ヘッダー（min-height 56px / sticky）<br>
+                左：ブランド名 / 右：横並びナビ（トップ / 総合案内 / 導入事例と実績 / ログイン / お問い合わせ）</p>
+              <p>2. ヒーロー（`.hero-grid`）<br>
+                左右比率：1.2fr / 0.8fr、gap 24px<br>
+                左：見出し・説明・CTA / 右：ビジュアルカード</p>
+              <p>3. サービス紹介・主要機能（`.card-grid`）<br>
+                PCでは3列（`repeat(3, 1fr)` / gap 22px）</p>
+              <p>4. 実績・KPI（`.stats-grid`）<br>
+                KPIカード3列表示（記録継続率 / 受診判断時間 / 相談満足度）</p>
+              <p>5. CTA導線（`.actions`）<br>
+                PCでは横並び（`display:flex` / `gap:10px`）で主導線を上段に配置</p>
+              <p>6. フッター（`.footer-grid`）<br>
+                リンク群を横方向に配置し、運営情報・法務・サポートへ到達しやすくする</p>
+            <p>ワイヤーフレーム画像配置：<br>
+              &lt;img src=&quot;../images/wireframe/top-pc.png&quot; alt=&quot;トップページ PC版 ワイヤーフレーム&quot;&gt;</p>
+            <p><img src="../img/top.html.png" alt="top.html のスクリーンショット（PC版）" style="max-width:100%; height:auto; border:1px solid #dbe3ef; border-radius:10px;"></p>
+          </div>
+        </div>
+        <div class="fill-block">
+          <div class="fill-label">配置意図の説明 <span class="required">必須</span></div>
+          <div class="fill-hint">各セクションの配置理由とユーザーへの効果</div>
+          <div class="fill-content">
+            <p>【ヘッダー】<br>
+              なぜその位置か：全ページ共通で最上部に固定し、どの閲覧タイミングでも主要導線（サービス紹介・ご利用の流れ・運営情報・お問い合わせ・ログイン）へ即アクセスできるようにするため。<br>
+              ユーザーへの効果：迷子になりにくく、比較検討中でもすぐに必要情報へ戻れる。行動（相談/ログイン）への心理的ハードルが下がる。</p>
+            <p>【ヒーローセクション】<br>
+              なぜその位置か：ファーストビューに配置し、サービス価値と対象ユーザーへの適合性を最初の数秒で伝えるため。CTAも同時配置して初動離脱を防ぐため。<br>
+              ユーザーへの効果：「自分向けサービスか」を短時間で判断でき、次の行動（詳細閲覧・相談予約）へ自然に進める。</p>
+            <p>【サービス紹介】<br>
+              なぜその位置か：ヒーロー直下に置き、興味を持った直後に機能の具体像（健康記録・AIチェック・診療連携）を提示するため。<br>
+              ユーザーへの効果：抽象的な魅力だけでなく、利用時のイメージが明確になる。比較検討時の理解コストが下がる。</p>
+            <p>【実績】<br>
+              なぜその位置か：機能理解の後段に配置し、導入判断の直前で信頼情報（事例・数値）を提示するため。<br>
+              ユーザーへの効果：「本当に効果があるか」という不安を軽減し、意思決定を後押しできる。</p>
+            <p>【CTA】<br>
+              なぜその位置か：実績セクションの直後に配置し、納得感が高まったタイミングで行動喚起を強めるため。<br>
+              ユーザーへの効果：検討から申込みへの遷移がスムーズになり、離脱前にアクションを取りやすくなる。</p>
+            <p>【フッター】<br>
+              なぜその位置か：ページ末尾に法務情報・運営情報・補助リンクを集約し、最終確認ニーズに対応するため。<br>
+              ユーザーへの効果：信頼性確認（規約・プライバシー・運営者情報）がしやすくなり、安心して申込み判断できる。</p>
+          </div>
+        </div>
+
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> 下層ページ</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">下層ページ ワイヤーフレーム <span class="required">必須</span></div>
+            <div class="fill-hint">各下層ページのワイヤーフレームを順に配置</div>
+            <div class="fill-content">
+              <p>（ここに各下層ページのワイヤーフレーム画像と説明を配置）
+
+                【ページ名1】
+                &lt;img src=&quot;../images/wireframe/page1-pc.png&quot; alt=&quot;ページ名1 ワイヤーフレーム&quot;&gt;
+                配置意図：（説明）
+
+                【ページ名2】
+                &lt;img src=&quot;../images/wireframe/page2-pc.png&quot; alt=&quot;ページ名2 ワイヤーフレーム&quot;&gt;
+                配置意図：（説明）</p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> Webアプリケーション画面</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">Webアプリ画面 ワイヤーフレーム <span class="required">必須</span></div>
+            <div class="fill-hint">主要な画面（ログイン・一覧・登録・詳細・編集）のワイヤーフレーム</div>
+            <div class="fill-content">
+              <p>（ここにWebアプリ画面のワイヤーフレーム画像を配置）</p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec5">
+          <h2 class="section-title"><span class="section-icon">5</span> スマートフォン版</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">スマートフォン版 ワイヤーフレーム <span class="optional">任意</span></div>
+            <div class="fill-hint">主要ページのスマートフォン版ワイヤーフレーム</div>
+            <div class="fill-content">
+              <p>【スマホワイヤー（1カラム基準）】</p>
+              <p>・コンテナ幅：82vw（max 960px）<br>
+                ・基本グリッド：1カラム<br>
+                ・セクション間余白：36px<br>
+                ・構成：1カラム縦スクロール（カード型UI）</p>
+              <p>1. ヘッダー（高さ 56px / sticky）<br>
+                左：ブランド名「ペットライフプラス」 / 右：メニューボタン（☰）<br>
+                ナビは開閉式（トップ / 総合案内 / 導入事例と実績 / ログイン / お問い合わせ）</p>
+              <p>2. ヒーロー<br>
+                上：eyebrow・見出し・説明文 / 中：CTA2種（縦並び） / 下：イメージカード</p>
+              <p>3. サービス紹介・主要機能<br>
+                各カードは1列積み（健康記録 / AI症状チェック / オンライン診療 など）</p>
+              <p>4. 実績・導線セクション<br>
+                導入事例導線カード、KPIカード（記録継続率/受診判断時間/相談満足度）を縦積み</p>
+              <p>5. お問い合わせ導線（CTA）<br>
+                ボタンは幅100%の縦配置を維持し、タップ領域を確保</p>
+              <p>6. フッター<br>
+                主要リンクを縦方向に配置し、モバイルでの到達性を優先</p>
+            <p>切替ルール：768px未満は1カラム（ドロワーナビ）。768px以上でPCレイアウト（ナビ常時表示、カード3列、ヒーロー2カラム）へ切替。</p>
+            <p>ワイヤーフレーム画像配置：<br>
+              &lt;img src=&quot;../images/wireframe/top-sp.png&quot; alt=&quot;トップページ スマートフォン版 ワイヤーフレーム&quot;&gt;</p>
+            <p><img src="../img/top_sp.html.png" alt="top_sp.html のスクリーンショット（スマートフォン版）" style="max-width:100%; height:auto; border:1px solid #dbe3ef; border-radius:10px;"></p>
+          </div>
+        </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ダッシュボード | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">ダッシュボード</span>
+      <span style="font-size:13px;color:#64748B;"
+            th:text="${currentUser != null ? currentUser.displayName() + ' さん、こんにちは' : ''}"></span>
+    </div>
+    <div class="content">
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">登録ペット数</div>
+          <div class="kpi-value" th:text="${petCount}">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">健康記録件数</div>
+          <div class="kpi-value" th:text="${recordCount}">0</div>
+        </div>
+        <div class="kpi-card" th:if="${currentUser != null and currentUser.isAdmin()}">
+          <div class="kpi-label">ユーザー数</div>
+          <div class="kpi-value" th:text="${userCount}">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">クイックアクセス</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a th:href="@{/app/pets}" class="btn btn-secondary">🐶 ペット一覧</a>
+          <a th:href="@{/app/pets/new}" class="btn btn-primary">＋ ペット登録</a>
+          <a th:if="${currentUser != null and currentUser.isAdmin()}"
+             th:href="@{/app/admin/users}" class="btn btn-secondary">👥 ユーザー管理</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

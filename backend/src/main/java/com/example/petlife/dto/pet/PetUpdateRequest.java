@@ -1,0 +1,18 @@
+package com.example.petlife.dto.pet;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public record PetUpdateRequest(
+        @NotBlank @Size(max = 100) String name,
+        @NotBlank @Size(max = 30) String species,
+        @Size(max = 100) String breed,
+        @Size(max = 10) String sex,
+        @PastOrPresent LocalDate birthDate,
+        BigDecimal weightBaselineKg
+) {
+}

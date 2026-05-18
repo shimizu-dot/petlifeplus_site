@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${editMode ? '健康記録 編集' : '健康記録 登録'} + ' | Pet Life Plus'">健康記録 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" th:text="${editMode ? '健康記録 編集' : '健康記録 登録'}">健康記録 登録</span>
+    </div>
+    <div class="content">
+
+      <div class="breadcrumb">
+        <a th:href="@{/app/pets}">ペット一覧</a> /
+        <a th:href="@{/app/pets/{id}(id=${pet.id})}" th:text="${pet.name}">ペット名</a> /
+        <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}">健康記録</a> /
+        <span th:text="${editMode ? '編集' : '登録'}">登録</span>
+      </div>
+
+      <div class="card" style="max-width:640px;">
+        <div class="card-title"
+             th:text="${pet.name} + ' の健康記録を' + (${editMode} ? '編集' : '登録')">健康記録を登録</div>
+
+        <form th:action="${editMode
+                          ? '/app/pets/' + pet.id + '/health-records/' + recordId
+                          : '/app/pets/' + pet.id + '/health-records'}"
+              method="post" th:object="${form}">
+          <input th:if="${editMode}" type="hidden" name="_method" value="PATCH">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="recordDate">記録日<span class="required">*</span></label>
+              <input id="recordDate" type="date" th:field="*{recordDate}" class="form-control"
+                     th:classappend="${#fields.hasErrors('recordDate')} ? 'is-invalid'">
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('recordDate')}" th:errors="*{recordDate}"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="weightKg">体重 (kg)</label>
+              <input id="weightKg" type="number" th:field="*{weightKg}" class="form-control"
+                     step="0.01" min="0" max="200" placeholder="例：8.60">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="exerciseMinutes">運動時間 (分)</label>
+              <input id="exerciseMinutes" type="number" th:field="*{exerciseMinutes}" class="form-control"
+                     min="0" placeholder="例：30">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="mealMemo">食事メモ</label>
+            <textarea id="mealMemo" th:field="*{mealMemo}" class="form-control" rows="3"
+                      maxlength="300" placeholder="例：食欲良好、いつもより少なめ など"
+                      th:classappend="${#fields.hasErrors('mealMemo')} ? 'is-invalid'"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('mealMemo')}" th:errors="*{mealMemo}"></div>
+            <div class="form-hint">300文字以内</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="note">メモ</label>
+            <textarea id="note" th:field="*{note}" class="form-control" rows="3"
+                      maxlength="1000" placeholder="気になる点、様子など自由に記録"
+                      th:classappend="${#fields.hasErrors('note')} ? 'is-invalid'"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
+            <div class="form-hint">1000文字以内</div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" th:text="${editMode ? '更新する' : '登録する'}">登録する</button>
+            <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary">キャンセル</a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

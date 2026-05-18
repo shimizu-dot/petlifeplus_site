@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マーケットリサーチ - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .market-research-page .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .market-research-page .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .market-research-page .doc-header .doc-category,
+    .market-research-page .doc-header .doc-meta,
+    .market-research-page .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .market-research-page .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .market-research-page .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .market-research-page .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .market-research-page .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .market-research-page .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .market-research-page .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .market-research-page .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .market-research-page .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .market-research-page .fill-hint {
+      color: #64748b;
+    }
+
+    .market-research-page .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #d9e4f5;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.07);
+    }
+
+    .market-research-page .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .market-research-page .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .market-research-page .doc-table thead th {
+      background: #e9f2ff;
+      color: #1f2f4d;
+      border-bottom: 1px solid #bfd2ec;
+    }
+
+    .market-research-page .doc-table tbody tr:nth-child(even) td,
+    .market-research-page .doc-table tbody tr:nth-child(even) th {
+      background: #f8fbff;
+    }
+
+    .market-research-page .doc-table tbody td:first-child,
+    .market-research-page .doc-table tbody th:first-child {
+      background: #f1f6ff;
+      color: #28446e;
+      font-weight: 700;
+    }
+
+    .market-research-page #sec2 .fill-block:first-of-type .doc-table tbody td:nth-child(2) {
+      background: #eef9f1;
+    }
+
+    .market-research-page #sec2 .fill-block:first-of-type .doc-table tbody td:nth-child(3) {
+      background: #fff1f1;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(2) .doc-table tbody tr:nth-child(-n+4) td {
+      background: #f3fbf6;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(2) .doc-table tbody tr:nth-child(n+5):nth-child(-n+8) td {
+      background: #fff8ef;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(2) .doc-table tbody tr:nth-child(n+9):nth-child(-n+12) td {
+      background: #f2f8ff;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(2) .doc-table tbody tr:nth-child(n+13) td {
+      background: #fff3f3;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(3) .doc-table tbody tr:nth-child(1) td:first-child {
+      background: #e9f7ed;
+      color: #245e3f;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(3) .doc-table tbody tr:nth-child(2) td:first-child {
+      background: #eef3ff;
+      color: #2d4477;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(3) .doc-table tbody tr:nth-child(3) td:first-child {
+      background: #fff7e8;
+      color: #7a5318;
+    }
+
+    .market-research-page #sec2 .fill-block:nth-of-type(3) .doc-table tbody tr:nth-child(4) td:first-child {
+      background: #ffeef0;
+      color: #7a2832;
+    }
+  </style>
+</head>
+
+<body class="market-research-page">
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 02</div>
+        <h1 class="doc-title">マーケットリサーチ</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-03-24</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水 宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細なマーケットリサーチは以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" placeholder="marketingFormat_document.xlsx" id="external-link-02">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-02').value || 'marketingFormat_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">3C分析</a></li>
+            <li><a href="#sec2">SWOT分析</a></li>
+            <li><a href="#sec3">STP分析</a></li>
+            <li><a href="#sec4">4P / 4C 分析</a></li>
+            <li><a href="#sec5">競合サイト分析</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> 3C分析</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">Customer（顧客） <span class="required">必須</span></div>
+            <div class="fill-hint">ターゲット顧客の特徴・ニーズ・行動パターン</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>顧客分析内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>特徴</strong></td>
+                  <td>主市場は犬猫飼育者。ヘルスケア調査では飼育者平均年齢は54.7歳で50〜60代が約6割。加えて共働き世帯・単身者・シニア飼育者など、日々の健康管理に時間や手間の制約がある層が中心。</td>
+                </tr>
+                <tr>
+                  <td><strong>ニーズ・課題</strong></td>
+                  <td>顧客ニーズは「不安の可視化」と「受診判断支援」。日常の体調変化を継続記録しにくい、受診の要否が判断しづらい、予防・投薬予定の管理が煩雑、医療費負担が重いといった課題がある。</td>
+                </tr>
+                <tr>
+                  <td><strong>行動パターン</strong></td>
+                  <td>
+                    日常では体重・食事・運動・排泄・投薬・ワクチン予定を記録し、異変時には症状確認と受診判断、通院前後には診療履歴・検査結果・処方内容の確認・保存を行う。現在は病院通院、電話相談、紙メモ、スマホ写真・カレンダー等を併用しており、情報が分散しやすい。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>重視ポイント</strong></td>
+                  <td>サービス選定では価格だけでなく、獣医師監修などの信頼性、使いやすさ、記録継続のしやすさ、家族共有のしやすさ、健康管理の実効性が重視される。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">Competitor（競合） <span class="required">必須</span></div>
+            <div class="fill-hint">競合サービスの特徴・強み・弱み</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>競合分析内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>主要競合サービス</strong></td>
+                  <td>
+                    animo、みるペット、アニぴたる、MinePet。animoは症状・服薬記録と獣医共有に強い健康管理アプリ。みるペットはオンライン相談・診療・予約・決済に強い。アニぴたるは獣医師へのオンライン相談と検索に強い。MinePetは日常記録と通院記録の一元管理に強い。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>競合の強み</strong></td>
+                  <td>
+                    animoは症状記録、服薬管理、カレンダー管理、獣医共有、対応病院でのオンライン診療導線を持つ。みるペットはビデオ通話、24時間WEB予約、オンライン決済、再診リマインドまで整っている。アニぴたるは初回無料相談、獣医師の得意分野検索、複数回答の可能性が強み。MinePetは写真・動画・テキストによる日常記録と通院記録の蓄積に強い。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>競合の弱み</strong></td>
+                  <td>
+                    animoは記録と共有に強い一方、サービス全体としては特定病院連携前提があり、生活者向け総合プラットフォーム性は限定的。みるペットは診療導線が強い一方で、日常健康データの継続蓄積は主軸ではない。アニぴたるは相談特化で、リアルタイム診療や処方、日常記録の統合は弱い。MinePetは記録中心で、相談・診療・予約機能の統合はまだ弱い。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>価格帯・導入特性</strong></td>
+                  <td>animoはApp
+                    Store上で無料、アプリ内課金あり。みるペットは飼い主登録費用・月額固定費用は無料で、オンライン相談・診療1回ごとに300円税抜、チャット相談1件ごとに100円税抜、別途病院側の診療費等が発生。アニぴたるはお試しプラン0円、月額330円税込のスタンダード、年額3,300円税込の年間プランがある。MinePetはβ版提供中で、公開ページ上では一般向け料金の明確な提示は限定的。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>デザイン特徴</strong></td>
+                  <td>
+                    animoは医療・記録系らしい実務寄りUIで、症状や服薬を整理して共有する設計が中心。みるペットは予約・受診導線が分かりやすく、通院負担軽減をストレートに訴求する実用型。アニぴたるは親しみやすさと信頼感を両立し、相談投稿や獣医検索に入りやすい構成。MinePetはやさしいトーンで、健康記録を日常に溶け込ませるシンプル設計。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>差別化ポイント</strong></td>
+                  <td>
+                    自作品では、単発相談や単なる記録で終わらず、「日常記録→異変検知→相談→診療予約→履歴管理」まで切れ目なくつなぐ設計を前面に出す。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">Company（自社） <span class="required">必須</span></div>
+            <div class="fill-hint">自分のサービスの強み・提供できる価値</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>自社分析内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>現状スキル</strong></td>
+                  <td>
+                    本企画では、健康記録・予定管理・通院履歴・症状チェック・オンライン診療連携・訪問ケア導線までを一体で設計している。要件上は、記録機能、通知機能、会員/契約管理、予約管理、顧客管理、決済管理など、Webサービス/業務システムの基本設計力を活用できる構成になっている。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>プロジェクト目的</strong></td>
+                  <td>
+                    「健康管理が続かない」「受診判断しづらい」「情報が分散して共有しにくい」という課題に対し、予防から受診前後までを一元化した体験を提供すること。記録アプリではなく健康管理プラットフォームとして価値を示す。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>活用可能な強み</strong></td>
+                  <td>健康記録だけでなく、ワクチン予定、症状チェックAI、オンライン診療、訪問ケアまでつながる統合設計が強み。日常利用から異変時・通院時までの行動導線を一貫して設計できる。</td>
+                </tr>
+                <tr>
+                  <td><strong>課題・制約</strong></td>
+                  <td>企画範囲が広く、全機能フル実装は負荷が高い。医療判断を伴う領域では監修・法務・外部連携の前提整理が必要なため、作品段階ではMVPに絞って優先実装する必要がある。</td>
+                </tr>
+                <tr>
+                  <td><strong>成功イメージ</strong></td>
+                  <td>日々の記録継続、異変時の受診判断、家族・獣医師との共有までがスムーズにつながる状態。課題起点のUI/UX設計と将来拡張性が伝わり、実際に使われるサービスとして想像できる完成度を目指す。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> SWOT分析</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">SWOT分析マトリクス <span class="required">必須</span></div>
+            <div class="fill-hint">Strengths（強み）・Weaknesses（弱み）・Opportunities（機会）・Threats（脅威）</div>
+
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>プラス要因</th>
+                  <th>マイナス要因</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>内部要因</strong></td>
+                  <td>
+                    <strong>Strengths（強み）</strong><br>
+                    ・拡張性のあるプラットフォーム<br>
+                    ・AIによる症状チェック<br>
+                    ・オンライン診療対応<br>
+                    ・訪問ケアサービス
+                  </td>
+                  <td>
+                    <strong>Weaknesses（弱み）</strong><br>
+                    ・サービス認知度の低さ<br>
+                    ・医療機関との連携の必要性<br>
+                    ・オフラインサービスの運用負荷<br>
+                    ・健康データ管理のリスク
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>外部要因</strong></td>
+                  <td>
+                    <strong>Opportunities（機会）</strong><br>
+                    ・ペット市場の拡大<br>
+                    ・オンライン診療の普及<br>
+                    ・デジタル化の進展<br>
+                    ・健康管理サービスの需要増加
+                  </td>
+                  <td>
+                    <strong>Threats（脅威）</strong><br>
+                    ・大手企業の参入<br>
+                    ・法規制の変化<br>
+                    ・無料サービスとの競争<br>
+                    ・データセキュリティリスク
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">SWOT要素の詳細</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>区分</th>
+                  <th>項目</th>
+                  <th>具体的な内容</th>
+                  <th>活用方法 / 改善策 / 対処法</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>拡張性のあるプラットフォーム</td>
+                  <td>動物病院・ペットショップなど外部サービスと連携できる可能性</td>
+                  <td>提携ビジネスを展開し、紹介・連携によるサービス拡大や新たな収益モデルを構築する。</td>
+                </tr>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>AIによる症状チェック</td>
+                  <td>ペットの体調変化をAIで確認し、受診の判断をサポートできる</td>
+                  <td>「早期発見」「安心サポート」を強調したマーケティングを行う。飼い主の不安解消サービスとして訴求する。</td>
+                </tr>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>オンライン診療対応</td>
+                  <td>スマホから獣医師に相談・診療が可能</td>
+                  <td>忙しい飼い主向けの「通院不要の診療サポート」として価値を訴求する。都市部の共働き世帯を中心に広告ターゲットを設定する。</td>
+                </tr>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>訪問ケアサービス</td>
+                  <td>自宅でケアを受けられる訪問サービスを提供</td>
+                  <td>高付加価値サービスとしてプレミアムプランや月額サービスとして展開する。</td>
+                </tr>
+                <tr>
+                  <td><strong>W</strong></td>
+                  <td>サービス認知度の低さ</td>
+                  <td>新規サービスのためユーザーの認知が低く、利用者を集めるまで時間がかかる</td>
+                  <td>ペット健康管理の情報発信（ブログ・SNS・動画）を行い、健康情報コンテンツからサービス利用へ導線を作る。</td>
+                </tr>
+                <tr>
+                  <td><strong>W</strong></td>
+                  <td>医療機関との連携の必要性</td>
+                  <td>動物病院など医療機関との提携がなければサービス価値が限定される</td>
+                  <td>動物病院やペットショップと提携し、紹介・予約機能などで双方のメリットを作る。</td>
+                </tr>
+                <tr>
+                  <td><strong>W</strong></td>
+                  <td>オフラインサービスの運用</td>
+                  <td>訪問ケアなどは人材確保や運営管理が必要</td>
+                  <td>地域パートナー（動物病院・ケア事業者）と提携することでサービス提供体制を構築する。</td>
+                </tr>
+                <tr>
+                  <td><strong>W</strong></td>
+                  <td>健康データ管理のリスク</td>
+                  <td>ペットの健康情報やユーザーデータを扱うためセキュリティ対策が必要</td>
+                  <td>セキュリティ対策やデータ管理方針を明確化し、ユーザーに安心して利用してもらう環境を整える。</td>
+                </tr>
+                <tr>
+                  <td><strong>O</strong></td>
+                  <td>ペット市場の拡大</td>
+                  <td>ペットの家族化により、健康管理・医療・保険などペット関連市場が拡大している</td>
+                  <td>ペットの健康管理サービスとして市場成長を背景に新規ユーザー獲得を狙う。広告やコンテンツで「ペットの健康意識の高まり」をテーマに訴求する。</td>
+                </tr>
+                <tr>
+                  <td><strong>O</strong></td>
+                  <td>オンライン診療の普及</td>
+                  <td>スマホやオンライン診療サービスの利用が一般化している</td>
+                  <td>通院の負担を減らすオンライン相談・診療を訴求し、忙しい都市部の飼い主をターゲットにマーケティングを行う。</td>
+                </tr>
+                <tr>
+                  <td><strong>O</strong></td>
+                  <td>デジタル化の進展</td>
+                  <td>健康管理や生活管理をアプリで行う習慣が広がっている</td>
+                  <td>健康記録アプリとしての使いやすさを重視し、継続利用型サービス（サブスクモデル）として展開する。</td>
+                </tr>
+                <tr>
+                  <td><strong>O</strong></td>
+                  <td>健康管理サービスの需要増加</td>
+                  <td>予防医療・健康管理など、日常的なケアサービスへの関心が高まっている</td>
+                  <td>健康記録・体調チェック・相談などの機能を中心に「予防型サービス」として差別化する。</td>
+                </tr>
+                <tr>
+                  <td><strong>T</strong></td>
+                  <td>大手企業の参入</td>
+                  <td>IT企業やペット関連企業がペットヘルスケア市場に参入する可能性がある</td>
+                  <td>早期にユーザー基盤を確立し、健康データや利用履歴などのプラットフォーム価値を高める。</td>
+                </tr>
+                <tr>
+                  <td><strong>T</strong></td>
+                  <td>法規制の変化</td>
+                  <td>オンライン診療や医療関連サービスは法制度や規制の影響を受ける可能性がある</td>
+                  <td>獣医師や医療機関と連携し、法規制を遵守したサービス設計を行う。</td>
+                </tr>
+                <tr>
+                  <td><strong>T</strong></td>
+                  <td>無料サービスとの競争</td>
+                  <td>健康管理アプリなど無料サービスが存在する</td>
+                  <td>AI診断、オンライン診療、訪問ケアなど付加価値の高いサービスで差別化し、有料サービスとしての価値を示す。</td>
+                </tr>
+                <tr>
+                  <td><strong>T</strong></td>
+                  <td>データセキュリティリスク</td>
+                  <td>健康データやユーザー情報の漏えいなどセキュリティ問題が発生する可能性</td>
+                  <td>セキュリティ対策やデータ管理体制を強化し、信頼性を確保する。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">クロスSWOT戦略</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>戦略タイプ</th>
+                  <th>組み合わせ</th>
+                  <th>具体的な戦略・アクション</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>SO戦略</strong></td>
+                  <td>強み × 機会</td>
+                  <td>忙しい飼い主向けオンラインサービス展開。オンライン診療やスマホ健康管理の利便性を活かし、都市部の共働き世帯や忙しい飼い主を中心にサービスを展開する。</td>
+                </tr>
+                <tr>
+                  <td><strong>ST戦略</strong></td>
+                  <td>強み × 脅威</td>
+                  <td>医療機関との連携による信頼性向上。獣医師や動物病院と連携することで、オンライン診療やAI症状チェックの信頼性を高める。</td>
+                </tr>
+                <tr>
+                  <td><strong>WO戦略</strong></td>
+                  <td>弱み × 機会</td>
+                  <td>MVPによる段階的サービス開発。初期は健康記録・症状チェックなどのコア機能から開始し、利用データをもとにオンライン診療や訪問ケアなどを段階的に拡張する。</td>
+                </tr>
+                <tr>
+                  <td><strong>WT戦略</strong></td>
+                  <td>弱み × 脅威</td>
+                  <td>地域提携モデルで運用負荷を抑えた展開。訪問ケアなどのオフラインサービスは地域提携モデルを採用し、運用コストを抑えながらサービス展開を行う。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> STP分析</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">Segmentation（市場細分化） <span class="required">必須</span></div>
+            <div class="fill-hint">市場をどのような基準で分類するか</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>セグメント名</th>
+                  <th>特徴（地域）</th>
+                  <th>特徴（年齢・属性）</th>
+                  <th>ニーズ・課題</th>
+                  <th>利用シーン / デジタル適性</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>セグメント①</strong></td>
+                  <td>都市部</td>
+                  <td>20〜40代・単身/共働き</td>
+                  <td>犬猫・日常管理ニーズ高</td>
+                  <td>スマホ活用高</td>
+                </tr>
+                <tr>
+                  <td><strong>セグメント②</strong></td>
+                  <td>都市部〜準都市</td>
+                  <td>30〜50代・家族世帯</td>
+                  <td>犬中心・予防/定期健診志向</td>
+                  <td>スマホ活用中</td>
+                </tr>
+                <tr>
+                  <td><strong>セグメント③</strong></td>
+                  <td>全国</td>
+                  <td>30〜60代</td>
+                  <td>シニア犬猫・慢性ケア層</td>
+                  <td>オンライン相談許容</td>
+                </tr>
+                <tr>
+                  <td><strong>セグメント④</strong></td>
+                  <td>地方</td>
+                  <td>30〜60代</td>
+                  <td>通院負担高・受診判断ニーズ高</td>
+                  <td>オンライン活用中</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">Targeting（ターゲット選定） <span class="required">必須</span></div>
+            <div class="fill-hint">どのセグメントを狙うか、その理由</div>
+            <table class="doc-table">
+              <tbody>
+                <tr>
+                  <th>メインターゲット</th>
+                  <td>セグメント①（都市部 / 20〜40代・単身/共働き）</td>
+                </tr>
+                <tr>
+                  <th>選定理由</th>
+                  <td>① 市場範囲が集中している<br> ② 単身・共働きが多い<br> ③ デジタルに精通している人口が高い<br> ④ 健康意識が高い</td>
+                </tr>
+                <tr>
+                  <th>サブターゲット</th>
+                  <td>セグメント③（全国 / 30〜60代）シニア犬猫・慢性ケア層。継続的な健康管理ニーズが高い層として設定。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">Positioning（ポジショニング） <span class="required">必須</span></div>
+            <div class="fill-hint">競合に対してどのような位置づけを取るか</div>
+            <table class="doc-table">
+              <tbody>
+                <tr>
+                  <th>競合比較での立ち位置</th>
+                  <td>動物病院は診療治療面の健康管理機能は高いが利便性が低い。一般的なペット管理アプリは利便性は高いが健康管理機能は低〜中。本サービスは「健康記録管理 + AI相談 + 診療予約 +
+                    訪問サービス依頼」を統合した日常利用しやすい総合プラットフォームとして位置づける。</td>
+                </tr>
+                <tr>
+                  <th>ターゲットへのメッセージ</th>
+                  <td>「忙しくても、ペットの健康を守れる新しい習慣。」</td>
+                </tr>
+                <tr>
+                  <th>コア価値（一番の売り）</th>
+                  <td>忙しい都市部の犬猫の飼い主に対し、日常から受診までを途切れなく支えること。</td>
+                </tr>
+                <tr>
+                  <th>独自の特徴・差別化要素</th>
+                  <td>① 健康管理から診療までの総合サービス<br> ② AIによる症状チェックと受診勧奨<br> ③ オンラインで一貫利用可能</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> 4P / 4C 分析</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">4P・4C分析 <span class="required">必須</span></div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>ブロック</th>
+                  <th>企業視点（4P）</th>
+                  <th>顧客視点（4C）</th>
+                  <th>判断・総評</th>
+                  <th>サービス設計施策内容</th>
+                  <th>Web制作構成内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>価値<br>（Product / Customer Value）</strong></td>
+                  <td>ペット健康管理プラットフォーム</td>
+                  <td>価値（Customer Value）</td>
+                  <td>ペットの健康状態を日常的に把握できる。異変に早く気づける。</td>
+                  <td>ペットの健康記録・症状チェックAI・オンライン診療・訪問ケアを一つのアプリで提供。</td>
+                  <td>健康データ管理 / 症状チェックAI / オンライン診療予約 / 訪問ケア</td>
+                </tr>
+                <tr>
+                  <td><strong>コスト<br>（Price / Cost）</strong></td>
+                  <td>サブスク料金</td>
+                  <td>コスト（Customer Cost）</td>
+                  <td>通院や相談の手間を減らし、コストと時間を削減。</td>
+                  <td>月額利用で健康管理・相談・診療予約などをまとめて利用可能。</td>
+                  <td>サブスクプラン / オンライン診療料金 / 訪問ケア追加料金</td>
+                </tr>
+                <tr>
+                  <td><strong>利便<br>（Place / Convenience）</strong></td>
+                  <td>スマホアプリ・オンライン</td>
+                  <td>利便（Convenience）</td>
+                  <td>忙しい飼い主でも、いつでも健康管理できる。</td>
+                  <td>スマホから健康記録・相談・診療予約まで完結できる。</td>
+                  <td>スマホアプリ / オンライン診療 / 予約管理機能</td>
+                </tr>
+                <tr>
+                  <td><strong>信頼<br>（Promotion / Communication）</strong></td>
+                  <td>健康情報・サポート</td>
+                  <td>信頼（Communication / Trust）</td>
+                  <td>ペットの健康管理に安心感が生まれる。</td>
+                  <td>健康データの蓄積と専門家サポートで信頼性を提供し、情報共有を可能にする。</td>
+                  <td>健康アドバイス通知 / 診療履歴管理 / 専門家相談</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec5">
+          <h2 class="section-title"><span class="section-icon">5</span> 競合サイト分析</h2>
+
+
+          <div class="fill-block">
+            <div class="fill-label">競合サイト 1 <span class="required">必須</span></div>
+            <div class="fill-hint">サイト名・URL・スクリーンショット・分析</div>
+            <div class="fill-content">
+              <p><strong>サイト名：</strong>animo</p>
+              <p><strong>URL：</strong><a href="https://animo-pet.jp/" target="_blank"
+                  rel="noopener noreferrer">https://animo-pet.jp/</a></p>
+              <img src="../img/screenshot1.png" alt="競合サイト1 animo のスクリーンショット"
+                style="display:block;max-width:100%;height:auto;border:1px solid #ddd;border-radius:8px;">
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">競合サイト 2 <span class="required">必須</span></div>
+            <div class="fill-hint">サイト名・URL・スクリーンショット・分析</div>
+            <div class="fill-content">
+              <p><strong>サイト名：</strong>mirpet</p>
+              <p><strong>URL：</strong><a href="https://mirpet.co.jp/" target="_blank"
+                  rel="noopener noreferrer">https://mirpet.co.jp/</a></p>
+              <img src="../img/screenshot2.png" alt="競合サイト2 mirpet のスクリーンショット"
+                style="display:block;max-width:100%;height:auto;border:1px solid #ddd;border-radius:8px;">
+            </div>
+          </div>
+          <div class="fill-block">
+            <div class="fill-label">競合サイト 3 <span class="required">必須</span></div>
+            <div class="fill-hint">サイト名・URL・スクリーンショット・分析</div>
+            <div class="fill-content">
+              <p><strong>サイト名：</strong>animary</p>
+              <p><strong>URL：</strong><a
+                  href="https://animary.jp/functions/online/?utm_term=&amp;utm_campaign=Performance+Max+202511Animary&amp;utm_source=adwords&amp;utm_medium=ppc&amp;hsa_acc=6345546982&amp;hsa_cam=23307270211&amp;hsa_grp=&amp;hsa_ad=&amp;hsa_src=x&amp;hsa_tgt=&amp;hsa_kw=&amp;hsa_mt=&amp;hsa_net=adwords&amp;hsa_ver=3&amp;gad_source=1&amp;gad_campaignid=23307274441&amp;gbraid=0AAAAADQ7ZWKvGsE2XprAnYi6zYyw4Tdv8&amp;gclid=CjwKCAjwyYPOBhBxEiwAgpT8P7PE60xUe4t3s0aBfY3wuzl7RuxdvdIswQlKscCAchdiWeIKYVT-sBoCigwQAvD_BwE"
+                  target="_blank"
+                  rel="noopener noreferrer">https://animary.jp/functions/online/?utm_term=&amp;utm_campaign=Performance+Max+202511Animary&amp;utm_source=adwords&amp;utm_medium=ppc&amp;hsa_acc=6345546982&amp;hsa_cam=23307270211&amp;hsa_grp=&amp;hsa_ad=&amp;hsa_src=x&amp;hsa_tgt=&amp;hsa_kw=&amp;hsa_mt=&amp;hsa_net=adwords&amp;hsa_ver=3&amp;gad_source=1&amp;gad_campaignid=23307274441&amp;gbraid=0AAAAADQ7ZWKvGsE2XprAnYi6zYyw4Tdv8&amp;gclid=CjwKCAjwyYPOBhBxEiwAgpT8P7PE60xUe4t3s0aBfY3wuzl7RuxdvdIswQlKscCAchdiWeIKYVT-sBoCigwQAvD_BwE</a>
+              </p>
+              <img src="../img/screenshot3.png" alt="競合サイト3 animary のスクリーンショット"
+                style="display:block;max-width:100%;height:auto;border:1px solid #ddd;border-radius:8px;">
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

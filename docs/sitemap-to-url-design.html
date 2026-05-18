@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>サイトマップ〜URL設計</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --line: #dbe3ef;
+      --head: #0f172a;
+      --accent: #0ea5a4;
+      --accent-2: #2563eb;
+      --soft: #ecfeff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 5% 10%, #dff8f6 0%, transparent 35%),
+        radial-gradient(circle at 95% 0%, #dbeafe 0%, transparent 28%),
+        var(--bg);
+      font-family: "Avenir Next", "Hiragino Sans", "Noto Sans JP", sans-serif;
+      line-height: 1.65;
+    }
+    .page {
+      max-width: 1180px;
+      margin: 36px auto;
+      padding: 0 20px 40px;
+    }
+    .hero {
+      background: linear-gradient(125deg, #0f172a 0%, #1d4ed8 55%, #0ea5a4 100%);
+      border-radius: 20px;
+      color: #f8fafc;
+      padding: 28px 28px 22px;
+      box-shadow: 0 18px 38px rgba(15, 23, 42, 0.24);
+      margin-bottom: 18px;
+    }
+    h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: .02em; }
+    .note { margin: 0; color: #d1e7ff; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 21px;
+      color: var(--head);
+      border-left: 6px solid var(--accent);
+      padding-left: 10px;
+    }
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--accent-2);
+      font-size: 17px;
+    }
+    pre {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      white-space: pre;
+      margin: 10px 0 0;
+    }
+    .sitemap-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 18px;
+    }
+    .sitemap-grid > div,
+    .app-grid > div { min-width: 0; }
+    .sitemap-grid pre { margin-top: 0; height: 100%; }
+    .app-sections {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .app-section {
+      border: 1px solid #cce8ef;
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--soft) 0%, #f8fdff 100%);
+      padding: 10px;
+    }
+    .app-section > h3 {
+      margin: 0 0 8px;
+      line-height: 1.35;
+      color: #1d4ed8;
+      font-size: 16px;
+      font-weight: 400;
+    }
+    .app-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .app-panel {
+      border: 1px solid #cce8ef;
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--soft) 0%, #f8fdff 100%);
+      padding: 10px;
+      min-width: 0;
+    }
+    .app-panel pre { margin-top: 0; height: 100%; }
+    .app-label {
+      margin: 0 0 8px;
+      line-height: 1.35;
+      font-size: 13px;
+      font-weight: 400;
+      color: #1d4ed8;
+    }
+    .chart-wrap { height: 100%; }
+    .app-box {
+      background: #fff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 7px;
+      height: calc(100% - 32px);
+      margin: 0;
+    }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-row span {
+      background: #f1f5f9;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .chart-wrap {
+      background: linear-gradient(180deg, var(--soft) 0%, #f8fdff 100%);
+      border: 1px solid #cce8ef;
+      border-radius: 14px;
+      padding: 8px;
+      margin-top: 0;
+      max-width: 92%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .map-flow {
+      display: grid;
+      gap: 8px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .map-root {
+      background: #0f172a;
+      color: #fff;
+      border-radius: 10px;
+      padding: 7px 9px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .map-group {
+      border: 1px solid #bfdbfe;
+      background: #fff;
+      border-radius: 10px;
+      padding: 7px;
+    }
+    .map-title {
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+    .map-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .map-items span {
+      background: #f1f5f9;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 10px;
+      border: 1px solid #d7e3f3;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 14px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+    }
+    th, td {
+      border-bottom: 1px solid #e4ecf8;
+      padding: 11px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: linear-gradient(135deg, #eff6ff 0%, #e6f4f1 100%);
+      color: #0f172a;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tr:nth-child(odd) td { background: #ffffff; }
+    tr:nth-child(even) td { background: #f8fbff; }
+    tbody tr:hover td {
+      background: #eef6ff;
+      transition: background-color 0.18s ease;
+    }
+    tr:last-child td { border-bottom: none; }
+    @media (max-width: 760px) {
+      .page { margin: 12px auto; padding: 0 10px 22px; }
+      .hero { border-radius: 14px; padding: 14px; }
+      h1 { font-size: 22px; }
+      section { padding: 12px; }
+      table { font-size: 12px; }
+      .sitemap-grid { grid-template-columns: 1fr; }
+      .app-row { grid-template-columns: 1fr; }
+      .map-flow { max-width: 100%; }
+      .map-title { font-size: 12px; }
+      .map-items span { font-size: 11px; padding: 2px 7px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>サイトマップ〜URL設計</h1>
+      <p class="note">出典: <code>hshimizu_project_archive_updated.md</code> の「## サイトマップ」から「## URL設計」まで</p>
+    </header>
+    <section>
+      <h2>サイトマップ</h2>
+      <div class="sitemap-grid">
+        <pre>トップページ
+├── サービス紹介（f_service）
+│   ├── 健康管理機能
+│   ├── AI症状チェック
+│   └── オンライン診療・訪問ケア
+├── ご利用の流れ（f_flow）
+│   ├── 登録手順
+│   ├── 初期設定
+│   └── 利用開始フロー
+├── 運営情報（f_info）
+│   ├── コンセプト
+│   ├── ミッション
+│   └── 利用規約・プライバシー
+├── お問い合わせ（f_contact）
+│   ├── 問い合わせフォーム
+│   └── 返信目安
+└── Webアプリ紹介（webapp）
+    ├── 機能概要
+    └── 主要画面導線</pre>
+
+        <div class="chart-wrap" aria-label="サイトマップ簡易チャート図">
+          <div class="map-flow">
+            <div class="map-root">トップページ</div>
+            <div class="map-group">
+              <div class="map-title">サービス紹介（f_service）</div>
+              <div class="map-items"><span>健康管理機能</span><span>AI症状チェック</span><span>オンライン診療・訪問ケア</span></div>
+            </div>
+            <div class="map-group">
+              <div class="map-title">ご利用の流れ（f_flow）</div>
+              <div class="map-items"><span>登録手順</span><span>初期設定</span><span>利用開始フロー</span></div>
+            </div>
+            <div class="map-group">
+              <div class="map-title">運営情報（f_info）</div>
+              <div class="map-items"><span>コンセプト</span><span>ミッション</span><span>利用規約・プライバシー</span></div>
+            </div>
+            <div class="map-group">
+              <div class="map-title">お問い合わせ（f_contact）</div>
+              <div class="map-items"><span>問い合わせフォーム</span><span>連絡先</span><span>返信目安</span></div>
+            </div>
+            <div class="map-group">
+              <div class="map-title">Webアプリ紹介（webapp）</div>
+              <div class="map-items"><span>機能概要</span><span>主要画面導線</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Webアプリケーション構造図</h2>
+      <div class="app-sections">
+        <div class="app-section">
+          <h3>ログイン前</h3>
+          <div class="app-row">
+            <div class="app-panel">
+            <pre>ログイン前
+├── ログイン
+│   ├── メールアドレス/パスワード入力
+│   ├── ログイン実行
+│   └── パスワードを忘れた場合
+├── パスワード再設定
+│   ├── 再設定メール送信
+│   └── 新パスワード登録
+└── お知らせ/メンテナンス情報</pre>
+            </div>
+            <div class="app-panel" aria-label="Webアプリ構造図 簡易イメージ">
+            <div class="app-box">
+              <div class="app-label">ログイン前</div>
+              <div class="chip-row">
+                <span>ログイン</span><span>パスワード再設定</span><span>お知らせ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="app-section">
+          <h3>ログイン後</h3>
+          <div class="app-row">
+            <div class="app-panel">
+            <pre>ログイン後
+├── ダッシュボード
+├── ユーザー管理（CRUD）
+├── ペット管理（CRUD）
+├── 健康記録管理（CRUD）
+├── 契約・プラン管理（CRUD）
+├── 予約管理（CRUD）
+├── 診療・相談履歴管理（CRUD）
+├── 通知管理
+├── レポート
+└── システム設定</pre>
+            </div>
+            <div class="app-panel" aria-label="Webアプリ構造図 簡易イメージ">
+            <div class="app-box">
+              <div class="app-label">ログイン後</div>
+              <div class="chip-row">
+                <span>ダッシュボード</span><span>ユーザー管理</span><span>ペット管理</span>
+                <span>健康記録</span><span>契約・プラン</span><span>予約管理</span>
+                <span>レポート</span><span>システム設定</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Webサイト ページ一覧</h2>
+  <table>
+    <thead>
+      <tr><th>No.</th><th>ページ名</th><th>ページの目的</th><th>主要コンテンツ</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>トップページ</td><td>サービス全体の価値を短時間で伝え、各ページへ誘導する</td><td>キャッチコピー、課題提起、特徴、CTA（無料相談/申込み）</td></tr>
+      <tr><td>2</td><td>サービス紹介（f_service）</td><td>提供機能と利用メリットを具体的に説明する</td><td>健康管理機能、AI症状チェック、オンライン診療、訪問ケア</td></tr>
+      <tr><td>3</td><td>ご利用の流れ（f_flow）</td><td>申込みから利用開始後までの手順を可視化する</td><td>登録手順、初期設定、利用開始フロー、サポート案内</td></tr>
+      <tr><td>4</td><td>運営情報（f_info）</td><td>運営体制と理念・方針を示し、安心感を与える</td><td>運営者情報、コンセプト、ミッション、利用規約・プライバシー</td></tr>
+      <tr><td>5</td><td>お問い合わせ（f_contact）</td><td>問い合わせ・相談を受け付ける</td><td>フォーム、連絡先、返信目安</td></tr>
+      <tr><td>6</td><td>Webアプリ紹介（webapp）</td><td>アプリ機能と主要画面を案内する</td><td>機能概要、主要画面、ログイン導線</td></tr>
+    </tbody>
+  </table>
+
+    </section>
+
+    <section>
+      <h2>Webアプリ 画面一覧</h2>
+  <table>
+    <thead>
+      <tr><th>No.</th><th>画面名</th><th>画面の目的</th><th>主要機能</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>ログイン画面</td><td>利用者認証を行い安全にシステムへアクセスさせる</td><td>メール/パスワード入力、ログイン、パスワード再設定導線</td></tr>
+      <tr><td>2</td><td>ダッシュボード画面</td><td>全体状況をひと目で把握し次の操作へ誘導する</td><td>KPI表示、予約予定、通知一覧、未対応タスク表示</td></tr>
+      <tr><td>3</td><td>ユーザー管理画面</td><td>飼い主ユーザー情報を管理する</td><td>一覧表示、検索、詳細表示、新規登録、編集、削除（CRUD）</td></tr>
+      <tr><td>4</td><td>ペット管理画面</td><td>ペット情報を一元管理する</td><td>一覧表示、絞り込み検索、詳細表示、登録・編集・削除（CRUD）</td></tr>
+      <tr><td>5</td><td>健康記録管理画面</td><td>日々の健康データを管理・確認する</td><td>体重/食事/運動記録の登録、履歴表示、期間検索、編集・削除</td></tr>
+      <tr><td>6</td><td>症状チェック結果管理画面</td><td>AI症状チェック結果を確認し対応判断を支援する</td><td>結果一覧、重症度フィルタ、詳細確認、対応ステータス更新</td></tr>
+      <tr><td>7</td><td>予約管理画面</td><td>診療・相談予約を管理する</td><td>予約一覧、日付検索、新規予約、変更、キャンセル、リマインド設定</td></tr>
+      <tr><td>8</td><td>診療・相談履歴画面</td><td>診療/相談内容を記録し継続対応に活用する</td><td>履歴一覧、キーワード検索、詳細記録、添付、編集</td></tr>
+      <tr><td>10</td><td>通知配信管理画面</td><td>ユーザー向け通知を作成・配信する</td><td>通知作成、一斉配信、セグメント配信、配信履歴確認</td></tr>
+    </tbody>
+  </table>
+
+    </section>
+
+    <section>
+      <h2>ユーザーフロー</h2>
+  <p><strong>ペルソナ:</strong> 佐藤 美咲、32歳、ITベンチャー企業のマーケティング担当<br>
+  <strong>目的:</strong> 忙しい日常でも、愛犬の健康状態を一元管理し、必要時にオンライン相談・診療までスムーズに利用する</p>
+  <table>
+    <thead>
+      <tr><th>ステップ</th><th>行動</th><th>表示ページ</th><th>次のアクション</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>SNS/検索で「ペット 健康管理 アプリ」を調べる</td><td>記事LP・検索結果</td><td>公式サイトを開く</td></tr>
+      <tr><td>2</td><td>サービス概要と特徴を確認する</td><td>トップページ</td><td>サービス詳細へ進む</td></tr>
+      <tr><td>3</td><td>機能（健康記録・AI症状チェック・オンライン診療）を確認する</td><td>サービス紹介ページ</td><td>利用の流れを確認する</td></tr>
+      <tr><td>4</td><td>登録〜利用開始までの手順を確認する</td><td>ご利用の流れページ</td><td>運営情報を確認する</td></tr>
+      <tr><td>5</td><td>運営体制・利用方針を確認する</td><td>運営情報ページ</td><td>問い合わせ/相談へ進む</td></tr>
+      <tr><td>6</td><td>不明点を問い合わせる</td><td>お問い合わせページ</td><td>Webアプリ詳細を確認する</td></tr>
+      <tr><td>7</td><td>新規登録を行う（アカウント作成）</td><td>申込み・登録ページ</td><td>初期設定を開始する</td></tr>
+      <tr><td>8</td><td>ペット情報を登録し、体重/食事/運動の記録を開始する</td><td>初期設定・ペット情報登録ページ</td><td>日常利用を継続する</td></tr>
+      <tr><td>9</td><td>体調が気になる日にAI症状チェックを実施する</td><td>症状チェックページ</td><td>必要ならオンライン相談を予約する</td></tr>
+      <tr><td>10</td><td>オンライン相談/診療を受け、履歴を確認する</td><td>予約ページ・診療履歴ページ</td><td>継続利用へ移行する</td></tr>
+    </tbody>
+  </table>
+
+    </section>
+
+    <section>
+      <h2>サブシナリオ</h2>
+  <table>
+    <thead>
+      <tr><th>ステップ</th><th>行動</th><th>表示ページ</th><th>次のアクション</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>夜間に愛犬の軽い不調（食欲低下）に気づく</td><td>-</td><td>すぐに公式サイトへアクセス</td></tr>
+      <tr><td>2</td><td>緊急時対応の可否を確認する</td><td>トップページ</td><td>医療サポート詳細へ進む</td></tr>
+      <tr><td>3</td><td>AI症状チェックとオンライン相談の流れを確認する</td><td>サービス紹介ページ（医療サポート）</td><td>利用の流れを確認する</td></tr>
+      <tr><td>4</td><td>利用開始手順と必要情報を確認する</td><td>ご利用の流れページ</td><td>不安点を問い合わせる</td></tr>
+      <tr><td>5</td><td>夜間相談可否や受診目安を問い合わせる</td><td>お問い合わせページ</td><td>相談申込みへ進む</td></tr>
+      <tr><td>6</td><td>最短でアカウント登録しペット情報を入力する</td><td>申込み・登録ページ</td><td>症状チェックを開始する</td></tr>
+      <tr><td>7</td><td>症状を入力して受診推奨度を確認する</td><td>AI症状チェックページ</td><td>オンライン相談予約へ進む</td></tr>
+      <tr><td>8</td><td>直近枠でオンライン相談を予約する</td><td>予約ページ</td><td>問診情報を事前送信する</td></tr>
+      <tr><td>9</td><td>オンライン相談で対応方針（自宅経過観察/受診）を確認する</td><td>オンライン相談画面</td><td>必要時は訪問ケア/病院受診を手配する</td></tr>
+      <tr><td>10</td><td>相談内容と今後のケアを履歴で確認し、通知設定を有効化する</td><td>診療履歴ページ・通知設定ページ</td><td>継続的な健康記録運用へ移行する</td></tr>
+    </tbody>
+  </table>
+
+    </section>
+
+    <section>
+      <h2>URL設計</h2>
+
+  <h3>Webサイト部分（公開サイト）</h3>
+  <table>
+    <thead>
+      <tr><th>URL</th><th>HTTPメソッド</th><th>画面/機能</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>/</td><td>GET</td><td>トップページ</td><td>サービス概要・導線表示</td></tr>
+      <tr><td>/f_service.html</td><td>GET</td><td>サービス紹介</td><td>機能・提供価値の説明</td></tr>
+      <tr><td>/f_flow.html</td><td>GET</td><td>ご利用の流れ</td><td>登録〜利用開始までの手順</td></tr>
+      <tr><td>/f_info.html</td><td>GET</td><td>運営情報</td><td>運営情報・利用規約・プライバシー表示</td></tr>
+      <tr><td>/f_contact.html</td><td>GET</td><td>お問い合わせフォーム</td><td>問い合わせ入力画面</td></tr>
+      <tr><td>/f_contact.html</td><td>POST</td><td>お問い合わせ送信</td><td>問い合わせ内容を送信</td></tr>
+      <tr><td>/webapp.html</td><td>GET</td><td>Webアプリ紹介</td><td>主要機能・画面導線を表示</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Spring Bootアプリ部分（管理/会員アプリ）</h3>
+  <table>
+    <thead>
+      <tr><th>URL</th><th>HTTPメソッド</th><th>画面/機能</th><th>説明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>/app/login</td><td>GET</td><td>ログイン画面</td><td>ログインフォーム表示</td></tr>
+      <tr><td>/app/sessions</td><td>POST</td><td>ログイン処理</td><td>認証してセッション作成</td></tr>
+      <tr><td>/app/sessions/current</td><td>DELETE</td><td>ログアウト</td><td>現在セッション削除</td></tr>
+      <tr><td>/app/password-resets</td><td>POST</td><td>パスワード再設定依頼</td><td>再設定メール送信</td></tr>
+      <tr><td>/app/password-resets/{token}</td><td>PATCH</td><td>パスワード更新</td><td>新パスワード反映</td></tr>
+      <tr><td>/app/dashboard</td><td>GET</td><td>ダッシュボード</td><td>KPI・通知・予定表示</td></tr>
+      <tr><td>/app/users</td><td>GET</td><td>ユーザー一覧/検索</td><td>一覧、条件検索</td></tr>
+      <tr><td>/app/users/new</td><td>GET</td><td>ユーザー登録画面</td><td>新規入力フォーム表示</td></tr>
+      <tr><td>/app/users</td><td>POST</td><td>ユーザー登録</td><td>新規作成</td></tr>
+      <tr><td>/app/users/{userId}</td><td>GET</td><td>ユーザー詳細</td><td>詳細表示</td></tr>
+      <tr><td>/app/users/{userId}/edit</td><td>GET</td><td>ユーザー編集画面</td><td>編集フォーム表示</td></tr>
+      <tr><td>/app/users/{userId}</td><td>PATCH</td><td>ユーザー更新</td><td>情報更新</td></tr>
+      <tr><td>/app/users/{userId}</td><td>DELETE</td><td>ユーザー削除</td><td>論理削除/削除</td></tr>
+      <tr><td>/app/pets</td><td>GET</td><td>ペット一覧/検索</td><td>一覧、条件検索</td></tr>
+      <tr><td>/app/pets</td><td>POST</td><td>ペット登録</td><td>新規作成</td></tr>
+      <tr><td>/app/pets/{petId}</td><td>GET</td><td>ペット詳細</td><td>詳細表示</td></tr>
+      <tr><td>/app/pets/{petId}</td><td>PATCH</td><td>ペット更新</td><td>情報更新</td></tr>
+      <tr><td>/app/pets/{petId}</td><td>DELETE</td><td>ペット削除</td><td>削除</td></tr>
+      <tr><td>/app/pets/{petId}/health-records</td><td>GET</td><td>健康記録一覧</td><td>体重/食事/運動履歴表示</td></tr>
+      <tr><td>/app/pets/{petId}/health-records</td><td>POST</td><td>健康記録登録</td><td>記録作成</td></tr>
+      <tr><td>/app/pets/{petId}/health-records/{recordId}</td><td>GET</td><td>健康記録詳細</td><td>記録詳細表示</td></tr>
+      <tr><td>/app/pets/{petId}/health-records/{recordId}</td><td>PATCH</td><td>健康記録更新</td><td>記録修正</td></tr>
+      <tr><td>/app/pets/{petId}/health-records/{recordId}</td><td>DELETE</td><td>健康記録削除</td><td>記録削除</td></tr>
+      <tr><td>/app/symptom-checks</td><td>POST</td><td>AI症状チェック実行</td><td>入力症状を診断ロジックへ送信</td></tr>
+      <tr><td>/app/symptom-checks/{checkId}</td><td>GET</td><td>AI結果表示</td><td>推奨対応・重症度表示</td></tr>
+      <tr><td>/app/appointments</td><td>GET</td><td>予約一覧/検索</td><td>日付・種別で検索</td></tr>
+      <tr><td>/app/appointments</td><td>POST</td><td>予約登録</td><td>相談/診療予約作成</td></tr>
+      <tr><td>/app/appointments/{appointmentId}</td><td>GET</td><td>予約詳細</td><td>予約内容表示</td></tr>
+      <tr><td>/app/appointments/{appointmentId}</td><td>PATCH</td><td>予約変更</td><td>日時・担当更新</td></tr>
+      <tr><td>/app/appointments/{appointmentId}</td><td>DELETE</td><td>予約キャンセル</td><td>予約取消</td></tr>
+      <tr><td>/app/consultations</td><td>GET</td><td>診療/相談履歴一覧</td><td>履歴検索・一覧表示</td></tr>
+      <tr><td>/app/consultations</td><td>POST</td><td>診療/相談履歴登録</td><td>履歴作成</td></tr>
+      <tr><td>/app/consultations/{consultationId}</td><td>GET</td><td>診療/相談履歴詳細</td><td>詳細表示</td></tr>
+      <tr><td>/app/consultations/{consultationId}</td><td>PATCH</td><td>診療/相談履歴更新</td><td>記録更新</td></tr>
+      <tr><td>/app/consultations/{consultationId}</td><td>DELETE</td><td>診療/相談履歴削除</td><td>記録削除</td></tr>
+      <tr><td>/app/notifications</td><td>GET</td><td>通知一覧</td><td>配信履歴表示</td></tr>
+      <tr><td>/app/notifications</td><td>POST</td><td>通知作成/配信</td><td>通知作成して配信</td></tr>
+      <tr><td>/app/reports/monthly</td><td>GET</td><td>月次レポート</td><td>月次集計表示</td></tr>
+      <tr><td>/app/reports/customers</td><td>GET</td><td>顧客別レポート</td><td>顧客単位集計表示</td></tr>
+      <tr><td>/app/reports/exports</td><td>POST</td><td>レポート出力</td><td>CSV/PDFエクスポート開始</td></tr>
+    </tbody>
+  </table>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${pet.name} + ' の健康記録 | Pet Life Plus'">健康記録 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" th:text="${pet.name} + ' の健康記録'">健康記録</span>
+    </div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="breadcrumb">
+        <a th:href="@{/app/pets}">ペット一覧</a> /
+        <a th:href="@{/app/pets/{id}(id=${pet.id})}" th:text="${pet.name}">ポチ</a> /
+        健康記録
+      </div>
+
+      <div class="page-header">
+        <h1 class="page-title" th:text="${pet.name} + ' の健康記録'">健康記録</h1>
+        <a th:href="@{/app/pets/{id}/health-records/new(id=${pet.id})}" class="btn btn-primary">
+          ＋ 記録を追加
+        </a>
+      </div>
+
+      <div class="card" style="padding:0;">
+        <div th:if="${page.items.isEmpty()}" class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <div class="empty-state-text">まだ健康記録がありません</div>
+          <a th:href="@{/app/pets/{id}/health-records/new(id=${pet.id})}" class="btn btn-primary">
+            最初の記録を追加する
+          </a>
+        </div>
+
+        <div th:if="${!page.items.isEmpty()}" class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>記録日</th>
+                <th>体重 (kg)</th>
+                <th>運動 (分)</th>
+                <th>食事メモ</th>
+                <th>メモ</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="rec : ${page.items}">
+                <td style="white-space:nowrap;" th:text="${rec.recordDate}">2026-05-10</td>
+                <td th:text="${rec.weightKg != null ? rec.weightKg : '—'}">8.60</td>
+                <td th:text="${rec.exerciseMinutes != null ? rec.exerciseMinutes : '—'}">30</td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                    th:text="${rec.mealMemo ?: '—'}">食欲良好</td>
+                <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                    th:text="${rec.note ?: '—'}">特記事項なし</td>
+                <td>
+                  <div class="table-actions">
+                    <a th:href="@{/app/pets/{pid}/health-records/{rid}/edit(pid=${pet.id},rid=${rec.id})}"
+                       class="btn btn-secondary btn-sm">編集</a>
+                    <form th:action="@{/app/pets/{pid}/health-records/{rid}(pid=${pet.id},rid=${rec.id})}"
+                          method="post" style="display:inline;"
+                          onsubmit="return confirm('この記録を削除しますか？')">
+                      <input type="hidden" name="_method" value="DELETE">
+                      <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ページネーション -->
+      <div class="pagination" th:if="${page.total > page.size}">
+        <a th:if="${page.page > 1}"
+           th:href="@{/app/pets/{id}/health-records(id=${pet.id},page=${page.page - 1})}">‹</a>
+        <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}"
+              th:class="${i == page.page ? 'current' : ''}"
+              th:text="${i}">1</span>
+        <a th:if="${page.page * page.size < page.total}"
+           th:href="@{/app/pets/{id}/health-records(id=${pet.id},page=${page.page + 1})}">›</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

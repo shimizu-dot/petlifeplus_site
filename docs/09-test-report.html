@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テスト報告書 - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .doc-header .doc-category,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .fill-hint {
+      color: #64748b;
+    }
+
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #cfe0f7;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+    }
+
+    .doc-table thead th {
+      background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 45%, #93c5fd 100%);
+      color: #0b2545;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      border-bottom: 1px solid #c5d7f1;
+      padding: 11px 12px;
+    }
+
+    .doc-table tbody td {
+      border-bottom: 1px solid #e7eef8;
+      padding: 10px 12px;
+    }
+
+    .doc-table tbody tr:nth-child(odd) td {
+      background: #ffffff;
+    }
+
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+
+    .doc-table tbody tr td:first-child {
+      background: linear-gradient(90deg, #f3f7ff 0%, #ffffff 85%);
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .doc-table tbody tr:hover td {
+      background: #ecfeff;
+      transition: background-color .18s ease;
+    }
+
+    .test-case-table th:first-child,
+    .test-case-table td:first-child {
+      white-space: nowrap;
+    }
+
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .scope-card {
+      border: 1px solid #dbeafe;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 10px 12px;
+    }
+    .scope-card h4 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      color: #1e3a8a;
+    }
+    .scope-card ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .scope-card li {
+      margin: 2px 0;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 09</div>
+        <h1 class="doc-title">テスト報告書</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-14</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細なテスト報告書は以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" placeholder="https://docs.google.com/spreadsheets/d/xxxxx" id="external-link-09"
+              value="test_report.xlsx" style="color:#0f172a; opacity:1;">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-09').value || 'test_report_document.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">テスト計画</a></li>
+            <li><a href="#sec2">テストケース一覧</a></li>
+            <li><a href="#sec3">テスト結果サマリー</a></li>
+            <li><a href="#sec4">バグ一覧</a></li>
+            <li><a href="#sec5">ブラウザ・デバイス対応</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> テスト計画</h2>
+
+        <div class="fill-block">
+          <div class="fill-label">テスト対象・範囲 <span class="required">必須</span></div>
+          <div class="fill-hint">テストの対象となる機能・画面と、テストの種類</div>
+          <div class="fill-content">
+            <div class="scope-grid">
+              <div class="scope-card">
+                <h4>対象機能（F-001〜F-015）</h4>
+                <ul>
+                  <li>認証: F-001 ログイン認証</li>
+                  <li>共通表示: F-002 ダッシュボード</li>
+                  <li>管理CRUD: F-003〜F-007</li>
+                  <li>共通制御: F-008 入力バリデーション</li>
+                  <li>支援機能: F-009〜F-010</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>対象画面</h4>
+                <ul>
+                  <li>ログイン、ダッシュボード</li>
+                  <li>ユーザー/ペット/健康記録/予約/履歴管理</li>
+                  <li>レポート出力、ファイルアップロード、メール通知</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>テスト種別</h4>
+                <ul>
+                  <li>機能テスト</li>
+                  <li>画面テスト</li>
+                  <li>セキュリティテスト</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>対象外（今回）</h4>
+                <ul>
+                  <li>本番運用監視設計</li>
+                  <li>災害復旧訓練</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> テストケース一覧</h2>
+
+
+          <div class="fill-block">
+            <div class="fill-label">テストケース一覧 <span class="required">必須</span></div>
+            <table class="doc-table test-case-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>対象機能</th>
+                  <th>テスト種別</th>
+                  <th>テスト内容</th>
+                  <th>期待結果</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>TC-001</td><td>F-001 ログイン認証</td><td>正常系</td><td>正しいメールアドレス・パスワードでログインする</td><td>認証成功しダッシュボードへ遷移する</td></tr>
+                <tr><td>TC-002</td><td>F-001 ログイン認証</td><td>異常系</td><td>パスワード未入力でログインする</td><td>必須エラーが表示されログイン不可</td></tr>
+                <tr><td>TC-003</td><td>F-001 ログイン認証</td><td>境界値</td><td>パスワード8文字ちょうどでログインする</td><td>バリデーションを通過し認証処理される</td></tr>
+                <tr><td>TC-004</td><td>F-002 ダッシュボード表示</td><td>正常系</td><td>期間未指定で画面表示する</td><td>KPI・予定・通知が表示される</td></tr>
+                <tr><td>TC-005</td><td>F-002 ダッシュボード表示</td><td>異常系</td><td>終了日 &lt; 開始日の条件で検索する</td><td>期間不正エラーが表示される</td></tr>
+                <tr><td>TC-006</td><td>F-002 ダッシュボード表示</td><td>境界値</td><td>データ0件の期間を指定する</td><td>0件表示で画面崩れなく表示される</td></tr>
+                <tr><td>TC-007</td><td>F-003 ユーザー管理</td><td>正常系</td><td>必須項目を入力してユーザー登録する</td><td>ユーザーが保存され一覧に反映される</td></tr>
+                <tr><td>TC-008</td><td>F-003 ユーザー管理</td><td>異常系</td><td>既存メールアドレスで登録する</td><td>重複エラーが表示され保存されない</td></tr>
+                <tr><td>TC-009</td><td>F-003 ユーザー管理</td><td>境界値</td><td>氏名を50文字で登録する</td><td>正常に登録できる</td></tr>
+                <tr><td>TC-010</td><td>F-004 ペット管理</td><td>正常系</td><td>飼い主を指定してペット登録する</td><td>ペット情報が保存され飼い主に紐付く</td></tr>
+                <tr><td>TC-011</td><td>F-004 ペット管理</td><td>異常系</td><td>ペット名未入力で登録する</td><td>必須エラーが表示される</td></tr>
+                <tr><td>TC-012</td><td>F-004 ペット管理</td><td>境界値</td><td>生年月日に当日を入力する</td><td>未来日ではないため保存できる</td></tr>
+                <tr><td>TC-013</td><td>F-005 健康記録管理</td><td>正常系</td><td>記録日・体重を入力して登録する</td><td>記録が保存され時系列一覧に表示される</td></tr>
+                <tr><td>TC-014</td><td>F-005 健康記録管理</td><td>異常系</td><td>体重に文字列を入力する</td><td>数値形式エラーが表示される</td></tr>
+                <tr><td>TC-015</td><td>F-005 健康記録管理</td><td>境界値</td><td>体重0.1kgで登録する</td><td>下限値として正常登録される</td></tr>
+                <tr><td>TC-016</td><td>F-006 予約管理</td><td>正常系</td><td>未来日時で予約登録する</td><td>予約が確定し一覧に反映される</td></tr>
+                <tr><td>TC-017</td><td>F-006 予約管理</td><td>異常系</td><td>過去日時で予約登録する</td><td>過去日時エラーが表示される</td></tr>
+                <tr><td>TC-018</td><td>F-006 予約管理</td><td>境界値</td><td>同一枠で重複予約を登録する</td><td>重複検知され登録できない</td></tr>
+                <tr><td>TC-019</td><td>F-007 診療・相談履歴管理</td><td>正常系</td><td>実施日と対応内容を入力して登録する</td><td>履歴が保存され一覧に表示される</td></tr>
+                <tr><td>TC-020</td><td>F-007 診療・相談履歴管理</td><td>異常系</td><td>対応内容1001文字で登録する</td><td>文字数超過エラーが表示される</td></tr>
+                <tr><td>TC-021</td><td>F-007 診療・相談履歴管理</td><td>境界値</td><td>対応内容1000文字で登録する</td><td>上限値として正常登録される</td></tr>
+                <tr><td>TC-022</td><td>F-008 入力バリデーション</td><td>正常系</td><td>各必須項目を満たして送信する</td><td>エラーなく保存処理へ進む</td></tr>
+                <tr><td>TC-023</td><td>F-008 入力バリデーション</td><td>異常系</td><td>メール形式不正で送信する</td><td>形式エラーが表示される</td></tr>
+                <tr><td>TC-024</td><td>F-009 AI症状チェック</td><td>正常系</td><td>症状種別・発症時期を入力して実行する</td><td>重症度と推奨対応が表示される</td></tr>
+                <tr><td>TC-025</td><td>F-009 AI症状チェック</td><td>異常系</td><td>症状種別未選択で実行する</td><td>必須エラーが表示される</td></tr>
+                <tr><td>TC-026</td><td>F-010 検索・ソート・ページネーション</td><td>境界値</td><td>ページ番号に0を指定する</td><td>1に補正されるかエラー表示される</td></tr>
+                <tr><td>TC-028</td><td>F-012 通知・リマインド配信</td><td>正常系</td><td>予約配信を設定して保存する</td><td>配信予定として履歴に保存される</td></tr>
+                <tr><td>TC-029</td><td>F-014 ファイルアップロード</td><td>異常系</td><td>許可外拡張子で添付する</td><td>拡張子エラーで保存不可</td></tr>
+                <tr><td>TC-030</td><td>F-015 メール通知</td><td>境界値</td><td>本文2000文字で送信登録する</td><td>上限値として正常に登録される</td></tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> テスト結果サマリー</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">テスト結果サマリー <span class="required">必須</span></div>
+            <div class="fill-hint">テスト実施後に集計結果を記入してください</div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>件数</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="template-row">
+                  <td>総テストケース数</td>
+                  <td>（数値を入力）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>OK</td>
+                  <td>（数値を入力）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>NG</td>
+                  <td>（数値を入力）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>未実施</td>
+                  <td>（数値を入力）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>合格率</td>
+                  <td>（％を入力）</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> バグ一覧</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">発見されたバグと対応状況 <span class="required">必須</span></div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>バグID</th>
+                  <th>発見日</th>
+                  <th>対象機能</th>
+                  <th>内容</th>
+                  <th>重大度</th>
+                  <th>対応状況</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="template-row">
+                  <td>BUG-001</td>
+                  <td>（日付）</td>
+                  <td>（機能名）</td>
+                  <td>（バグの内容）</td>
+                  <td>（高/中/低）</td>
+                  <td>（修正済/対応中/保留）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>…</td>
+                  <td>…</td>
+                  <td>…</td>
+                  <td>…</td>
+                  <td>…</td>
+                  <td>…</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec5">
+          <h2 class="section-title"><span class="section-icon">5</span> ブラウザ・デバイス対応</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">対応状況 <span class="required">必須</span></div>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>ブラウザ/デバイス</th>
+                  <th>バージョン</th>
+                  <th>表示</th>
+                  <th>機能</th>
+                  <th>備考</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="template-row">
+                  <td>Chrome（PC）</td>
+                  <td>（バージョン）</td>
+                  <td>（○/△/×）</td>
+                  <td>（○/△/×）</td>
+                  <td>（備考）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Firefox（PC）</td>
+                  <td>（バージョン）</td>
+                  <td>（○/△/×）</td>
+                  <td>（○/△/×）</td>
+                  <td>（備考）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Edge（PC）</td>
+                  <td>（バージョン）</td>
+                  <td>（○/△/×）</td>
+                  <td>（○/△/×）</td>
+                  <td>（備考）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Chrome（スマートフォン）</td>
+                  <td>（バージョン）</td>
+                  <td>（○/△/×）</td>
+                  <td>（○/△/×）</td>
+                  <td>（備考）</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Safari（iPhone）</td>
+                  <td>（バージョン）</td>
+                  <td>（○/△/×）</td>
+                  <td>（○/△/×）</td>
+                  <td>（備考）</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

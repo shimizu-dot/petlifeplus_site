@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${pet.name} + ' | Pet Life Plus'">ペット詳細 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title" th:text="${pet.name}">ペット詳細</span></div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="breadcrumb">
+        <a th:href="@{/app/pets}">ペット一覧</a> / <span th:text="${pet.name}">ペット名</span>
+      </div>
+
+      <div class="page-header">
+        <h1 class="page-title" th:text="${pet.name}">ポチ</h1>
+        <div style="display:flex;gap:10px;">
+          <a th:href="@{/app/pets/{id}/edit(id=${pet.id})}" class="btn btn-secondary">編集</a>
+          <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-primary">健康記録を見る</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">基本情報</div>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">種別</div>
+            <div class="detail-value">
+              <span th:class="${pet.species == 'DOG' ? 'badge badge-blue' : pet.species == 'CAT' ? 'badge badge-green' : 'badge badge-gray'}"
+                    th:text="${pet.species == 'DOG' ? '犬' : pet.species == 'CAT' ? '猫' : pet.species}">犬</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">品種</div>
+            <div class="detail-value" th:text="${pet.breed ?: '—'}">柴犬</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">性別</div>
+            <div class="detail-value"
+                 th:text="${pet.sex == 'MALE' ? 'オス' : pet.sex == 'FEMALE' ? 'メス' : '不明'}">オス</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">生年月日</div>
+            <div class="detail-value" th:text="${pet.birthDate ?: '—'}">2021-03-01</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">基準体重</div>
+            <div class="detail-value"
+                 th:text="${pet.weightBaselineKg != null ? pet.weightBaselineKg + ' kg' : '—'}">8.50 kg</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <a th:href="@{/app/pets/{id}/health-records/new(id=${pet.id})}" class="btn btn-primary">
+          ＋ 健康記録を追加
+        </a>
+        <form th:action="@{/app/pets/{id}(id=${pet.id})}" method="post"
+              onsubmit="return confirm('このペットを削除しますか？')">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="btn btn-danger">削除</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>データベース設計書 - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content {
+      background:
+        radial-gradient(circle at 2% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+        radial-gradient(circle at 100% 10%, rgba(20, 184, 166, 0.08), transparent 22%);
+    }
+
+    .doc-header {
+      background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 58%, #0ea5a4 100%);
+      color: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      margin-bottom: 18px;
+    }
+
+    .doc-header .doc-category,
+    .doc-header .doc-meta,
+    .doc-header .doc-meta .material-symbols-outlined {
+      color: #dbeafe;
+    }
+
+    .doc-header .doc-title {
+      color: #f8fafc;
+    }
+
+    .external-link-box {
+      border: 1px solid #cfe3ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #f2fcfb 100%);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .external-link-box-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .external-link-input input {
+      border: 1px solid #b7cff7;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .section {
+      border: 1px solid #d7e5f6;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      border-left: 6px solid #14b8a6;
+      padding-left: 10px;
+      color: #0f172a;
+    }
+
+    .fill-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .fill-label {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .fill-hint {
+      color: #64748b;
+    }
+
+    .doc-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #cfe0f7;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+    }
+
+    .doc-table thead th {
+      background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 45%, #93c5fd 100%);
+      color: #0b2545;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      border-bottom: 1px solid #c5d7f1;
+      padding: 11px 12px;
+    }
+
+    .doc-table tbody td {
+      border-bottom: 1px solid #e7eef8;
+      padding: 10px 12px;
+    }
+
+    .doc-table tbody tr:nth-child(odd) td {
+      background: #ffffff;
+    }
+
+    .doc-table tbody tr:nth-child(even) td {
+      background: #f8fbff;
+    }
+
+    .doc-table tbody tr td:first-child {
+      background: linear-gradient(90deg, #f3f7ff 0%, #ffffff 85%);
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .doc-table tbody tr:hover td {
+      background: #ecfeff;
+      transition: background-color .18s ease;
+    }
+
+    .toc {
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .toc-title {
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 10px 0 22px;
+      border: 1px solid #d7e5f6;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .db-table {
+      min-width: 980px;
+      margin: 0;
+    }
+
+    .db-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    .db-table td,
+    .db-table th {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .mini-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .mini-nav a {
+      display: inline-block;
+      padding: 6px 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 12px;
+      color: #1e3a8a;
+      background: #eff6ff;
+    }
+
+    .mini-nav a:hover {
+      background: #dbeafe;
+    }
+
+    .table-note {
+      font-size: 12px;
+      color: #64748b;
+      margin: 8px 0 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="hamburger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="page-wrapper">
+    <aside class="sidebar" data-nav-level="docs"></aside>
+
+    <main class="main-content">
+      <header class="doc-header">
+        <div class="doc-category">DOCUMENT 08</div>
+        <h1 class="doc-title">データベース設計書</h1>
+        <div class="doc-meta">
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-14</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+        </div>
+      </header>
+
+      <div class="doc-body">
+
+        <div class="external-link-box">
+          <div class="external-link-box-title">
+            <span class="material-symbols-outlined">link</span>
+            詳細ドキュメント（Google スプレッドシート）
+          </div>
+          <div class="external-link-box-desc">
+            このページは概要のみを記載しています。詳細なDB設計書は以下のリンクからご確認ください。
+          </div>
+          <div class="external-link-input">
+            <input type="text" placeholder="https://docs.google.com/spreadsheets/d/xxxxx" id="external-link-08"
+              value="db-design.xlsx" style="color:#0f172a; opacity:1;">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-08').value || 'db-design.xlsx', '_blank'); return false;">
+              <span class="material-symbols-outlined">open_in_new</span>
+              開く
+            </a>
+          </div>
+        </div>
+
+        <div class="toc">
+          <div class="toc-title">目次</div>
+          <ol class="toc-list">
+            <li><a href="#sec1">ER図</a></li>
+            <li><a href="#sec2">テーブル定義</a></li>
+            <li><a href="#sec3">インデックス設計</a></li>
+            <li><a href="#sec4">初期データ</a></li>
+          </ol>
+        </div>
+
+        <section class="section" id="sec1">
+          <h2 class="section-title"><span class="section-icon">1</span> ER図</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">ER図 <span class="required">必須</span></div>
+            <div class="fill-hint">テーブル間のリレーション図（テキストベースまたは画像で記載）</div>
+            <div class="fill-content">
+              <pre>凡例:
+- 1 ─ *      : 1対多
+- * ─ *      : 多対多
+- 0..1 ─ 1   : 任意1対1（片側はNULL可）
+
+【1. ユーザー・ペット管理】
+[roles] 1 ─ * [users]
+[users] 1 ─ * [pets]
+
+【2. 健康記録・AI症状チェック】
+[pets] 1 ─ * [health_records]
+[pets] 1 ─ * [symptom_checks]
+
+【3. 予約・診療履歴】
+[pets] 1 ─ * [appointments]
+[users] 1 ─ * [appointments]   （owner_user_id: 飼い主）
+[users] 1 ─ * [appointments]   （staff_user_id: 担当者/獣医）
+[pets] 1 ─ * [medical_histories]
+[appointments] 0..1 ─ 1 [medical_histories]
+[medical_histories] 1 ─ * [medical_attachments]
+
+[plans] 1 ─ * [subscriptions]
+[users] 1 ─ * [subscriptions]
+[pets] 1 ─ * [subscriptions]
+
+【5. 通知・メール】
+[notifications] * ─ * [users]
+  └ 中間テーブル: [notification_recipients]
+[email_templates] 1 ─ * [email_messages]
+[users] 1 ─ * [email_messages]
+[pets] 0..1 ─ * [email_messages]
+[appointments] 0..1 ─ * [email_messages]
+            </div>
+          </div>
+
+        </section>
+
+        <section class="section" id="sec2">
+          <h2 class="section-title"><span class="section-icon">2</span> テーブル定義</h2>
+          <div class="fill-block">
+            <div class="fill-label">テーブル定義一覧 <span class="required">必須</span></div>
+            <div class="fill-hint">ER図に基づく主要テーブル定義（created_at/updated_atを全テーブルに付与）</div>
+            <div class="table-note">見方: 左右にスクロール可能 / ヘッダー固定 / 偶数行を薄色表示</div>
+            <div class="mini-nav">
+              <a href="#tbl-roles">roles</a>
+              <a href="#tbl-users">users</a>
+              <a href="#tbl-pets">pets</a>
+              <a href="#tbl-appointments">appointments</a>
+              <a href="#tbl-medical-histories">medical_histories</a>
+              <a href="#tbl-medical-attachments">medical_attachments</a>
+            </div>
+
+            <h3 id="tbl-roles">roles</h3>
+            <div class="table-wrap">
+              <table class="doc-table db-table">
+                <thead>
+                  <tr>
+                    <th>カラム名</th>
+                    <th>データ型</th>
+                    <th>NULL許可</th>
+                    <th>デフォルト値</th>
+                    <th>制約</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td>AUTO_INCREMENT</td>
+                    <td>PK</td>
+                    <td>ロールID</td>
+                  </tr>
+                  <tr>
+                    <td>role_code</td>
+                    <td>VARCHAR(50)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>UNIQUE</td>
+                    <td>ロールコード</td>
+                  </tr>
+                  <tr>
+                    <td>role_name</td>
+                    <td>VARCHAR(100)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>ロール名</td>
+                  </tr>
+                  <tr>
+                    <td>created_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>作成日時</td>
+                  </tr>
+                  <tr>
+                    <td>updated_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>更新日時</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 id="tbl-users">users</h3>
+            <div class="table-wrap">
+              <table class="doc-table db-table">
+                <thead>
+                  <tr>
+                    <th>カラム名</th>
+                    <th>データ型</th>
+                    <th>NULL許可</th>
+                    <th>デフォルト値</th>
+                    <th>制約</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td>AUTO_INCREMENT</td>
+                    <td>PK</td>
+                    <td>ユーザーID</td>
+                  </tr>
+                  <tr>
+                    <td>role_id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>FK -> roles.id</td>
+                    <td>ロールID</td>
+                  </tr>
+                  <tr>
+                    <td>name</td>
+                    <td>VARCHAR(100)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>氏名</td>
+                  </tr>
+                  <tr>
+                    <td>email</td>
+                    <td>VARCHAR(255)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>UNIQUE</td>
+                    <td>メール</td>
+                  </tr>
+                  <tr>
+                    <td>password_hash</td>
+                    <td>VARCHAR(255)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>パスワードハッシュ</td>
+                  </tr>
+                  <tr>
+                    <td>phone</td>
+                    <td>VARCHAR(20)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>電話番号</td>
+                  </tr>
+                  <tr>
+                    <td>status</td>
+                    <td>VARCHAR(20)</td>
+                    <td>NO</td>
+                    <td>'ACTIVE'</td>
+                    <td></td>
+                    <td>状態</td>
+                  </tr>
+                  <tr>
+                    <td>last_login_at</td>
+                    <td>DATETIME</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>最終ログイン日時</td>
+                  </tr>
+                  <tr>
+                    <td>deleted_at</td>
+                    <td>DATETIME</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>論理削除日時</td>
+                  </tr>
+                  <tr>
+                    <td>created_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>作成日時</td>
+                  </tr>
+                  <tr>
+                    <td>updated_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>更新日時</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 id="tbl-pets">pets</h3>
+            <div class="table-wrap">
+              <table class="doc-table db-table">
+                <thead>
+                  <tr>
+                    <th>カラム名</th>
+                    <th>データ型</th>
+                    <th>NULL許可</th>
+                    <th>デフォルト値</th>
+                    <th>制約</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td>AUTO_INCREMENT</td>
+                    <td>PK</td>
+                    <td>ペットID</td>
+                  </tr>
+                  <tr>
+                    <td>owner_user_id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>FK -> users.id</td>
+                    <td>飼い主ID</td>
+                  </tr>
+                  <tr>
+                    <td>name</td>
+                    <td>VARCHAR(100)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>ペット名</td>
+                  </tr>
+                  <tr>
+                    <td>species</td>
+                    <td>VARCHAR(30)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>種別</td>
+                  </tr>
+                  <tr>
+                    <td>breed</td>
+                    <td>VARCHAR(100)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>品種</td>
+                  </tr>
+                  <tr>
+                    <td>sex</td>
+                    <td>VARCHAR(10)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>性別</td>
+                  </tr>
+                  <tr>
+                    <td>birth_date</td>
+                    <td>DATE</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>生年月日</td>
+                  </tr>
+                  <tr>
+                    <td>weight_baseline_kg</td>
+                    <td>DECIMAL(5,2)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>基準体重</td>
+                  </tr>
+                  <tr>
+                    <td>deleted_at</td>
+                    <td>DATETIME</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>論理削除日時</td>
+                  </tr>
+                  <tr>
+                    <td>created_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>作成日時</td>
+                  </tr>
+                  <tr>
+                    <td>updated_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>更新日時</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 id="tbl-appointments">appointments</h3>
+            <div class="table-wrap">
+              <table class="doc-table db-table">
+                <thead>
+                  <tr>
+                    <th>カラム名</th>
+                    <th>データ型</th>
+                    <th>NULL許可</th>
+                    <th>デフォルト値</th>
+                    <th>制約</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td>AUTO_INCREMENT</td>
+                    <td>PK</td>
+                    <td>予約ID</td>
+                  </tr>
+                  <tr>
+                    <td>pet_id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>FK -> pets.id</td>
+                    <td>ペットID</td>
+                  </tr>
+                  <tr>
+                    <td>owner_user_id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>FK -> users.id</td>
+                    <td>飼い主ID</td>
+                  </tr>
+                  <tr>
+                    <td>staff_user_id</td>
+                    <td>BIGINT</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td>FK -> users.id</td>
+                    <td>担当者ID</td>
+                  </tr>
+                  <tr>
+                    <td>appointment_type</td>
+                    <td>VARCHAR(20)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>予約種別</td>
+                  </tr>
+                  <tr>
+                    <td>channel</td>
+                    <td>VARCHAR(20)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>実施チャネル</td>
+                  </tr>
+                  <tr>
+                    <td>scheduled_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>予約日時</td>
+                  </tr>
+                  <tr>
+                    <td>status</td>
+                    <td>VARCHAR(20)</td>
+                    <td>NO</td>
+                    <td>'REQUESTED'</td>
+                    <td></td>
+                    <td>状態</td>
+                  </tr>
+                  <tr>
+                    <td>note</td>
+                    <td>VARCHAR(500)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>備考</td>
+                  </tr>
+                  <tr>
+                    <td>deleted_at</td>
+                    <td>DATETIME</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>論理削除日時</td>
+                  </tr>
+                  <tr>
+                    <td>created_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>作成日時</td>
+                  </tr>
+                  <tr>
+                    <td>updated_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>更新日時</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 id="tbl-medical-histories">medical_histories</h3>
+            <div class="table-wrap">
+              <table class="doc-table db-table">
+                <thead>
+                  <tr>
+                    <th>カラム名</th>
+                    <th>データ型</th>
+                    <th>NULL許可</th>
+                    <th>デフォルト値</th>
+                    <th>制約</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td>AUTO_INCREMENT</td>
+                    <td>PK</td>
+                    <td>履歴ID</td>
+                  </tr>
+                  <tr>
+                    <td>pet_id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>FK -> pets.id</td>
+                    <td>ペットID</td>
+                  </tr>
+                  <tr>
+                    <td>appointment_id</td>
+                    <td>BIGINT</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td>UNIQUE, FK -> appointments.id</td>
+                    <td>予約ID</td>
+                  </tr>
+                  <tr>
+                    <td>handled_by_user_id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>FK -> users.id</td>
+                    <td>対応者ID</td>
+                  </tr>
+                  <tr>
+                    <td>performed_on</td>
+                    <td>DATE</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>実施日</td>
+                  </tr>
+                  <tr>
+                    <td>treatment_detail</td>
+                    <td>VARCHAR(1000)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>対応内容</td>
+                  </tr>
+                  <tr>
+                    <td>diagnosis</td>
+                    <td>VARCHAR(1000)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>診断</td>
+                  </tr>
+                  <tr>
+                    <td>prescription</td>
+                    <td>VARCHAR(1000)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>処方</td>
+                  </tr>
+                  <tr>
+                    <td>deleted_at</td>
+                    <td>DATETIME</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>論理削除日時</td>
+                  </tr>
+                  <tr>
+                    <td>created_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>作成日時</td>
+                  </tr>
+                  <tr>
+                    <td>updated_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>更新日時</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 id="tbl-medical-attachments">medical_attachments</h3>
+            <div class="table-wrap">
+              <table class="doc-table db-table">
+                <thead>
+                  <tr>
+                    <th>カラム名</th>
+                    <th>データ型</th>
+                    <th>NULL許可</th>
+                    <th>デフォルト値</th>
+                    <th>制約</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td>AUTO_INCREMENT</td>
+                    <td>PK</td>
+                    <td>添付ID</td>
+                  </tr>
+                  <tr>
+                    <td>medical_history_id</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td>FK -> medical_histories.id</td>
+                    <td>診療履歴ID</td>
+                  </tr>
+                  <tr>
+                    <td>file_name</td>
+                    <td>VARCHAR(255)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>ファイル名</td>
+                  </tr>
+                  <tr>
+                    <td>file_path</td>
+                    <td>VARCHAR(500)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>保存先</td>
+                  </tr>
+                  <tr>
+                    <td>file_mime_type</td>
+                    <td>VARCHAR(100)</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>MIME</td>
+                  </tr>
+                  <tr>
+                    <td>file_size_bytes</td>
+                    <td>BIGINT</td>
+                    <td>NO</td>
+                    <td></td>
+                    <td></td>
+                    <td>容量</td>
+                  </tr>
+                  <tr>
+                    <td>description</td>
+                    <td>VARCHAR(200)</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>説明</td>
+                  </tr>
+                  <tr>
+                    <td>deleted_at</td>
+                    <td>DATETIME</td>
+                    <td>YES</td>
+                    <td>NULL</td>
+                    <td></td>
+                    <td>論理削除日時</td>
+                  </tr>
+                  <tr>
+                    <td>created_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>作成日時</td>
+                  </tr>
+                  <tr>
+                    <td>updated_at</td>
+                    <td>DATETIME</td>
+                    <td>NO</td>
+                    <td>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+                    <td></td>
+                    <td>更新日時</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+              / email_messages / health_records / symptom_checks</h3>
+            <p>残りテーブルは <code>db-design.md</code> の表形式定義と同一構成で管理（本ページは主要テーブルを掲載）。</p>
+          </div>
+        </section>
+
+        <section class="section" id="sec3">
+          <h2 class="section-title"><span class="section-icon">3</span> インデックス設計</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">インデックス一覧 <span class="required">必須</span></div>
+            <div class="table-note">検索頻度・FK結合・一意制約・ソート用途の観点で選定</div>
+            <div class="table-wrap">
+              <table class="doc-table db-table">
+                <thead>
+                  <tr>
+                    <th>テーブル名</th>
+                    <th>インデックス名</th>
+                    <th>対象カラム</th>
+                    <th>種類</th>
+                    <th>設定理由</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>roles</td>
+                    <td>uk_roles_role_code</td>
+                    <td>role_code</td>
+                    <td>UNIQUE</td>
+                    <td>ロールコード一意制約</td>
+                  </tr>
+                  <tr>
+                    <td>users</td>
+                    <td>uk_users_email</td>
+                    <td>email</td>
+                    <td>UNIQUE</td>
+                    <td>ログインID一意制約</td>
+                  </tr>
+                  <tr>
+                    <td>users</td>
+                    <td>idx_users_role_id</td>
+                    <td>role_id</td>
+                    <td>INDEX</td>
+                    <td>ロール別検索・FK結合</td>
+                  </tr>
+                  <tr>
+                    <td>users</td>
+                    <td>idx_users_status_deleted_at</td>
+                    <td>status, deleted_at</td>
+                    <td>INDEX</td>
+                    <td>有効ユーザー絞り込み</td>
+                  </tr>
+                  <tr>
+                    <td>pets</td>
+                    <td>idx_pets_owner_user_id</td>
+                    <td>owner_user_id</td>
+                    <td>INDEX</td>
+                    <td>飼い主配下のペット検索</td>
+                  </tr>
+                  <tr>
+                    <td>pets</td>
+                    <td>idx_pets_species</td>
+                    <td>species</td>
+                    <td>INDEX</td>
+                    <td>種別検索</td>
+                  </tr>
+                  <tr>
+                    <td>health_records</td>
+                    <td>idx_health_records_pet_record_date</td>
+                    <td>pet_id, record_date</td>
+                    <td>INDEX</td>
+                    <td>ペット別時系列取得</td>
+                  </tr>
+                  <tr>
+                    <td>health_records</td>
+                    <td>idx_health_records_recorded_by_user_id</td>
+                    <td>recorded_by_user_id</td>
+                    <td>INDEX</td>
+                    <td>記録者検索・FK結合</td>
+                  </tr>
+                  <tr>
+                    <td>symptom_checks</td>
+                    <td>idx_symptom_checks_pet_created_at</td>
+                    <td>pet_id, created_at</td>
+                    <td>INDEX</td>
+                    <td>ペット別チェック履歴</td>
+                  </tr>
+                  <tr>
+                    <td>symptom_checks</td>
+                    <td>idx_symptom_checks_requested_by_user_id</td>
+                    <td>requested_by_user_id</td>
+                    <td>INDEX</td>
+                    <td>依頼者検索・FK結合</td>
+                  </tr>
+                  <tr>
+                    <td>appointments</td>
+                    <td>idx_appointments_pet_scheduled_at</td>
+                    <td>pet_id, scheduled_at</td>
+                    <td>INDEX</td>
+                    <td>ペット別予約一覧・ソート</td>
+                  </tr>
+                  <tr>
+                    <td>appointments</td>
+                    <td>idx_appointments_owner_scheduled_at</td>
+                    <td>owner_user_id, scheduled_at</td>
+                    <td>INDEX</td>
+                    <td>飼い主別予約検索</td>
+                  </tr>
+                  <tr>
+                    <td>appointments</td>
+                    <td>idx_appointments_staff_scheduled_at</td>
+                    <td>staff_user_id, scheduled_at</td>
+                    <td>INDEX</td>
+                    <td>担当者別予定検索</td>
+                  </tr>
+                  <tr>
+                    <td>appointments</td>
+                    <td>idx_appointments_status_scheduled_at</td>
+                    <td>status, scheduled_at</td>
+                    <td>INDEX</td>
+                    <td>状態別の時系列検索</td>
+                  </tr>
+                  <tr>
+                    <td>medical_histories</td>
+                    <td>uk_medical_histories_appointment_id</td>
+                    <td>appointment_id</td>
+                    <td>UNIQUE</td>
+                    <td>予約と履歴の1対1担保</td>
+                  </tr>
+                  <tr>
+                    <td>medical_histories</td>
+                    <td>idx_medical_histories_pet_performed_on</td>
+                    <td>pet_id, performed_on</td>
+                    <td>INDEX</td>
+                    <td>ペット別履歴検索・日付順</td>
+                  </tr>
+                  <tr>
+                    <td>medical_attachments</td>
+                    <td>idx_medical_attachments_history_id</td>
+                    <td>medical_history_id</td>
+                    <td>INDEX</td>
+                    <td>履歴配下の添付取得</td>
+                  </tr>
+                  <tr>
+                    <td>plans</td>
+                    <td>idx_plans_is_active</td>
+                    <td>is_active</td>
+                    <td>INDEX</td>
+                    <td>有効プラン検索</td>
+                  </tr>
+                  <tr>
+                    <td>subscriptions</td>
+                    <td>idx_subscriptions_user_status</td>
+                    <td>user_id, status</td>
+                    <td>INDEX</td>
+                    <td>ユーザー契約一覧</td>
+                  </tr>
+                  <tr>
+                    <td>subscriptions</td>
+                    <td>idx_subscriptions_pet_status</td>
+                    <td>pet_id, status</td>
+                    <td>INDEX</td>
+                    <td>ペット契約一覧</td>
+                  </tr>
+                  <tr>
+                    <td>subscriptions</td>
+                    <td>idx_subscriptions_plan_id</td>
+                    <td>plan_id</td>
+                    <td>INDEX</td>
+                    <td>プラン別集計・FK結合</td>
+                  </tr>
+                  <tr>
+                    <td>invoice_number</td>
+                    <td>UNIQUE</td>
+                  </tr>
+                  <tr>
+                    <td>subscription_id</td>
+                    <td>INDEX</td>
+                  </tr>
+                  <tr>
+                    <td>payment_status, due_date</td>
+                    <td>INDEX</td>
+                    <td>未払い・期限順管理</td>
+                  </tr>
+                  <tr>
+                    <td>invoice_id</td>
+                    <td>INDEX</td>
+                  </tr>
+                  <tr>
+                    <td>status</td>
+                    <td>INDEX</td>
+                  </tr>
+                  <tr>
+                    <td>notifications</td>
+                    <td>idx_notifications_created_by</td>
+                    <td>created_by_user_id</td>
+                    <td>INDEX</td>
+                    <td>作成者別検索・FK結合</td>
+                  </tr>
+                  <tr>
+                    <td>notifications</td>
+                    <td>idx_notifications_status_scheduled</td>
+                    <td>delivery_status, scheduled_at</td>
+                    <td>INDEX</td>
+                    <td>配信対象抽出</td>
+                  </tr>
+                  <tr>
+                    <td>notification_recipients</td>
+                    <td>pk_notification_recipients</td>
+                    <td>notification_id, user_id</td>
+                    <td>PRIMARY KEY</td>
+                    <td>中間テーブル複合主キー</td>
+                  </tr>
+                  <tr>
+                    <td>notification_recipients</td>
+                    <td>idx_notification_recipients_user_status</td>
+                    <td>user_id, delivery_status</td>
+                    <td>INDEX</td>
+                    <td>ユーザー受信一覧</td>
+                  </tr>
+                  <tr>
+                    <td>email_templates</td>
+                    <td>uk_email_templates_template_code</td>
+                    <td>template_code</td>
+                    <td>UNIQUE</td>
+                    <td>テンプレートコード一意制約</td>
+                  </tr>
+                  <tr>
+                    <td>email_messages</td>
+                    <td>idx_email_messages_recipient_created</td>
+                    <td>recipient_user_id, created_at</td>
+                    <td>INDEX</td>
+                    <td>宛先別送信履歴</td>
+                  </tr>
+                  <tr>
+                    <td>email_messages</td>
+                    <td>idx_email_messages_status_send_timing</td>
+                    <td>status, send_timing_at</td>
+                    <td>INDEX</td>
+                    <td>送信キュー処理</td>
+                  </tr>
+                  <tr>
+                    <td>email_messages</td>
+                    <td>idx_email_messages_template_id</td>
+                    <td>template_id</td>
+                    <td>INDEX</td>
+                    <td>テンプレート別集計</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="section" id="sec4">
+          <h2 class="section-title"><span class="section-icon">4</span> 初期データ</h2>
+
+          <div class="fill-block">
+            <div class="fill-label">マスタデータ・テストデータ <span class="required">必須</span></div>
+            <div class="fill-hint">初期投入するデータ（カテゴリマスタ、管理者ユーザー等）</div>
+            <div class="fill-content">
+              <p>実行用SQLファイル: <code>docs/08-db-seed.sql</code></p>
+              <pre>投入対象:
+- roles
+- users（管理者1件 + 一般2件、BCryptハッシュ済み）
+- plans（カテゴリマスタ相当5件）
+- pets / health_records / symptom_checks（各5件）
+- appointments / medical_histories / medical_attachments（各5件）
+- notifications / notification_recipients（各5件）
+- email_templates / email_messages（各5件）</pre>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

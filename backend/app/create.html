@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理画面 | 新規登録</title>
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h1>管理メニュー</h1>
+      <a href="./list.html">ユーザー一覧</a>
+      <a class="active" href="./create.html">新規登録</a>
+      <a href="./detail.html">詳細</a>
+      <a href="./edit.html">編集</a>
+    </aside>
+    <main class="main">
+      <div class="topbar"><strong>ユーザー新規登録</strong><a class="btn" href="./list.html">一覧へ戻る</a></div>
+      <div class="card">
+        <h2>新規登録画面</h2>
+        <div class="grid grid-2">
+          <div><label>氏名（必須）</label><input placeholder="例: 佐藤 美咲" /></div>
+          <div><label>メールアドレス（必須）</label><input placeholder="example@mail.com" /></div>
+          <div><label>電話番号</label><input placeholder="090-1234-5678" /></div>
+          <div><label>ステータス</label><select><option>有効</option><option>停止</option></select></div>
+        </div>
+        <div style="margin-top:12px;"><label>備考</label><textarea placeholder="補足情報を入力"></textarea></div>
+        <div class="btn-row" style="margin-top:14px;">
+          <a class="btn primary" href="./list.html">登録する</a>
+          <a class="btn" href="#">下書き保存</a>
+          <a class="btn" href="./list.html">キャンセル</a>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
