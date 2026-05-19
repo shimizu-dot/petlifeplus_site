@@ -6,9 +6,12 @@ import com.example.petlife.dto.pet.PetForm;
 import com.example.petlife.dto.pet.PetResponse;
 import com.example.petlife.dto.symptom.SymptomCheckForm;
 import com.example.petlife.entity.PetEntity;
+import com.example.petlife.service.PlanAccessService;
 import com.example.petlife.service.PetCareRecordService;
 import com.example.petlife.service.PetService;
 import com.example.petlife.service.SymptomCheckService;
+import com.example.petlife.exception.BadRequestException;
+import com.example.petlife.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/app/pets")
 public class PetController {
@@ -25,19 +31,33 @@ public class PetController {
     private final PetService petService;
     private final PetCareRecordService petCareRecordService;
     private final SymptomCheckService symptomCheckService;
+    private final PlanAccessService planAccessService;
+    private final UserService userService;
 
-    public PetController(PetService petService, PetCareRecordService petCareRecordService, SymptomCheckService symptomCheckService) {
+    public PetController(PetService petService, PetCareRecordService petCareRecordService,
+                         SymptomCheckService symptomCheckService, PlanAccessService planAccessService,
+                         UserService userService) {
         this.petService = petService;
         this.petCareRecordService = petCareRecordService;
         this.symptomCheckService = symptomCheckService;
+        this.planAccessService = planAccessService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String list(@RequestParam(defaultValue = "1") int page,
-                       @RequestParam(defaultValue = "20") int size,
+                       @RequestParam(defaultValue = "10") int size,
                        Model model,
                        @AuthenticationPrincipal LoginUser currentUser) {
-        model.addAttribute("page", petService.list(page, size, currentUser));
+        var petPage = petService.list(page, size, currentUser);
+        model.addAttribute("page", petPage);
+        if (currentUser.canManagePets()) {
+            Map<Long, String> petPlanLabels = new HashMap<>();
+            for (PetResponse pet : petPage.items()) {
+                petPlanLabels.put(pet.id(), planAccessService.planLabelEnByUserId(pet.ownerUserId()));
+            }
+            model.addAttribute("petPlanLabels", petPlanLabels);
+        }
         return "pets/list";
     }
 
@@ -68,7 +88,11 @@ public class PetController {
     public String detail(@PathVariable Long id,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser) {
-        model.addAttribute("pet", petService.get(id, currentUser));
+        PetResponse pet = petService.get(id, currentUser);
+        model.addAttribute("pet", pet);
+        if (currentUser.canManagePets()) {
+            model.addAttribute("ownerName", userService.get(pet.ownerUserId()).name());
+        }
         model.addAttribute("careForm", new PetCareRecordForm());
         model.addAttribute("symptomForm", new SymptomCheckForm());
         model.addAttribute("careRecords", petCareRecordService.listByPet(id, currentUser));
@@ -92,8 +116,12 @@ public class PetController {
             model.addAttribute("symptomChecks", symptomCheckService.recentByPet(id, currentUser));
             return "pets/detail";
         }
-        symptomCheckService.runCheck(id, form, currentUser);
-        ra.addFlashAttribute("success", "AI症状チェックを実行しました");
+        try {
+            symptomCheckService.runCheck(id, form, currentUser);
+            ra.addFlashAttribute("success", "AI症状チェックを実行しました");
+        } catch (BadRequestException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/app/pets/" + id;
     }
 

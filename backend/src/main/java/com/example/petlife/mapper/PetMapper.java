@@ -35,6 +35,13 @@ public interface PetMapper {
                                        @Param("limit") int limit,
                                        @Param("offset") int offset);
 
+    @Select("""
+        SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
+               deleted_at, created_at, updated_at
+        FROM pets WHERE owner_user_id = #{ownerUserId} AND deleted_at IS NULL ORDER BY id
+        """)
+    List<PetEntity> findActiveByOwnerUserId(@Param("ownerUserId") Long ownerUserId);
+
     @Select("SELECT COUNT(*) FROM pets WHERE owner_user_id = #{ownerUserId} AND deleted_at IS NULL")
     long countByOwnerUserId(@Param("ownerUserId") Long ownerUserId);
 

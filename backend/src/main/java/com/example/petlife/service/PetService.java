@@ -6,6 +6,7 @@ import com.example.petlife.dto.pet.PetCreateRequest;
 import com.example.petlife.dto.pet.PetResponse;
 import com.example.petlife.dto.pet.PetUpdateRequest;
 import com.example.petlife.entity.PetEntity;
+import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.PetMapper;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class PetService {
         int safeSize = Math.min(Math.max(size, 1), 100);
         int offset = (safePage - 1) * safeSize;
 
-        if (currentUser.isAdmin()) {
+        if (currentUser.canManagePets()) {
             List<PetResponse> items = petMapper.findAll(safeSize, offset).stream().map(this::toResponse).toList();
             return new PageResponse<>(items, safePage, safeSize, petMapper.countAll());
         } else {
@@ -52,10 +53,22 @@ public class PetService {
         return resolvePet(id, currentUser);
     }
 
+    public List<PetEntity> listOwnedEntities(LoginUser currentUser) {
+        if (currentUser.canManagePets()) {
+            return petMapper.findAll(200, 0);
+        }
+        return petMapper.findActiveByOwnerUserId(currentUser.id());
+    }
+
+    public List<PetResponse> listByOwnerUserIdForAdmin(Long ownerUserId) {
+        return petMapper.findActiveByOwnerUserId(ownerUserId).stream().map(this::toResponse).toList();
+    }
+
     // ---- 作成 ----
 
     public PetResponse create(PetCreateRequest req, MultipartFile imageFile, LoginUser currentUser) {
-        Long ownerId = currentUser.isAdmin() ? req.ownerUserId() : currentUser.id();
+        validateDogOnly(req.species());
+        Long ownerId = currentUser.canManagePets() ? req.ownerUserId() : currentUser.id();
         String imagePath = petImageStorageService.store(imageFile);
         PetEntity row = new PetEntity(
                 null, ownerId, req.name(), req.species(), req.breed(),
@@ -69,6 +82,7 @@ public class PetService {
     // ---- 更新 ----
 
     public PetResponse update(Long id, PetUpdateRequest req, MultipartFile imageFile, LoginUser currentUser) {
+        validateDogOnly(req.species());
         PetEntity existing = resolvePet(id, currentUser);
         String imagePath = existing.imagePath();
         String uploadedPath = petImageStorageService.store(imageFile);
@@ -96,7 +110,7 @@ public class PetService {
     // ---- 内部ヘルパー ----
 
     private PetEntity resolvePet(Long id, LoginUser currentUser) {
-        PetEntity row = currentUser.isAdmin()
+        PetEntity row = currentUser.canManagePets()
                 ? petMapper.findById(id)
                 : petMapper.findByIdAndOwnerUserId(id, currentUser.id());
         if (row == null) throw new NotFoundException("Pet not found: " + id);
@@ -106,5 +120,11 @@ public class PetService {
     public PetResponse toResponse(PetEntity row) {
         return new PetResponse(row.id(), row.ownerUserId(), row.name(), row.species(),
                 row.breed(), row.sex(), row.birthDate(), row.weightBaselineKg(), row.imagePath());
+    }
+
+    private void validateDogOnly(String species) {
+        if (!"DOG".equals(species)) {
+            throw new BadRequestException("現在対応している種別は犬（DOG）のみです");
+        }
     }
 }

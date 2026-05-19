@@ -83,8 +83,6 @@ public class UserService {
                 throw new BadRequestException("Active subscription not found for user");
             }
             auditLog.info("action=user_plan_update userId={} plan={}", id, desiredPlan);
-        } else if (req.planTier() != null && !req.planTier().isBlank()) {
-            throw new BadRequestException("planTier can only be set for role USER");
         }
         auditLog.info("action=user_update userId={} roleId={} status={}", id, nextRoleId, req.status());
         return get(id);

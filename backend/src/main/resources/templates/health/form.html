@@ -110,8 +110,14 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="recordDate">記録日<span class="required">*</span></label>
-              <input id="recordDate" type="date" th:field="*{recordDate}" class="form-control"
+              <input th:if="${!editMode}" id="recordDate" type="date" th:field="*{recordDate}" class="form-control"
+                     th:attr="max=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
                      th:classappend="${#fields.hasErrors('recordDate')} ? 'is-invalid'">
+              <input th:if="${editMode}" type="hidden" th:field="*{recordDate}">
+              <div th:if="${editMode}" class="form-control" style="background:#F8FAFC;"
+                   th:text="${form.recordDate}">2026-05-19</div>
+              <div class="form-hint" th:if="${!editMode}">新規登録では当日または過去の日付のみ指定できます。</div>
+              <div class="form-hint" th:if="${editMode}">既存データの編集では記録日は変更できません。</div>
               <div class="invalid-feedback" th:if="${#fields.hasErrors('recordDate')}" th:errors="*{recordDate}"></div>
             </div>
             <div class="form-group">

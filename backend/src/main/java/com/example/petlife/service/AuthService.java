@@ -6,24 +6,23 @@ import com.example.petlife.entity.UserEntity;
 import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.mapper.AuthMapper;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
     private final AuthMapper authMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthService(AuthMapper authMapper) {
+    public AuthService(AuthMapper authMapper, BCryptPasswordEncoder passwordEncoder) {
         this.authMapper = authMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public LoginResponse login(LoginRequest request, HttpSession session) {
         UserEntity user = authMapper.findByEmail(request.email());
-        if (user == null) {
-            throw new BadRequestException("Invalid credentials");
-        }
-        // Prototype: plain compare. Replace with BCrypt check in production.
-        if (!request.password().equals(user.passwordHash())) {
+        if (user == null || !passwordEncoder.matches(request.password(), user.passwordHash())) {
             throw new BadRequestException("Invalid credentials");
         }
         session.setAttribute("userId", user.id());

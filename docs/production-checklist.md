@@ -67,3 +67,9 @@
 - 秘密情報ローテーション手順
 - 管理者操作ポリシー（監査ログレビュー頻度含む）
 - 問い合わせ対応テンプレート（Zoomフォールバック通知時の案内文）
+
+## 9. 起動トラブルシュート（ローカル）
+- 症状: `./mvnw spring-boot:run` で `Port 8080 was already in use` が出る
+- 8080ポート解放:
+  - 通常停止: `lsof -ti tcp:8080 | xargs kill`
+  - 強制停止: `lsof -ti tcp:8080 | xargs kill -9`

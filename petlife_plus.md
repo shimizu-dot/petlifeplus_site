@@ -385,10 +385,10 @@ Webアプリ部分（管理/会員アプリ）
 
 URL	HTTPメソッド	画面/機能	説明
 /app/login	GET	ログイン画面	ログインフォーム表示
-/app/sessions	POST	ログイン処理	認証してセッション作成
-/app/sessions/current	DELETE	ログアウト	現在セッション削除
-/app/password-resets	POST	パスワード再設定依頼	再設定メール送信
-/app/password-resets/{token}	PATCH	パスワード更新	新パスワード反映
+/app/login	POST	ログイン処理	Spring Security が認証・セッション作成
+/app/logout	POST	ログアウト	セッション破棄・Cookie削除
+/app/password-resets	GET	パスワード変更画面	変更フォーム表示（要ログイン）
+/app/password-resets	POST	パスワード変更	現在パスワード確認後にBCryptで更新
 /app/dashboard	GET	ダッシュボード	KPI・通知・予定表示
 /app/users	GET	ユーザー一覧/検索	一覧、条件検索
 /app/users/new	GET	ユーザー登録画面	新規入力フォーム表示
@@ -430,12 +430,10 @@ AuthController（認証）
 
 URL	HTTPメソッド	画面/機能	説明
 /app/login	GET	ログイン画面	ログインフォームを表示
-/app/sessions	POST	ログイン処理	認証してセッション作成
-/app/sessions/current	DELETE	ログアウト	現在セッションを破棄
-/app/password-resets/new	GET	再設定申請画面	メール入力画面を表示
-/app/password-resets	POST	再設定申請	再設定トークンを発行・通知
-/app/password-resets/{token}/edit	GET	再設定入力画面	新パスワード入力画面を表示
-/app/password-resets/{token}	PATCH	パスワード更新	パスワードを更新
+/app/login	POST	ログイン処理	Spring Security が認証・セッション作成（loginProcessingUrl）
+/app/logout	POST	ログアウト	セッション破棄・Cookie削除（Spring Security）
+/app/password-resets	GET	パスワード変更画面	変更フォームを表示（要ログイン）
+/app/password-resets	POST	パスワード変更	現在パスワード確認後にBCryptで更新
 DashboardController
 
 URL	HTTPメソッド	画面/機能	説明

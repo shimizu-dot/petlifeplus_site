@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>通知 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">通知</span></div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="page-header">
+        <h1 class="page-title">通知一覧
+          <span th:if="${unreadCount > 0}" class="badge badge-blue" th:text="${unreadCount} + ' 件未読'"></span>
+        </h1>
+        <form th:if="${unreadCount > 0}" th:action="@{/app/notifications/read-all}" method="post">
+          <button type="submit" class="btn btn-secondary">すべて既読にする</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div th:if="${notifications.isEmpty()}" style="color:#64748b;text-align:center;padding:24px;">
+          通知はありません
+        </div>
+        <div th:each="n : ${notifications}"
+             th:style="${n.unread()} ? 'padding:14px;border-bottom:1px solid #e2e8f0;background:#f0f9ff;' : 'padding:14px;border-bottom:1px solid #e2e8f0;'">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+            <div>
+              <span th:class="${n.notificationType() == 'ALERT' ? 'badge badge-yellow' : n.notificationType() == 'REMINDER' ? 'badge badge-blue' : 'badge badge-gray'}"
+                    th:text="${n.notificationType() == 'ALERT' ? '警告' : n.notificationType() == 'REMINDER' ? 'リマインダー' : 'お知らせ'}">お知らせ</span>
+              <strong style="margin-left:8px;" th:text="${n.title()}">タイトル</strong>
+              <span th:if="${n.unread()}" style="color:#0ea5e9;font-size:.8em;margin-left:6px;">●未読</span>
+              <div style="margin-top:6px;color:#475569;" th:text="${n.body()}">本文</div>
+              <div style="font-size:.8em;color:#94a3b8;margin-top:4px;"
+                   th:text="${#temporals.format(n.createdAt(), 'yyyy-MM-dd HH:mm')}">2026-05-01 10:00</div>
+            </div>
+            <form th:if="${n.unread()}" th:action="@{/app/notifications/{id}/read(id=${n.id()})}" method="post"
+                  style="flex-shrink:0;">
+              <button type="submit" class="btn btn-secondary" style="font-size:.85em;padding:4px 10px;">既読</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination-summary" th:if="${total > 0}"
+           th:text="'全' + ${total} + '件中 ' + ${((page - 1) * size + 1)} + '-' + ${((page - 1) * size + #lists.size(notifications))} + '件'">
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

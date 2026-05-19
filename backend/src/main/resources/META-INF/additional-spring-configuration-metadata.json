@@ -1,0 +1,70 @@
+{
+  "properties": [
+    {
+      "name": "app.login-maintenance-mode",
+      "type": "java.lang.Boolean",
+      "description": "When true, the login page redirects to the maintenance page instead of showing the login form.",
+      "defaultValue": false
+    },
+    {
+      "name": "slack.bot-token",
+      "type": "java.lang.String",
+      "description": "Slack Bot Token (xoxb-...) for Slack integration. Leave empty to disable Slack features."
+    },
+    {
+      "name": "slack.signing-secret",
+      "type": "java.lang.String",
+      "description": "Slack Signing Secret for verifying incoming Slack event requests."
+    },
+    {
+      "name": "zoom.meeting-base-url",
+      "type": "java.lang.String",
+      "description": "Base URL for Zoom meeting links (e.g. https://zoom.us/j).",
+      "defaultValue": "https://zoom.us/j"
+    },
+    {
+      "name": "zoom.api-base-url",
+      "type": "java.lang.String",
+      "description": "Zoom REST API base URL.",
+      "defaultValue": "https://api.zoom.us/v2"
+    },
+    {
+      "name": "zoom.oauth-base-url",
+      "type": "java.lang.String",
+      "description": "Zoom OAuth token endpoint base URL.",
+      "defaultValue": "https://zoom.us/oauth/token"
+    },
+    {
+      "name": "zoom.account-id",
+      "type": "java.lang.String",
+      "description": "Zoom account ID for Server-to-Server OAuth."
+    },
+    {
+      "name": "zoom.client-id",
+      "type": "java.lang.String",
+      "description": "Zoom OAuth client ID."
+    },
+    {
+      "name": "zoom.client-secret",
+      "type": "java.lang.String",
+      "description": "Zoom OAuth client secret."
+    },
+    {
+      "name": "openai.api-key",
+      "type": "java.lang.String",
+      "description": "OpenAI API key. When empty, SymptomCheckService falls back to keyword-based heuristics."
+    },
+    {
+      "name": "openai.model",
+      "type": "java.lang.String",
+      "description": "OpenAI model ID to use for AI symptom checks.",
+      "defaultValue": "gpt-4.1-mini"
+    },
+    {
+      "name": "openai.base-url",
+      "type": "java.lang.String",
+      "description": "OpenAI API base URL. Override for Azure OpenAI or compatible proxies.",
+      "defaultValue": "https://api.openai.com/v1"
+    }
+  ]
+}

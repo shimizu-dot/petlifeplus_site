@@ -2,6 +2,7 @@ package com.example.petlife.service;
 
 import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.appointment.AppointmentCreateRequest;
+import com.example.petlife.dto.appointment.AppointmentListRow;
 import com.example.petlife.dto.appointment.AppointmentResponse;
 import com.example.petlife.dto.appointment.AppointmentUpdateRequest;
 import com.example.petlife.dto.common.PageResponse;
@@ -54,6 +55,18 @@ public class AppointmentService {
         return get(row.id());
     }
 
+    public PageResponse<AppointmentListRow> listForApp(int page, int size, LoginUser currentUser) {
+        int safePage = Math.max(page, 1);
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        int offset = (safePage - 1) * safeSize;
+        if (currentUser.isAdmin()) {
+            List<AppointmentListRow> items = appointmentMapper.findAllRows(safeSize, offset);
+            return new PageResponse<>(items, safePage, safeSize, appointmentMapper.countAll());
+        }
+        List<AppointmentListRow> items = appointmentMapper.findRowsByOwnerUserId(currentUser.id(), safeSize, offset);
+        return new PageResponse<>(items, safePage, safeSize, appointmentMapper.countByOwnerUserId(currentUser.id()));
+    }
+
     public AppointmentResponse update(Long id, AppointmentUpdateRequest req) {
         AppointmentEntity existing = appointmentMapper.findById(id);
         if (existing == null) throw new NotFoundException("Appointment not found: " + id);
@@ -96,6 +109,44 @@ public class AppointmentService {
         appointmentMapper.insert(row);
         AppointmentResponse created = get(row.id());
         return new PremiumOnlineCareResult(created, zoomResult.fallbackUsed(), zoomResult.fallbackReason());
+    }
+
+    public AppointmentResponse createGeneralCare(Long petId,
+                                                 LocalDateTime scheduledAt,
+                                                 String note,
+                                                 LoginUser currentUser) {
+        if (!currentUser.isAdmin() && !planAccessService.canUseAiSymptom(currentUser)) {
+            throw new BadRequestException("この機能はスタンダード以上で利用できます");
+        }
+        if (scheduledAt == null || !scheduledAt.isAfter(LocalDateTime.now())) {
+            throw new BadRequestException("予約日時は未来日時を指定してください");
+        }
+        if (currentUser.canManagePets()) {
+            if (petMapper.findById(petId) == null) {
+                throw new NotFoundException("Pet not found: " + petId);
+            }
+        } else {
+            if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null) {
+                throw new NotFoundException("Pet not found: " + petId);
+            }
+        }
+        AppointmentEntity row = new AppointmentEntity(
+                null,
+                petId,
+                currentUser.id(),
+                null,
+                "MEDICAL",
+                "VISIT",
+                scheduledAt,
+                "REQUESTED",
+                null,
+                note,
+                null,
+                null,
+                null
+        );
+        appointmentMapper.insert(row);
+        return get(row.id());
     }
 
     public void delete(Long id) {

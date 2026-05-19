@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>サブスクリプション | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">サブスクリプション</span></div>
+    <div class="content">
+
+      <h1 class="page-title" th:text="${isAdminView} ? 'サブスクリプション一覧（全ユーザー）' : 'マイサブスクリプション'">
+        サブスクリプション
+      </h1>
+
+      <div class="card">
+        <div th:if="${page.items.isEmpty()}" style="color:#64748b;text-align:center;padding:24px;">
+          サブスクリプションはありません
+        </div>
+        <div class="table-wrap" th:if="${!page.items.isEmpty()}">
+          <table class="table">
+            <thead>
+            <tr>
+              <th th:if="${isAdminView}">飼い主</th>
+              <th>プラン</th>
+              <th>対象ペット</th>
+              <th>開始日</th>
+              <th>終了日</th>
+              <th>ステータス</th>
+              <th>自動更新</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${page.items}">
+              <td th:if="${isAdminView}" th:text="${row.ownerName()}">山田 太郎</td>
+              <td th:text="${row.planName()}">STANDARD</td>
+              <td th:text="${row.petName()}">ポチ</td>
+              <td th:text="${row.startDate()}">2026-01-01</td>
+              <td th:text="${row.endDate() != null ? row.endDate() : '—'}">—</td>
+              <td>
+                <span th:class="${row.status() == 'ACTIVE' ? 'badge badge-green' :
+                                  row.status() == 'PAUSED' ? 'badge badge-yellow' : 'badge badge-gray'}"
+                      th:text="${row.status() == 'ACTIVE' ? '有効' :
+                                 row.status() == 'PAUSED' ? '一時停止' : 'キャンセル済'}">有効</span>
+              </td>
+              <td th:text="${row.autoRenew()} ? '有効' : '無効'">有効</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pagination-summary" th:if="${page.total > 0}"
+           th:text="'全' + ${page.total} + '件中 ' + ${((page.page - 1) * page.size + 1)} + '-' + ${((page.page - 1) * page.size + #lists.size(page.items))} + '件'">
+      </div>
+
+      <div class="pagination" th:if="${page.total > page.size}">
+        <a th:if="${page.page > 1}" th:href="@{/app/subscriptions(page=${page.page - 1},size=${page.size})}">前へ</a>
+        <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}">
+          <span th:if="${i == page.page}" class="current" th:text="${i}">1</span>
+          <a th:if="${i != page.page}" th:href="@{/app/subscriptions(page=${i},size=${page.size})}" th:text="${i}">2</a>
+        </span>
+        <a th:if="${page.page * page.size < page.total}"
+           th:href="@{/app/subscriptions(page=${page.page + 1},size=${page.size})}">次へ</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

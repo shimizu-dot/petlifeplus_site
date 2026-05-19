@@ -15,6 +15,7 @@
     <div class="content">
 
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
       <div class="breadcrumb">
         <a th:href="@{/app/pets}">ペット一覧</a> / <span th:text="${pet.name}">ペット名</span>
@@ -55,6 +56,10 @@
             <div class="detail-label">生年月日</div>
             <div class="detail-value" th:text="${pet.birthDate ?: '—'}">2021-03-01</div>
           </div>
+          <div class="detail-item" th:if="${ownerName != null}">
+            <div class="detail-label">飼い主</div>
+            <div class="detail-value" th:text="${ownerName}">飼い主 花子</div>
+          </div>
           <div class="detail-item">
             <div class="detail-label">基準体重</div>
             <div class="detail-value"
@@ -69,6 +74,11 @@
              th:each="n : ${upcomingCareNotices}">
           <span th:text="${(n.careType == 'RABIES' ? '狂犬病' : n.careType == 'HEARTWORM' ? 'フィラリア' : n.careType == 'COMBO_VACCINE' ? '混合ワクチン' : n.careType == 'MEDICAL_VISIT' ? '診療' : 'その他') + ' の次回予定日: ' + n.nextDueOn}"></span>
         </div>
+      </div>
+
+      <div class="card" th:unless="${canUseAiSymptom}">
+        <div class="card-title">AI症状チェック</div>
+        <p style="color:#64748b;">AI症状チェックはスタンダード以上のプランでご利用いただけます。</p>
       </div>
 
       <div class="card" th:if="${canUseAiSymptom}">
@@ -117,8 +127,8 @@
             <tr th:each="s : ${symptomChecks}">
               <td th:text="${#temporals.format(s.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
               <td th:text="${s.symptomType}"></td>
-              <td th:text="${s.severity}"></td>
-              <td th:text="${s.recommendation}"></td>
+              <td th:text="${s.severity == 'HIGH' ? '高リスク' : s.severity == 'MEDIUM' ? '中リスク' : '低リスク'}"></td>
+              <td th:text="${s.recommendation == 'VISIT' ? '今すぐ受診' : s.recommendation == 'CONSULT' ? '相談推奨' : '様子見'}"></td>
               <td th:text="${s.aiModel}"></td>
             </tr>
             </tbody>

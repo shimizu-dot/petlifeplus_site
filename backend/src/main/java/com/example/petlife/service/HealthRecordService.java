@@ -13,6 +13,7 @@ import com.example.petlife.mapper.PetMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,11 +33,16 @@ public class HealthRecordService {
 
     // ---- 一覧（ペット別・オーナー確認済み） ----
 
-    public PageResponse<HealthRecordResponse> listForPet(Long petId, int page, int size, LoginUser currentUser) {
+    public PageResponse<HealthRecordResponse> listForPet(Long petId, int page, int size, LocalDate recordDate, LoginUser currentUser) {
         verifyPetAccess(petId, currentUser);
         int safePage = Math.max(page, 1);
         int safeSize = Math.min(Math.max(size, 1), 100);
         int offset = (safePage - 1) * safeSize;
+        if (recordDate != null) {
+            List<HealthRecordResponse> filteredItems = healthRecordMapper.findByPetIdAndRecordDate(petId, recordDate, safeSize, offset)
+                    .stream().map(this::toResponse).toList();
+            return new PageResponse<>(filteredItems, safePage, safeSize, healthRecordMapper.countByPetIdAndRecordDate(petId, recordDate));
+        }
         List<HealthRecordResponse> items = healthRecordMapper.findByPetId(petId, safeSize, offset)
                 .stream().map(this::toResponse).toList();
         return new PageResponse<>(items, safePage, safeSize, healthRecordMapper.countByPetId(petId));
@@ -106,7 +112,7 @@ public class HealthRecordService {
     // ---- 内部ヘルパー ----
 
     private void verifyPetAccess(Long petId, LoginUser currentUser) {
-        PetEntity pet = currentUser.isAdmin()
+        PetEntity pet = currentUser.canManagePets()
                 ? petMapper.findById(petId)
                 : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
         if (pet == null) throw new NotFoundException("Pet not found: " + petId);

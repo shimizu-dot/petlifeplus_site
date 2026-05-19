@@ -39,10 +39,10 @@ Schema and seed data (`schema.sql`, `data.sql`) are applied automatically on eve
 | owner1@petlifeplus.local | user123 | USER |
 | vet1@petlifeplus.local | vet123 | VET |
 | staff1@petlifeplus.local | staff123 | STAFF |
-｜owner2@petlifeplus.local	｜　user123	｜　USER |
-｜owner.light@petlifeplus.local	｜　light123　｜ USER |
-｜owner.standard@petlifeplus.local	｜standard123　｜ USER |
-｜owner.premium@petlifeplus.local　｜	premium123	｜ USER |
+| owner2@petlifeplus.local | user123 | USER |
+| owner.light@petlifeplus.local | light123 | USER |
+| owner.standard@petlifeplus.local | standard123 | USER |
+| owner.premium@petlifeplus.local | premium123 | USER |
 
 
 ## Backend Architecture
@@ -56,8 +56,13 @@ Controller → Service → Mapper (MyBatis) → PostgreSQL
 - `/` — redirects to frontend index
 - `/app/login` — form login (public)
 - `/app/dashboard` — authenticated entry point
-- `/app/pets`, `/app/appointments`, `/app/health-records` — user-facing CRUD
-- `/app/admin/**` — requires ADMIN role
+- `/app/pets`, `/app/pets/{petId}/health-records`, `/app/appointments` — user-facing CRUD
+- `/app/notifications` — 通知一覧・既読処理（全認証ユーザー）
+- `/app/subscriptions` — サブスクリプション確認（ADMIN は全ユーザー分）
+- `/app/password-resets` — パスワード変更（全認証ユーザー）
+- `/app/consultations/**` — 診療記録 CRUD（VET / STAFF / ADMIN のみ）
+- `/app/reports` — サービス統計（ADMIN のみ）
+- `/app/admin/**` — ユーザー管理（ADMIN のみ）
 - `/assets/**`, `/css/**`, `/js/**` — static resources (public)
 
 **Authentication:** Spring Security with session-based form login. `UserDetailsServiceImpl` loads users by email. Roles: `ADMIN`, `USER`, `VET`, `STAFF`. Role filtering happens in the service layer (`currentUser.isAdmin()` checks).
@@ -66,13 +71,23 @@ Controller → Service → Mapper (MyBatis) → PostgreSQL
 
 **HTTP method override:** Thymeleaf forms use `_method` hidden parameter for `PATCH`/`DELETE` (Spring's `HiddenHttpMethodFilter` is enabled).
 
-## Key Known Issue
+## External Service Configuration
 
-`AuthService` currently compares passwords in plain text. It should use:
-```java
-passwordEncoder.matches(request.password(), user.passwordHash())
-```
-instead of direct string equality.
+The following integrations are configured via environment variables (with defaults in `application.properties`):
+
+| Service | Env Vars | Used by |
+|---|---|---|
+| **OpenAI** | `OPENAI_API_KEY`, `OPENAI_MODEL` (default: `gpt-4.1-mini`), `OPENAI_BASE_URL` | `SymptomCheckService` — AI症状チェック。キー未設定時はキーワードベースのフォールバックで動作 |
+| **Slack** | `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET` | `SlackEventController` (`/api/slack/events`) + `ConsultChatService` — Slackbot相談 |
+| **Zoom** | `ZOOM_ACCOUNT_ID`, `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ZOOM_MEETING_BASE_URL`, `ZOOM_API_BASE_URL`, `ZOOM_OAUTH_BASE_URL` | `ZoomLinkService` + `PremiumSupportController` (`/app/premium/online-care`) — プレミアムオンライン診療 |
+
+未設定のまま起動しても OpenAI はフォールバックで動作し、Slack/Zoom は該当機能を使わない限りエラーにならない。
+
+## Authentication Notes
+
+Login is handled by Spring Security form login via `UserDetailsServiceImpl` + `BCryptPasswordEncoder`. This path works correctly.
+
+`AuthService.login()` is a secondary login method (not called by any controller) and was previously doing plain-text password comparison. It has been fixed to use `passwordEncoder.matches()`. If a controller endpoint is added that calls `AuthService.login()`, it will work correctly.
 
 ## Frontend
 
@@ -97,5 +112,12 @@ Detailed schema: `backend/src/main/resources/schema.sql`. Business requirements:
 ## Implementation Status
 
 - **Implemented (Must):** User/pet/health-record/appointment CRUD, role-based access, dashboards
-- **Schema only (not implemented):** AI symptom check (F-009), invoices, payments, notifications, email, PDF export
+- **Implemented (Premium):** AI symptom check (F-009) — `SymptomCheckService` calls OpenAI API with heuristic fallback; gated by plan via `PlanAccessService.canUseAiSymptom()`
+- **Implemented:** Notifications (`/app/notifications`) — view & mark-as-read; backed by `notification_recipients` table
+- **Implemented:** Subscriptions (`/app/subscriptions`) — plan contract list per user; admin sees all
+- **Implemented:** Password change (`/app/password-resets`) — requires current password; BCrypt re-hash on save
+- **Implemented:** Medical history / Consultations (`/app/consultations/**`) — full CRUD; VET/STAFF/ADMIN only; backed by `medical_histories` table
+- **Implemented:** Reports (`/app/reports`) — aggregate stats for admin (users, pets, appointments, subscriptions)
+- **Schema only (not implemented):** invoices, payments, email (templates & messages), PDF export
+- **All 22 DB tables have corresponding MyBatis mappers.** Mappers for schema-only features (invoices, payments, email, medical_attachments) provide basic CRUD but have no controller/service wired up yet.
 - **No automated tests exist** — `backend/docs/test_report.md` is a test plan, not test code

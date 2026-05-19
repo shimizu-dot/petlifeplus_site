@@ -49,7 +49,7 @@ public class SymptomCheckService {
         if (!planAccessService.canUseAiSymptom(currentUser)) {
             throw new BadRequestException("AI症状チェックはスタンダード以上で利用できます");
         }
-        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.isAdmin()) {
+        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.canManagePets()) {
             throw new BadRequestException("対象ペットが見つかりません");
         }
 
@@ -76,7 +76,7 @@ public class SymptomCheckService {
     }
 
     public List<SymptomCheckEntity> recentByPet(Long petId, LoginUser currentUser) {
-        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.isAdmin()) {
+        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.canManagePets()) {
             return List.of();
         }
         List<SymptomCheckEntity> desc = symptomCheckMapper.findRecentByPetId(petId, 5);

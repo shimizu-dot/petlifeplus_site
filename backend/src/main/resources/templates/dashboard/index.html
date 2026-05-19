@@ -55,7 +55,7 @@
           <span th:if="${!canUsePrioritySupport and currentUser != null and !currentUser.isAdmin()}"
                 style="font-size:13px;color:#64748B;">優先サポートはプレミアムで利用できます</span>
           <a th:if="${currentUser != null and currentUser.isAdmin()}"
-             th:href="@{/app/admin/users}" class="btn btn-secondary">👥 ユーザー管理</a>
+             th:href="@{/app/admin/users}" class="btn btn-secondary">👥 ユーザ管理</a>
         </div>
       </div>
 

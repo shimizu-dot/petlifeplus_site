@@ -22,7 +22,7 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers("/api/slack/events").permitAll()
                 .requestMatchers("/app/login").permitAll()
-                .requestMatchers("/app/admin/**").hasRole("ADMIN")
+                .requestMatchers("/app/admin/**", "/app/reports/**").hasRole("ADMIN")
                 .requestMatchers("/app/**").authenticated()
                 .anyRequest().permitAll()
             )

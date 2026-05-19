@@ -16,6 +16,21 @@
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
       <div class="card">
+        <div class="card-title">質問フロー</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div th:each="step : ${flowProgress}"
+               style="font-size:14px;color:#0F172A;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #E2E8F0;border-radius:8px;padding:8px 10px;">
+            <span th:text="${step.label}">1. 症状の種類</span>
+            <span th:if="${step.completed}" style="font-size:12px;font-weight:700;color:#065F46;background:#D1FAE5;padding:4px 8px;border-radius:9999px;">回答済み</span>
+            <span th:if="${!step.completed}" style="font-size:12px;font-weight:700;color:#334155;background:#E2E8F0;padding:4px 8px;border-radius:9999px;">未回答</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:#64748B;">
+          回答テンプレート: 要約 → 判定 → 判断理由 → 次の行動 → 次に確認したいこと
+        </div>
+      </div>
+
+      <div class="card">
         <div class="card-title">相談履歴</div>
         <div style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;">
           <div th:if="${#lists.isEmpty(messages)}" style="color:#64748B;">まだメッセージはありません。</div>
@@ -30,6 +45,10 @@
 
       <div class="card">
         <div class="card-title">メッセージ送信</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+          <button type="button" class="btn btn-secondary btn-sm prompt-btn" th:each="prompt : ${quickPrompts}"
+                  th:data-prompt="${prompt}" th:text="${prompt}">嘔吐があります。昨日夜からです。</button>
+        </div>
         <form th:action="@{/app/consult/chatbot}" method="post" th:object="${form}">
           <div class="form-group">
             <label class="form-label" for="message">相談内容<span class="required">*</span></label>
@@ -44,5 +63,15 @@
     </div>
   </div>
 </div>
+<script>
+  document.querySelectorAll('.prompt-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var textarea = document.getElementById('message');
+      if (!textarea) return;
+      textarea.value = btn.dataset.prompt || '';
+      textarea.focus();
+    });
+  });
+</script>
 </body>
 </html>

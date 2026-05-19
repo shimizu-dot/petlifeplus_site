@@ -2,6 +2,7 @@ package com.example.petlife.controller;
 
 import com.example.petlife.dto.user.UserForm;
 import com.example.petlife.entity.UserEntity;
+import com.example.petlife.service.PetService;
 import com.example.petlife.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -15,14 +16,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
     private final UserService userService;
+    private final PetService petService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PetService petService) {
         this.userService = userService;
+        this.petService = petService;
     }
 
     @GetMapping
     public String list(@RequestParam(defaultValue = "1") int page,
-                       @RequestParam(defaultValue = "20") int size,
+                       @RequestParam(defaultValue = "10") int size,
                        Model model) {
         model.addAttribute("page", userService.list(page, size));
         return "admin/users/list";
@@ -40,6 +43,10 @@ public class UserController {
                          BindingResult result,
                          Model model,
                          RedirectAttributes ra) {
+        String password = form.getPassword() == null ? "" : form.getPassword().trim();
+        if (password.length() < 8 || password.length() > 64) {
+            result.rejectValue("password", "Size.form.password", "パスワードは8〜64文字で入力してください");
+        }
         if (result.hasErrors()) {
             model.addAttribute("editMode", false);
             return "admin/users/form";
@@ -60,8 +67,11 @@ public class UserController {
         form.setStatus(entity.status());
         if (entity.roleId() != null && entity.roleId() == 2L) {
             String plan = userService.findActivePlanNameByUserId(entity.id());
-            form.setPlanTier(plan != null ? plan : "LIGHT");
+            form.setPlanTier(plan != null ? plan : "PREMIUM");
+        } else {
+            form.setPlanTier("PREMIUM");
         }
+        model.addAttribute("linkedPets", petService.listByOwnerUserIdForAdmin(entity.id()));
         model.addAttribute("form",     form);
         model.addAttribute("userId",   id);
         model.addAttribute("editMode", true);

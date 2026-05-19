@@ -31,6 +31,11 @@
         </a>
       </div>
 
+      <div th:if="${recordDate != null}" class="alert alert-success" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <span th:text="${recordDate} + ' の記録を表示中'">2026-05-26 の記録を表示中</span>
+        <a class="btn btn-secondary btn-sm" th:href="@{/app/pets/{id}/health-records(id=${pet.id})}">日付絞り込みを解除</a>
+      </div>
+
       <div class="card" style="padding:0;">
         <div th:if="${page.items.isEmpty()}" class="empty-state">
           <div class="empty-state-icon">📋</div>
@@ -45,6 +50,7 @@
             <thead>
               <tr>
                 <th>記録日</th>
+                <th>記録者</th>
                 <th>体重 (kg)</th>
                 <th>運動 (分)</th>
                 <th>食事</th>
@@ -61,13 +67,17 @@
             <tbody>
               <tr th:each="rec : ${page.items}">
                 <td style="white-space:nowrap;" th:text="${rec.recordDate}">2026-05-10</td>
+                <td>
+                  <span th:if="${rec.recordedByUserId != pet.ownerUserId}" class="badge badge-yellow">医師</span>
+                  <span th:if="${rec.recordedByUserId == pet.ownerUserId}">—</span>
+                </td>
                 <td th:text="${rec.weightKg != null ? rec.weightKg : '—'}">8.60</td>
                 <td th:text="${rec.exerciseMinutes != null ? rec.exerciseMinutes : '—'}">30</td>
-                <td th:text="${rec.mealScore == 5 ? '😄' : rec.mealScore == 4 ? '😁' : rec.mealScore == 3 ? '😅' : rec.mealScore == 2 ? '🙂' : rec.mealScore == 1 ? '😟' : '—'}">😄</td>
-                <td th:text="${rec.exerciseScore == 5 ? '😄' : rec.exerciseScore == 4 ? '😁' : rec.exerciseScore == 3 ? '😅' : rec.exerciseScore == 2 ? '🙂' : rec.exerciseScore == 1 ? '😟' : '—'}">😄</td>
-                <td th:text="${rec.sleepScore == 5 ? '😄' : rec.sleepScore == 4 ? '😁' : rec.sleepScore == 3 ? '😅' : rec.sleepScore == 2 ? '🙂' : rec.sleepScore == 1 ? '😟' : '—'}">😄</td>
-                <td th:text="${rec.moodScore == 5 ? '😄' : rec.moodScore == 4 ? '😁' : rec.moodScore == 3 ? '😅' : rec.moodScore == 2 ? '🙂' : rec.moodScore == 1 ? '😟' : '—'}">😄</td>
-                <td th:text="${rec.overallScore == 5 ? '😄' : rec.overallScore == 4 ? '😁' : rec.overallScore == 3 ? '😅' : rec.overallScore == 2 ? '🙂' : rec.overallScore == 1 ? '😟' : '—'}">😄</td>
+                <td th:text="${rec.mealScore != null ? rec.mealScore : '—'}">5</td>
+                <td th:text="${rec.exerciseScore != null ? rec.exerciseScore : '—'}">5</td>
+                <td th:text="${rec.sleepScore != null ? rec.sleepScore : '—'}">5</td>
+                <td th:text="${rec.moodScore != null ? rec.moodScore : '—'}">5</td>
+                <td th:text="${rec.overallScore != null ? rec.overallScore : '—'}">5</td>
                 <td>
                   <img th:if="${rec.imagePath != null}" th:src="${rec.imagePath}" alt="health-image"
                        style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid #CBD5E1;">
@@ -98,12 +108,12 @@
       <!-- ページネーション -->
       <div class="pagination" th:if="${page.total > page.size}">
         <a th:if="${page.page > 1}"
-           th:href="@{/app/pets/{id}/health-records(id=${pet.id},page=${page.page - 1})}">‹</a>
+           th:href="@{/app/pets/{id}/health-records(id=${pet.id},page=${page.page - 1},recordDate=${recordDate})}">‹</a>
         <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}"
               th:class="${i == page.page ? 'current' : ''}"
               th:text="${i}">1</span>
         <a th:if="${page.page * page.size < page.total}"
-           th:href="@{/app/pets/{id}/health-records(id=${pet.id},page=${page.page + 1})}">›</a>
+           th:href="@{/app/pets/{id}/health-records(id=${pet.id},page=${page.page + 1},recordDate=${recordDate})}">›</a>
       </div>
 
     </div>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>診療案内 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <style>
+    #clinicMap { width: 100%; height: 460px; border-radius: 12px; border: 1px solid #CBD5E1; }
+    .guide-tools { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .guide-inline { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .clinic-list { margin-top: 12px; display: grid; gap: 8px; }
+    .clinic-item { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 12px; background: #fff; }
+    @media (max-width: 768px) {
+      #clinicMap { height: 360px; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">診療案内</span></div>
+    <div class="content">
+      <div class="card">
+        <div class="card-title">近くの動物病院を探す</div>
+        <div class="guide-tools">
+          <button id="gpsSearchBtn" type="button" class="btn btn-primary">現在地で検索</button>
+          <div class="guide-inline">
+            <input id="stationInput" type="text" class="form-control" style="width:260px;" placeholder="最寄り駅を入力（例: 渋谷駅）">
+            <button id="stationSearchBtn" type="button" class="btn btn-secondary">駅指定で検索</button>
+          </div>
+        </div>
+        <div id="statusMessage" class="form-hint">まずは「現在地で検索」を押してください。GPSが使えない場合は駅名を指定してください。</div>
+        <div id="clinicMap"></div>
+        <div id="clinicList" class="clinic-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  const statusMessage = document.getElementById('statusMessage');
+  const stationInput = document.getElementById('stationInput');
+  const clinicList = document.getElementById('clinicList');
+  const map = L.map('clinicMap').setView([35.681236, 139.767125], 12);
+  const markers = [];
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  async function searchClinics(lat, lon, baseLabel) {
+    statusMessage.textContent = baseLabel + ' 周辺の動物病院を検索しています...';
+    clinicList.innerHTML = '';
+    clearMarkers();
+
+    const radius = 5000;
+    const query = `
+      [out:json][timeout:25];
+      (
+        node["amenity"="veterinary"](around:${radius},${lat},${lon});
+        way["amenity"="veterinary"](around:${radius},${lat},${lon});
+        relation["amenity"="veterinary"](around:${radius},${lat},${lon});
+      );
+      out center;
+    `;
+
+    const res = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: query
+    });
+    if (!res.ok) throw new Error('病院情報の取得に失敗しました');
+    const data = await res.json();
+    const hospitals = (data.elements || []).map((el) => {
+      const hLat = el.lat || (el.center && el.center.lat);
+      const hLon = el.lon || (el.center && el.center.lon);
+      if (!hLat || !hLon) return null;
+      const name = (el.tags && el.tags.name) ? el.tags.name : '動物病院';
+      const addr = el.tags && (el.tags['addr:full'] || el.tags['addr:street'] || '');
+      return { name, addr, lat: hLat, lon: hLon };
+    }).filter(Boolean);
+
+    if (hospitals.length === 0) {
+      statusMessage.textContent = baseLabel + ' 周辺5kmに動物病院が見つかりませんでした。駅名を変えて再検索してください。';
+      return;
+    }
+
+    statusMessage.textContent = baseLabel + ' 周辺の動物病院 ' + hospitals.length + ' 件を表示中です。';
+    map.setView([lat, lon], 13);
+    addMarker(lat, lon, baseLabel + '（検索中心）');
+
+    hospitals.slice(0, 30).forEach((h, index) => {
+      addMarker(h.lat, h.lon, (index + 1) + '. ' + h.name + (h.addr ? '<br>' + h.addr : ''));
+      const item = document.createElement('div');
+      item.className = 'clinic-item';
+      item.textContent = (index + 1) + '. ' + h.name + (h.addr ? ' / ' + h.addr : '');
+      clinicList.appendChild(item);
+    });
+  }
+
+  async function searchByStation() {
+    const station = (stationInput.value || '').trim();
+    if (!station) {
+      statusMessage.textContent = '最寄り駅を入力してください。';
+      return;
+    }
+    statusMessage.textContent = station + ' の位置を検索しています...';
+    const geoUrl = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(station + ' 日本');
+    const res = await fetch(geoUrl, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('駅情報の取得に失敗しました');
+    const rows = await res.json();
+    if (!rows || rows.length === 0) {
+      statusMessage.textContent = '駅が見つかりませんでした。駅名を見直してください。';
+      return;
+    }
+    const lat = Number(rows[0].lat);
+    const lon = Number(rows[0].lon);
+    await searchClinics(lat, lon, station);
+  }
+
+  function searchByGps() {
+    if (!navigator.geolocation) {
+      statusMessage.textContent = 'GPSが利用できません。最寄り駅を指定して検索してください。';
+      return;
+    }
+    statusMessage.textContent = '現在地を取得しています...';
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      await searchClinics(lat, lon, '現在地');
+    }, () => {
+      statusMessage.textContent = 'GPSが利用できません。最寄り駅を指定して検索してください。';
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  }
+
+  function addMarker(lat, lon, popupText) {
+    const marker = L.marker([lat, lon]).addTo(map);
+    marker.bindPopup(popupText);
+    markers.push(marker);
+  }
+
+  function clearMarkers() {
+    while (markers.length > 0) {
+      map.removeLayer(markers.pop());
+    }
+  }
+
+  document.getElementById('gpsSearchBtn').addEventListener('click', () => {
+    searchByGps().catch((e) => {
+      statusMessage.textContent = e.message || '検索に失敗しました。時間をおいて再試行してください。';
+    });
+  });
+  document.getElementById('stationSearchBtn').addEventListener('click', () => {
+    searchByStation().catch((e) => {
+      statusMessage.textContent = e.message || '検索に失敗しました。時間をおいて再試行してください。';
+    });
+  });
+  stationInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('stationSearchBtn').click();
+    }
+  });
+</script>
+</body>
+</html>

@@ -32,4 +32,7 @@ public record LoginUser(
     @Override public boolean isEnabled() { return enabled; }
 
     public boolean isAdmin() { return roleId == 1L; }
+    public boolean isVet() { return roleId == 3L; }
+    public boolean isStaff() { return roleId == 4L; }
+    public boolean canManagePets() { return isAdmin() || isVet() || isStaff(); }
 }

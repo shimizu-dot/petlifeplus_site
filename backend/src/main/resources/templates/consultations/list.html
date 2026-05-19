@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>診療記録 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">診療記録</span></div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="page-header">
+        <h1 class="page-title">診療記録一覧</h1>
+        <a th:href="@{/app/consultations/new}" class="btn btn-primary">＋ 新規登録</a>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>実施日</th>
+              <th>ペット</th>
+              <th>担当者</th>
+              <th>治療内容</th>
+              <th>診断</th>
+              <th>処方</th>
+              <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${page.items.isEmpty()}">
+              <td colspan="7" style="text-align:center;color:#64748B;">診療記録はありません</td>
+            </tr>
+            <tr th:each="row : ${page.items}">
+              <td th:text="${row.performedOn()}">2026-05-01</td>
+              <td th:text="${row.petName()}">ポチ</td>
+              <td th:text="${row.handlerName()}">山田 太郎</td>
+              <td th:text="${#strings.abbreviate(row.treatmentDetail(), 40)}">治療内容</td>
+              <td th:text="${row.diagnosis() != null ? #strings.abbreviate(row.diagnosis(), 30) : '—'}">—</td>
+              <td th:text="${row.prescription() != null ? #strings.abbreviate(row.prescription(), 30) : '—'}">—</td>
+              <td style="white-space:nowrap;">
+                <a th:href="@{/app/consultations/{id}/edit(id=${row.id()})}" class="btn btn-secondary"
+                   style="font-size:.85em;padding:4px 10px;">編集</a>
+                <form th:action="@{/app/consultations/{id}(id=${row.id()})}" method="post"
+                      style="display:inline;"
+                      onsubmit="return confirm('この診療記録を削除しますか？')">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn btn-danger"
+                          style="font-size:.85em;padding:4px 10px;">削除</button>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pagination-summary" th:if="${page.total > 0}"
+           th:text="'全' + ${page.total} + '件中 ' + ${((page.page - 1) * page.size + 1)} + '-' + ${((page.page - 1) * page.size + #lists.size(page.items))} + '件'">
+      </div>
+
+      <div class="pagination" th:if="${page.total > page.size}">
+        <a th:if="${page.page > 1}" th:href="@{/app/consultations(page=${page.page - 1},size=${page.size})}">前へ</a>
+        <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}">
+          <span th:if="${i == page.page}" class="current" th:text="${i}">1</span>
+          <a th:if="${i != page.page}" th:href="@{/app/consultations(page=${i},size=${page.size})}" th:text="${i}">2</a>
+        </span>
+        <a th:if="${page.page * page.size < page.total}"
+           th:href="@{/app/consultations(page=${page.page + 1},size=${page.size})}">次へ</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

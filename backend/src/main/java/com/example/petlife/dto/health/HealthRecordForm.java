@@ -1,7 +1,5 @@
 package com.example.petlife.dto.health;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -12,7 +10,7 @@ import java.time.LocalDate;
 
 @Data
 public class HealthRecordForm {
-    @NotNull @PastOrPresent private LocalDate recordDate;
+    private LocalDate       recordDate;
                             private BigDecimal weightKg;
     @Size(max = 300)        private String mealMemo;
                             private Integer exerciseMinutes;

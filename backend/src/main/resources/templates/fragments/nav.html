@@ -14,6 +14,18 @@
        th:classappend="${requestURI.contains('/pets') ? 'active' : ''}">
       🐶 ペット管理
     </a>
+    <a th:href="@{/app/calendar}"
+       th:classappend="${requestURI.contains('/calendar') ? 'active' : ''}">
+      📅 カレンダー
+    </a>
+    <a th:href="@{/app/clinic-guide}"
+       th:classappend="${requestURI.contains('/clinic-guide') ? 'active' : ''}">
+      🏥 診療案内
+    </a>
+    <a th:if="${canUseAiSymptom}" th:href="@{/app/appointments}"
+       th:classappend="${requestURI.contains('/appointments') ? 'active' : ''}">
+      📋 診療予約
+    </a>
     <a th:if="${canUseAiSymptom}" th:href="@{/app/consult/chatbot}"
        th:classappend="${requestURI.contains('/consult/chatbot') ? 'active' : ''}">
       💬 相談チャット
@@ -22,6 +34,27 @@
        th:classappend="${requestURI.contains('/premium/online-care') ? 'active' : ''}">
       ⭐ Zoom診療
     </a>
+    <a th:href="@{/app/notifications}"
+       th:classappend="${requestURI.contains('/notifications') ? 'active' : ''}">
+      🔔 通知
+    </a>
+    <a th:href="@{/app/subscriptions}"
+       th:classappend="${requestURI.contains('/subscriptions') ? 'active' : ''}">
+      💳 サブスクリプション
+    </a>
+    <a th:href="@{/app/password-resets}"
+       th:classappend="${requestURI.contains('/password-resets') ? 'active' : ''}">
+      🔑 パスワード変更
+    </a>
+  </nav>
+
+  <!-- 獣医師・スタッフ・管理者メニュー -->
+  <div th:if="${currentUser != null and currentUser.canManagePets()}" class="sidebar-section">診療</div>
+  <nav th:if="${currentUser != null and currentUser.canManagePets()}" class="sidebar-nav">
+    <a th:href="@{/app/consultations}"
+       th:classappend="${requestURI.contains('/consultations') ? 'active' : ''}">
+      🩺 診療記録
+    </a>
   </nav>
 
   <!-- 管理者メニュー -->
@@ -29,7 +62,15 @@
   <nav th:if="${currentUser != null and currentUser.isAdmin()}" class="sidebar-nav">
     <a th:href="@{/app/admin/users}"
        th:classappend="${requestURI.contains('/admin/users') ? 'active' : ''}">
-      👥 ユーザー管理
+      👥 ユーザ管理
+    </a>
+    <a th:href="@{/app/appointments}"
+       th:classappend="${requestURI.contains('/appointments') ? 'active' : ''}">
+      📋 予約リスト
+    </a>
+    <a th:href="@{/app/reports}"
+       th:classappend="${requestURI.contains('/reports') ? 'active' : ''}">
+      📊 レポート
     </a>
   </nav>
 

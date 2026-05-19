@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/app/consult/chatbot")
 public class ConsultChatController {
@@ -27,6 +29,7 @@ public class ConsultChatController {
     public String page(Model model, @AuthenticationPrincipal LoginUser currentUser) {
         model.addAttribute("form", new ConsultChatForm());
         model.addAttribute("messages", consultChatService.getRecentMessages(currentUser));
+        putFlowGuide(model, currentUser);
         return "consult/chatbot";
     }
 
@@ -38,10 +41,21 @@ public class ConsultChatController {
                        Model model) {
         if (result.hasErrors()) {
             model.addAttribute("messages", consultChatService.getRecentMessages(currentUser));
+            putFlowGuide(model, currentUser);
             return "consult/chatbot";
         }
         consultChatService.postUserMessage(currentUser, form.getMessage());
         ra.addFlashAttribute("success", "メッセージを送信しました");
         return "redirect:/app/consult/chatbot";
+    }
+
+    private void putFlowGuide(Model model, LoginUser currentUser) {
+        model.addAttribute("flowProgress", consultChatService.getFlowProgress(currentUser));
+        model.addAttribute("quickPrompts", List.of(
+                "嘔吐があります。昨日夜からです。",
+                "症状は1日2回ほどです。",
+                "食欲と元気が落ちています。",
+                "便と尿の状態を記録します。"
+        ));
     }
 }

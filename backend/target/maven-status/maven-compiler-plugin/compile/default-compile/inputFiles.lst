@@ -4,9 +4,13 @@
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/config/MyBatisConfig.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/config/SecurityConfig.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/config/UserDetailsServiceImpl.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/config/WebResourceConfig.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/config/logging/RequestLoggingFilter.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/AppointmentController.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/AppointmentPageController.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/AuthController.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/CalendarController.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/ClinicGuideController.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/ConsultChatController.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/DashboardController.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/GlobalControllerAdvice.java
@@ -17,10 +21,13 @@
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/UserController.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/controller/slack/SlackEventController.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/appointment/AppointmentCreateRequest.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/appointment/AppointmentListRow.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/appointment/AppointmentResponse.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/appointment/AppointmentUpdateRequest.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/appointment/GeneralAppointmentForm.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/auth/LoginRequest.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/auth/LoginResponse.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/calendar/CalendarMarkForm.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/chat/ConsultChatForm.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/common/ApiErrorResponse.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/common/FieldErrorDetail.java
@@ -41,8 +48,10 @@
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/user/UserResponse.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/dto/user/UserUpdateRequest.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/AppointmentEntity.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/CalendarMarkEntity.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/ConsultChatMessageEntity.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/HealthRecordEntity.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/HealthRecordPetDateEntity.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/PetCareRecordEntity.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/PetEntity.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/entity/SymptomCheckEntity.java
@@ -52,6 +61,7 @@
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/exception/NotFoundException.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/mapper/AppointmentMapper.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/mapper/AuthMapper.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/mapper/CalendarMarkMapper.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/mapper/ConsultChatMapper.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/mapper/HealthRecordMapper.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/mapper/PetCareRecordMapper.java
@@ -61,6 +71,7 @@
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/mapper/UserMapper.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/service/AppointmentService.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/service/AuthService.java
+/Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/service/CalendarService.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/service/ConsultChatService.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/service/HealthRecordImageStorageService.java
 /Users/academia/src/petlifeplus_site/backend/src/main/java/com/example/petlife/service/HealthRecordService.java

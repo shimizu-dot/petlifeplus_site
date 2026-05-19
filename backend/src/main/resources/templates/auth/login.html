@@ -4,46 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ログイン | Pet Life Plus</title>
-  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-<div class="login-page">
-  <div class="login-card">
-    <div class="login-logo">
-      <div style="font-size:40px;">🐾</div>
-      <div class="login-logo-title">Pet Life Plus</div>
-      <div class="login-logo-sub">ペット健康管理プラットフォーム</div>
-    </div>
+<a class="skip-link" href="#main">本文へ移動</a>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="/index.html">ペットライフプラス</a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="global-nav" aria-label="メニューを開く">☰</button>
+    <nav id="global-nav" class="global-nav" aria-label="グローバルナビゲーション">
+      <a href="/index.html">トップ</a>
+      <a href="/f_service.html">総合案内</a>
+      <a href="/f_flow.html">導入事例と実績</a>
+      <a href="/webapp.html">ログイン</a>
+      <a href="/f_contact.html" class="btn btn-primary">お問い合わせ</a>
+    </nav>
+  </div>
+</header>
+<main id="main" class="section">
+  <div class="container container-narrow view-small">
+    <h1>ログイン</h1>
 
-    <h1 class="login-title">ログイン</h1>
-
-    <div th:if="${param.error}" class="alert alert-error">
+    <div th:if="${param.error}" style="padding:10px 12px;border-radius:10px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;margin-bottom:12px;">
       メールアドレスまたはパスワードが正しくありません。
     </div>
-    <div th:if="${param.logout}" class="alert alert-success">
+    <div th:if="${param.logout}" style="padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;margin-bottom:12px;">
       ログアウトしました。
     </div>
 
-    <form th:action="@{/app/login}" method="post">
-      <div class="form-group">
-        <label class="form-label" for="email">メールアドレス<span class="required">*</span></label>
-        <input id="email" type="email" name="email" class="form-control"
-               placeholder="example@petlifeplus.local" autocomplete="email" required>
+    <form th:action="@{/app/login}" method="post" class="contact-form" style="margin-top:12px;">
+      <div class="field">
+        <label for="email">メールアドレス</label>
+        <input id="email" type="email" name="email" placeholder="example@petlifeplus.local" autocomplete="email" required>
       </div>
-      <div class="form-group">
-        <label class="form-label" for="password">パスワード<span class="required">*</span></label>
-        <input id="password" type="password" name="password" class="form-control"
-               placeholder="••••••••" autocomplete="current-password" required>
+      <div class="field">
+        <label for="password">パスワード</label>
+        <input id="password" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
       </div>
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">
-        ログイン
-      </button>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">ログイン</button>
+        <a class="btn btn-secondary" href="/index.html">トップへ戻る</a>
+      </div>
     </form>
-
-    <p style="text-align:center;margin-top:20px;font-size:13px;color:#64748B;">
-      <a th:href="@{/}" style="color:#1D4ED8;">← サイトトップへ戻る</a>
-    </p>
   </div>
-</div>
+</main>
+<footer class="site-footer"><div class="container footer-grid footer-grid-single"><a href="/index.html">トップ</a><a href="/f_service.html">総合案内</a><a href="/f_flow.html">導入事例と実績</a><a href="/f_info.html">運営情報・規約</a></div></footer>
+<script src="/assets/js/main.js"></script>
 </body>
 </html>

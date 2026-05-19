@@ -99,6 +99,37 @@
         </form>
       </div>
 
+      <div class="card" style="max-width:640px;" th:if="${editMode}">
+        <div class="card-title">紐づくペット情報</div>
+        <div th:if="${#lists.isEmpty(linkedPets)}" class="empty-state" style="padding:20px 12px;">
+          <div class="empty-state-text" style="margin-bottom:0;">紐づくペットはありません</div>
+        </div>
+        <div th:if="${!#lists.isEmpty(linkedPets)}" class="table-wrap">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>名前</th>
+              <th>種別</th>
+              <th>品種</th>
+              <th>性別</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="pet : ${linkedPets}">
+              <td>
+                <a th:href="@{/app/pets/{id}(id=${pet.id})}"
+                   style="color:var(--primary);font-weight:600;text-decoration:none;"
+                   th:text="${pet.name}">ポチ</a>
+              </td>
+              <td th:text="${pet.species == 'DOG' ? '犬' : pet.species == 'CAT' ? '猫' : pet.species}">犬</td>
+              <td th:text="${pet.breed ?: '—'}">柴犬</td>
+              <td th:text="${pet.sex == 'MALE' ? 'オス' : pet.sex == 'FEMALE' ? 'メス' : '—'}">オス</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

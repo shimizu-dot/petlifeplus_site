@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>カレンダー | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">カレンダー</span></div>
+    <div class="content">
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="card">
+        <div class="card-title">対象ペット</div>
+        <div class="pet-picker">
+          <button type="button"
+                  class="pet-chip"
+                  th:each="p : ${calendar.pets}"
+                  th:classappend="${p.colorClass()}"
+                  th:attr="data-pet-id=${p.id()}"
+                  th:text="${p.name()}">ポチ</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">シール</div>
+        <div class="sticker-row">
+          <div class="sticker-legend">
+            <span class="sticker-item" draggable="true" data-mark-type="KARTE" title="カルテ">📁</span>
+            <span class="sticker-item" draggable="true" data-mark-type="VACCINE" title="予防接種">💉</span>
+            <span class="sticker-item" draggable="true" data-mark-type="HOSPITAL" title="病院で診察">🩺</span>
+            <span class="sticker-item" draggable="true" data-mark-type="TRIMMING" title="トリミング">✂️</span>
+            <span class="sticker-item" draggable="true" data-mark-type="DOG_RUN" title="ドッグラン">🌳</span>
+            <span class="sticker-item" draggable="true" data-mark-type="MEDICINE" title="薬を服用">💊</span>
+          </div>
+          <div id="trashZone" class="trash-zone" title="シールをここへドロップで削除">🗑️</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <span>月間カレンダー</span>
+          <div style="display:flex;gap:10px;">
+            <span style="display:inline-flex;align-items:center;font-size:16px;font-weight:700;color:#0F172A;padding:0 4px;"
+                  th:text="${calendar.monthLabel()}">2026年5月</span>
+            <a class="btn btn-secondary" th:href="@{/app/calendar(month=${calendar.prevMonth()})}">← 前月</a>
+            <a class="btn btn-secondary" th:href="@{/app/calendar(month=${calendar.nextMonth()})}">翌月 →</a>
+          </div>
+        </div>
+        <div class="calendar-grid calendar-head">
+          <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+        </div>
+        <div class="calendar-grid">
+          <div th:each="d : ${calendar.days}" class="calendar-cell calendar-drop-target"
+               th:classappend="${!d.inCurrentMonth()} ? 'is-out' : ''"
+               th:attr="data-date=${d.date()}">
+            <div class="calendar-date"
+                 th:classappend="${(d.sunday() or d.holiday()) ? 'is-holiday' : ''}"
+                 th:text="${d.date().dayOfMonth}">1</div>
+            <div class="calendar-stickers">
+              <span th:each="m : ${d.marks()}"
+                    th:class="${'calendar-mark ' + (!m.auto() ? 'manual-mark ' : '') + m.colorClass()}"
+                    th:attr="data-mark-id=${m.id()},data-date=${d.date()},draggable=${!m.auto()}"
+                    th:title="${(m.type() == 'KARTE' ? 'カルテ' : m.type() == 'INJECTION' ? '予防接種' : m.type() == 'DOCTOR' ? '病院で診察' : m.type() == 'SCISSORS' ? 'トリミング' : m.type() == 'PARK' ? 'ドッグラン' : m.type() == 'CAPSULE' ? '薬を服用' : '誕生日') + (!m.auto() ? '（ゴミ箱へドラッグで削除）' : '（自動）')}">
+                <a th:if="${m.type() == 'KARTE' and m.petId() != null}"
+                   class="karte-link"
+                   th:href="@{/app/pets/{pid}/health-records(pid=${m.petId()},recordDate=${d.date()})}">📁</a>
+                <span th:if="${m.type() != 'KARTE'}"
+                      th:text="${m.type() == 'INJECTION' ? '💉' : m.type() == 'DOCTOR' ? '🩺' : m.type() == 'SCISSORS' ? '✂️' : m.type() == 'PARK' ? '🌳' : m.type() == 'CAPSULE' ? '💊' : '🎂'}">💉</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form id="markAddForm" th:action="@{/app/calendar/marks/add}" method="post" style="display:none;" th:object="${markForm}">
+        <input type="hidden" name="month" th:value="${calendar.month()}">
+        <input type="hidden" name="petId" id="hiddenPetId">
+        <input type="hidden" name="markDate" id="hiddenMarkDate">
+        <input type="hidden" name="markType" id="hiddenMarkType">
+      </form>
+
+      <form id="markDeleteForm" th:action="@{/app/calendar/marks/0/delete}" method="post" style="display:none;">
+        <input type="hidden" name="month" th:value="${calendar.month()}">
+      </form>
+
+    </div>
+  </div>
+</div>
+<script>
+  const markAddForm = document.getElementById('markAddForm');
+  const hiddenPetId = document.getElementById('hiddenPetId');
+  const hiddenMarkDate = document.getElementById('hiddenMarkDate');
+  const hiddenMarkType = document.getElementById('hiddenMarkType');
+  const petChips = document.querySelectorAll('.pet-chip');
+  const trashZone = document.getElementById('trashZone');
+  let selectedPetId = '';
+  let draggingType = '';
+  let draggingManualMarkId = '';
+  const petStorageKey = 'calendar.selectedPetId';
+
+  function applySelectedPet(petId) {
+    if (!petId) return false;
+    let found = false;
+    petChips.forEach((c) => {
+      const active = c.dataset.petId === petId;
+      c.classList.toggle('is-active', active);
+      if (active) found = true;
+    });
+    if (!found) return false;
+    selectedPetId = petId;
+    hiddenPetId.value = petId;
+    localStorage.setItem(petStorageKey, petId);
+    return true;
+  }
+
+  const savedPetId = localStorage.getItem(petStorageKey);
+  if (!applySelectedPet(savedPetId) && petChips.length > 0) {
+    applySelectedPet(petChips[0].dataset.petId || '');
+  }
+
+  petChips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      applySelectedPet(chip.dataset.petId || '');
+    });
+  });
+
+  document.querySelectorAll('.sticker-item').forEach((item) => {
+    item.addEventListener('dragstart', (e) => {
+      draggingManualMarkId = '';
+      draggingType = item.dataset.markType;
+      e.dataTransfer.setData('text/plain', draggingType);
+    });
+  });
+
+  document.querySelectorAll('.calendar-drop-target').forEach((cell) => {
+    cell.addEventListener('dragover', (e) => e.preventDefault());
+    cell.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const petId = selectedPetId;
+      const markType = e.dataTransfer.getData('text/plain') || draggingType;
+      if (!petId) {
+        alert('対象ペットを選択してください。');
+        return;
+      }
+      if (!markType) {
+        return;
+      }
+      hiddenPetId.value = petId;
+      hiddenMarkDate.value = cell.dataset.date;
+      hiddenMarkType.value = markType;
+      markAddForm.submit();
+    });
+  });
+
+  document.querySelectorAll('.manual-mark').forEach((mark) => {
+    mark.addEventListener('dragstart', (e) => {
+      draggingType = '';
+      draggingManualMarkId = mark.dataset.markId || '';
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('application/x-calendar-mark-id', draggingManualMarkId);
+      e.dataTransfer.setData('text/plain', draggingManualMarkId);
+    });
+  });
+
+  trashZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    trashZone.classList.add('is-active');
+  });
+  trashZone.addEventListener('dragleave', () => {
+    trashZone.classList.remove('is-active');
+  });
+  trashZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    trashZone.classList.remove('is-active');
+    const markId = e.dataTransfer.getData('application/x-calendar-mark-id')
+            || e.dataTransfer.getData('text/plain')
+            || draggingManualMarkId;
+    if (!markId) return;
+    const form = document.getElementById('markDeleteForm');
+    form.action = '/app/calendar/marks/' + markId + '/delete';
+    form.submit();
+  });
+
+  document.addEventListener('dragend', () => {
+    draggingManualMarkId = '';
+    draggingType = '';
+    trashZone.classList.remove('is-active');
+  });
+</script>
+</body>
+</html>

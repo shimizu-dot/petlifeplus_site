@@ -1,11 +1,13 @@
 package com.example.petlife.mapper;
 
 import com.example.petlife.entity.HealthRecordEntity;
+import com.example.petlife.entity.HealthRecordPetDateEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,6 +42,31 @@ public interface HealthRecordMapper {
 
     @Select("SELECT COUNT(*) FROM health_records WHERE pet_id = #{petId} AND deleted_at IS NULL")
     long countByPetId(@Param("petId") Long petId);
+
+    @Select("""
+        SELECT id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo,
+               exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, image_path,
+               note, deleted_at, created_at, updated_at
+        FROM health_records
+        WHERE pet_id = #{petId}
+          AND record_date = #{recordDate}
+          AND deleted_at IS NULL
+        ORDER BY id DESC
+        LIMIT #{limit} OFFSET #{offset}
+        """)
+    List<HealthRecordEntity> findByPetIdAndRecordDate(@Param("petId") Long petId,
+                                                      @Param("recordDate") LocalDate recordDate,
+                                                      @Param("limit") int limit,
+                                                      @Param("offset") int offset);
+
+    @Select("""
+        SELECT COUNT(*)
+        FROM health_records
+        WHERE pet_id = #{petId}
+          AND record_date = #{recordDate}
+          AND deleted_at IS NULL
+        """)
+    long countByPetIdAndRecordDate(@Param("petId") Long petId, @Param("recordDate") LocalDate recordDate);
 
     // ---- 単件 ----
     @Select("""
@@ -77,4 +104,38 @@ public interface HealthRecordMapper {
         WHERE id = #{id} AND deleted_at IS NULL
         """)
     int softDelete(@Param("id") Long id, @Param("deletedAt") LocalDateTime deletedAt);
+
+    @Select("""
+        SELECT DISTINCT h.record_date
+        FROM health_records h
+        JOIN pets p ON p.id = h.pet_id
+        WHERE p.owner_user_id = #{ownerUserId}
+          AND p.deleted_at IS NULL
+          AND h.deleted_at IS NULL
+          AND h.record_date >= #{fromDate}
+          AND h.record_date <= #{toDate}
+        ORDER BY h.record_date ASC
+        """)
+    List<LocalDate> findRecordDatesByOwnerUserIdAndDateRange(
+            @Param("ownerUserId") Long ownerUserId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
+
+    @Select("""
+        SELECT DISTINCT h.pet_id, h.record_date
+        FROM health_records h
+        JOIN pets p ON p.id = h.pet_id
+        WHERE p.owner_user_id = #{ownerUserId}
+          AND p.deleted_at IS NULL
+          AND h.deleted_at IS NULL
+          AND h.record_date >= #{fromDate}
+          AND h.record_date <= #{toDate}
+        ORDER BY h.record_date ASC
+        """)
+    List<HealthRecordPetDateEntity> findRecordPetDatesByOwnerUserIdAndDateRange(
+            @Param("ownerUserId") Long ownerUserId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
 }

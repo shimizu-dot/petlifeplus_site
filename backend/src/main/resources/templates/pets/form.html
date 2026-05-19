@@ -39,13 +39,9 @@
               <label class="form-label" for="species">種別<span class="required">*</span></label>
               <select id="species" th:field="*{species}" class="form-control"
                       th:classappend="${#fields.hasErrors('species')} ? 'is-invalid'">
-                <option value="">選択してください</option>
                 <option value="DOG">犬</option>
-                <option value="CAT">猫</option>
-                <option value="RABBIT">うさぎ</option>
-                <option value="BIRD">鳥</option>
-                <option value="OTHER">その他</option>
               </select>
+              <div class="form-hint">現在は犬のみ対応しています（他種別は今後対応予定）。</div>
               <div class="invalid-feedback" th:if="${#fields.hasErrors('species')}" th:errors="*{species}"></div>
             </div>
           </div>

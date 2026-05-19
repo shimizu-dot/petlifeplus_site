@@ -1,0 +1,28 @@
+# Build output
+backend/target/
+
+# Database backups (contain sensitive user data)
+backups/
+backup.sql
+
+# Uploaded files
+uploads/
+backend/uploads/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

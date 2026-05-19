@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>レポート | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">レポート</span></div>
+    <div class="content">
+
+      <h1 class="page-title">サービス統計</h1>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#1d4ed8;" th:text="${userCount}">0</div>
+          <div style="color:#64748b;">総ユーザー数</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#0891b2;" th:text="${petCount}">0</div>
+          <div style="color:#64748b;">総ペット数</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#059669;" th:text="${healthRecordCount}">0</div>
+          <div style="color:#64748b;">健康記録数</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#d97706;" th:text="${appointmentCount}">0</div>
+          <div style="color:#64748b;">総予約数</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#7c3aed;" th:text="${subscriptionCount}">0</div>
+          <div style="color:#64748b;">サブスクリプション数</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+        <div class="card">
+          <div class="card-title">ユーザー内訳</div>
+          <table class="table">
+            <tbody>
+            <tr><td>管理者</td><td th:text="${userCountAdmin}">0</td></tr>
+            <tr><td>一般ユーザー</td><td th:text="${userCountUser}">0</td></tr>
+            <tr><td>獣医師</td><td th:text="${userCountVet}">0</td></tr>
+            <tr><td>スタッフ</td><td th:text="${userCountStaff}">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">予約ステータス内訳</div>
+          <table class="table">
+            <tbody>
+            <tr><td>申請中</td><td th:text="${appointmentRequested}">0</td></tr>
+            <tr><td>確定</td><td th:text="${appointmentConfirmed}">0</td></tr>
+            <tr><td>完了</td><td th:text="${appointmentCompleted}">0</td></tr>
+            <tr><td>キャンセル</td><td th:text="${appointmentCanceled}">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

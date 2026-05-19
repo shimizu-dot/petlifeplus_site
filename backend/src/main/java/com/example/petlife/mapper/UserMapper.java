@@ -101,6 +101,16 @@ public interface UserMapper {
 
     @Update("""
         UPDATE users
+        SET password_hash = #{passwordHash}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id} AND deleted_at IS NULL
+        """)
+    int updatePasswordById(@Param("id") Long id, @Param("passwordHash") String passwordHash);
+
+    @Select("SELECT COUNT(*) FROM users WHERE role_id = #{roleId} AND deleted_at IS NULL")
+    long countByRoleId(@Param("roleId") Long roleId);
+
+    @Update("""
+        UPDATE users
         SET role_id = #{roleId},
             name = #{name},
             password_hash = #{passwordHash},

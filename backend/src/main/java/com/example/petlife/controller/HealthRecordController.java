@@ -14,6 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 @Controller
 @RequestMapping("/app/pets/{petId}/health-records")
 public class HealthRecordController {
@@ -30,10 +33,12 @@ public class HealthRecordController {
     public String list(@PathVariable Long petId,
                        @RequestParam(defaultValue = "1") int page,
                        @RequestParam(defaultValue = "20") int size,
+                       @RequestParam(required = false) LocalDate recordDate,
                        Model model,
                        @AuthenticationPrincipal LoginUser currentUser) {
         model.addAttribute("pet",  petService.get(petId, currentUser));
-        model.addAttribute("page", healthRecordService.listForPet(petId, page, size, currentUser));
+        model.addAttribute("page", healthRecordService.listForPet(petId, page, size, recordDate, currentUser));
+        model.addAttribute("recordDate", recordDate);
         return "health/list";
     }
 
@@ -55,6 +60,11 @@ public class HealthRecordController {
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
+        if (form.getRecordDate() == null) {
+            result.rejectValue("recordDate", "NotNull.form.recordDate", "記録日は必須です");
+        } else if (isFutureInJst(form.getRecordDate())) {
+            result.rejectValue("recordDate", "PastOrPresent.form.recordDate", "現在もしくは過去の日付にしてください");
+        }
         if (result.hasErrors()) {
             model.addAttribute("pet",      petService.get(petId, currentUser));
             model.addAttribute("editMode", false);
@@ -100,6 +110,9 @@ public class HealthRecordController {
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
+        LocalDate existingDate = healthRecordService.getEntity(id, petId, currentUser).recordDate();
+        // 編集時は記録日変更不可: 送信値に関わらず既存値を維持
+        form.setRecordDate(existingDate);
         if (result.hasErrors()) {
             model.addAttribute("pet",      petService.get(petId, currentUser));
             model.addAttribute("recordId", id);
@@ -120,5 +133,10 @@ public class HealthRecordController {
         healthRecordService.delete(id, petId, currentUser);
         ra.addFlashAttribute("success", "健康記録を削除しました");
         return "redirect:/app/pets/" + petId + "/health-records";
+    }
+
+    private boolean isFutureInJst(LocalDate date) {
+        LocalDate todayJst = LocalDate.now(ZoneId.of("Asia/Tokyo"));
+        return date != null && date.isAfter(todayJst);
     }
 }

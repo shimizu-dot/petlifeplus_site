@@ -53,4 +53,36 @@ public interface AppointmentMapper {
     int countDuplicatedSlot(@Param("staffUserId") Long staffUserId,
                             @Param("scheduledAt") LocalDateTime scheduledAt,
                             @Param("excludeId") Long excludeId);
+
+    @Select("""
+        SELECT a.id, p.name AS "petName", u.name AS "ownerName", a.appointment_type AS "appointmentType",
+               a.channel, a.scheduled_at AS "scheduledAt", a.status, a.note
+        FROM appointments a
+        INNER JOIN pets p ON p.id = a.pet_id
+        INNER JOIN users u ON u.id = a.owner_user_id
+        WHERE a.deleted_at IS NULL
+        ORDER BY a.scheduled_at DESC, a.id DESC
+        LIMIT #{limit} OFFSET #{offset}
+        """)
+    List<com.example.petlife.dto.appointment.AppointmentListRow> findAllRows(@Param("limit") int limit, @Param("offset") int offset);
+
+    @Select("""
+        SELECT a.id, p.name AS "petName", u.name AS "ownerName", a.appointment_type AS "appointmentType",
+               a.channel, a.scheduled_at AS "scheduledAt", a.status, a.note
+        FROM appointments a
+        INNER JOIN pets p ON p.id = a.pet_id
+        INNER JOIN users u ON u.id = a.owner_user_id
+        WHERE a.deleted_at IS NULL AND a.owner_user_id = #{ownerUserId}
+        ORDER BY a.scheduled_at DESC, a.id DESC
+        LIMIT #{limit} OFFSET #{offset}
+        """)
+    List<com.example.petlife.dto.appointment.AppointmentListRow> findRowsByOwnerUserId(@Param("ownerUserId") Long ownerUserId,
+                                                                                         @Param("limit") int limit,
+                                                                                         @Param("offset") int offset);
+
+    @Select("SELECT COUNT(*) FROM appointments WHERE deleted_at IS NULL AND owner_user_id = #{ownerUserId}")
+    long countByOwnerUserId(@Param("ownerUserId") Long ownerUserId);
+
+    @Select("SELECT COUNT(*) FROM appointments WHERE deleted_at IS NULL AND status = #{status}")
+    long countByStatus(@Param("status") String status);
 }

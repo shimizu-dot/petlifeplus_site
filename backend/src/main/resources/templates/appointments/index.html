@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>診療予約 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">診療予約</span></div>
+    <div class="content">
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="card" th:if="${!isAdminView}" style="max-width:760px;">
+        <div class="card-title">一般診療を予約</div>
+        <form th:action="@{/app/appointments}" method="post" th:object="${form}">
+          <div class="form-group">
+            <label class="form-label" for="petId">対象ペット<span class="required">*</span></label>
+            <select id="petId" th:field="*{petId}" class="form-control"
+                    th:classappend="${#fields.hasErrors('petId')} ? 'is-invalid'">
+              <option value="">選択してください</option>
+              <option th:each="p : ${pets}" th:value="${p.id}" th:text="${p.name}">ポチ</option>
+            </select>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('petId')}" th:errors="*{petId}"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="scheduledAt">予約日時<span class="required">*</span></label>
+            <input id="scheduledAt" type="datetime-local" th:field="*{scheduledAt}" class="form-control"
+                   th:classappend="${#fields.hasErrors('scheduledAt')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduledAt')}" th:errors="*{scheduledAt}"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="note">相談内容</label>
+            <textarea id="note" th:field="*{note}" rows="4" maxlength="500" class="form-control"
+                      placeholder="症状、経過、受診時に相談したいこと"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">予約する</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title" th:text="${isAdminView ? '予約リスト（全ユーザー）' : '予約リスト（自分の予約）'}">予約リスト</div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>対象ペット</th>
+              <th th:if="${isAdminView}">飼い主</th>
+              <th>種別</th>
+              <th>方法</th>
+              <th>予約日時</th>
+              <th>状態</th>
+              <th>相談内容</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${page.items.isEmpty()}">
+              <td th:colspan="${isAdminView ? 8 : 7}" style="text-align:center;color:#64748B;">予約はありません</td>
+            </tr>
+            <tr th:each="row : ${page.items}">
+              <td th:text="${row.id}">1</td>
+              <td th:text="${row.petName}">ポチ</td>
+              <td th:if="${isAdminView}" th:text="${row.ownerName}">山田 太郎</td>
+              <td th:text="${row.appointmentType == 'MEDICAL' ? '診療' : row.appointmentType}">診療</td>
+              <td th:text="${row.channel == 'VISIT' ? '来院' : row.channel == 'ONLINE' ? 'オンライン' : row.channel}">来院</td>
+              <td th:text="${#temporals.format(row.scheduledAt, 'yyyy-MM-dd HH:mm')}">2026-05-20 10:00</td>
+              <td>
+                <span th:class="${row.status == 'REQUESTED' ? 'badge badge-blue' :
+                                  row.status == 'CONFIRMED' ? 'badge badge-green' :
+                                  row.status == 'COMPLETED' ? 'badge badge-gray' : 'badge badge-yellow'}"
+                      th:text="${row.status == 'REQUESTED' ? '申請中' :
+                                row.status == 'CONFIRMED' ? '確定' :
+                                row.status == 'COMPLETED' ? '完了' : row.status == 'CANCELED' ? '取消' : row.status}">申請中</span>
+              </td>
+              <td th:text="${row.note ?: '—'}">咳が続く</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pagination-summary" th:if="${page.total > 0}"
+           th:text="'全' + ${page.total} + '件中 ' + ${((page.page - 1) * page.size + 1)} + '-' + ${((page.page - 1) * page.size + #lists.size(page.items))} + '件'">
+        全50件中 1-10件
+      </div>
+
+      <div class="pagination" th:if="${page.total > page.size}">
+        <a th:if="${page.page > 1}" th:href="@{/app/appointments(page=${page.page - 1},size=${page.size})}">前へ</a>
+        <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}">
+          <span th:if="${i == page.page}" class="current" th:text="${i}">1</span>
+          <a th:if="${i != page.page}" th:href="@{/app/appointments(page=${i},size=${page.size})}" th:text="${i}">2</a>
+        </span>
+        <a th:if="${page.page * page.size < page.total}"
+           th:href="@{/app/appointments(page=${page.page + 1},size=${page.size})}">次へ</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

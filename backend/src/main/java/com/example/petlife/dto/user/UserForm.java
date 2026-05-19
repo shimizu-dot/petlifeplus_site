@@ -12,10 +12,10 @@ public class UserForm {
     @NotNull                                     private Long roleId;
     @NotBlank @Size(max = 100)                   private String name;
     @NotBlank @Email @Size(max = 255)            private String email;
-    @Size(min = 8, max = 64)                     private String password;
+    @Size(max = 64)                              private String password;
     @Pattern(regexp = "^[0-9-]{10,13}$|^$")     private String phone;
     private String status = "ACTIVE";
-    private String planTier = "LIGHT";
+    private String planTier = "PREMIUM";
 
     public UserCreateRequest toCreateRequest() {
         return new UserCreateRequest(roleId, name, email, password, phone);

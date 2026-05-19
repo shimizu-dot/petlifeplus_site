@@ -18,19 +18,17 @@ public class PlanAccessService {
     }
 
     public PlanTier resolvePlanTier(LoginUser user) {
-        if (user == null || user.isAdmin()) {
+        if (user == null || user.canManagePets()) {
             return PlanTier.PREMIUM;
         }
-        String raw = subscriptionMapper.findActivePlanNameByUserId(user.id());
-        if (raw == null || raw.isBlank()) {
-            return PlanTier.LIGHT;
-        }
-        if (raw.contains("PREMIUM")) {
-            return PlanTier.PREMIUM;
-        }
-        if (raw.contains("STANDARD")) {
-            return PlanTier.STANDARD;
-        }
+        return resolvePlanTierByUserId(user.id());
+    }
+
+    public PlanTier resolvePlanTierByUserId(Long userId) {
+        String raw = subscriptionMapper.findActivePlanNameByUserId(userId);
+        if (raw == null || raw.isBlank()) return PlanTier.LIGHT;
+        if (raw.contains("PREMIUM")) return PlanTier.PREMIUM;
+        if (raw.contains("STANDARD")) return PlanTier.STANDARD;
         return PlanTier.LIGHT;
     }
 
@@ -48,6 +46,22 @@ public class PlanAccessService {
             case LIGHT -> "ライト";
             case STANDARD -> "スタンダード";
             case PREMIUM -> "プレミアム";
+        };
+    }
+
+    public String planLabelByUserId(Long userId) {
+        return switch (resolvePlanTierByUserId(userId)) {
+            case LIGHT -> "ライト";
+            case STANDARD -> "スタンダード";
+            case PREMIUM -> "プレミアム";
+        };
+    }
+
+    public String planLabelEnByUserId(Long userId) {
+        return switch (resolvePlanTierByUserId(userId)) {
+            case LIGHT -> "Light";
+            case STANDARD -> "Standard";
+            case PREMIUM -> "Premium";
         };
     }
 }
