@@ -1,8 +1,11 @@
 package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
+import com.example.petlife.mapper.MedicalHistoryMapper;
 import com.example.petlife.dto.health.HealthRecordForm;
 import com.example.petlife.entity.HealthRecordEntity;
+import com.example.petlife.entity.PetCareRecordEntity;
+import com.example.petlife.service.PetCareRecordService;
 import com.example.petlife.service.HealthRecordService;
 import com.example.petlife.service.PetService;
 import jakarta.validation.Valid;
@@ -16,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 @Controller
 @RequestMapping("/app/pets/{petId}/health-records")
@@ -23,10 +27,15 @@ public class HealthRecordController {
 
     private final HealthRecordService healthRecordService;
     private final PetService petService;
+    private final PetCareRecordService petCareRecordService;
+    private final MedicalHistoryMapper medicalHistoryMapper;
 
-    public HealthRecordController(HealthRecordService healthRecordService, PetService petService) {
+    public HealthRecordController(HealthRecordService healthRecordService, PetService petService,
+                                  PetCareRecordService petCareRecordService, MedicalHistoryMapper medicalHistoryMapper) {
         this.healthRecordService = healthRecordService;
         this.petService = petService;
+        this.petCareRecordService = petCareRecordService;
+        this.medicalHistoryMapper = medicalHistoryMapper;
     }
 
     @GetMapping
@@ -133,6 +142,21 @@ public class HealthRecordController {
         healthRecordService.delete(id, petId, currentUser);
         ra.addFlashAttribute("success", "健康記録を削除しました");
         return "redirect:/app/pets/" + petId + "/health-records";
+    }
+
+    @GetMapping("/print")
+    public String printMedicalSummary(@PathVariable Long petId,
+                                      Model model,
+                                      @AuthenticationPrincipal LoginUser currentUser) {
+        var careRecords = petCareRecordService.listByPet(petId, currentUser);
+        List<PetCareRecordEntity> vaccineRecords = careRecords.stream()
+                .filter(r -> !"MEDICAL_VISIT".equals(r.careType()))
+                .toList();
+        model.addAttribute("pet", petService.get(petId, currentUser));
+        model.addAttribute("vaccineRecords", vaccineRecords);
+        model.addAttribute("medicalHistories", medicalHistoryMapper.findRowsByPetId(petId, 200, 0));
+        model.addAttribute("healthRecords", healthRecordService.listForPet(petId, 1, 100, null, currentUser).items());
+        return "health/print";
     }
 
     private boolean isFutureInJst(LocalDate date) {

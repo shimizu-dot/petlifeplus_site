@@ -26,9 +26,14 @@
 
       <div class="page-header">
         <h1 class="page-title" th:text="${pet.name} + ' の健康記録'">健康記録</h1>
-        <a th:href="@{/app/pets/{id}/health-records/new(id=${pet.id})}" class="btn btn-primary">
-          ＋ 記録を追加
-        </a>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <a th:href="@{/app/pets/{id}/health-records/print(id=${pet.id})}" class="btn btn-secondary" target="_blank" rel="noopener">
+            診療情報を印刷
+          </a>
+          <a th:href="@{/app/pets/{id}/health-records/new(id=${pet.id})}" class="btn btn-primary">
+            ＋ 記録を追加
+          </a>
+        </div>
       </div>
 
       <div th:if="${recordDate != null}" class="alert alert-success" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">

@@ -25,23 +25,65 @@
         </form>
       </div>
 
+      <!-- 予定・お知らせリマインダー -->
+      <div class="card" style="margin-bottom:20px;">
+        <div style="padding:14px 16px;border-bottom:1px solid #e2e8f0;background:#f8fafc;display:flex;align-items:center;gap:10px;">
+          <strong>予定・お知らせ（30日以内）</strong>
+          <span th:if="${!scheduleReminders.isEmpty()}"
+                class="badge badge-blue"
+                th:text="${#lists.size(scheduleReminders)} + ' 件'"></span>
+        </div>
+
+        <div th:if="${scheduleReminders.isEmpty()}"
+             style="color:#64748b;padding:20px;text-align:center;">
+          30日以内の予定通知はありません
+        </div>
+
+        <div th:each="r : ${scheduleReminders}"
+             th:with="isInfo=${r.notificationType() == 'INFO'}"
+             th:style="${isInfo} ? 'padding:14px 16px;border-bottom:1px solid #e2e8f0;background:#fefce8;' : 'padding:14px 16px;border-bottom:1px solid #e2e8f0;background:#f0f9ff;'">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+            <div style="flex:1;">
+              <!-- バッジ：種別ごとに色分け -->
+              <span th:if="${r.notificationType() == 'REMINDER'}" class="badge badge-blue">リマインダー</span>
+              <span th:if="${r.notificationType() == 'INFO'}" class="badge badge-yellow">更新お知らせ</span>
+              <strong style="margin-left:8px;" th:text="${r.title()}">予定通知</strong>
+              <div style="margin-top:6px;color:#475569;" th:text="${r.body()}">本文</div>
+              <div style="font-size:.8em;color:#94a3b8;margin-top:4px;"
+                   th:text="${#temporals.format(r.scheduledAt(), 'yyyy-MM-dd')}">2026-05-01</div>
+            </div>
+            <!-- 確認ボタン -->
+            <form th:action="@{/app/notifications/reminders/dismiss}" method="post"
+                  style="flex-shrink:0;">
+              <input type="hidden" name="reminderKey" th:value="${r.key()}">
+              <button type="submit" class="btn btn-primary"
+                      style="font-size:.85em;padding:5px 12px;">確認</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 配信済み通知 -->
       <div class="card">
+        <div style="padding:14px 16px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
+          <strong>配信済み通知</strong>
+        </div>
         <div th:if="${notifications.isEmpty()}" style="color:#64748b;text-align:center;padding:24px;">
           通知はありません
         </div>
         <div th:each="n : ${notifications}"
-             th:style="${n.unread()} ? 'padding:14px;border-bottom:1px solid #e2e8f0;background:#f0f9ff;' : 'padding:14px;border-bottom:1px solid #e2e8f0;'">
+             th:style="${n.isUnread()} ? 'padding:14px 16px;border-bottom:1px solid #e2e8f0;background:#f0f9ff;' : 'padding:14px 16px;border-bottom:1px solid #e2e8f0;'">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
             <div>
               <span th:class="${n.notificationType() == 'ALERT' ? 'badge badge-yellow' : n.notificationType() == 'REMINDER' ? 'badge badge-blue' : 'badge badge-gray'}"
                     th:text="${n.notificationType() == 'ALERT' ? '警告' : n.notificationType() == 'REMINDER' ? 'リマインダー' : 'お知らせ'}">お知らせ</span>
               <strong style="margin-left:8px;" th:text="${n.title()}">タイトル</strong>
-              <span th:if="${n.unread()}" style="color:#0ea5e9;font-size:.8em;margin-left:6px;">●未読</span>
+              <span th:if="${n.isUnread()}" style="color:#0ea5e9;font-size:.8em;margin-left:6px;">●未読</span>
               <div style="margin-top:6px;color:#475569;" th:text="${n.body()}">本文</div>
               <div style="font-size:.8em;color:#94a3b8;margin-top:4px;"
                    th:text="${#temporals.format(n.createdAt(), 'yyyy-MM-dd HH:mm')}">2026-05-01 10:00</div>
             </div>
-            <form th:if="${n.unread()}" th:action="@{/app/notifications/{id}/read(id=${n.id()})}" method="post"
+            <form th:if="${n.isUnread()}" th:action="@{/app/notifications/{id}/read(id=${n.id()})}" method="post"
                   style="flex-shrink:0;">
               <button type="submit" class="btn btn-secondary" style="font-size:.85em;padding:4px 10px;">既読</button>
             </form>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${pet.name} + ' の診療情報印刷 | Pet Life Plus'">診療情報印刷 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    body {
+      margin: 0;
+      background: #F8FAFC;
+      color: #0F172A;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .print-page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .print-tools {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .print-sheet {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .print-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+    }
+    .print-sub {
+      color: #475569;
+      margin-bottom: 16px;
+    }
+    .section {
+      margin-top: 18px;
+    }
+    .section h2 {
+      font-size: 16px;
+      margin: 0 0 8px 0;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 16px;
+    }
+    .label {
+      color: #64748B;
+      margin-right: 8px;
+    }
+    .table-wrap {
+      overflow: auto;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th,
+    .table td {
+      border: 1px solid #CBD5E1;
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .empty {
+      color: #64748B;
+      padding: 8px 0;
+    }
+    @media print {
+      body {
+        background: #FFFFFF;
+      }
+      .print-page {
+        max-width: none;
+        padding: 0;
+      }
+      .print-tools {
+        display: none;
+      }
+      .print-sheet {
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 12mm;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="print-page">
+  <div class="print-tools">
+    <button type="button" class="btn btn-primary" onclick="window.print()">印刷する</button>
+    <button type="button" class="btn btn-secondary" onclick="window.close()">閉じる</button>
+  </div>
+
+  <div class="print-sheet">
+    <h1 class="print-title">診療情報</h1>
+    <div class="print-sub">
+      <span th:text="${pet.name}">ポチ</span> /
+      出力日: <span th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'yyyy-MM-dd HH:mm')}">2026-05-19 10:00</span>
+    </div>
+
+    <section class="section">
+      <h2>ペット基本情報</h2>
+      <div class="info-grid">
+        <div><span class="label">名前</span><span th:text="${pet.name}">ポチ</span></div>
+        <div><span class="label">種別</span><span th:text="${pet.species == 'DOG' ? '犬' : pet.species == 'CAT' ? '猫' : pet.species}">犬</span></div>
+        <div><span class="label">品種</span><span th:text="${pet.breed ?: '—'}">柴犬</span></div>
+        <div><span class="label">性別</span><span th:text="${pet.sex == 'MALE' ? 'オス' : pet.sex == 'FEMALE' ? 'メス' : '不明'}">オス</span></div>
+        <div><span class="label">生年月日</span><span th:text="${pet.birthDate ?: '—'}">2021-03-01</span></div>
+        <div><span class="label">基準体重</span><span th:text="${pet.weightBaselineKg != null ? pet.weightBaselineKg + ' kg' : '—'}">8.50 kg</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>ワクチン・予防記録</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>種別</th>
+            <th>実施日</th>
+            <th>次回予定日</th>
+            <th>メモ</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${#lists.isEmpty(vaccineRecords)}">
+            <td colspan="4" class="empty">記録はありません</td>
+          </tr>
+          <tr th:each="r : ${vaccineRecords}">
+            <td th:text="${r.careType == 'RABIES' ? '狂犬病' : r.careType == 'HEARTWORM' ? 'フィラリア' : r.careType == 'COMBO_VACCINE' ? '混合ワクチン' : 'その他'}">狂犬病</td>
+            <td th:text="${r.administeredOn}">2026-05-01</td>
+            <td th:text="${r.nextDueOn ?: '—'}">2027-05-01</td>
+            <td th:text="${r.memo ?: '—'}">異常なし</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>診療履歴</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>受診日</th>
+            <th>担当</th>
+            <th>処置内容</th>
+            <th>診断</th>
+            <th>処方</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${#lists.isEmpty(medicalHistories)}">
+            <td colspan="5" class="empty">記録はありません</td>
+          </tr>
+          <tr th:each="h : ${medicalHistories}">
+            <td th:text="${h.performedOn}">2026-05-10</td>
+            <td th:text="${h.handlerName ?: '—'}">獣医 太郎</td>
+            <td th:text="${h.treatmentDetail ?: '—'}">診察</td>
+            <td th:text="${h.diagnosis ?: '—'}">胃腸炎</td>
+            <td th:text="${h.prescription ?: '—'}">整腸剤</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>健康記録</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>記録日</th>
+            <th>体重(kg)</th>
+            <th>運動(分)</th>
+            <th>食事メモ</th>
+            <th>メモ</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${#lists.isEmpty(healthRecords)}">
+            <td colspan="5" class="empty">記録はありません</td>
+          </tr>
+          <tr th:each="rec : ${healthRecords}">
+            <td th:text="${rec.recordDate}">2026-05-10</td>
+            <td th:text="${rec.weightKg != null ? rec.weightKg : '—'}">8.6</td>
+            <td th:text="${rec.exerciseMinutes != null ? rec.exerciseMinutes : '—'}">30</td>
+            <td th:text="${rec.mealMemo ?: '—'}">食欲良好</td>
+            <td th:text="${rec.note ?: '—'}">特記事項なし</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+</body>
+</html>

@@ -23,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Controller
 @RequestMapping("/app/pets")
@@ -70,11 +72,12 @@ public class PetController {
 
     @PostMapping
     public String create(@Valid @ModelAttribute("form") PetForm form,
-                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          BindingResult result,
+                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
+        validateBirthDate(form, result);
         if (result.hasErrors()) {
             model.addAttribute("editMode", false);
             return "pets/form";
@@ -157,11 +160,12 @@ public class PetController {
     @PatchMapping("/{id}")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("form") PetForm form,
-                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          BindingResult result,
+                         @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
+        validateBirthDate(form, result);
         if (result.hasErrors()) {
             model.addAttribute("petId", id);
             model.addAttribute("editMode", true);
@@ -180,5 +184,12 @@ public class PetController {
         petService.delete(id, currentUser);
         ra.addFlashAttribute("success", "ペットを削除しました");
         return "redirect:/app/pets";
+    }
+
+    private void validateBirthDate(PetForm form, BindingResult result) {
+        LocalDate birthDate = form.getBirthDate();
+        if (birthDate != null && birthDate.isAfter(LocalDate.now(ZoneId.of("Asia/Tokyo")))) {
+            result.rejectValue("birthDate", "PastOrPresent.form.birthDate", "生年月日は現在日以前を入力してください");
+        }
     }
 }

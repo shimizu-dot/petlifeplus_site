@@ -20,6 +20,7 @@
 [subscriptions] 1 ──── * [invoices]
 [invoices] 1 ──── * [payments]
 [notifications] * ──── * [users]           ※中間テーブル [notification_recipients]
+[users] 1 ──── * [dismissed_reminders]
 [email_templates] 1 ──── * [email_messages]
 [users] 1 ──── * [email_messages]
 [pets] 0..1 ──── * [email_messages]
@@ -192,6 +193,13 @@
 - read_at
 - delivery_status (PENDING/SENT/FAILED)
 
+### dismissed_reminders
+- id (PK)
+- user_id (FK -> users.id)
+- reminder_key VARCHAR(200) — 確認済みリマインダーの識別キー（例: `CARE:{petId}:{careType}:{date}`, `APPT:{id}`, `SUB:{id}:{date}`）
+- dismissed_at
+- UNIQUE (user_id, reminder_key)
+
 ### email_templates
 - id (PK)
 - template_code (UNIQUE)
@@ -254,6 +262,8 @@
 | email_messages | idx_email_messages_recipient_created | recipient_user_id, created_at | INDEX | 宛先別送信履歴 |
 | email_messages | idx_email_messages_status_send_timing | status, send_timing_at | INDEX | 送信キュー処理 |
 | email_messages | idx_email_messages_template_id | template_id | INDEX | テンプレート別集計 |
+| dismissed_reminders | uk_dismissed_reminders_user_key | user_id, reminder_key | UNIQUE | ユーザーごとのリマインダー確認重複防止 |
+| dismissed_reminders | idx_dismissed_reminders_user_id | user_id | INDEX | ユーザー別確認済み一覧取得 |
 
 ## 初期データ（INSERT）
 

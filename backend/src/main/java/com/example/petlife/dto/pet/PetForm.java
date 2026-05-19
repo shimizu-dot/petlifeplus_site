@@ -24,4 +24,26 @@ public class PetForm {
     public PetUpdateRequest toUpdateRequest(String imagePath) {
         return new PetUpdateRequest(name, species, breed, sex, birthDate, weightBaselineKg, imagePath);
     }
+
+    public void setName(String name) {
+        this.name = normalize(name);
+    }
+
+    public void setSpecies(String species) {
+        this.species = normalize(species);
+    }
+
+    public void setBreed(String breed) {
+        this.breed = normalize(breed);
+    }
+
+    public void setSex(String sex) {
+        this.sex = normalize(sex);
+    }
+
+    private String normalize(String value) {
+        if (value == null) return null;
+        String normalized = value.replace('\u3000', ' ').strip();
+        return normalized.isEmpty() ? null : normalized;
+    }
 }

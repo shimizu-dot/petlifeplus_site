@@ -101,11 +101,12 @@ UI conventions (from `frontend/docs/ui-design.md`):
 
 ## Database Schema
 
-22 tables across these domains:
+23 tables across these domains:
 - **Auth:** `users`, `roles`
 - **Pets & Health:** `pets`, `health_records`, `symptom_checks`, `medical_histories`, `medical_attachments`
 - **Operations:** `appointments`, `plans`, `subscriptions`, `invoices`, `payments`
 - **Messaging:** `notifications`, `notification_recipients`, `email_templates`, `email_messages`
+- **UX:** `dismissed_reminders` — ユーザーが確認済みのスケジュールリマインダーを永続保存（user_id + reminder_key のユニーク制約）
 
 Detailed schema: `backend/src/main/resources/schema.sql`. Business requirements: `petlife_plus.md` and `backend/docs/requirements.md`.
 
@@ -113,7 +114,7 @@ Detailed schema: `backend/src/main/resources/schema.sql`. Business requirements:
 
 - **Implemented (Must):** User/pet/health-record/appointment CRUD, role-based access, dashboards
 - **Implemented (Premium):** AI symptom check (F-009) — `SymptomCheckService` calls OpenAI API with heuristic fallback; gated by plan via `PlanAccessService.canUseAiSymptom()`
-- **Implemented:** Notifications (`/app/notifications`) — view & mark-as-read; backed by `notification_recipients` table
+- **Implemented:** Notifications (`/app/notifications`) — view & mark-as-read; backed by `notification_recipients` table. Schedule reminders (vaccine/appointment/subscription renewal within 30 days) shown separately with per-item dismiss; dismissed state persisted in `dismissed_reminders` table via `POST /app/notifications/reminders/dismiss`
 - **Implemented:** Subscriptions (`/app/subscriptions`) — plan contract list per user; admin sees all
 - **Implemented:** Password change (`/app/password-resets`) — requires current password; BCrypt re-hash on save
 - **Implemented:** Medical history / Consultations (`/app/consultations/**`) — full CRUD; VET/STAFF/ADMIN only; backed by `medical_histories` table
