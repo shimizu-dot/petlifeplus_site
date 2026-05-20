@@ -103,14 +103,14 @@ public class NotificationController {
             upcoming.forEach(r -> {
                 if (r.nextDueOn() == null) return;
                 String key = "CARE:" + pet.id() + ":" + r.careType() + ":" + r.nextDueOn();
-                if (dismissed.contains(key)) return;
                 LocalDateTime due = r.nextDueOn().atStartOfDay();
                 rows.add(new ScheduleReminderRow(
                         key,
                         "REMINDER",
                         due,
                         "次回" + careTypeLabel(r.careType()) + "予定日",
-                        pet.name() + " の " + careTypeLabel(r.careType()) + " 予定日: " + r.nextDueOn()
+                        pet.name() + " の " + careTypeLabel(r.careType()) + " 予定日: " + r.nextDueOn(),
+                        dismissed.contains(key)
                 ));
             });
         });
@@ -121,27 +121,27 @@ public class NotificationController {
                 .filter(a -> !"CANCELED".equals(a.status()))
                 .forEach(a -> {
                     String key = "APPT:" + a.id();
-                    if (dismissed.contains(key)) return;
                     boolean isZoom = "ONLINE".equals(a.channel());
                     rows.add(new ScheduleReminderRow(
                             key,
                             "REMINDER",
                             a.scheduledAt(),
                             isZoom ? "Zoom診療時間" : "診療予約日",
-                            a.petName() + " の" + (isZoom ? " Zoom診療" : " 診療予約") + ": " + fmt.format(a.scheduledAt())
+                            a.petName() + " の" + (isZoom ? " Zoom診療" : " 診療予約") + ": " + fmt.format(a.scheduledAt()),
+                            dismissed.contains(key)
                     ));
                 });
 
         subscriptionMapper.findUpcomingRenewalsByUserId(currentUser.id()).forEach(s -> {
             String key = "SUB:" + s.id() + ":" + s.endDate();
-            if (dismissed.contains(key)) return;
             String autoRenewNote = s.autoRenew() ? "（自動更新あり）" : "（自動更新なし）";
             rows.add(new ScheduleReminderRow(
                     key,
                     "INFO",
                     s.endDate().atStartOfDay(),
                     "サブスクリプション更新のお知らせ",
-                    s.petName() + " の " + s.planName() + " プランが " + s.endDate() + " に更新されます" + autoRenewNote
+                    s.petName() + " の " + s.planName() + " プランが " + s.endDate() + " に更新されます" + autoRenewNote,
+                    dismissed.contains(key)
             ));
         });
 
@@ -164,6 +164,7 @@ public class NotificationController {
             String notificationType,
             LocalDateTime scheduledAt,
             String title,
-            String body
+            String body,
+            boolean confirmed
     ) {}
 }

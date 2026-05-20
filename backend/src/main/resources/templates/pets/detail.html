@@ -16,6 +16,8 @@
 
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
       <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+      <div th:if="${symptomAdvice}" class="alert alert-success" th:text="${symptomAdvice}"></div>
+      <div th:if="${pet.deceasedAt != null}" class="alert alert-danger">このペットは永眠登録済みのため、各操作は利用できません。</div>
 
       <div class="breadcrumb">
         <a th:href="@{/app/pets}">ペット一覧</a> / <span th:text="${pet.name}">ペット名</span>
@@ -24,12 +26,14 @@
       <div class="page-header">
         <h1 class="page-title" th:text="${pet.name}">ポチ</h1>
         <div style="display:flex;gap:10px;">
-          <a th:href="@{/app/pets/{id}/edit(id=${pet.id})}" class="btn btn-secondary">編集</a>
-          <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-primary">健康記録を見る</a>
+          <a th:if="${pet.deceasedAt == null}" th:href="@{/app/pets/{id}/edit(id=${pet.id})}" class="btn btn-secondary">編集</a>
+          <a th:if="${pet.deceasedAt == null}" th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-primary">健康記録を見る</a>
+          <span th:if="${pet.deceasedAt != null}" class="badge badge-gray"
+                th:text="'永眠登録: ' + ${#temporals.format(pet.deceasedAt, 'yyyy-MM-dd HH:mm')}">永眠登録</span>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" th:if="${pet.deceasedAt == null}">
         <div class="card-title">基本情報</div>
         <div th:if="${pet.imagePath != null}" style="margin-bottom:14px;">
           <img th:src="${pet.imagePath}" alt="pet-image"
@@ -76,13 +80,9 @@
         </div>
       </div>
 
-      <div class="card" th:unless="${canUseAiSymptom}">
+      <div class="card" th:if="${pet.deceasedAt == null}">
         <div class="card-title">AI症状チェック</div>
-        <p style="color:#64748b;">AI症状チェックはスタンダード以上のプランでご利用いただけます。</p>
-      </div>
-
-      <div class="card" th:if="${canUseAiSymptom}">
-        <div class="card-title">AI症状チェック</div>
+        <p th:if="${!canUseAiSymptom}" style="color:#64748b;">無料プランでは簡易判定を提供します（受診判断の補助情報）。</p>
         <form th:action="@{/app/pets/{id}/symptom-check(id=${pet.id})}" method="post" th:object="${symptomForm}">
           <div class="form-row">
             <div class="form-group">
@@ -107,7 +107,7 @@
         </form>
       </div>
 
-      <div class="card" th:if="${canUseAiSymptom}">
+      <div class="card">
         <div class="card-title">AI症状チェック履歴</div>
         <div class="table-wrap">
           <table class="table">
@@ -117,18 +117,20 @@
               <th>症状</th>
               <th>重症度</th>
               <th>推奨対応</th>
+              <th>回答</th>
               <th>モデル</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${#lists.isEmpty(symptomChecks)}">
-              <td colspan="5">履歴はまだありません</td>
+              <td colspan="6">履歴はまだありません</td>
             </tr>
             <tr th:each="s : ${symptomChecks}">
               <td th:text="${#temporals.format(s.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
               <td th:text="${s.symptomType}"></td>
               <td th:text="${s.severity == 'HIGH' ? '高リスク' : s.severity == 'MEDIUM' ? '中リスク' : '低リスク'}"></td>
               <td th:text="${s.recommendation == 'VISIT' ? '今すぐ受診' : s.recommendation == 'CONSULT' ? '相談推奨' : '様子見'}"></td>
+              <td th:text="${s.guidance} ?: '—'"></td>
               <td th:text="${s.aiModel}"></td>
             </tr>
             </tbody>
@@ -198,7 +200,7 @@
         </div>
       </div>
 
-      <div style="display:flex;gap:10px;margin-top:8px;">
+      <div style="display:flex;gap:10px;margin-top:8px;" th:if="${pet.deceasedAt == null}">
         <a th:href="@{/app/pets/{id}/health-records/new(id=${pet.id})}" class="btn btn-primary">
           ＋ 健康記録を追加
         </a>
@@ -206,6 +208,10 @@
               onsubmit="return confirm('このペットを削除しますか？')">
           <input type="hidden" name="_method" value="DELETE">
           <button type="submit" class="btn btn-danger">削除</button>
+        </form>
+        <form th:action="@{/app/pets/{id}/decease(id=${pet.id})}" method="post"
+              onsubmit="return confirm('このペットを永眠として登録しますか？この後は各操作を利用できません。')">
+          <button type="submit" class="btn btn-secondary">永眠</button>
         </form>
       </div>
 

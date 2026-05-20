@@ -23,6 +23,7 @@ public class PetCareRecordService {
 
     public void addRecord(Long petId, PetCareRecordForm form, LoginUser currentUser) {
         PetEntity pet = petService.getEntity(petId, currentUser);
+        petService.ensurePetUsable(pet);
 
         LocalDate administeredOn = form.getAdministeredOn() != null ? form.getAdministeredOn() : LocalDate.now();
         LocalDate nextDueOn = form.getNextDueOn() != null ? form.getNextDueOn() : administeredOn.plusYears(1);

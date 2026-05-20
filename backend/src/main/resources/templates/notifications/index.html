@@ -47,13 +47,14 @@
               <!-- バッジ：種別ごとに色分け -->
               <span th:if="${r.notificationType() == 'REMINDER'}" class="badge badge-blue">リマインダー</span>
               <span th:if="${r.notificationType() == 'INFO'}" class="badge badge-yellow">更新お知らせ</span>
+              <span th:if="${r.confirmed()}" class="badge badge-gray" style="margin-left:8px;">確認済み</span>
               <strong style="margin-left:8px;" th:text="${r.title()}">予定通知</strong>
               <div style="margin-top:6px;color:#475569;" th:text="${r.body()}">本文</div>
               <div style="font-size:.8em;color:#94a3b8;margin-top:4px;"
                    th:text="${#temporals.format(r.scheduledAt(), 'yyyy-MM-dd')}">2026-05-01</div>
             </div>
             <!-- 確認ボタン -->
-            <form th:action="@{/app/notifications/reminders/dismiss}" method="post"
+            <form th:if="${!r.confirmed()}" th:action="@{/app/notifications/reminders/dismiss}" method="post"
                   style="flex-shrink:0;">
               <input type="hidden" name="reminderKey" th:value="${r.key()}">
               <button type="submit" class="btn btn-primary"

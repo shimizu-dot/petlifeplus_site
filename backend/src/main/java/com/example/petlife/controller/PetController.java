@@ -120,8 +120,9 @@ public class PetController {
             return "pets/detail";
         }
         try {
-            symptomCheckService.runCheck(id, form, currentUser);
+            SymptomCheckService.SymptomCheckResult checkResult = symptomCheckService.runCheckWithGuidance(id, form, currentUser);
             ra.addFlashAttribute("success", "AI症状チェックを実行しました");
+            ra.addFlashAttribute("symptomAdvice", checkResult.guidance());
         } catch (BadRequestException e) {
             ra.addFlashAttribute("error", e.getMessage());
         }
@@ -181,9 +182,26 @@ public class PetController {
     public String delete(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        petService.delete(id, currentUser);
-        ra.addFlashAttribute("success", "ペットを削除しました");
+        try {
+            petService.delete(id, currentUser);
+            ra.addFlashAttribute("success", "ペットを削除しました");
+        } catch (BadRequestException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/app/pets";
+    }
+
+    @PostMapping("/{id}/decease")
+    public String markDeceased(@PathVariable Long id,
+                               @AuthenticationPrincipal LoginUser currentUser,
+                               RedirectAttributes ra) {
+        try {
+            petService.markDeceased(id, currentUser);
+            ra.addFlashAttribute("success", "ペットを永眠として登録しました。以後このペットでは各操作を利用できません。");
+        } catch (BadRequestException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/app/pets/" + id;
     }
 
     private void validateBirthDate(PetForm form, BindingResult result) {

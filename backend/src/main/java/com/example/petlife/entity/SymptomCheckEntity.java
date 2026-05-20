@@ -11,6 +11,7 @@ public record SymptomCheckEntity(
         String memo,
         String severity,
         String recommendation,
+        String guidance,
         String aiModel,
         LocalDateTime createdAt
 ) {

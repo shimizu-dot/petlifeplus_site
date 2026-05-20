@@ -7,6 +7,7 @@ import com.example.petlife.dto.health.HealthRecordResponse;
 import com.example.petlife.dto.health.HealthRecordUpdateRequest;
 import com.example.petlife.entity.HealthRecordEntity;
 import com.example.petlife.entity.PetEntity;
+import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.HealthRecordMapper;
 import com.example.petlife.mapper.PetMapper;
@@ -116,6 +117,7 @@ public class HealthRecordService {
                 ? petMapper.findById(petId)
                 : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
         if (pet == null) throw new NotFoundException("Pet not found: " + petId);
+        if (pet.deceasedAt() != null) throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
     }
 
     public HealthRecordResponse toResponse(HealthRecordEntity row) {

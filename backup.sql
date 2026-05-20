@@ -630,6 +630,7 @@ CREATE TABLE public.symptom_checks (
     memo character varying(500),
     severity character varying(10) NOT NULL,
     recommendation character varying(10) NOT NULL,
+    guidance text,
     ai_model character varying(100),
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT symptom_checks_recommendation_check CHECK (((recommendation)::text = ANY ((ARRAY['OBSERVE'::character varying, 'CONSULT'::character varying, 'VISIT'::character varying])::text[]))),
@@ -902,10 +903,10 @@ COPY public.subscriptions (id, user_id, pet_id, plan_id, start_date, end_date, s
 -- Data for Name: symptom_checks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.symptom_checks (id, pet_id, requested_by_user_id, symptom_type, onset_text, memo, severity, recommendation, ai_model, created_at) FROM stdin;
-1	2	2	VOMITING	今朝から	1回嘔吐	MEDIUM	CONSULT	gpt-4.1-mini	2026-05-15 16:20:31.555165
-2	1	2	COUGH	昨日から	夜に咳	LOW	OBSERVE	gpt-4.1-mini	2026-05-15 16:20:31.555165
-3	6	8	食欲低下	昨夜から	水も飲んでいない	MEDIUM	CONSULT	fallback-local	2026-05-18 15:07:09.439108
+COPY public.symptom_checks (id, pet_id, requested_by_user_id, symptom_type, onset_text, memo, severity, recommendation, guidance, ai_model, created_at) FROM stdin;
+1	2	2	VOMITING	今朝から	1回嘔吐	MEDIUM	CONSULT	\N	gpt-4.1-mini	2026-05-15 16:20:31.555165
+2	1	2	COUGH	昨日から	夜に咳	LOW	OBSERVE	\N	gpt-4.1-mini	2026-05-15 16:20:31.555165
+3	6	8	食欲低下	昨夜から	水も飲んでいない	MEDIUM	CONSULT	\N	fallback-local	2026-05-18 15:07:09.439108
 \.
 
 
@@ -1713,4 +1714,3 @@ ALTER TABLE ONLY public.users
 --
 
 \unrestrict 3T4fiSc7p14g7mm2GOD0Ozqc18RDJkcvTwrlp0QthtzuQY66K6t9oT9w6q0a58t
-

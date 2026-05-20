@@ -14,6 +14,7 @@ public record PetEntity(
         LocalDate birthDate,
         BigDecimal weightBaselineKg,
         String imagePath,
+        LocalDateTime deceasedAt,
         LocalDateTime deletedAt,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

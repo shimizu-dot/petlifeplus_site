@@ -40,7 +40,9 @@ public class PremiumSupportController {
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new PremiumOnlineCareForm());
         }
-        model.addAttribute("pets", petService.list(1, 100, currentUser).items());
+        model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
+                .filter(p -> p.deceasedAt() == null)
+                .toList());
         return "premium/online-care";
     }
 
@@ -54,7 +56,9 @@ public class PremiumSupportController {
             throw new BadRequestException("この機能はプレミアムプランで利用できます");
         }
         if (result.hasErrors()) {
-            model.addAttribute("pets", petService.list(1, 100, currentUser).items());
+            model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
+                    .filter(p -> p.deceasedAt() == null)
+                    .toList());
             return "premium/online-care";
         }
 

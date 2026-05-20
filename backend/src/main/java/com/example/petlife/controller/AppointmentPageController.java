@@ -43,7 +43,9 @@ public class AppointmentPageController {
             model.addAttribute("form", new GeneralAppointmentForm());
         }
         model.addAttribute("isAdminView", currentUser.isAdmin());
-        model.addAttribute("pets", petService.list(1, 100, currentUser).items());
+        model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
+                .filter(p -> p.deceasedAt() == null)
+                .toList());
         model.addAttribute("page", appointmentService.listForApp(page, size, currentUser));
         return "appointments/index";
     }
@@ -60,7 +62,9 @@ public class AppointmentPageController {
         }
         if (result.hasErrors()) {
             model.addAttribute("isAdminView", false);
-            model.addAttribute("pets", petService.list(1, 100, currentUser).items());
+            model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
+                    .filter(p -> p.deceasedAt() == null)
+                    .toList());
             model.addAttribute("page", appointmentService.listForApp(1, 10, currentUser));
             return "appointments/index";
         }

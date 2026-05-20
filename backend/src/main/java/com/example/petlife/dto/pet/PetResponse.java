@@ -2,6 +2,7 @@ package com.example.petlife.dto.pet;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record PetResponse(
         Long id,
@@ -12,6 +13,7 @@ public record PetResponse(
         String sex,
         LocalDate birthDate,
         BigDecimal weightBaselineKg,
-        String imagePath
+        String imagePath,
+        LocalDateTime deceasedAt
 ) {
 }

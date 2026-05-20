@@ -2,6 +2,7 @@ package com.example.petlife.service;
 
 import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.symptom.SymptomCheckForm;
+import com.example.petlife.entity.PetEntity;
 import com.example.petlife.entity.SymptomCheckEntity;
 import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.mapper.PetMapper;
@@ -46,14 +47,22 @@ public class SymptomCheckService {
     }
 
     public SymptomCheckEntity runCheck(Long petId, SymptomCheckForm form, LoginUser currentUser) {
-        if (!planAccessService.canUseAiSymptom(currentUser)) {
-            throw new BadRequestException("AI症状チェックはスタンダード以上で利用できます");
-        }
+        return runCheckWithGuidance(petId, form, currentUser).entity();
+    }
+
+    public SymptomCheckResult runCheckWithGuidance(Long petId, SymptomCheckForm form, LoginUser currentUser) {
         if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.canManagePets()) {
             throw new BadRequestException("対象ペットが見つかりません");
         }
+        PetEntity pet = currentUser.canManagePets()
+                ? petMapper.findById(petId)
+                : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
+        if (pet != null && pet.deceasedAt() != null) {
+            throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
+        }
 
-        AiResult ai = callAiOrFallback(form);
+        boolean paidAiEnabled = planAccessService.canUseAiSymptom(currentUser) || currentUser.isAdmin();
+        AiResult ai = callAiOrFallback(form, paidAiEnabled);
 
         SymptomCheckEntity row = new SymptomCheckEntity(
                 null,
@@ -64,15 +73,17 @@ public class SymptomCheckService {
                 form.getMemo(),
                 ai.severity,
                 ai.recommendation,
+                buildGuidance(form, ai),
                 ai.model,
                 LocalDateTime.now()
         );
         symptomCheckMapper.insertReturningId(row);
 
-        return new SymptomCheckEntity(
+        SymptomCheckEntity saved = new SymptomCheckEntity(
                 null, petId, currentUser.id(), form.getSymptomType(), form.getOnsetText(), form.getMemo(),
-                ai.severity, ai.recommendation, ai.model, LocalDateTime.now()
+                ai.severity, ai.recommendation, row.guidance(), ai.model, LocalDateTime.now()
         );
+        return new SymptomCheckResult(saved, row.guidance());
     }
 
     public List<SymptomCheckEntity> recentByPet(Long petId, LoginUser currentUser) {
@@ -85,7 +96,10 @@ public class SymptomCheckService {
         return asc;
     }
 
-    private AiResult callAiOrFallback(SymptomCheckForm form) {
+    private AiResult callAiOrFallback(SymptomCheckForm form, boolean paidAiEnabled) {
+        if (!paidAiEnabled) {
+            return heuristic(form, "free-local");
+        }
         if (openaiApiKey == null || openaiApiKey.isBlank()) {
             return heuristic(form, "fallback-local");
         }
@@ -144,6 +158,25 @@ public class SymptomCheckService {
     private String nullToEmpty(String s) {
         return s == null ? "" : s;
     }
+
+    private String buildGuidance(SymptomCheckForm form, AiResult ai) {
+        String symptom = nullToEmpty(form.getSymptomType());
+        String onset = nullToEmpty(form.getOnsetText());
+        String base = switch (ai.recommendation) {
+            case "VISIT" -> "緊急性がある可能性があります。今すぐ動物病院へ連絡し、可能なら当日受診してください。";
+            case "CONSULT" -> "本日〜翌日に動物病院へ相談するのが安全です。症状が続く・悪化する場合は受診を優先してください。";
+            default -> "現時点では様子見可能です。24時間以内に改善しない場合は動物病院へ相談してください。";
+        };
+        String watch = "確認ポイント: 食欲低下、嘔吐、血便/黒色便、水分が取れない、ぐったり。いずれかがあれば早めに受診してください。";
+        String context = (symptom.isBlank() ? "" : "症状: " + symptom + "。")
+                + (onset.isBlank() ? "" : "発症時期: " + onset + "。");
+        return context + base + " " + watch;
+    }
+
+    public record SymptomCheckResult(
+            SymptomCheckEntity entity,
+            String guidance
+    ) {}
 
     private static class AiResult {
         final String severity;

@@ -13,11 +13,11 @@ public interface SymptomCheckMapper {
     @Select("""
         INSERT INTO symptom_checks(
             pet_id, requested_by_user_id, symptom_type, onset_text, memo,
-            severity, recommendation, ai_model, created_at
+            severity, recommendation, guidance, ai_model, created_at
         )
         VALUES(
             #{petId}, #{requestedByUserId}, #{symptomType}, #{onsetText}, #{memo},
-            #{severity}, #{recommendation}, #{aiModel}, CURRENT_TIMESTAMP
+            #{severity}, #{recommendation}, #{guidance}, #{aiModel}, CURRENT_TIMESTAMP
         )
         RETURNING id
         """)
@@ -25,7 +25,7 @@ public interface SymptomCheckMapper {
 
     @Select("""
         SELECT id, pet_id, requested_by_user_id, symptom_type, onset_text, memo,
-               severity, recommendation, ai_model, created_at
+               severity, recommendation, guidance, ai_model, created_at
         FROM symptom_checks
         WHERE pet_id = #{petId}
         ORDER BY id DESC

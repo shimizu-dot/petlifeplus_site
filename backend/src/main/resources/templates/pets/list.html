@@ -15,6 +15,7 @@
     <div class="content">
 
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
       <div class="page-header">
         <h1 class="page-title">ペット一覧</h1>
@@ -50,18 +51,24 @@
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
               <span th:class="${pet.species == 'DOG' ? 'badge badge-blue' : pet.species == 'CAT' ? 'badge badge-green' : 'badge badge-gray'}"
                     th:text="${pet.species == 'DOG' ? '犬' : pet.species == 'CAT' ? '猫' : pet.species}">犬</span>
+              <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">永眠</span>
               <span th:if="${currentUser != null and currentUser.canManagePets()}"
                     th:class="${petPlanLabels[pet.id] == 'Premium' ? 'badge badge-red' :
                               petPlanLabels[pet.id] == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
                     th:text="${petPlanLabels[pet.id] ?: 'Light'}">Light</span>
               <div class="table-actions">
                 <a th:href="@{/app/pets/{id}(id=${pet.id})}" class="btn btn-secondary btn-sm">詳細</a>
-                <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary btn-sm">健康記録</a>
-                <form th:action="@{/app/pets/{id}(id=${pet.id})}" method="post" style="display:inline;"
+                <a th:if="${pet.deceasedAt == null}" th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary btn-sm">健康記録</a>
+                <form th:if="${pet.deceasedAt == null}" th:action="@{/app/pets/{id}(id=${pet.id})}" method="post" style="display:inline;"
                       onsubmit="return confirm('削除しますか？')">
                   <input type="hidden" name="_method" value="DELETE">
                   <button type="submit" class="btn btn-danger btn-sm">削除</button>
                 </form>
+                <form th:if="${pet.deceasedAt == null}" th:action="@{/app/pets/{id}/decease(id=${pet.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('このペットを永眠として登録しますか？')">
+                  <button type="submit" class="btn btn-secondary btn-sm">永眠</button>
+                </form>
+                <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">操作不可</span>
               </div>
             </div>
           </div>
@@ -76,6 +83,7 @@
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
               <span th:class="${pet.species == 'DOG' ? 'badge badge-blue' : pet.species == 'CAT' ? 'badge badge-green' : 'badge badge-gray'}"
                     th:text="${pet.species == 'DOG' ? '犬' : pet.species == 'CAT' ? '猫' : pet.species}">犬</span>
+              <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">永眠</span>
               <span th:if="${currentUser != null and currentUser.canManagePets()}"
                     th:class="${petPlanLabels[pet.id] == 'Premium' ? 'badge badge-red' :
                               petPlanLabels[pet.id] == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
@@ -83,12 +91,17 @@
             </div>
             <div class="table-actions">
               <a th:href="@{/app/pets/{id}(id=${pet.id})}" class="btn btn-secondary btn-sm">詳細</a>
-              <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary btn-sm">健康記録</a>
-              <form th:action="@{/app/pets/{id}(id=${pet.id})}" method="post" style="display:inline;"
+              <a th:if="${pet.deceasedAt == null}" th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary btn-sm">健康記録</a>
+              <form th:if="${pet.deceasedAt == null}" th:action="@{/app/pets/{id}(id=${pet.id})}" method="post" style="display:inline;"
                     onsubmit="return confirm('削除しますか？')">
                 <input type="hidden" name="_method" value="DELETE">
                 <button type="submit" class="btn btn-danger btn-sm">削除</button>
               </form>
+              <form th:if="${pet.deceasedAt == null}" th:action="@{/app/pets/{id}/decease(id=${pet.id})}" method="post" style="display:inline;"
+                    onsubmit="return confirm('このペットを永眠として登録しますか？')">
+                <button type="submit" class="btn btn-secondary btn-sm">永眠</button>
+              </form>
+              <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">操作不可</span>
             </div>
           </div>
         </div>
@@ -116,6 +129,7 @@
                 <td>
                   <span th:class="${pet.species == 'DOG' ? 'badge badge-blue' : pet.species == 'CAT' ? 'badge badge-green' : 'badge badge-gray'}"
                         th:text="${pet.species == 'DOG' ? '犬' : pet.species == 'CAT' ? '猫' : pet.species}">犬</span>
+                  <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">永眠</span>
                 </td>
                 <td th:text="${pet.breed ?: '—'}">柴犬</td>
                 <td th:text="${pet.sex == 'MALE' ? 'オス' : pet.sex == 'FEMALE' ? 'メス' : '—'}">オス</td>
@@ -128,12 +142,17 @@
                 <td>
                   <div class="table-actions">
                     <a th:href="@{/app/pets/{id}(id=${pet.id})}" class="btn btn-secondary btn-sm">詳細</a>
-                    <a th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary btn-sm">健康記録</a>
-                    <form th:action="@{/app/pets/{id}(id=${pet.id})}" method="post" style="display:inline;"
+                    <a th:if="${pet.deceasedAt == null}" th:href="@{/app/pets/{id}/health-records(id=${pet.id})}" class="btn btn-secondary btn-sm">健康記録</a>
+                    <form th:if="${pet.deceasedAt == null}" th:action="@{/app/pets/{id}(id=${pet.id})}" method="post" style="display:inline;"
                           onsubmit="return confirm('削除しますか？')">
                       <input type="hidden" name="_method" value="DELETE">
                       <button type="submit" class="btn btn-danger btn-sm">削除</button>
                     </form>
+                    <form th:if="${pet.deceasedAt == null}" th:action="@{/app/pets/{id}/decease(id=${pet.id})}" method="post" style="display:inline;"
+                          onsubmit="return confirm('このペットを永眠として登録しますか？')">
+                      <button type="submit" class="btn btn-secondary btn-sm">永眠</button>
+                    </form>
+                    <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">操作不可</span>
                   </div>
                 </td>
               </tr>

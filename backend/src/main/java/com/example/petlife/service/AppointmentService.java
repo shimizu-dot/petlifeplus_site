@@ -51,8 +51,8 @@ public class AppointmentService {
         ensureNoDuplicate(req.staffUserId(), req.scheduledAt(), null);
         AppointmentEntity row = new AppointmentEntity(null, req.petId(), req.ownerUserId(), req.staffUserId(), req.appointmentType(), req.channel(),
                 req.scheduledAt(), req.status(), null, req.note(), null, null, null);
-        appointmentMapper.insert(row);
-        return get(row.id());
+        Long createdId = appointmentMapper.insert(row);
+        return get(createdId);
     }
 
     public PageResponse<AppointmentListRow> listForApp(int page, int size, LoginUser currentUser) {
@@ -84,8 +84,12 @@ public class AppointmentService {
         if (!planAccessService.canUsePrioritySupport(currentUser)) {
             throw new BadRequestException("この機能はプレミアムプランで利用できます");
         }
-        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null) {
+        var pet = petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
+        if (pet == null) {
             throw new NotFoundException("Pet not found: " + petId);
+        }
+        if (pet.deceasedAt() != null) {
+            throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
         }
         ZoomLinkService.ZoomMeetingResult zoomResult = zoomLinkService.createMeetingOrFallback(
                 scheduledAt,
@@ -106,8 +110,8 @@ public class AppointmentService {
                 null,
                 null
         );
-        appointmentMapper.insert(row);
-        AppointmentResponse created = get(row.id());
+        Long createdId = appointmentMapper.insert(row);
+        AppointmentResponse created = get(createdId);
         return new PremiumOnlineCareResult(created, zoomResult.fallbackUsed(), zoomResult.fallbackReason());
     }
 
@@ -122,12 +126,20 @@ public class AppointmentService {
             throw new BadRequestException("予約日時は未来日時を指定してください");
         }
         if (currentUser.canManagePets()) {
-            if (petMapper.findById(petId) == null) {
+            var pet = petMapper.findById(petId);
+            if (pet == null) {
                 throw new NotFoundException("Pet not found: " + petId);
             }
+            if (pet.deceasedAt() != null) {
+                throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
+            }
         } else {
-            if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null) {
+            var pet = petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
+            if (pet == null) {
                 throw new NotFoundException("Pet not found: " + petId);
+            }
+            if (pet.deceasedAt() != null) {
+                throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
             }
         }
         AppointmentEntity row = new AppointmentEntity(
@@ -145,8 +157,8 @@ public class AppointmentService {
                 null,
                 null
         );
-        appointmentMapper.insert(row);
-        return get(row.id());
+        Long createdId = appointmentMapper.insert(row);
+        return get(createdId);
     }
 
     public void delete(Long id) {

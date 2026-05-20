@@ -73,6 +73,7 @@ public class PetService {
         PetEntity row = new PetEntity(
                 null, ownerId, req.name(), req.species(), req.breed(),
                 req.sex(), req.birthDate(), req.weightBaselineKg(), imagePath,
+                null,
                 null, null, null
         );
         Long newId = petMapper.insertReturningId(row);
@@ -92,6 +93,7 @@ public class PetService {
         PetEntity row = new PetEntity(
                 id, existing.ownerUserId(), req.name(), req.species(), req.breed(),
                 req.sex(), req.birthDate(), req.weightBaselineKg(), imagePath,
+                existing.deceasedAt(),
                 existing.deletedAt(), existing.createdAt(), existing.updatedAt()
         );
         petMapper.update(row);
@@ -102,7 +104,17 @@ public class PetService {
 
     public void delete(Long id, LoginUser currentUser) {
         resolvePet(id, currentUser);
+        if (petMapper.countLinkedDataFlags(id) > 0) {
+            throw new BadRequestException("このペットは他データと連携済みのため削除できません。代わりに「永眠」ボタンを使用してください。");
+        }
         if (petMapper.softDelete(id, LocalDateTime.now()) == 0) {
+            throw new NotFoundException("Pet not found: " + id);
+        }
+    }
+
+    public void markDeceased(Long id, LoginUser currentUser) {
+        resolvePet(id, currentUser);
+        if (petMapper.markDeceased(id, LocalDateTime.now()) == 0) {
             throw new NotFoundException("Pet not found: " + id);
         }
     }
@@ -119,7 +131,13 @@ public class PetService {
 
     public PetResponse toResponse(PetEntity row) {
         return new PetResponse(row.id(), row.ownerUserId(), row.name(), row.species(),
-                row.breed(), row.sex(), row.birthDate(), row.weightBaselineKg(), row.imagePath());
+                row.breed(), row.sex(), row.birthDate(), row.weightBaselineKg(), row.imagePath(), row.deceasedAt());
+    }
+
+    public void ensurePetUsable(PetEntity pet) {
+        if (pet.deceasedAt() != null) {
+            throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
+        }
     }
 
     private void validateDogOnly(String species) {

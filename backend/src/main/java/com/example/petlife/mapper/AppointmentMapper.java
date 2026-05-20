@@ -24,12 +24,12 @@ public interface AppointmentMapper {
         """)
     AppointmentEntity findById(@Param("id") Long id);
 
-    @Insert("""
+    @Select("""
         INSERT INTO appointments(pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, zoom_join_url, note, created_at, updated_at)
         VALUES(#{petId}, #{ownerUserId}, #{staffUserId}, #{appointmentType}, #{channel}, #{scheduledAt}, #{status}, #{zoomJoinUrl}, #{note}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        RETURNING id
         """)
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    int insert(AppointmentEntity row);
+    Long insert(AppointmentEntity row);
 
     @Update("""
         UPDATE appointments

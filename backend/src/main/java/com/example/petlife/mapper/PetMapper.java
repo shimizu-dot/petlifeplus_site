@@ -15,7 +15,7 @@ public interface PetMapper {
     // ---- 全件（管理者用） ----
     @Select("""
         SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
-               deleted_at, created_at, updated_at
+               deceased_at, deleted_at, created_at, updated_at
         FROM pets WHERE deleted_at IS NULL ORDER BY id
         LIMIT #{limit} OFFSET #{offset}
         """)
@@ -27,7 +27,7 @@ public interface PetMapper {
     // ---- オーナー別（一般ユーザー用） ----
     @Select("""
         SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
-               deleted_at, created_at, updated_at
+               deceased_at, deleted_at, created_at, updated_at
         FROM pets WHERE owner_user_id = #{ownerUserId} AND deleted_at IS NULL ORDER BY id
         LIMIT #{limit} OFFSET #{offset}
         """)
@@ -37,7 +37,7 @@ public interface PetMapper {
 
     @Select("""
         SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
-               deleted_at, created_at, updated_at
+               deceased_at, deleted_at, created_at, updated_at
         FROM pets WHERE owner_user_id = #{ownerUserId} AND deleted_at IS NULL ORDER BY id
         """)
     List<PetEntity> findActiveByOwnerUserId(@Param("ownerUserId") Long ownerUserId);
@@ -48,14 +48,14 @@ public interface PetMapper {
     // ---- 単件取得 ----
     @Select("""
         SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
-               deleted_at, created_at, updated_at
+               deceased_at, deleted_at, created_at, updated_at
         FROM pets WHERE id = #{id} AND deleted_at IS NULL
         """)
     PetEntity findById(@Param("id") Long id);
 
     @Select("""
         SELECT id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
-               deleted_at, created_at, updated_at
+               deceased_at, deleted_at, created_at, updated_at
         FROM pets WHERE id = #{id} AND owner_user_id = #{ownerUserId} AND deleted_at IS NULL
         """)
     PetEntity findByIdAndOwnerUserId(@Param("id") Long id, @Param("ownerUserId") Long ownerUserId);
@@ -63,9 +63,9 @@ public interface PetMapper {
     // ---- 更新系 ----
     @Select("""
         INSERT INTO pets(owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
-                         created_at, updated_at)
+                         deceased_at, created_at, updated_at)
         VALUES(#{ownerUserId}, #{name}, #{species}, #{breed}, #{sex}, #{birthDate},
-               #{weightBaselineKg}, #{imagePath}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+               #{weightBaselineKg}, #{imagePath}, #{deceasedAt}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING id
         """)
     Long insertReturningId(PetEntity pet);
@@ -74,7 +74,7 @@ public interface PetMapper {
         UPDATE pets
         SET name = #{name}, species = #{species}, breed = #{breed}, sex = #{sex},
             birth_date = #{birthDate}, weight_baseline_kg = #{weightBaselineKg},
-            image_path = #{imagePath},
+            image_path = #{imagePath}, deceased_at = #{deceasedAt},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id} AND deleted_at IS NULL
         """)
@@ -85,4 +85,22 @@ public interface PetMapper {
         WHERE id = #{id} AND deleted_at IS NULL
         """)
     int softDelete(@Param("id") Long id, @Param("deletedAt") LocalDateTime deletedAt);
+
+    @Select("""
+        SELECT
+          (CASE WHEN EXISTS (SELECT 1 FROM health_records h WHERE h.pet_id = #{petId} AND h.deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM pet_care_records c WHERE c.pet_id = #{petId} AND c.deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM symptom_checks s WHERE s.pet_id = #{petId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM appointments a WHERE a.pet_id = #{petId} AND a.deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM medical_histories m WHERE m.pet_id = #{petId} AND m.deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM subscriptions sub WHERE sub.pet_id = #{petId} AND sub.deleted_at IS NULL) THEN 1 ELSE 0 END)
+        """)
+    int countLinkedDataFlags(@Param("petId") Long petId);
+
+    @Update("""
+        UPDATE pets
+        SET deceased_at = COALESCE(deceased_at, #{deceasedAt}), updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id} AND deleted_at IS NULL
+        """)
+    int markDeceased(@Param("id") Long id, @Param("deceasedAt") LocalDateTime deceasedAt);
 }
