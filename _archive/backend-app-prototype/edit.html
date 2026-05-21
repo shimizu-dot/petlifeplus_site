@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理画面 | 編集</title>
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h1>管理メニュー</h1>
+      <a href="./list.html">ユーザー一覧</a>
+      <a href="./create.html">新規登録</a>
+      <a href="./detail.html">詳細</a>
+      <a class="active" href="./edit.html">編集</a>
+    </aside>
+    <main class="main">
+      <div class="topbar"><strong>ユーザー編集</strong><a class="btn" href="./detail.html">詳細へ戻る</a></div>
+      <div class="card">
+        <h2>編集画面</h2>
+        <p class="helper">最終更新: 2026-05-12 18:20（担当: admin）</p>
+        <div class="grid grid-2" style="margin-top:8px;">
+          <div><label>氏名（必須）</label><input value="佐藤 美咲" /></div>
+          <div><label>メールアドレス（必須）</label><input value="misaki@example.com" /></div>
+          <div><label>電話番号</label><input value="090-xxxx-xxxx" /></div>
+          <div><label>ステータス</label><select><option selected>有効</option><option>停止</option></select></div>
+        </div>
+        <div style="margin-top:12px;"><label>備考</label><textarea>オンライン相談を月1回ペースで利用中。</textarea></div>
+        <div class="btn-row" style="margin-top:14px;">
+          <a class="btn primary" href="./detail.html">更新する</a>
+          <a class="btn" href="./detail.html">キャンセル</a>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

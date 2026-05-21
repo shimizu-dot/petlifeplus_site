@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>診療予約 | Pet Life Plus</title>
   <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    .date-nav {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .date-nav a {
+      color: #1D4ED8; text-decoration: none; font-size: 0.9rem; padding: 4px 10px;
+      border: 1px solid #93C5FD; border-radius: 6px; background: #EFF6FF;
+    }
+    .date-nav a:hover { background: #DBEAFE; }
+    .date-nav input[type="date"] {
+      border: 1px solid #CBD5E1; border-radius: 8px; padding: 5px 10px; font-size: 0.9rem;
+    }
+    .date-nav-label {
+      font-size: 0.95rem; font-weight: 600; color: #334155;
+    }
+    .slot-section-label {
+      font-size: 0.85rem; color: #64748B; margin-bottom: 8px;
+    }
+    .slot-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px;
+    }
+    .slot-btn input[type="radio"] { display: none; }
+    .slot-btn label {
+      display: block; padding: 7px 16px; border: 1.5px solid #93C5FD;
+      border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: #1D4ED8;
+      background: #EFF6FF; transition: all 0.15s; user-select: none;
+    }
+    .slot-btn input[type="radio"]:checked + label {
+      background: #1D4ED8; color: #fff; border-color: #1D4ED8; font-weight: 600;
+    }
+    .slot-btn label:hover { background: #DBEAFE; }
+    .slot-empty {
+      font-size: 0.9rem; color: #94A3B8; padding: 12px 0;
+    }
+  </style>
 </head>
 <body>
 <div class="layout">
@@ -15,9 +50,47 @@
     <div class="content">
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-      <div class="card" th:if="${!isAdminView}" style="max-width:760px;">
+      <!-- Booking form — user only -->
+      <div class="card" th:if="${!isAdminView}" style="max-width:780px;">
         <div class="card-title">一般診療を予約</div>
+
+        <!-- Date navigation (GET) -->
+        <form method="get" th:action="@{/app/appointments}" class="date-nav">
+          <a th:href="@{/app/appointments(date=${selectedDate.minusDays(1)})}">&lt; 前日</a>
+          <input type="date" name="date" th:value="${selectedDate}"
+                 onchange="this.form.submit()" style="cursor:pointer;">
+          <a th:href="@{/app/appointments(date=${selectedDate.plusDays(1)})}">翌日 &gt;</a>
+          <span class="date-nav-label"
+                th:text="${#temporals.format(selectedDate, 'yyyy年MM月dd日（E）')}"></span>
+        </form>
+
+        <!-- POST booking form -->
         <form th:action="@{/app/appointments}" method="post" th:object="${form}">
+          <!-- scheduledAt is set by JS when a slot radio is clicked -->
+          <input type="hidden" id="scheduledAt" th:field="*{scheduledAt}">
+
+          <div class="form-group">
+            <label class="form-label">予約時間<span class="required">*</span></label>
+            <div th:if="${availableSlots.isEmpty()}" class="slot-empty">
+              この日は空き枠がありません。別の日を選んでください。
+            </div>
+            <div class="slot-grid" th:if="${!availableSlots.isEmpty()}">
+              <div class="slot-btn" th:each="slot, st : ${availableSlots}">
+                <input type="radio"
+                       th:id="'slot-' + ${st.index}"
+                       name="slotChoice"
+                       th:value="${#temporals.format(slot, 'yyyy-MM-dd') + 'T' + #temporals.format(slot, 'HH:mm')}"
+                       th:checked="${form.scheduledAt != null and form.scheduledAt == slot}"
+                       onchange="document.getElementById('scheduledAt').value = this.value;">
+                <label th:for="'slot-' + ${st.index}"
+                       th:text="${#temporals.format(slot, 'HH:mm')}">10:00</label>
+              </div>
+            </div>
+            <div class="invalid-feedback" style="display:block;"
+                 th:if="${#fields.hasErrors('scheduledAt')}"
+                 th:errors="*{scheduledAt}"></div>
+          </div>
+
           <div class="form-group">
             <label class="form-label" for="petId">対象ペット<span class="required">*</span></label>
             <select id="petId" th:field="*{petId}" class="form-control"
@@ -26,13 +99,6 @@
               <option th:each="p : ${pets}" th:value="${p.id}" th:text="${p.name}">ポチ</option>
             </select>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('petId')}" th:errors="*{petId}"></div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="scheduledAt">予約日時<span class="required">*</span></label>
-            <input id="scheduledAt" type="datetime-local" th:field="*{scheduledAt}" class="form-control"
-                   th:classappend="${#fields.hasErrors('scheduledAt')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduledAt')}" th:errors="*{scheduledAt}"></div>
           </div>
 
           <div class="form-group">
@@ -46,8 +112,10 @@
         </form>
       </div>
 
+      <!-- Appointment list -->
       <div class="card">
-        <div class="card-title" th:text="${isAdminView ? '予約リスト（全ユーザー）' : '予約リスト（自分の予約）'}">予約リスト</div>
+        <div class="card-title"
+             th:text="${isAdminView ? '予約リスト（全ユーザー）' : '予約リスト（自分の予約）'}">予約リスト</div>
         <div class="table-wrap">
           <table class="table">
             <thead>
@@ -60,11 +128,13 @@
               <th>予約日時</th>
               <th>状態</th>
               <th>相談内容</th>
+              <th th:if="${isAdminView}">操作</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${page.items.isEmpty()}">
-              <td th:colspan="${isAdminView ? 8 : 7}" style="text-align:center;color:#64748B;">予約はありません</td>
+              <td th:colspan="${isAdminView ? 9 : 7}"
+                  style="text-align:center;color:#64748B;">予約はありません</td>
             </tr>
             <tr th:each="row : ${page.items}">
               <td th:text="${row.id}">1</td>
@@ -79,9 +149,25 @@
                                   row.status == 'COMPLETED' ? 'badge badge-gray' : 'badge badge-yellow'}"
                       th:text="${row.status == 'REQUESTED' ? '申請中' :
                                 row.status == 'CONFIRMED' ? '確定' :
-                                row.status == 'COMPLETED' ? '完了' : row.status == 'CANCELED' ? '取消' : row.status}">申請中</span>
+                                row.status == 'COMPLETED' ? '完了' :
+                                row.status == 'CANCELED' ? '取消' : row.status}">申請中</span>
               </td>
               <td th:text="${row.note ?: '—'}">咳が続く</td>
+              <td th:if="${isAdminView}">
+                <span th:if="${row.status == 'REQUESTED'}" style="display:flex;gap:4px;">
+                  <form th:action="@{/app/appointments/{id}/approve(id=${row.id})}"
+                        method="post" style="margin:0;">
+                    <button type="submit" class="btn btn-primary"
+                            style="padding:2px 10px;font-size:0.8rem;">承認</button>
+                  </form>
+                  <form th:action="@{/app/appointments/{id}/reject(id=${row.id})}"
+                        method="post" style="margin:0;">
+                    <button type="submit" class="btn btn-danger"
+                            style="padding:2px 10px;font-size:0.8rem;">却下</button>
+                  </form>
+                </span>
+                <span th:if="${row.status != 'REQUESTED'}" style="color:#94A3B8;">—</span>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -89,15 +175,17 @@
       </div>
 
       <div class="pagination-summary" th:if="${page.total > 0}"
-           th:text="'全' + ${page.total} + '件中 ' + ${((page.page - 1) * page.size + 1)} + '-' + ${((page.page - 1) * page.size + #lists.size(page.items))} + '件'">
+           th:text="'全' + ${page.total} + '件中 ' + ${((page.page - 1) * page.size + 1)} + '–' + ${((page.page - 1) * page.size + #lists.size(page.items))} + '件'">
         全50件中 1-10件
       </div>
 
       <div class="pagination" th:if="${page.total > page.size}">
-        <a th:if="${page.page > 1}" th:href="@{/app/appointments(page=${page.page - 1},size=${page.size})}">前へ</a>
+        <a th:if="${page.page > 1}"
+           th:href="@{/app/appointments(page=${page.page - 1},size=${page.size})}">前へ</a>
         <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}">
           <span th:if="${i == page.page}" class="current" th:text="${i}">1</span>
-          <a th:if="${i != page.page}" th:href="@{/app/appointments(page=${i},size=${page.size})}" th:text="${i}">2</a>
+          <a th:if="${i != page.page}"
+             th:href="@{/app/appointments(page=${i},size=${page.size})}" th:text="${i}">2</a>
         </span>
         <a th:if="${page.page * page.size < page.total}"
            th:href="@{/app/appointments(page=${page.page + 1},size=${page.size})}">次へ</a>

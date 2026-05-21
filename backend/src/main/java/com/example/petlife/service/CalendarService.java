@@ -1,11 +1,15 @@
 package com.example.petlife.service;
 
 import com.example.petlife.config.LoginUser;
+import com.example.petlife.dto.calendar.AppointmentCalendarRow;
 import com.example.petlife.dto.calendar.CalendarMarkForm;
+import com.example.petlife.entity.AppointmentSlotEntity;
 import com.example.petlife.entity.CalendarMarkEntity;
 import com.example.petlife.entity.HealthRecordPetDateEntity;
 import com.example.petlife.entity.PetEntity;
 import com.example.petlife.exception.BadRequestException;
+import com.example.petlife.mapper.AppointmentMapper;
+import com.example.petlife.mapper.AppointmentSlotMapper;
 import com.example.petlife.mapper.CalendarMarkMapper;
 import com.example.petlife.mapper.HealthRecordMapper;
 import org.springframework.stereotype.Service;
@@ -29,13 +33,19 @@ public class CalendarService {
     private final PetService petService;
     private final CalendarMarkMapper calendarMarkMapper;
     private final HealthRecordMapper healthRecordMapper;
+    private final AppointmentMapper appointmentMapper;
+    private final AppointmentSlotMapper appointmentSlotMapper;
 
     public CalendarService(PetService petService,
                            CalendarMarkMapper calendarMarkMapper,
-                           HealthRecordMapper healthRecordMapper) {
+                           HealthRecordMapper healthRecordMapper,
+                           AppointmentMapper appointmentMapper,
+                           AppointmentSlotMapper appointmentSlotMapper) {
         this.petService = petService;
         this.calendarMarkMapper = calendarMarkMapper;
         this.healthRecordMapper = healthRecordMapper;
+        this.appointmentMapper = appointmentMapper;
+        this.appointmentSlotMapper = appointmentSlotMapper;
     }
 
     public CalendarView buildMonthView(LoginUser user, YearMonth ym) {
@@ -108,7 +118,25 @@ public class CalendarService {
             petBadges.add(new PetBadge(pet.id(), pet.name(), petColors.getOrDefault(pet.id(), "")));
         }
 
-        return new CalendarView(ym, days, petBadges);
+        Map<LocalDate, List<AppointmentCalendarRow>> appointmentsByDate = new HashMap<>();
+        if (user.isAdmin()) {
+            List<AppointmentCalendarRow> appointments = appointmentMapper.findByScheduledDateRange(start, finish);
+            for (AppointmentCalendarRow row : appointments) {
+                LocalDate date = row.scheduledAt().toLocalDate();
+                appointmentsByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(row);
+            }
+        }
+
+        Map<LocalDate, List<AppointmentSlotEntity>> availableSlotsByDate = new HashMap<>();
+        if (!user.isAdmin()) {
+            List<AppointmentSlotEntity> slots = appointmentSlotMapper.findAvailableInDateRange(start, finish);
+            for (AppointmentSlotEntity slot : slots) {
+                LocalDate date = slot.slotDatetime().toLocalDate();
+                availableSlotsByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(slot);
+            }
+        }
+
+        return new CalendarView(ym, days, petBadges, appointmentsByDate, availableSlotsByDate);
     }
 
     public void addMark(LoginUser user, CalendarMarkForm form) {
@@ -225,7 +253,9 @@ public class CalendarService {
 
     public record PetBadge(Long id, String name, String colorClass) {}
 
-    public record CalendarView(YearMonth month, List<DayCell> days, List<PetBadge> pets) {
+    public record CalendarView(YearMonth month, List<DayCell> days, List<PetBadge> pets,
+                               Map<LocalDate, List<AppointmentCalendarRow>> appointmentsByDate,
+                               Map<LocalDate, List<AppointmentSlotEntity>> availableSlotsByDate) {
         public String monthLabel() {
             return month.getYear() + "年" + month.getMonthValue() + "月";
         }
@@ -238,6 +268,14 @@ public class CalendarService {
         public String nextMonth() {
             YearMonth next = month.plusMonths(1);
             return next.getYear() + "-" + String.format("%02d", next.getMonthValue());
+        }
+
+        public List<AppointmentCalendarRow> appointmentsForDate(LocalDate date) {
+            return appointmentsByDate.getOrDefault(date, List.of());
+        }
+
+        public List<AppointmentSlotEntity> availableSlotsForDate(LocalDate date) {
+            return availableSlotsByDate.getOrDefault(date, List.of());
         }
     }
 }

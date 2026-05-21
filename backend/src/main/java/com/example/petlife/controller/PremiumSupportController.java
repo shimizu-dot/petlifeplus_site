@@ -7,6 +7,7 @@ import com.example.petlife.service.AppointmentService;
 import com.example.petlife.service.PetService;
 import com.example.petlife.service.PlanAccessService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/app/premium/online-care")
@@ -33,16 +37,21 @@ public class PremiumSupportController {
     }
 
     @GetMapping
-    public String form(Model model, @AuthenticationPrincipal LoginUser currentUser) {
+    public String form(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                       Model model,
+                       @AuthenticationPrincipal LoginUser currentUser) {
         if (!planAccessService.canUsePrioritySupport(currentUser)) {
             throw new BadRequestException("この機能はプレミアムプランで利用できます");
         }
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new PremiumOnlineCareForm());
         }
+        LocalDate slotDate = (date != null) ? date : LocalDate.now();
         model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                 .filter(p -> p.deceasedAt() == null)
                 .toList());
+        model.addAttribute("selectedDate", slotDate);
+        model.addAttribute("availableSlots", appointmentService.generateAvailableSlots(slotDate));
         return "premium/online-care";
     }
 
@@ -56,9 +65,12 @@ public class PremiumSupportController {
             throw new BadRequestException("この機能はプレミアムプランで利用できます");
         }
         if (result.hasErrors()) {
+            LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
             model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                     .filter(p -> p.deceasedAt() == null)
                     .toList());
+            model.addAttribute("selectedDate", slotDate);
+            model.addAttribute("availableSlots", appointmentService.generateAvailableSlots(slotDate));
             return "premium/online-care";
         }
 

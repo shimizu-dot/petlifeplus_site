@@ -74,6 +74,18 @@
                       th:text="${m.type() == 'INJECTION' ? '💉' : m.type() == 'DOCTOR' ? '🩺' : m.type() == 'SCISSORS' ? '✂️' : m.type() == 'PARK' ? '🌳' : m.type() == 'CAPSULE' ? '💊' : '🎂'}">💉</span>
               </span>
             </div>
+            <div th:each="appt : ${calendar.appointmentsForDate(d.date())}"
+                 class="calendar-appointment"
+                 th:classappend="${appt.status() == 'REQUESTED' ? ' appt-requested' : ' appt-confirmed'}"
+                 th:title="${appt.ownerName() + ' / ' + appt.petName() + ' ' + #temporals.format(appt.scheduledAt(), 'HH:mm') + ' ' + (appt.channel() == 'ONLINE' ? 'オンライン' : appt.channel() == 'VISIT' ? '来院' : appt.channel())}">
+              <span th:text="${#temporals.format(appt.scheduledAt(), 'HH:mm') + ' ' + appt.petName()}">10:00 ポチ</span>
+            </div>
+            <a th:each="slot : ${calendar.availableSlotsForDate(d.date())}"
+               th:href="@{/app/appointments}"
+               class="calendar-appointment appt-available"
+               th:title="${#temporals.format(slot.slotDatetime(), 'HH:mm') + ' 予約受付中' + (slot.note() != null and !slot.note().isBlank() ? ' (' + slot.note() + ')' : '')}">
+              <span th:text="${#temporals.format(slot.slotDatetime(), 'HH:mm') + ' 空き'}">10:00 空き</span>
+            </a>
           </div>
         </div>
       </div>

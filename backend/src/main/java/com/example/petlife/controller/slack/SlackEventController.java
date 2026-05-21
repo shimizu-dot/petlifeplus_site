@@ -35,8 +35,13 @@ public class SlackEventController {
     public ResponseEntity<?> events(
             @RequestHeader(value = "X-Slack-Request-Timestamp", required = false) String timestamp,
             @RequestHeader(value = "X-Slack-Signature", required = false) String signature,
+            @RequestHeader(value = "X-Slack-Retry-Num", required = false) String retryNum,
             @RequestBody String payloadJson
     ) {
+        if (retryNum != null) {
+            return ResponseEntity.ok(Map.of("ok", true));
+        }
+
         if (!slackRequestVerifier.isValid(timestamp, signature, payloadJson)) {
             auditLog.warn("action=slack_signature_invalid timestamp={} sigPresent={}", timestamp, signature != null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("ok", false));

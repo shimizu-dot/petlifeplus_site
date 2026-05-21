@@ -14,6 +14,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/slack/events")
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/", "/index.html", "/webapp.html",

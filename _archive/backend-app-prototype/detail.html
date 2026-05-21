@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理画面 | 詳細</title>
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h1>管理メニュー</h1>
+      <a href="./list.html">ユーザー一覧</a>
+      <a href="./create.html">新規登録</a>
+      <a class="active" href="./detail.html">詳細</a>
+      <a href="./edit.html">編集</a>
+    </aside>
+    <main class="main">
+      <div class="topbar"><strong>ユーザー詳細</strong><a class="btn" href="./list.html">一覧へ戻る</a></div>
+      <div class="grid grid-2">
+        <section class="card">
+          <h2>基本情報</h2>
+          <dl class="detail-list">
+            <dt>ID</dt><dd>U-0012</dd>
+            <dt>氏名</dt><dd>佐藤 美咲</dd>
+            <dt>メール</dt><dd>misaki@example.com</dd>
+            <dt>電話番号</dt><dd>090-xxxx-xxxx</dd>
+            <dt>ステータス</dt><dd><span class="badge">有効</span></dd>
+            <dt>作成日</dt><dd>2026-04-01</dd>
+            <dt>更新日</dt><dd>2026-05-12</dd>
+          </dl>
+        </section>
+        <section class="card">
+          <h2>関連情報</h2>
+          <dl class="detail-list">
+            <dt>登録ペット</dt><dd>トイプードル（4歳）</dd>
+            <dt>直近予約</dt><dd>2026-05-20 19:00 オンライン相談</dd>
+            <dt>未対応タスク</dt><dd>ワクチン記録確認</dd>
+          </dl>
+        </section>
+      </div>
+      <div class="btn-row" style="margin-top:12px;">
+        <a class="btn alt" href="./edit.html">編集する</a>
+        <a class="btn danger" href="#">削除</a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -65,8 +65,12 @@
       👥 ユーザ管理
     </a>
     <a th:href="@{/app/appointments}"
-       th:classappend="${requestURI.contains('/appointments') ? 'active' : ''}">
+       th:classappend="${requestURI.contains('/appointments') and !requestURI.contains('/slots') ? 'active' : ''}">
       📋 予約リスト
+    </a>
+    <a th:href="@{/app/admin/appointment-slots}"
+       th:classappend="${requestURI.contains('/appointment-slots') ? 'active' : ''}">
+      🗓️ 予約枠管理
     </a>
     <a th:href="@{/app/reports}"
        th:classappend="${requestURI.contains('/reports') ? 'active' : ''}">

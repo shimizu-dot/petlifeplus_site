@@ -1,6 +1,9 @@
 # Build output
 backend/target/
 
+# Local secrets (API keys, credentials)
+backend/src/main/resources/application-local.properties
+
 # Database backups (contain sensitive user data)
 backups/
 backup.sql

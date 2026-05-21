@@ -603,3 +603,79 @@ scripts/db_restore.sh <backup_sql_file>
 実行例:
 ./scripts/db_backup.sh
 ./scripts/db_restore.sh backups/20260518_backup.sql
+
+---
+
+## 環境構築・起動手順
+
+### 前提条件
+- PostgreSQL 17（`C:\Program Files\PostgreSQL\17`）が起動していること
+- Java 17以上がインストールされていること
+
+### 1. データベース準備
+
+#### 初回または復元時
+```powershell
+# DB を削除して再作成（既存接続を強制切断）
+$env:PGPASSWORD = "hs0512"
+& "C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -h localhost -c "DROP DATABASE IF EXISTS petlifeplus WITH (FORCE);"
+& "C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -h localhost -c "CREATE DATABASE petlifeplus OWNER postgres ENCODING 'UTF8';"
+
+# backup.sql から復元
+Get-Content "c:\Projects\petlifeplus_site\backup.sql" | & "C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -h localhost -d petlifeplus
+```
+
+### 2. 環境変数（APIキー）の設定
+
+`backend/src/main/resources/application-local.properties` を作成（Git 管理外）：
+
+```properties
+# Zoom（Server-to-Server OAuth）
+zoom.account-id=（Account ID）
+zoom.client-id=（Client ID）
+zoom.client-secret=（Client Secret）
+
+# Slack（設定時のみ）
+# slack.bot-token=xoxb-...
+# slack.signing-secret=...
+
+# OpenAI（設定時のみ・未設定でもフォールバック動作）
+# openai.api-key=sk-...
+```
+
+### 3. アプリ起動
+
+```powershell
+cd c:\Projects\petlifeplus_site\backend
+& .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+- `local` プロファイルを付けると `application-local.properties` が読み込まれ外部APIキーが有効になる
+- 付けない場合は Zoom/Slack/OpenAI がフォールバック動作
+- `spring.sql.init.mode=never` のため、起動時に schema.sql / data.sql は自動適用されない
+
+### 4. アクセス
+
+| URL | 説明 |
+|---|---|
+| http://localhost:8080 | トップ（フロントエンドへリダイレクト） |
+| http://localhost:8080/app/login | ログイン画面 |
+| http://localhost:8080/app/dashboard | ダッシュボード（要ログイン） |
+
+### デフォルトログイン情報
+
+| メールアドレス | パスワード | ロール |
+|---|---|---|
+| admin@petlifeplus.local | admin123 | ADMIN |
+| owner1@petlifeplus.local | user123 | USER |
+| vet1@petlifeplus.local | vet123 | VET |
+| staff1@petlifeplus.local | staff123 | STAFF |
+| owner.premium@petlifeplus.local | premium123 | USER（Premium） |
+
+### 外部サービス連携状況
+
+| サービス | 状態 | 備考 |
+|---|---|---|
+| Zoom | 有効（Server-to-Server OAuth） | application-local.properties に設定済み |
+| Slack | 未設定（非機能） | SLACK_BOT_TOKEN 未設定 |
+| OpenAI | フォールバック動作 | OPENAI_API_KEY 未設定時はキーワードベース判定 |

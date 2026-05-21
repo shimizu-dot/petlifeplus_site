@@ -13,6 +13,7 @@ public record AppointmentEntity(
         String status,
         String zoomJoinUrl,
         String note,
+        Long slotId,
         LocalDateTime deletedAt,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

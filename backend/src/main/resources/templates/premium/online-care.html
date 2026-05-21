@@ -5,6 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>プレミアム優先サポート | Pet Life Plus</title>
   <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    .date-nav {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .date-nav a {
+      color: #1D4ED8; text-decoration: none; font-size: 0.9rem; padding: 4px 10px;
+      border: 1px solid #93C5FD; border-radius: 6px; background: #EFF6FF;
+    }
+    .date-nav a:hover { background: #DBEAFE; }
+    .date-nav input[type="date"] {
+      border: 1px solid #CBD5E1; border-radius: 8px; padding: 5px 10px; font-size: 0.9rem;
+    }
+    .date-nav-label {
+      font-size: 0.95rem; font-weight: 600; color: #334155;
+    }
+    .slot-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px;
+    }
+    .slot-btn input[type="radio"] { display: none; }
+    .slot-btn label {
+      display: block; padding: 7px 16px; border: 1.5px solid #93C5FD;
+      border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: #1D4ED8;
+      background: #EFF6FF; transition: all 0.15s; user-select: none;
+    }
+    .slot-btn input[type="radio"]:checked + label {
+      background: #1D4ED8; color: #fff; border-color: #1D4ED8; font-weight: 600;
+    }
+    .slot-btn label:hover { background: #DBEAFE; }
+    .slot-empty {
+      font-size: 0.9rem; color: #94A3B8; padding: 12px 0;
+    }
+  </style>
 </head>
 <body>
 <div class="layout">
@@ -22,7 +54,40 @@
 
       <div class="card" style="max-width:720px;">
         <div class="card-title">オンライン診療を予約</div>
+
+        <form method="get" th:action="@{/app/premium/online-care}" class="date-nav">
+          <a th:href="@{/app/premium/online-care(date=${selectedDate.minusDays(1)})}">&lt; 前日</a>
+          <input type="date" name="date" th:value="${selectedDate}" onchange="this.form.submit()" style="cursor:pointer;">
+          <a th:href="@{/app/premium/online-care(date=${selectedDate.plusDays(1)})}">翌日 &gt;</a>
+          <span class="date-nav-label"
+                th:text="${#temporals.format(selectedDate, 'yyyy年MM月dd日（E）')}"></span>
+        </form>
+
         <form th:action="@{/app/premium/online-care}" method="post" th:object="${form}">
+          <input type="hidden" id="scheduledAt" th:field="*{scheduledAt}">
+
+          <div class="form-group">
+            <label class="form-label">予約時間<span class="required">*</span></label>
+            <div th:if="${availableSlots.isEmpty()}" class="slot-empty">
+              この日は空き枠がありません。別の日を選んでください。
+            </div>
+            <div class="slot-grid" th:if="${!availableSlots.isEmpty()}">
+              <div class="slot-btn" th:each="slot, st : ${availableSlots}">
+                <input type="radio"
+                       th:id="'slot-' + ${st.index}"
+                       name="slotChoice"
+                       th:value="${#temporals.format(slot, 'yyyy-MM-dd') + 'T' + #temporals.format(slot, 'HH:mm')}"
+                       th:checked="${form.scheduledAt != null and form.scheduledAt == slot}"
+                       onchange="document.getElementById('scheduledAt').value = this.value;">
+                <label th:for="'slot-' + ${st.index}"
+                       th:text="${#temporals.format(slot, 'HH:mm')}">10:00</label>
+              </div>
+            </div>
+            <div class="invalid-feedback" style="display:block;"
+                 th:if="${#fields.hasErrors('scheduledAt')}"
+                 th:errors="*{scheduledAt}"></div>
+          </div>
+
           <div class="form-group">
             <label class="form-label" for="petId">対象ペット<span class="required">*</span></label>
             <select id="petId" th:field="*{petId}" class="form-control"
@@ -31,13 +96,6 @@
               <option th:each="p : ${pets}" th:value="${p.id}" th:text="${p.name}"></option>
             </select>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('petId')}" th:errors="*{petId}"></div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="scheduledAt">予約日時<span class="required">*</span></label>
-            <input id="scheduledAt" type="datetime-local" th:field="*{scheduledAt}" class="form-control"
-                   th:classappend="${#fields.hasErrors('scheduledAt')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduledAt')}" th:errors="*{scheduledAt}"></div>
           </div>
 
           <div class="form-group">
