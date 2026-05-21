@@ -79,10 +79,17 @@ public class HealthRecordController {
             model.addAttribute("editMode", false);
             return "health/form";
         }
-        healthRecordService.create(
-                petId, form.toCreateRequest(petId, currentUser.id(), null), imageFile, currentUser);
-        ra.addFlashAttribute("success", "健康記録を登録しました");
-        return "redirect:/app/pets/" + petId + "/health-records";
+        try {
+            healthRecordService.create(
+                    petId, form.toCreateRequest(petId, currentUser.id(), null), imageFile, currentUser);
+            ra.addFlashAttribute("success", "健康記録を登録しました");
+            return "redirect:/app/pets/" + petId + "/health-records";
+        } catch (IllegalArgumentException e) {
+            result.reject("imageFile", e.getMessage());
+            model.addAttribute("pet",      petService.get(petId, currentUser));
+            model.addAttribute("editMode", false);
+            return "health/form";
+        }
     }
 
     @GetMapping("/{id}/edit")
@@ -119,19 +126,27 @@ public class HealthRecordController {
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        LocalDate existingDate = healthRecordService.getEntity(id, petId, currentUser).recordDate();
-        // 編集時は記録日変更不可: 送信値に関わらず既存値を維持
-        form.setRecordDate(existingDate);
+        HealthRecordEntity existing = healthRecordService.getEntity(id, petId, currentUser);
+        form.setRecordDate(existing.recordDate());
         if (result.hasErrors()) {
-            model.addAttribute("pet",      petService.get(petId, currentUser));
-            model.addAttribute("recordId", id);
-            model.addAttribute("editMode", true);
+            model.addAttribute("pet",             petService.get(petId, currentUser));
+            model.addAttribute("recordId",        id);
+            model.addAttribute("recordImagePath", existing.imagePath());
+            model.addAttribute("editMode",        true);
             return "health/form";
         }
-        String currentImagePath = healthRecordService.getEntity(id, petId, currentUser).imagePath();
-        healthRecordService.update(id, petId, form.toUpdateRequest(currentImagePath), imageFile, currentUser);
-        ra.addFlashAttribute("success", "健康記録を更新しました");
-        return "redirect:/app/pets/" + petId + "/health-records";
+        try {
+            healthRecordService.update(id, petId, form.toUpdateRequest(existing.imagePath()), imageFile, currentUser);
+            ra.addFlashAttribute("success", "健康記録を更新しました");
+            return "redirect:/app/pets/" + petId + "/health-records";
+        } catch (IllegalArgumentException e) {
+            result.reject("imageFile", e.getMessage());
+            model.addAttribute("pet",             petService.get(petId, currentUser));
+            model.addAttribute("recordId",        id);
+            model.addAttribute("recordImagePath", existing.imagePath());
+            model.addAttribute("editMode",        true);
+            return "health/form";
+        }
     }
 
     @DeleteMapping("/{id}")

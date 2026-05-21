@@ -6,7 +6,7 @@
   <title th:text="${editMode ? 'ペット編集' : 'ペット登録'} + ' | Pet Life Plus'">ペット登録 | Pet Life Plus</title>
   <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
+<body th:class="${bodyClass}">
 <div class="layout">
   <div th:replace="~{fragments/nav :: sidebar}"></div>
 
@@ -77,11 +77,14 @@
 
           <div class="form-group">
             <label class="form-label" for="imageFile">ペット画像</label>
-            <input id="imageFile" type="file" name="imageFile" class="form-control" accept="image/*">
+            <input id="imageFile" type="file" name="imageFile" class="form-control" accept="image/*"
+                   th:classappend="${#fields.hasGlobalErrors()} ? 'is-invalid'">
             <div class="form-hint">jpeg / png / webp / gif（任意）</div>
+            <div th:if="${#fields.hasGlobalErrors()}" class="invalid-feedback"
+                 th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
             <div th:if="${editMode and petImagePath != null}" style="margin-top:8px;">
               <img th:src="${petImagePath}" alt="current-pet-image"
-                   style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid #CBD5E1;">
+                   style="width:100px;height:100px;object-fit:cover;border-radius:10px;border:1px solid #CBD5E1;">
             </div>
           </div>
 

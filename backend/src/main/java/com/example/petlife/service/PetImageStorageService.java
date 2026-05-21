@@ -35,12 +35,17 @@ public class PetImageStorageService {
             if (src == null) {
                 throw new IllegalArgumentException("画像の読み込みに失敗しました。jpeg/png/gif 形式を利用してください");
             }
-            BufferedImage resized = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+            int size = 100;
+            int sw = src.getWidth(), sh = src.getHeight();
+            int cropX = 0, cropY = 0, cropSize = Math.min(sw, sh);
+            if (sw > sh) cropX = (sw - cropSize) / 2;
+            else         cropY = (sh - cropSize) / 2;
+            BufferedImage resized = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = resized.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.drawImage(src, 0, 0, 200, 200, null);
+            g.drawImage(src, 0, 0, size, size, cropX, cropY, cropX + cropSize, cropY + cropSize, null);
             g.dispose();
             ImageIO.write(resized, "png", dst.toFile());
         } catch (IOException e) {

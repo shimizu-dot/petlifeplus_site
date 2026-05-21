@@ -41,4 +41,10 @@ public class GlobalControllerAdvice {
     public boolean canUsePrioritySupport(@AuthenticationPrincipal LoginUser user) {
         return user != null && planAccessService.canUsePrioritySupport(user);
     }
+
+    @ModelAttribute("bodyClass")
+    public String bodyClass(@AuthenticationPrincipal LoginUser user) {
+        if (user == null) return "";
+        return user.canManagePets() ? "role-admin" : "role-user";
+    }
 }

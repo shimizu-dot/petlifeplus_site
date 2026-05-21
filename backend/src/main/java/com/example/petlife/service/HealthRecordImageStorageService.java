@@ -35,12 +35,17 @@ public class HealthRecordImageStorageService {
             if (src == null) {
                 throw new IllegalArgumentException("画像の読み込みに失敗しました。jpeg/png/gif 形式を利用してください");
             }
-            BufferedImage resized = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+            int maxPx = 800;
+            int sw = src.getWidth(), sh = src.getHeight();
+            double scale = Math.min(1.0, Math.min((double) maxPx / sw, (double) maxPx / sh));
+            int w = Math.max(1, (int)(sw * scale));
+            int h = Math.max(1, (int)(sh * scale));
+            BufferedImage resized = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = resized.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.drawImage(src, 0, 0, 200, 200, null);
+            g.drawImage(src, 0, 0, w, h, null);
             g.dispose();
             ImageIO.write(resized, "png", dst.toFile());
         } catch (IOException e) {

@@ -82,9 +82,15 @@ public class PetController {
             model.addAttribute("editMode", false);
             return "pets/form";
         }
-        PetResponse pet = petService.create(form.toCreateRequest(currentUser.id()), imageFile, currentUser);
-        ra.addFlashAttribute("success", "ペットを登録しました");
-        return "redirect:/app/pets/" + pet.id();
+        try {
+            PetResponse pet = petService.create(form.toCreateRequest(currentUser.id()), imageFile, currentUser);
+            ra.addFlashAttribute("success", "ペットを登録しました");
+            return "redirect:/app/pets/" + pet.id();
+        } catch (IllegalArgumentException e) {
+            result.reject("imageFile", e.getMessage());
+            model.addAttribute("editMode", false);
+            return "pets/form";
+        }
     }
 
     @GetMapping("/{id}")
@@ -167,15 +173,24 @@ public class PetController {
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
         validateBirthDate(form, result);
+        String currentImagePath = petService.getEntity(id, currentUser).imagePath();
         if (result.hasErrors()) {
             model.addAttribute("petId", id);
+            model.addAttribute("petImagePath", currentImagePath);
             model.addAttribute("editMode", true);
             return "pets/form";
         }
-        String currentImagePath = petService.getEntity(id, currentUser).imagePath();
-        petService.update(id, form.toUpdateRequest(currentImagePath), imageFile, currentUser);
-        ra.addFlashAttribute("success", "ペット情報を更新しました");
-        return "redirect:/app/pets/" + id;
+        try {
+            petService.update(id, form.toUpdateRequest(currentImagePath), imageFile, currentUser);
+            ra.addFlashAttribute("success", "ペット情報を更新しました");
+            return "redirect:/app/pets/" + id;
+        } catch (IllegalArgumentException e) {
+            result.reject("imageFile", e.getMessage());
+            model.addAttribute("petId", id);
+            model.addAttribute("petImagePath", currentImagePath);
+            model.addAttribute("editMode", true);
+            return "pets/form";
+        }
     }
 
     @DeleteMapping("/{id}")

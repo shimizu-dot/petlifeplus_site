@@ -15,7 +15,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/slack/events")
+                .ignoringRequestMatchers("/api/slack/events", "/api/line/events")
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
@@ -23,7 +23,7 @@ public class SecurityConfig {
                     "/f_contact.html", "/f_flow.html", "/f_info.html", "/f_service.html",
                     "/css/**", "/js/**", "/assets/**", "/images/**", "/uploads/**"
                 ).permitAll()
-                .requestMatchers("/api/slack/events").permitAll()
+                .requestMatchers("/api/slack/events", "/api/line/events").permitAll()
                 .requestMatchers("/app/login").permitAll()
                 .requestMatchers("/app/admin/**", "/app/reports/**").hasRole("ADMIN")
                 .requestMatchers("/app/**").authenticated()

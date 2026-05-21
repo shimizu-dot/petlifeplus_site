@@ -677,5 +677,5 @@ cd c:\Projects\petlifeplus_site\backend
 | サービス | 状態 | 備考 |
 |---|---|---|
 | Zoom | 有効（Server-to-Server OAuth） | application-local.properties に設定済み |
-| Slack | 未設定（非機能） | SLACK_BOT_TOKEN 未設定 |
+| Slack | 設定済（機能） | SLACK_BOT_TOKEN 設定済 |
 | OpenAI | フォールバック動作 | OPENAI_API_KEY 未設定時はキーワードベース判定 |

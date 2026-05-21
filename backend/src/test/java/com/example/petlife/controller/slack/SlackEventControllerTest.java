@@ -21,7 +21,7 @@ class SlackEventControllerTest {
         when(verifier.isValid(any(), any(), any())).thenReturn(false);
 
         SlackEventController controller = new SlackEventController(bot, verifier);
-        ResponseEntity<?> res = controller.events("123", "v0=bad", "{\"type\":\"event_callback\"}");
+        ResponseEntity<?> res = controller.events("123", "v0=bad", null, "{\"type\":\"event_callback\"}");
 
         assertEquals(HttpStatus.UNAUTHORIZED, res.getStatusCode());
     }
@@ -33,7 +33,7 @@ class SlackEventControllerTest {
         when(verifier.isValid(any(), any(), any())).thenReturn(true);
 
         SlackEventController controller = new SlackEventController(bot, verifier);
-        ResponseEntity<?> res = controller.events("123", "v0=ok", "{\"type\":\"url_verification\",\"challenge\":\"abc123\"}");
+        ResponseEntity<?> res = controller.events("123", "v0=ok", null, "{\"type\":\"url_verification\",\"challenge\":\"abc123\"}");
 
         assertEquals(HttpStatus.OK, res.getStatusCode());
         assertTrue(res.getBody() instanceof Map);

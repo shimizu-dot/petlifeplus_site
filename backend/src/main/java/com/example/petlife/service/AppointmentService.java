@@ -7,11 +7,9 @@ import com.example.petlife.dto.appointment.AppointmentResponse;
 import com.example.petlife.dto.appointment.AppointmentUpdateRequest;
 import com.example.petlife.dto.common.PageResponse;
 import com.example.petlife.entity.AppointmentEntity;
-import com.example.petlife.entity.AppointmentSlotEntity;
 import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.AppointmentMapper;
-import com.example.petlife.mapper.AppointmentSlotMapper;
 import com.example.petlife.mapper.PetMapper;
 import org.springframework.stereotype.Service;
 
@@ -24,18 +22,15 @@ import java.util.List;
 @Service
 public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
-    private final AppointmentSlotMapper appointmentSlotMapper;
     private final PlanAccessService planAccessService;
     private final ZoomLinkService zoomLinkService;
     private final PetMapper petMapper;
 
     public AppointmentService(AppointmentMapper appointmentMapper,
-                              AppointmentSlotMapper appointmentSlotMapper,
                               PlanAccessService planAccessService,
                               ZoomLinkService zoomLinkService,
                               PetMapper petMapper) {
         this.appointmentMapper = appointmentMapper;
-        this.appointmentSlotMapper = appointmentSlotMapper;
         this.planAccessService = planAccessService;
         this.zoomLinkService = zoomLinkService;
         this.petMapper = petMapper;

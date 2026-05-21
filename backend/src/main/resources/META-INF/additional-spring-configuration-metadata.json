@@ -17,6 +17,16 @@
       "description": "Slack Signing Secret for verifying incoming Slack event requests."
     },
     {
+      "name": "line.channel-token",
+      "type": "java.lang.String",
+      "description": "LINE Messaging API channel access token. Leave empty to disable LINE push/reply features."
+    },
+    {
+      "name": "line.channel-secret",
+      "type": "java.lang.String",
+      "description": "LINE Messaging API channel secret for validating webhook signatures."
+    },
+    {
       "name": "zoom.meeting-base-url",
       "type": "java.lang.String",
       "description": "Base URL for Zoom meeting links (e.g. https://zoom.us/j).",

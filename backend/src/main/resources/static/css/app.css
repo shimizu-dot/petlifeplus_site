@@ -22,20 +22,35 @@
   --shadow-md: 0 12px 24px rgba(37,99,235,.10);
 }
 
-/* ===== ADMIN THEME (purple) ===== */
+/* ===== ADMIN THEME (blue) ===== */
 body.role-admin {
-  --primary: #7C3AED;
-  --primary-dark: #6D28D9;
-  --primary-light: #F5F3FF;
-  --accent: #F59E0B;
-  --shadow-md: 0 12px 24px rgba(109,40,217,.12);
-}
-
-/* ===== USER THEME (blue — default, explicit for clarity) ===== */
-body.role-user {
   --primary: #1D4ED8;
   --primary-dark: #1E40AF;
   --primary-light: #EFF6FF;
+  --accent: #F59E0B;
+  --shadow-md: 0 12px 24px rgba(29,78,216,.12);
+}
+
+/* ===== USER THEME (teal gradient) ===== */
+body.role-user {
+  --primary: #0B8585;
+  --primary-dark: #096F6F;
+  --primary-light: #F0FDFA;
+  --shadow-md: 0 12px 24px rgba(11,133,133,.12);
+}
+
+body.role-user .sidebar {
+  background: linear-gradient(160deg, #0B8585 0%, #0C5F8A 100%);
+}
+
+body.role-user .btn-primary {
+  background: linear-gradient(135deg, #0EA5A4 0%, #0C5F8A 100%);
+  border-color: transparent;
+}
+
+body.role-user .btn-primary:hover {
+  background: linear-gradient(135deg, #0B8585 0%, #0A4F75 100%);
+  border-color: transparent;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

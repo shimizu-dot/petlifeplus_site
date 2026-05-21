@@ -6,7 +6,7 @@
   <title>ダッシュボード | Pet Life Plus</title>
   <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body th:class="${currentUser != null and currentUser.canManagePets() ? 'role-admin' : 'role-user'}">
+<body th:class="${bodyClass}">
 <div class="layout">
   <div th:replace="~{fragments/nav :: sidebar}"></div>
 
