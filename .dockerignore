@@ -1,0 +1,14 @@
+.git
+.idea
+.vscode
+target
+build
+out
+backend/target
+backend/build
+backend/out
+logs
+backups
+_archive
+frontend
+docs
