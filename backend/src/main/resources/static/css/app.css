@@ -255,6 +255,27 @@ body {
 
 .table-actions { display: flex; gap: 8px; }
 
+/* Grid cards: prevent action buttons from overlapping by wrapping into columns */
+.user-list-root.view-grid .table-actions,
+.pet-list-root.view-grid .table-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.user-list-root.view-grid .table-actions form,
+.pet-list-root.view-grid .table-actions form {
+  width: 100%;
+  margin: 0;
+}
+
+.user-list-root.view-grid .table-actions .btn,
+.pet-list-root.view-grid .table-actions .btn {
+  width: 100%;
+  justify-content: center;
+}
+
 /* ===== BUTTONS ===== */
 .btn {
   display: inline-flex;
@@ -708,6 +729,8 @@ body {
   .view-switch { width: 100%; justify-content: stretch; }
   .view-switch-btn { flex: 1; }
   .user-view-grid { grid-template-columns: 1fr; }
+  .user-list-root.view-grid .table-actions,
+  .pet-list-root.view-grid .table-actions { grid-template-columns: 1fr; }
 }
 
 /* ===== PET VIEW MODES ===== */
