@@ -8,11 +8,11 @@ public class RootController {
 
     @GetMapping("/")
     public String root() {
-        return "redirect:/app/login";
+        return "redirect:/index.html";
     }
 
     @GetMapping("/i")
     public String shortI() {
-        return "redirect:/app/login";
+        return "redirect:/index.html";
     }
 }

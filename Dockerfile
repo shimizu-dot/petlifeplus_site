@@ -5,6 +5,7 @@ COPY backend/.mvn/ /app/.mvn/
 COPY backend/mvnw /app/mvnw
 COPY backend/pom.xml /app/pom.xml
 COPY backend/src/ /app/src/
+COPY frontend/public/ /app/frontend/public/
 
 RUN chmod +x ./mvnw
 RUN ./mvnw -B -DskipTests package
