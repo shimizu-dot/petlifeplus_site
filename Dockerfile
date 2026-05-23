@@ -14,6 +14,7 @@ FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar /app/app.jar
+COPY --from=build /app/frontend/public/ /app/frontend/public/
 
 EXPOSE 10000
 ENTRYPOINT ["java", "-Dserver.port=10000", "-jar", "/app/app.jar"]
