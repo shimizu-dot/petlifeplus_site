@@ -98,6 +98,10 @@
        th:classappend="${requestURI.contains('/reports') ? 'active' : ''}">
       📊 サービス統計
     </a>
+    <a th:href="@{/app/admin/database}"
+       th:classappend="${requestURI.contains('/admin/database') ? 'active' : ''}">
+      🗄️ DBバックアップ
+    </a>
   </nav>
 
   <div class="sidebar-footer">

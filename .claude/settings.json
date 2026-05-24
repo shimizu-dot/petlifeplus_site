@@ -5,7 +5,9 @@
       "Bash(python3 -c \"import openpyxl; print\\('openpyxl OK'\\)\")",
       "Bash(python3 -c \"import openpyxl; print\\('openpyxl', openpyxl.__version__\\)\")",
       "Bash(python -c ' *)",
-      "Bash(python docs/update_db_xlsx.py)"
+      "Bash(python docs/update_db_xlsx.py)",
+      "Bash(Remove-Item \"c:\\\\Projects\\\\petlifeplus_site\\\\docs\\\\update_db_xlsx.py\")",
+      "Bash(del \"c:\\\\Projects\\\\petlifeplus_site\\\\docs\\\\update_db_xlsx.py\")"
     ]
   }
 }

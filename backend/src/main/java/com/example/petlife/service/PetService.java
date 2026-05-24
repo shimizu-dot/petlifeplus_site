@@ -65,7 +65,10 @@ public class PetService {
     }
 
     public boolean canDeletePet(Long petId, LoginUser currentUser) {
-        resolvePet(petId, currentUser);
+        PetEntity pet = resolvePet(petId, currentUser);
+        if (pet.deceasedAt() != null) {
+            return false;
+        }
         return petMapper.countLinkedDataFlags(petId) == 0;
     }
 
@@ -90,6 +93,7 @@ public class PetService {
     public PetResponse update(Long id, PetUpdateRequest req, MultipartFile imageFile, LoginUser currentUser) {
         validateDogOnly(req.species());
         PetEntity existing = resolvePet(id, currentUser);
+        ensurePetUsable(existing);
         String imagePath = existing.imagePath();
         String uploadedPath = petImageStorageService.store(imageFile);
         if (uploadedPath != null) {
@@ -108,7 +112,8 @@ public class PetService {
     // ---- 削除 ----
 
     public void delete(Long id, LoginUser currentUser) {
-        resolvePet(id, currentUser);
+        PetEntity pet = resolvePet(id, currentUser);
+        ensurePetUsable(pet);
         if (petMapper.countLinkedDataFlags(id) > 0) {
             throw new BadRequestException("このペットは他データと連携済みのため削除できません。代わりに「永眠」ボタンを使用してください。");
         }
@@ -118,7 +123,10 @@ public class PetService {
     }
 
     public void markDeceased(Long id, LoginUser currentUser) {
-        resolvePet(id, currentUser);
+        PetEntity pet = resolvePet(id, currentUser);
+        if (pet.deceasedAt() != null) {
+            throw new BadRequestException("このペットはすでに永眠登録されています");
+        }
         if (petMapper.markDeceased(id, LocalDateTime.now()) == 0) {
             throw new NotFoundException("Pet not found: " + id);
         }

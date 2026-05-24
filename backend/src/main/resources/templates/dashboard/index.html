@@ -71,6 +71,22 @@
         </div>
       </div>
 
+      <!-- ADMIN: DBバックアップ -->
+      <div class="card" th:if="${currentUser != null and currentUser.isAdmin()}"
+           style="max-width:640px;border-left:4px solid #1D4ED8;">
+        <div class="card-title">🗄️ データベース管理</div>
+        <p style="font-size:14px;color:#475569;margin-bottom:12px;">
+          バックアップのダウンロードやリストアを行います。
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <form th:action="@{/app/admin/database/backup}" method="post" style="display:inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="btn btn-primary">⬇ バックアップをダウンロード</button>
+          </form>
+          <a th:href="@{/app/admin/database}" class="btn btn-secondary">🗄️ リストア管理画面へ</a>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

@@ -108,6 +108,18 @@
       "name": "admin.line-user-ids",
       "type": "java.lang.String",
       "description": "Comma-separated LINE user IDs that receive admin-level bot notifications."
+    },
+    {
+      "name": "db.backup.pg-dump-path",
+      "type": "java.lang.String",
+      "description": "Path to the pg_dump executable. Override with env var PG_DUMP_PATH if not on PATH.",
+      "defaultValue": "pg_dump"
+    },
+    {
+      "name": "db.backup.psql-path",
+      "type": "java.lang.String",
+      "description": "Path to the psql executable. Override with env var PSQL_PATH if not on PATH.",
+      "defaultValue": "psql"
     }
   ]
 }
