@@ -53,7 +53,7 @@ public class PetController {
                        @AuthenticationPrincipal LoginUser currentUser) {
         var petPage = petService.list(page, size, currentUser);
         model.addAttribute("page", petPage);
-        if (currentUser.canManagePets()) {
+        if (currentUser.hasStaffAccess()) {
             Map<Long, String> petPlanLabels = new HashMap<>();
             for (PetResponse pet : petPage.items()) {
                 petPlanLabels.put(pet.id(), planAccessService.planLabelEnByUserId(pet.ownerUserId()));
@@ -99,7 +99,7 @@ public class PetController {
                          @AuthenticationPrincipal LoginUser currentUser) {
         PetResponse pet = petService.get(id, currentUser);
         model.addAttribute("pet", pet);
-        if (currentUser.canManagePets()) {
+        if (currentUser.hasStaffAccess()) {
             model.addAttribute("ownerName", userService.get(pet.ownerUserId()).name());
         }
         model.addAttribute("careForm", new PetCareRecordForm());

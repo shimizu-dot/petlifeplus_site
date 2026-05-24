@@ -221,26 +221,40 @@
             <div class="fill-hint">Spring Bootアプリケーションの画面構造をツリー形式で記載</div>
             <div class="fill-content">
               <pre>ログイン前
-├── ログイン
+├── ログイン（/app/login）
 │   ├── メールアドレス/パスワード入力
-│   ├── ログイン実行
-│   └── パスワードを忘れた場合
-├── パスワード再設定
-│   ├── 再設定メール送信
-│   └── 新パスワード登録
-└── お知らせ/メンテナンス情報
+│   └── ログイン処理（POST /app/login）
+└── ログアウト（POST /app/logout）
 
-ログイン後
-├── ダッシュボード
-├── ユーザー管理（CRUD）
-├── ペット管理（CRUD）
-├── 健康記録管理（CRUD）
-├── 契約・プラン管理（CRUD）
-├── 予約管理（CRUD）
-├── 診療・相談履歴管理（CRUD）
-├── 通知管理
-├── レポート
-└── システム設定</pre>
+全ユーザー（ログイン後）
+├── ダッシュボード（/app/dashboard）
+├── 通知（/app/notifications）
+└── パスワード変更（/app/password-resets）
+
+一般ユーザー（USERロール）
+├── ペット管理（/app/pets）
+│   └── 健康記録（/app/pets/{id}/health-records）
+├── カレンダー（/app/calendar）
+├── 診療予約（/app/appointments）          ※Standard/Premium
+├── チャット相談（/app/consult/chatbot）   ※Standard/Premium
+├── 診療案内（/app/clinic-guide）
+├── サブスクリプション（/app/subscriptions）
+└── Zoom診療（/app/premium/online-care）   ※Premiumのみ
+
+獣医師・スタッフ（VET/STAFFロール）
+├── カレンダー（/app/calendar）
+├── 診療記録（/app/consultations）
+└── 診療予約管理（/app/appointments）
+
+全スタッフ系（VET/STAFF/ADMINロール）
+└── ユーザー管理（/app/admin/users）
+
+ADMIN・スタッフ（ADMIN/STAFFロール）
+├── お知らせ管理（/app/admin/announcements）
+└── 予約枠管理（/app/admin/appointment-slots）
+
+ADMINのみ
+└── サービス統計（/app/reports）</pre>
             </div>
           </div>
 
@@ -318,58 +332,103 @@
                   <td>1</td>
                   <td>ログイン画面</td>
                   <td>利用者認証を行い安全にシステムへアクセスさせる</td>
-                  <td>メール/パスワード入力、ログイン、パスワード再設定導線</td>
+                  <td>メール/パスワード入力、ログイン処理（全ユーザー）</td>
                 </tr>
                 <tr>
                   <td>2</td>
                   <td>ダッシュボード画面</td>
                   <td>全体状況をひと目で把握し次の操作へ誘導する</td>
-                  <td>KPI表示、予約予定、通知一覧、未対応タスク表示</td>
+                  <td>KPI表示、予約予定、通知一覧、未対応タスク表示（全ユーザー）</td>
                 </tr>
                 <tr>
                   <td>3</td>
-                  <td>ユーザー管理画面</td>
-                  <td>飼い主ユーザー情報を管理する</td>
-                  <td>一覧表示、検索、詳細表示、新規登録、編集、削除（CRUD）</td>
+                  <td>通知画面</td>
+                  <td>システム通知とスケジュールリマインダーを確認する</td>
+                  <td>通知一覧、既読処理、ワクチン/予約/更新リマインダー表示（全ユーザー）</td>
                 </tr>
                 <tr>
                   <td>4</td>
-                  <td>ペット管理画面</td>
-                  <td>ペット情報を一元管理する</td>
-                  <td>一覧表示、絞り込み検索、詳細表示、登録・編集・削除（CRUD）</td>
+                  <td>パスワード変更画面</td>
+                  <td>現在のパスワードを確認の上、新しいパスワードへ変更する</td>
+                  <td>現パスワード入力、新パスワード確認入力、BCrypt再ハッシュ保存（全ユーザー）</td>
                 </tr>
                 <tr>
                   <td>5</td>
-                  <td>健康記録管理画面</td>
-                  <td>日々の健康データを管理・確認する</td>
-                  <td>体重/食事/運動記録の登録、履歴表示、期間検索、編集・削除</td>
+                  <td>ペット管理画面</td>
+                  <td>ペット情報を一元管理する</td>
+                  <td>一覧表示、絞り込み検索、詳細表示、登録・編集・削除（USER）</td>
                 </tr>
                 <tr>
                   <td>6</td>
-                  <td>症状チェック結果管理画面</td>
-                  <td>AI症状チェック結果を確認し対応判断を支援する</td>
-                  <td>結果一覧、重症度フィルタ、詳細確認、対応ステータス更新</td>
+                  <td>健康記録管理画面</td>
+                  <td>日々の健康データを管理・確認する</td>
+                  <td>体重/食事/運動記録の登録、履歴表示、期間検索、編集・削除（USER）</td>
                 </tr>
                 <tr>
                   <td>7</td>
-                  <td>予約管理画面</td>
-                  <td>診療・相談予約を管理する</td>
-                  <td>予約一覧、日付検索、新規予約、変更、キャンセル、リマインド設定</td>
+                  <td>カレンダー画面</td>
+                  <td>ペットの予定や出来事をカレンダー形式で管理する</td>
+                  <td>月別カレンダー表示、マーク登録・削除（USER/VET/STAFF）</td>
                 </tr>
                 <tr>
                   <td>8</td>
-                  <td>診療・相談履歴画面</td>
-                  <td>診療/相談内容を記録し継続対応に活用する</td>
-                  <td>履歴一覧、キーワード検索、詳細記録、添付、編集</td>
+                  <td>チャット相談画面</td>
+                  <td>AIチャットボットを通じて症状の事前確認を行う</td>
+                  <td>症状入力、AI判定結果表示、受診推奨度確認（USER・Standard/Premiumプラン）</td>
                 </tr>
                 <tr>
                   <td>9</td>
+                  <td>診療案内画面</td>
+                  <td>提携クリニックの案内情報を表示する</td>
+                  <td>クリニック情報、アクセス・診療時間案内（USER）</td>
                 </tr>
                 <tr>
                   <td>10</td>
-                  <td>通知配信管理画面</td>
-                  <td>ユーザー向け通知を作成・配信する</td>
-                  <td>通知作成、一斉配信、セグメント配信、配信履歴確認</td>
+                  <td>診療予約画面</td>
+                  <td>診療・相談予約を管理する</td>
+                  <td>予約一覧、新規予約申請、承認・却下・キャンセル（USER/VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td>サブスクリプション管理画面</td>
+                  <td>契約中のプラン情報を確認する</td>
+                  <td>現在のプラン表示、契約期間・状態確認（USER）</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>Zoom診療画面</td>
+                  <td>Zoomによるオンライン診療リンクを取得する</td>
+                  <td>Zoomリンク生成・表示（USER・Premiumプランのみ）</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>診療記録管理画面</td>
+                  <td>診療/相談内容を記録し継続対応に活用する</td>
+                  <td>記録一覧、詳細表示、新規記録・編集・削除（VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>14</td>
+                  <td>ユーザー管理画面</td>
+                  <td>利用者アカウントを管理する</td>
+                  <td>一覧・詳細閲覧（VET）、登録・編集（STAFF/ADMIN）、削除（ADMIN）</td>
+                </tr>
+                <tr>
+                  <td>15</td>
+                  <td>お知らせ管理画面</td>
+                  <td>全ユーザー向けお知らせを作成・管理する</td>
+                  <td>一覧表示、新規作成、編集、削除（ADMIN/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>16</td>
+                  <td>予約枠管理画面</td>
+                  <td>診療予約受付用の枠を設定・管理する</td>
+                  <td>予約枠一覧、枠の追加・削除（ADMIN/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>17</td>
+                  <td>サービス統計画面</td>
+                  <td>サービス全体のKPIを集計・表示する</td>
+                  <td>ユーザー数・ペット数・予約数・サブスク数の集計表示（ADMIN）</td>
                 </tr>
               </tbody>
             </table>
@@ -560,73 +619,223 @@
                   <td>/app/login</td>
                   <td>GET</td>
                   <td>ログイン画面</td>
-                  <td>ログインフォーム表示</td>
+                  <td>ログインフォーム表示（公開）</td>
                 </tr>
                 <tr>
-                  <td>/app/sessions</td>
+                  <td>/app/login</td>
                   <td>POST</td>
                   <td>ログイン処理</td>
-                  <td>認証してセッション作成</td>
+                  <td>Spring Securityが認証・セッション作成（公開）</td>
                 </tr>
                 <tr>
-                  <td>/app/sessions/current</td>
-                  <td>DELETE</td>
+                  <td>/app/logout</td>
+                  <td>POST</td>
                   <td>ログアウト</td>
-                  <td>現在セッション削除</td>
+                  <td>Spring Securityがセッション破棄（全ユーザー）</td>
                 </tr>
                 <tr>
                   <td>/app/dashboard</td>
                   <td>GET</td>
                   <td>ダッシュボード</td>
-                  <td>KPI・通知・予定表示</td>
-                </tr>
-                <tr>
-                  <td>/app/users</td>
-                  <td>GET</td>
-                  <td>ユーザー一覧/検索</td>
-                  <td>一覧、条件検索</td>
-                </tr>
-                <tr>
-                  <td>/app/pets</td>
-                  <td>GET</td>
-                  <td>ペット一覧/検索</td>
-                  <td>一覧、条件検索</td>
-                </tr>
-                <tr>
-                  <td>/app/pets/{petId}/health-records</td>
-                  <td>GET</td>
-                  <td>健康記録一覧</td>
-                  <td>体重/食事/運動履歴表示</td>
-                </tr>
-                <tr>
-                  <td>/app/symptom-checks</td>
-                  <td>POST</td>
-                  <td>AI症状チェック実行</td>
-                  <td>入力症状を診断ロジックへ送信</td>
-                </tr>
-                <tr>
-                  <td>/app/appointments</td>
-                  <td>GET</td>
-                  <td>予約一覧/検索</td>
-                  <td>日付・種別で検索</td>
-                </tr>
-                <tr>
-                  <td>/app/consultations</td>
-                  <td>GET</td>
-                  <td>診療/相談履歴一覧</td>
-                  <td>履歴検索・一覧表示</td>
+                  <td>KPI・通知・予定表示（全ユーザー）</td>
                 </tr>
                 <tr>
                   <td>/app/notifications</td>
                   <td>GET</td>
                   <td>通知一覧</td>
-                  <td>配信履歴表示</td>
+                  <td>通知・リマインダー表示（全ユーザー）</td>
                 </tr>
                 <tr>
-                  <td>/app/reports/monthly</td>
+                  <td>/app/notifications/{id}/read</td>
+                  <td>POST</td>
+                  <td>通知既読処理</td>
+                  <td>指定通知を既読にする（全ユーザー）</td>
+                </tr>
+                <tr>
+                  <td>/app/notifications/reminders/dismiss</td>
+                  <td>POST</td>
+                  <td>リマインダー非表示</td>
+                  <td>スケジュールリマインダーを確認済みにする（全ユーザー）</td>
+                </tr>
+                <tr>
+                  <td>/app/password-resets</td>
+                  <td>GET / POST</td>
+                  <td>パスワード変更</td>
+                  <td>現パスワード確認付き変更フォーム・実行（全ユーザー）</td>
+                </tr>
+                <tr>
+                  <td>/app/pets</td>
+                  <td>GET / POST</td>
+                  <td>ペット一覧 / 登録</td>
+                  <td>ペット一覧表示・新規登録（USER）</td>
+                </tr>
+                <tr>
+                  <td>/app/pets/{petId}</td>
+                  <td>PATCH / DELETE</td>
+                  <td>ペット更新 / 削除</td>
+                  <td>ペット情報更新・論理削除（USER）</td>
+                </tr>
+                <tr>
+                  <td>/app/pets/{petId}/health-records</td>
+                  <td>GET / POST</td>
+                  <td>健康記録一覧 / 登録</td>
+                  <td>体重/食事/運動記録の表示・登録（USER）</td>
+                </tr>
+                <tr>
+                  <td>/app/pets/{petId}/health-records/{id}</td>
+                  <td>PATCH / DELETE</td>
+                  <td>健康記録更新 / 削除</td>
+                  <td>記録修正・削除（USER）</td>
+                </tr>
+                <tr>
+                  <td>/app/calendar</td>
                   <td>GET</td>
-                  <td>月次レポート</td>
-                  <td>月次集計表示</td>
+                  <td>カレンダー</td>
+                  <td>月別カレンダー・ペット予定表示（USER/VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/calendar/marks</td>
+                  <td>POST / DELETE</td>
+                  <td>カレンダーマーク</td>
+                  <td>カレンダーへのマーク追加・削除（USER/VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/appointments</td>
+                  <td>GET / POST</td>
+                  <td>診療予約一覧 / 申請</td>
+                  <td>予約一覧・申請（USER/VET/STAFF、USERはStandard+プラン）</td>
+                </tr>
+                <tr>
+                  <td>/app/appointments/{id}/approve</td>
+                  <td>PATCH</td>
+                  <td>予約承認</td>
+                  <td>予約申請を承認する（VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/appointments/{id}/reject</td>
+                  <td>PATCH</td>
+                  <td>予約却下</td>
+                  <td>予約申請を却下する（VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/appointments/{id}/cancel</td>
+                  <td>POST</td>
+                  <td>予約キャンセル</td>
+                  <td>予約をキャンセルする（VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/consult/chatbot</td>
+                  <td>GET / POST</td>
+                  <td>チャット相談</td>
+                  <td>AI症状チェック・チャット相談（USER・Standard/Premiumプラン）</td>
+                </tr>
+                <tr>
+                  <td>/app/clinic-guide</td>
+                  <td>GET</td>
+                  <td>診療案内</td>
+                  <td>提携クリニック情報表示（USER）</td>
+                </tr>
+                <tr>
+                  <td>/app/subscriptions</td>
+                  <td>GET</td>
+                  <td>サブスクリプション確認</td>
+                  <td>現在のプラン・契約情報表示（USER）</td>
+                </tr>
+                <tr>
+                  <td>/app/premium/online-care</td>
+                  <td>GET</td>
+                  <td>Zoom診療</td>
+                  <td>Zoomオンライン診療リンク取得（USER・Premiumプランのみ）</td>
+                </tr>
+                <tr>
+                  <td>/app/consultations</td>
+                  <td>GET / POST</td>
+                  <td>診療記録一覧 / 作成</td>
+                  <td>診療記録管理（VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/consultations/{id}</td>
+                  <td>PATCH / DELETE</td>
+                  <td>診療記録更新 / 削除</td>
+                  <td>診療記録の修正・論理削除（VET/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/users</td>
+                  <td>GET</td>
+                  <td>ユーザー一覧</td>
+                  <td>ユーザー一覧閲覧（VET/STAFF/ADMIN）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/users</td>
+                  <td>POST</td>
+                  <td>ユーザー登録</td>
+                  <td>新規ユーザー登録（STAFF/ADMIN）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/users/{id}/edit</td>
+                  <td>GET</td>
+                  <td>ユーザー編集フォーム</td>
+                  <td>ユーザー編集フォーム表示（STAFF/ADMIN）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/users/{id}</td>
+                  <td>PATCH</td>
+                  <td>ユーザー更新</td>
+                  <td>ユーザー情報更新（STAFF/ADMIN）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/users/{id}</td>
+                  <td>DELETE</td>
+                  <td>ユーザー削除</td>
+                  <td>ユーザー論理削除（ADMINのみ）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/announcements</td>
+                  <td>GET / POST</td>
+                  <td>お知らせ一覧 / 作成</td>
+                  <td>お知らせ管理（ADMIN/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/announcements/{id}</td>
+                  <td>PATCH / DELETE</td>
+                  <td>お知らせ更新 / 削除</td>
+                  <td>お知らせの修正・削除（ADMIN/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/appointment-slots</td>
+                  <td>GET / POST</td>
+                  <td>予約枠一覧 / 追加</td>
+                  <td>診療予約枠の管理（ADMIN/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/admin/appointment-slots/{id}/delete</td>
+                  <td>POST</td>
+                  <td>予約枠削除</td>
+                  <td>未予約の予約枠を削除（ADMIN/STAFF）</td>
+                </tr>
+                <tr>
+                  <td>/app/reports</td>
+                  <td>GET</td>
+                  <td>サービス統計</td>
+                  <td>ユーザー・ペット・予約・サブスク集計（ADMINのみ）</td>
+                </tr>
+                <tr>
+                  <td>/api/slack/events</td>
+                  <td>POST</td>
+                  <td>Slack Webhook受信</td>
+                  <td>Slack Events API受信・メッセージ処理（外部）</td>
+                </tr>
+                <tr>
+                  <td>/api/line/events</td>
+                  <td>POST</td>
+                  <td>LINE Webhook受信</td>
+                  <td>LINE Messaging API受信・メッセージ処理（外部）</td>
+                </tr>
+                <tr>
+                  <td>/api/appointments</td>
+                  <td>GET</td>
+                  <td>予約一覧（REST）</td>
+                  <td>予約データをJSON形式で返す（認証済み）</td>
                 </tr>
               </tbody>
             </table>

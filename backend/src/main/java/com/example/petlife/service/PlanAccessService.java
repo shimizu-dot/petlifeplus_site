@@ -1,8 +1,12 @@
 package com.example.petlife.service;
 
 import com.example.petlife.config.LoginUser;
+import com.example.petlife.dto.user.UserIntegrationStatus;
+import com.example.petlife.mapper.PlanFeatureMapper;
 import com.example.petlife.mapper.SubscriptionMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class PlanAccessService {
@@ -11,14 +15,25 @@ public class PlanAccessService {
         LIGHT, STANDARD, PREMIUM
     }
 
-    private final SubscriptionMapper subscriptionMapper;
+    private static final Set<String> ALL_FEATURES = Set.of(
+            UserIntegrationStatus.FEATURE_AI_SYMPTOM,
+            UserIntegrationStatus.FEATURE_SLACK_BOT,
+            UserIntegrationStatus.FEATURE_LINE_BOT,
+            UserIntegrationStatus.FEATURE_ZOOM_CONSULT
+    );
 
-    public PlanAccessService(SubscriptionMapper subscriptionMapper) {
+    private final SubscriptionMapper subscriptionMapper;
+    private final PlanFeatureMapper planFeatureMapper;
+
+    public PlanAccessService(SubscriptionMapper subscriptionMapper, PlanFeatureMapper planFeatureMapper) {
         this.subscriptionMapper = subscriptionMapper;
+        this.planFeatureMapper = planFeatureMapper;
     }
 
+    // ── Plan tier (label/display) ────────────────────────────────────────────
+
     public PlanTier resolvePlanTier(LoginUser user) {
-        if (user == null || user.canManagePets()) {
+        if (user == null || user.hasStaffAccess()) {
             return PlanTier.PREMIUM;
         }
         return resolvePlanTierByUserId(user.id());
@@ -30,15 +45,6 @@ public class PlanAccessService {
         if (raw.contains("PREMIUM")) return PlanTier.PREMIUM;
         if (raw.contains("STANDARD")) return PlanTier.STANDARD;
         return PlanTier.LIGHT;
-    }
-
-    public boolean canUseAiSymptom(LoginUser user) {
-        PlanTier tier = resolvePlanTier(user);
-        return tier == PlanTier.STANDARD || tier == PlanTier.PREMIUM;
-    }
-
-    public boolean canUsePrioritySupport(LoginUser user) {
-        return resolvePlanTier(user) == PlanTier.PREMIUM;
     }
 
     public String planLabel(LoginUser user) {
@@ -63,5 +69,76 @@ public class PlanAccessService {
             case STANDARD -> "Standard";
             case PREMIUM -> "Premium";
         };
+    }
+
+    // ── Feature access (plan_features table) ────────────────────────────────
+
+    /**
+     * ユーザーの有効プランに紐づく機能コード一覧を返す。
+     * ADMIN / VET / STAFF は全機能利用可能として扱う。
+     */
+    private Set<String> activeFeatures(LoginUser user) {
+        if (user == null || user.hasStaffAccess()) {
+            return ALL_FEATURES;
+        }
+        return planFeatureMapper.findActiveFeatureCodesByUserId(user.id());
+    }
+
+    private Set<String> activeFeaturesByUserId(Long userId) {
+        return planFeatureMapper.findActiveFeatureCodesByUserId(userId);
+    }
+
+    public boolean canUseAiSymptom(LoginUser user) {
+        return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_AI_SYMPTOM);
+    }
+
+    public boolean canUsePrioritySupport(LoginUser user) {
+        return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_ZOOM_CONSULT);
+    }
+
+    public boolean canUseSlack(LoginUser user) {
+        return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_SLACK_BOT);
+    }
+
+    public boolean canUseLine(LoginUser user) {
+        return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_LINE_BOT);
+    }
+
+    public boolean canUseZoom(LoginUser user) {
+        return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_ZOOM_CONSULT);
+    }
+
+    // ── Integration status (feature availability + registration) ────────────
+
+    /**
+     * プランによる機能可否とアカウント登録状況を組み合わせたステータスを返す。
+     *
+     * @param user        認証済みログインユーザー
+     * @param slackUserId users.slack_user_id の値
+     * @param lineUserId  users.line_user_id の値
+     */
+    public UserIntegrationStatus resolveIntegrationStatus(LoginUser user, String slackUserId, String lineUserId) {
+        Set<String> features = activeFeatures(user);
+        return new UserIntegrationStatus(
+                features.contains(UserIntegrationStatus.FEATURE_SLACK_BOT),
+                slackUserId != null && !slackUserId.isBlank(),
+                features.contains(UserIntegrationStatus.FEATURE_LINE_BOT),
+                lineUserId != null && !lineUserId.isBlank(),
+                features.contains(UserIntegrationStatus.FEATURE_ZOOM_CONSULT)
+        );
+    }
+
+    /**
+     * userId 指定版（管理者が他ユーザーを確認する場合など）。
+     */
+    public UserIntegrationStatus resolveIntegrationStatusByUserId(Long userId, String slackUserId, String lineUserId) {
+        Set<String> features = activeFeaturesByUserId(userId);
+        return new UserIntegrationStatus(
+                features.contains(UserIntegrationStatus.FEATURE_SLACK_BOT),
+                slackUserId != null && !slackUserId.isBlank(),
+                features.contains(UserIntegrationStatus.FEATURE_LINE_BOT),
+                lineUserId != null && !lineUserId.isBlank(),
+                features.contains(UserIntegrationStatus.FEATURE_ZOOM_CONSULT)
+        );
     }
 }

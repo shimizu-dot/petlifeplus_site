@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem \"c:\\\\Projects\\\\petlifeplus_site\\\\docs\\\\\" | Select-Object Name, Extension)",
+      "Bash(python3 -c \"import openpyxl; print\\('openpyxl OK'\\)\")",
+      "Bash(python3 -c \"import openpyxl; print\\('openpyxl', openpyxl.__version__\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(python docs/update_db_xlsx.py)"
+    ]
+  }
+}

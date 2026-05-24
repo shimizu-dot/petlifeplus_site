@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS users (
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     phone         VARCHAR(20),
+    slack_user_id VARCHAR(100),
+    line_user_id  VARCHAR(100),
     status        VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE'
                       CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
     last_login_at TIMESTAMP,
@@ -105,6 +107,12 @@ CREATE TABLE IF NOT EXISTS plans (
     deleted_at    TIMESTAMP,
     created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS plan_features (
+    plan_id      BIGINT      NOT NULL REFERENCES plans(id),
+    feature_code VARCHAR(50) NOT NULL,
+    PRIMARY KEY (plan_id, feature_code)
 );
 
 CREATE TABLE IF NOT EXISTS subscriptions (

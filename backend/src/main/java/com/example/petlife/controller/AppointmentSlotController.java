@@ -65,6 +65,6 @@ public class AppointmentSlotController {
     }
 
     private void ensureAdmin(LoginUser currentUser) {
-        if (!currentUser.isAdmin()) throw new BadRequestException("管理者のみアクセスできます");
+        if (!currentUser.canManageOperations()) throw new BadRequestException("管理者・スタッフのみアクセスできます");
     }
 }

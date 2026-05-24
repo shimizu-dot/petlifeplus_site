@@ -36,8 +36,8 @@ public class ConsultationController {
                        @RequestParam(defaultValue = "20") int size,
                        Model model,
                        @AuthenticationPrincipal LoginUser currentUser) {
-        if (!currentUser.canManagePets()) {
-            throw new BadRequestException("診療記録の閲覧には獣医師・スタッフ権限が必要です");
+        if (!currentUser.canManageClinical()) {
+            throw new BadRequestException("診療記録の閲覧には獣医師・スタッフのみアクセスできます");
         }
         int offset = (page - 1) * size;
         List<MedicalHistoryRow> items = medicalHistoryMapper.findAllRows(size, offset);
@@ -48,8 +48,8 @@ public class ConsultationController {
 
     @GetMapping("/new")
     public String newForm(Model model, @AuthenticationPrincipal LoginUser currentUser) {
-        if (!currentUser.canManagePets()) {
-            throw new BadRequestException("診療記録の登録には獣医師・スタッフ権限が必要です");
+        if (!currentUser.canManageClinical()) {
+            throw new BadRequestException("診療記録の登録には獣医師・スタッフのみアクセスできます");
         }
         model.addAttribute("form", new ConsultationForm());
         model.addAttribute("pets", petMapper.findAll(200, 0));
@@ -63,8 +63,8 @@ public class ConsultationController {
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.canManagePets()) {
-            throw new BadRequestException("診療記録の登録には獣医師・スタッフ権限が必要です");
+        if (!currentUser.canManageClinical()) {
+            throw new BadRequestException("診療記録の登録には獣医師・スタッフのみアクセスできます");
         }
         if (result.hasErrors()) {
             model.addAttribute("pets", petMapper.findAll(200, 0));
@@ -85,8 +85,8 @@ public class ConsultationController {
     public String editForm(@PathVariable Long id,
                            Model model,
                            @AuthenticationPrincipal LoginUser currentUser) {
-        if (!currentUser.canManagePets()) {
-            throw new BadRequestException("診療記録の編集には獣医師・スタッフ権限が必要です");
+        if (!currentUser.canManageClinical()) {
+            throw new BadRequestException("診療記録の編集には獣医師・スタッフのみアクセスできます");
         }
         MedicalHistoryEntity entity = medicalHistoryMapper.findById(id);
         if (entity == null) throw new BadRequestException("記録が見つかりません");
@@ -113,8 +113,8 @@ public class ConsultationController {
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.canManagePets()) {
-            throw new BadRequestException("診療記録の編集には獣医師・スタッフ権限が必要です");
+        if (!currentUser.canManageClinical()) {
+            throw new BadRequestException("診療記録の編集には獣医師・スタッフのみアクセスできます");
         }
         MedicalHistoryEntity existing = medicalHistoryMapper.findById(id);
         if (existing == null) throw new BadRequestException("記録が見つかりません");
@@ -139,8 +139,8 @@ public class ConsultationController {
     public String delete(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.canManagePets()) {
-            throw new BadRequestException("診療記録の削除には獣医師・スタッフ権限が必要です");
+        if (!currentUser.canManageClinical()) {
+            throw new BadRequestException("診療記録の削除には獣医師・スタッフのみアクセスできます");
         }
         medicalHistoryMapper.softDelete(id, LocalDateTime.now());
         ra.addFlashAttribute("success", "診療記録を削除しました");

@@ -9,6 +9,8 @@ public record UserEntity(
         String email,
         String passwordHash,
         String phone,
+        String slackUserId,
+        String lineUserId,
         String status,
         LocalDateTime lastLoginAt,
         LocalDateTime deletedAt,

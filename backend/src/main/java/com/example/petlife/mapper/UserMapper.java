@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
     @Select("""
-        SELECT id, role_id, name, email, password_hash, phone, status, last_login_at, deleted_at, created_at, updated_at
+        SELECT id, role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, last_login_at, deleted_at, created_at, updated_at
         FROM users
         WHERE deleted_at IS NULL
         ORDER BY id
@@ -24,13 +24,13 @@ public interface UserMapper {
     long countAll();
 
     @Select("""
-        SELECT id, role_id, name, email, password_hash, phone, status, last_login_at, deleted_at, created_at, updated_at
+        SELECT id, role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, last_login_at, deleted_at, created_at, updated_at
         FROM users WHERE id = #{id} AND deleted_at IS NULL
         """)
     UserEntity findById(@Param("id") Long id);
 
     @Select("""
-        SELECT id, role_id, name, email, password_hash, phone, status, last_login_at, deleted_at, created_at, updated_at
+        SELECT id, role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, last_login_at, deleted_at, created_at, updated_at
         FROM users WHERE email = #{email} AND deleted_at IS NULL
         """)
     UserEntity findByEmail(@Param("email") String email);
@@ -80,8 +80,8 @@ public interface UserMapper {
     int updateActiveSubscriptionPlanByUserId(@Param("userId") Long userId, @Param("planId") Long planId);
 
     @Select("""
-        INSERT INTO users(role_id, name, email, password_hash, phone, status, created_at, updated_at)
-        VALUES(#{roleId}, #{name}, #{email}, #{passwordHash}, #{phone}, #{status}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        INSERT INTO users(role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, created_at, updated_at)
+        VALUES(#{roleId}, #{name}, #{email}, #{passwordHash}, #{phone}, #{slackUserId}, #{lineUserId}, #{status}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING id
         """)
     Long insertReturningId(UserEntity user);
@@ -92,6 +92,8 @@ public interface UserMapper {
             name = #{name},
             email = #{email},
             phone = #{phone},
+            slack_user_id = #{slackUserId},
+            line_user_id = #{lineUserId},
             status = #{status},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id} AND deleted_at IS NULL

@@ -98,6 +98,8 @@
                 <th>氏名</th>
                 <th>メール</th>
                 <th>電話番号</th>
+                <th>Slack</th>
+                <th>LINE</th>
                 <th>ロール</th>
                 <th>ステータス</th>
                 <th>操作</th>
@@ -109,6 +111,8 @@
                 <td style="font-weight:600;" th:text="${user.name}">管理 太郎</td>
                 <td th:text="${user.email}">admin@example.com</td>
                 <td th:text="${user.phone ?: '—'}">090-0000-0000</td>
+                <td th:text="${user.slackUserId ?: '—'}">—</td>
+                <td th:text="${user.lineUserId ?: '—'}">—</td>
                 <td>
                   <span th:class="${user.roleId == 1 ? 'badge badge-red' :
                                     user.roleId == 3 ? 'badge badge-blue' :

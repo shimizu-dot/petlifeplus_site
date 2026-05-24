@@ -14,15 +14,30 @@ ON CONFLICT DO NOTHING;
 -- ─── Plans ───────────────────────────────────────────────────────────────────
 
 INSERT INTO plans (id, name, monthly_fee, features_json, is_active) VALUES
-(1, 'LIGHT',    980.00,  '{"healthRecord":true,"basicNotification":true}'::jsonb, true),
-(2, 'STANDARD', 1980.00, '{"healthRecord":true,"basicNotification":true,"aiSymptomCheck":true,"consultationLead":true}'::jsonb, true),
-(3, 'PREMIUM',  2980.00, '{"healthRecord":true,"basicNotification":true,"aiSymptomCheck":true,"consultationLead":true,"prioritySupport":true}'::jsonb, true)
+(1, 'LIGHT',    980.00,  '{"healthRecord":true,"basicNotification":true,"aiSymptomCheck":false,"slackBot":false,"lineBot":false,"zoomConsult":false}'::jsonb, true),
+(2, 'STANDARD', 1980.00, '{"healthRecord":true,"basicNotification":true,"aiSymptomCheck":true,"slackBot":true,"lineBot":true,"zoomConsult":false}'::jsonb, true),
+(3, 'PREMIUM',  2980.00, '{"healthRecord":true,"basicNotification":true,"aiSymptomCheck":true,"slackBot":true,"lineBot":true,"zoomConsult":true}'::jsonb, true)
 ON CONFLICT (id) DO UPDATE
     SET name          = EXCLUDED.name,
         monthly_fee   = EXCLUDED.monthly_fee,
         features_json = EXCLUDED.features_json,
         is_active     = EXCLUDED.is_active,
         updated_at    = CURRENT_TIMESTAMP;
+
+-- ─── Plan features ────────────────────────────────────────────────────────────
+-- LIGHT  (1): 基本機能のみ
+-- STANDARD (2): AI症状チェック・Slack・LINE
+-- PREMIUM (3): STANDARD 全機能 + Zoom オンライン診療
+
+INSERT INTO plan_features (plan_id, feature_code) VALUES
+(2, 'AI_SYMPTOM'),
+(2, 'SLACK_BOT'),
+(2, 'LINE_BOT'),
+(3, 'AI_SYMPTOM'),
+(3, 'SLACK_BOT'),
+(3, 'LINE_BOT'),
+(3, 'ZOOM_CONSULT')
+ON CONFLICT DO NOTHING;
 
 -- ─── Pets ────────────────────────────────────────────────────────────────────
 -- owner1@petlifeplus.local
@@ -33,31 +48,31 @@ FROM users u WHERE u.email = 'owner1@petlifeplus.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 1);
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 2, u.id, 'ミケ', 'CAT', '雑種', 'FEMALE', '2022-07-12', 3.80
+SELECT 2, u.id, 'タロウ', 'DOG', '雑種', 'FEMALE', '2022-07-12', 3.80
 FROM users u WHERE u.email = 'owner1@petlifeplus.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 2);
 
 -- owner2@petlifeplus.local
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 3, u.id, 'レオ', 'DOG', 'トイプードル', 'MALE', '2020-11-23', 5.20
+SELECT 3, u.id, 'レオン', 'DOG', 'トイプードル', 'MALE', '2020-11-23', 5.20
 FROM users u WHERE u.email = 'owner2@petlifeplus.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 3);
 
 -- プラン別テストアカウント用
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 101, u.id, 'ライト犬', 'DOG', '柴犬', 'MALE', '2022-01-01', 7.40
+SELECT 101, u.id, 'ちび', 'DOG', 'チワワ', 'MALE', '2022-01-01', 7.40
 FROM users u WHERE u.email = 'owner.light@petlifeplus.local'
   AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 101 OR (p.owner_user_id = u.id AND p.name = 'ライト犬'));
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 102, u.id, '標準猫', 'CAT', '雑種', 'FEMALE', '2021-06-10', 4.10
+SELECT 102, u.id, 'アポロ', 'DOG', '雑種', 'FEMALE', '2021-06-10', 4.10
 FROM users u WHERE u.email = 'owner.standard@petlifeplus.local'
   AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 102 OR (p.owner_user_id = u.id AND p.name = '標準猫'));
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 103, u.id, '上位プー', 'DOG', 'トイプードル', 'MALE', '2020-04-20', 5.60
+SELECT 103, u.id, 'ボス', 'DOG', 'パグ', 'MALE', '2020-04-20', 5.60
 FROM users u WHERE u.email = 'owner.premium@petlifeplus.local'
   AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 103 OR (p.owner_user_id = u.id AND p.name = '上位プー'));
 

@@ -50,7 +50,8 @@ public class UserService {
         UserEntity row = new UserEntity(
                 null, roleId, req.name(), req.email(),
                 passwordEncoder.encode(req.password()),
-                req.phone(), "ACTIVE", null, null, null, null
+                req.phone(), req.slackUserId(), req.lineUserId(),
+                "ACTIVE", null, null, null, null
         );
         Long newId = userMapper.insertReturningId(row);
         auditLog.info("action=user_create userId={} email={} roleId={}", newId, req.email(), roleId);
@@ -67,6 +68,7 @@ public class UserService {
         UserEntity row = new UserEntity(
                 id, nextRoleId, req.name(), req.email(),
                 existing.passwordHash(), req.phone(),
+                req.slackUserId(), req.lineUserId(),
                 req.status(), existing.lastLoginAt(), existing.deletedAt(),
                 existing.createdAt(), existing.updatedAt()
         );
@@ -111,7 +113,7 @@ public class UserService {
                 }
             }
         };
-        return new UserResponse(row.id(), row.roleId(), roleDisplay, row.name(), row.email(), row.phone(), row.status());
+        return new UserResponse(row.id(), row.roleId(), roleDisplay, row.name(), row.email(), row.phone(), row.slackUserId(), row.lineUserId(), row.status());
     }
 
     public UserEntity findEntity(Long id) {

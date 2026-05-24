@@ -1,0 +1,13 @@
+* text=auto
+
+# Treat binary assets as binary to avoid accidental re-encoding.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.xls binary
+*.zip binary
+*.jar binary

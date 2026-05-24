@@ -45,6 +45,6 @@ public class GlobalControllerAdvice {
     @ModelAttribute("bodyClass")
     public String bodyClass(@AuthenticationPrincipal LoginUser user) {
         if (user == null) return "";
-        return user.canManagePets() ? "role-admin" : "role-user";
+        return user.hasStaffAccess() ? "role-admin" : "role-user";
     }
 }

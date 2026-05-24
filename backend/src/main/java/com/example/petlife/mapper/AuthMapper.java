@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select;
 public interface AuthMapper {
 
     @Select("""
-        SELECT id, role_id, name, email, password_hash, phone, status, last_login_at, deleted_at, created_at, updated_at
+        SELECT id, role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, last_login_at, deleted_at, created_at, updated_at
         FROM users
         WHERE email = #{email} AND deleted_at IS NULL
         """)

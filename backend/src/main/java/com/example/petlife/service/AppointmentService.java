@@ -166,7 +166,7 @@ public class AppointmentService {
             throw new BadRequestException("その時間帯はすでに予約済みです");
         }
 
-        var pet = currentUser.canManagePets()
+        var pet = currentUser.hasStaffAccess()
                 ? petMapper.findById(petId)
                 : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
         if (pet == null) throw new NotFoundException("Pet not found: " + petId);

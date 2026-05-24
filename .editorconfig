@@ -1,0 +1,6 @@
+root = true
+
+[*.{java,xml,yml,yaml,properties,md,txt,html,css,js,ts,tsx,json,sql,csv,log}]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true

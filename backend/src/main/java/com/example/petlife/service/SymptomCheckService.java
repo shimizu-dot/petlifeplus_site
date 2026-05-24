@@ -51,10 +51,10 @@ public class SymptomCheckService {
     }
 
     public SymptomCheckResult runCheckWithGuidance(Long petId, SymptomCheckForm form, LoginUser currentUser) {
-        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.canManagePets()) {
+        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.hasStaffAccess()) {
             throw new BadRequestException("対象ペットが見つかりません");
         }
-        PetEntity pet = currentUser.canManagePets()
+        PetEntity pet = currentUser.hasStaffAccess()
                 ? petMapper.findById(petId)
                 : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
         if (pet != null && pet.deceasedAt() != null) {
@@ -87,7 +87,7 @@ public class SymptomCheckService {
     }
 
     public List<SymptomCheckEntity> recentByPet(Long petId, LoginUser currentUser) {
-        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.canManagePets()) {
+        if (petMapper.findByIdAndOwnerUserId(petId, currentUser.id()) == null && !currentUser.hasStaffAccess()) {
             return List.of();
         }
         List<SymptomCheckEntity> desc = symptomCheckMapper.findRecentByPetId(petId, 5);

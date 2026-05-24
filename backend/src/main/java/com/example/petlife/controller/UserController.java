@@ -1,10 +1,13 @@
 package com.example.petlife.controller;
 
+import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.user.UserForm;
 import com.example.petlife.entity.UserEntity;
+import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.service.PetService;
 import com.example.petlife.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,17 +35,20 @@ public class UserController {
     }
 
     @GetMapping("/new")
-    public String newForm(Model model) {
+    public String newForm(Model model, @AuthenticationPrincipal LoginUser currentUser) {
+        ensureWriteAccess(currentUser);
         model.addAttribute("form", new UserForm());
         model.addAttribute("editMode", false);
         return "admin/users/form";
     }
 
     @PostMapping
-    public String create(@Valid @ModelAttribute("form") UserForm form,
+    public String create(@Valid @ModelAttribute UserForm form,
                          BindingResult result,
                          Model model,
+                         @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
+        ensureWriteAccess(currentUser);
         String password = form.getPassword() == null ? "" : form.getPassword().trim();
         if (password.length() < 8 || password.length() > 64) {
             result.rejectValue("password", "Size.form.password", "パスワードは8〜64文字で入力してください");
@@ -57,13 +63,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable Long id, Model model,
+                           @AuthenticationPrincipal LoginUser currentUser) {
+        ensureWriteAccess(currentUser);
         UserEntity entity = userService.findEntity(id);
         UserForm form = new UserForm();
         form.setRoleId(entity.roleId());
         form.setName(entity.name());
         form.setEmail(entity.email());
         form.setPhone(entity.phone());
+        form.setSlackUserId(entity.slackUserId());
+        form.setLineUserId(entity.lineUserId());
         form.setStatus(entity.status());
         if (entity.roleId() != null && entity.roleId() == 2L) {
             String plan = userService.findActivePlanNameByUserId(entity.id());
@@ -80,10 +90,12 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("form") UserForm form,
+                         @Valid @ModelAttribute UserForm form,
                          BindingResult result,
                          Model model,
+                         @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
+        ensureWriteAccess(currentUser);
         if (result.hasErrors()) {
             model.addAttribute("userId",   id);
             model.addAttribute("editMode", true);
@@ -95,9 +107,19 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id, RedirectAttributes ra) {
+    public String delete(@PathVariable Long id,
+                         @AuthenticationPrincipal LoginUser currentUser,
+                         RedirectAttributes ra) {
+        if (!currentUser.isAdmin()) throw new BadRequestException("削除は管理者のみ実行できます");
         userService.delete(id);
         ra.addFlashAttribute("success", "ユーザーを削除しました");
         return "redirect:/app/admin/users";
+    }
+
+    /** ADMIN + STAFF のみ書き込み可。VET は一覧閲覧のみ。 */
+    private void ensureWriteAccess(LoginUser currentUser) {
+        if (!currentUser.canManageOperations()) {
+            throw new BadRequestException("ユーザー編集は管理者・スタッフのみ実行できます");
+        }
     }
 }

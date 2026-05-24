@@ -110,12 +110,14 @@ UI conventions (from `frontend/docs/ui-design.md`):
 
 ## Database Schema
 
-22 tables across these domains:
+23 tables across these domains:
 - **Auth:** `users`, `roles`
 - **Pets & Health:** `pets`, `health_records`, `pet_care_records`, `symptom_checks`, `medical_histories`, `medical_attachments`
-- **Operations:** `appointments`, `appointment_slots`, `plans`, `subscriptions`, `invoices`, `payments`
+- **Operations:** `appointments`, `appointment_slots`, `plans`, `plan_features`, `subscriptions`, `invoices`, `payments`
 - **Messaging:** `notifications`, `notification_recipients`, `email_templates`, `email_messages`, `consult_chat_messages`
 - **UX:** `dismissed_reminders` — ユーザーが確認済みのスケジュールリマインダーを永続保存（user_id + reminder_key のユニーク制約）; `pet_calendar_marks` — カレンダーマーク; `announcements` — お知らせ（管理者が作成、全ユーザーに表示）
+
+`plan_features` — プランごとに利用可能な機能コードを管理。コード: `AI_SYMPTOM` / `SLACK_BOT` / `LINE_BOT` / `ZOOM_CONSULT`。`PlanFeatureMapper` + `PlanAccessService` でアクセス。ADMIN/VET/STAFF は全機能利用可能として扱う。
 
 Detailed schema: `backend/src/main/resources/schema.sql`. Business requirements: `petlife_plus.md` and `backend/docs/requirements.md`.
 

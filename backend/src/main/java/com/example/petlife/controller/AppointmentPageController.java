@@ -50,7 +50,7 @@ public class AppointmentPageController {
             model.addAttribute("form", new GeneralAppointmentForm());
         }
         LocalDate slotDate = (date != null) ? date : LocalDate.now();
-        model.addAttribute("isAdminView", currentUser.isAdmin());
+        model.addAttribute("isAdminView", currentUser.canManageClinical());
         model.addAttribute("canChooseOnline", planAccessService.canUsePrioritySupport(currentUser));
         model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                 .filter(p -> p.deceasedAt() == null)
@@ -69,9 +69,6 @@ public class AppointmentPageController {
                          Model model,
                          RedirectAttributes ra) {
         ensureAccessible(currentUser);
-        if (currentUser.isAdmin()) {
-            throw new BadRequestException("管理者はこの画面から予約作成できません");
-        }
         if (result.hasErrors()) {
             LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
             model.addAttribute("isAdminView", false);
@@ -94,7 +91,7 @@ public class AppointmentPageController {
     public String approve(@PathVariable Long id,
                           @AuthenticationPrincipal LoginUser currentUser,
                           RedirectAttributes ra) {
-        if (!currentUser.isAdmin()) throw new BadRequestException("管理者のみ承認できます");
+        if (!currentUser.canManageClinical()) throw new BadRequestException("獣医師・スタッフのみ承認できます");
         appointmentService.approve(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を承認しました");
         return "redirect:/app/appointments";
@@ -104,7 +101,7 @@ public class AppointmentPageController {
     public String reject(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.isAdmin()) throw new BadRequestException("管理者のみ却下できます");
+        if (!currentUser.canManageClinical()) throw new BadRequestException("獣医師・スタッフのみ却下できます");
         appointmentService.reject(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を却下しました");
         return "redirect:/app/appointments";
@@ -114,8 +111,8 @@ public class AppointmentPageController {
     public String cancel(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (currentUser == null || currentUser.isAdmin()) {
-            throw new BadRequestException("ユーザー予約のみキャンセルできます");
+        if (currentUser.canManageClinical()) {
+            throw new BadRequestException("自分の予約のみキャンセルできます");
         }
         appointmentService.cancelRequestedByOwner(id, currentUser);
         ra.addFlashAttribute("success", "予約をキャンセルしました");
@@ -123,7 +120,7 @@ public class AppointmentPageController {
     }
 
     @PostMapping("/delete-selected")
-    public String deleteSelected(@RequestParam(value = "appointmentIds", required = false) List<Long> appointmentIds,
+    public String deleteSelected(@RequestParam(required = false) List<Long> appointmentIds,
                                  @AuthenticationPrincipal LoginUser currentUser,
                                  RedirectAttributes ra) {
         ensureAccessible(currentUser);
@@ -133,7 +130,7 @@ public class AppointmentPageController {
     }
 
     private void ensureAccessible(LoginUser currentUser) {
-        if (!currentUser.isAdmin() && !planAccessService.canUseAiSymptom(currentUser)) {
+        if (!currentUser.canManageClinical() && !planAccessService.canUseAiSymptom(currentUser)) {
             throw new BadRequestException("この機能はスタンダード以上で利用できます");
         }
     }

@@ -27,7 +27,24 @@ public class SecurityConfig {
                 .requestMatchers("/app/login").permitAll()
                 .requestMatchers("/app/forgot-password", "/app/forgot-password/**").permitAll()
                 .requestMatchers("/app/reset-password", "/app/reset-password/**").permitAll()
-                .requestMatchers("/app/admin/**", "/app/reports/**").hasRole("ADMIN")
+                // /app/admin/** の中で VET・STAFF にも開放するパスを先に列挙（順序重要）
+                .requestMatchers("/app/admin/users", "/app/admin/users/**")
+                    .hasAnyRole("ADMIN", "VET", "STAFF")
+                .requestMatchers("/app/admin/announcements", "/app/admin/announcements/**")
+                    .hasAnyRole("ADMIN", "STAFF")
+                .requestMatchers("/app/admin/appointment-slots", "/app/admin/appointment-slots/**")
+                    .hasAnyRole("ADMIN", "STAFF")
+                // 残りの admin・reports は ADMIN のみ
+                .requestMatchers("/app/admin/**", "/app/reports", "/app/reports/**")
+                    .hasRole("ADMIN")
+                // 診療記録: VET・STAFF のみ（ADMIN は閲覧不可）
+                .requestMatchers("/app/consultations", "/app/consultations/**")
+                    .hasAnyRole("VET", "STAFF")
+                // 診療予約・カレンダー: USER(一般)・VET・STAFF のみ（ADMIN は閲覧不可）
+                .requestMatchers("/app/appointments", "/app/appointments/**")
+                    .hasAnyRole("VET", "STAFF", "USER")
+                .requestMatchers("/app/calendar", "/app/calendar/**")
+                    .hasAnyRole("VET", "STAFF", "USER")
                 .requestMatchers("/app/**").authenticated()
                 .anyRequest().permitAll()
             )

@@ -113,7 +113,7 @@ public class HealthRecordService {
     // ---- 内部ヘルパー ----
 
     private void verifyPetAccess(Long petId, LoginUser currentUser) {
-        PetEntity pet = currentUser.canManagePets()
+        PetEntity pet = currentUser.hasStaffAccess()
                 ? petMapper.findById(petId)
                 : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
         if (pet == null) throw new NotFoundException("Pet not found: " + petId);

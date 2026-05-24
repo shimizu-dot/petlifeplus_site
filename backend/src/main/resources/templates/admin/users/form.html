@@ -73,6 +73,23 @@
             </div>
           </div>
 
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="slackUserId">Slack ユーザーID</label>
+              <input id="slackUserId" type="text" th:field="*{slackUserId}" class="form-control"
+                     th:classappend="${#fields.hasErrors('slackUserId')} ? 'is-invalid'"
+                     placeholder="例：U012AB3CD" maxlength="100">
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('slackUserId')}" th:errors="*{slackUserId}"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lineUserId">LINE ユーザーID</label>
+              <input id="lineUserId" type="text" th:field="*{lineUserId}" class="form-control"
+                     th:classappend="${#fields.hasErrors('lineUserId')} ? 'is-invalid'"
+                     placeholder="例：Uxxxxxxxxxxxxxxxxxxxx" maxlength="100">
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('lineUserId')}" th:errors="*{lineUserId}"></div>
+            </div>
+          </div>
+
           <div class="form-group" th:if="${editMode}">
             <label class="form-label" for="status">ステータス</label>
             <select id="status" th:field="*{status}" class="form-control">

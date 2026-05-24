@@ -13,6 +13,8 @@ public record UserUpdateRequest(
         @NotBlank @Size(max = 100) String name,
         @NotBlank @Email @Size(max = 255) String email,
         @Pattern(regexp = "^[0-9-]{10,13}$", message = "phone must be 10-13 digits/hyphen") String phone,
+        @Size(max = 100) String slackUserId,
+        @Size(max = 100) String lineUserId,
         @Pattern(regexp = "^(ACTIVE|INACTIVE|SUSPENDED)$", message = "status must be ACTIVE/INACTIVE/SUSPENDED")
         String status
 ) {

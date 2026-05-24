@@ -33,7 +33,7 @@ public class PetService {
         int safeSize = Math.min(Math.max(size, 1), 100);
         int offset = (safePage - 1) * safeSize;
 
-        if (currentUser.canManagePets()) {
+        if (currentUser.hasStaffAccess()) {
             List<PetResponse> items = petMapper.findAll(safeSize, offset).stream().map(this::toResponse).toList();
             return new PageResponse<>(items, safePage, safeSize, petMapper.countAll());
         } else {
@@ -54,7 +54,7 @@ public class PetService {
     }
 
     public List<PetEntity> listOwnedEntities(LoginUser currentUser) {
-        if (currentUser.canManagePets()) {
+        if (currentUser.hasStaffAccess()) {
             return petMapper.findAll(200, 0);
         }
         return petMapper.findActiveByOwnerUserId(currentUser.id());
@@ -73,7 +73,7 @@ public class PetService {
 
     public PetResponse create(PetCreateRequest req, MultipartFile imageFile, LoginUser currentUser) {
         validateDogOnly(req.species());
-        Long ownerId = currentUser.canManagePets() ? req.ownerUserId() : currentUser.id();
+        Long ownerId = currentUser.hasStaffAccess() ? req.ownerUserId() : currentUser.id();
         String imagePath = petImageStorageService.store(imageFile);
         PetEntity row = new PetEntity(
                 null, ownerId, req.name(), req.species(), req.breed(),
@@ -127,7 +127,7 @@ public class PetService {
     // ---- 内部ヘルパー ----
 
     private PetEntity resolvePet(Long id, LoginUser currentUser) {
-        PetEntity row = currentUser.canManagePets()
+        PetEntity row = currentUser.hasStaffAccess()
                 ? petMapper.findById(id)
                 : petMapper.findByIdAndOwnerUserId(id, currentUser.id());
         if (row == null) throw new NotFoundException("Pet not found: " + id);

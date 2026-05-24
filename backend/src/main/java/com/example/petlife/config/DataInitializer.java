@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
             UserEntity u = new UserEntity(
                     null, roleId, name, email,
                     passwordHash,
-                    phone, "ACTIVE", null, null, null, null
+                    phone, null, null, "ACTIVE", null, null, null, null
             );
             userMapper.insertReturningId(u);
             return;
