@@ -3,9 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>メソッド一覧 -  プロジェクトアーカイブ</title>
+  <title>メソッド一覧 - PetLifePlus</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .doc-table td { font-size: 11px; }
+    .doc-table td:nth-child(2) { font-size: 11px; }
+    code { background:#f1f5f9; border-radius:3px; padding:1px 4px; font-size:10px; }
+    .badge { display:inline-block; border-radius:4px; padding:1px 6px; font-size:9px; font-weight:700; letter-spacing:.4px; }
+    .badge-get  { background:#DBEAFE; color:#1E40AF; }
+    .badge-post { background:#D1FAE5; color:#065F46; }
+    .badge-patch{ background:#FEF3C7; color:#92400E; }
+    .badge-del  { background:#FEE2E2; color:#7F1D1D; }
+    .badge-put  { background:#EDE9FE; color:#4C1D95; }
+    .badge-rest { background:#F1F5F9; color:#475569; border:1px solid #CBD5E1; }
+    .url { font-family: monospace; font-size: 10px; color: #475569; }
+    .subsec-label { background:#F8FAFC; border-left:3px solid #93C5FD; padding:4px 10px; margin:16px 0 6px; font-size:12px; font-weight:700; color:#1E40AF; }
+    .subsec-svc   { border-left-color:#5EEAD4; color:#0F766E; }
+    .subsec-map   { border-left-color:#C4B5FD; color:#6D28D9; }
+    .subsec-util  { border-left-color:#FCD34D; color:#B45309; }
+    .table-note { font-size:11px; color:#64748B; margin:4px 0 0; }
+  </style>
 </head>
 <body>
   <button class="hamburger" aria-label="メニュー">
@@ -20,9 +38,9 @@
         <div class="doc-category">DESIGN DOCUMENT</div>
         <h1 class="doc-title">メソッド一覧</h1>
         <div class="doc-meta">
-          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-XX-XX</span>
-          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：（氏名を入力）</span>
-          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-25</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：Hiromi SHIMIZU</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 2.0</span>
         </div>
       </header>
 
@@ -31,447 +49,915 @@
         <div class="toc">
           <div class="toc-title">目次</div>
           <ol class="toc-list">
-            <li><a href="#sec1">Controller メソッド一覧</a></li>
+            <li><a href="#sec1">Controller メソッド一覧</a>
+              <ol>
+                <li><a href="#s1-pet">ペット・健康記録</a></li>
+                <li><a href="#s1-appt">予約・カレンダー</a></li>
+                <li><a href="#s1-dash">ダッシュボード・通知・サブスク</a></li>
+                <li><a href="#s1-consult">診療・相談チャット</a></li>
+                <li><a href="#s1-admin">管理者機能</a></li>
+                <li><a href="#s1-auth">認証・パスワード</a></li>
+                <li><a href="#s1-ext">外部 API・その他</a></li>
+              </ol>
+            </li>
             <li><a href="#sec2">Service メソッド一覧</a></li>
-            <li><a href="#sec3">Repository メソッド一覧</a></li>
+            <li><a href="#sec3">Mapper メソッド一覧</a></li>
             <li><a href="#sec4">共通処理・ユーティリティ</a></li>
           </ol>
         </div>
 
+        <!-- ===== SECTION 1: CONTROLLER ===== -->
         <section class="section" id="sec1">
           <h2 class="section-title"><span class="section-icon">1</span> Controller メソッド一覧</h2>
+          <p class="table-note">共通引数：<code>currentUser</code> = <code>@AuthenticationPrincipal LoginUser</code> / <code>model</code> = <code>Model</code> / <code>ra</code> = <code>RedirectAttributes</code></p>
+
+          <!-- ペット・健康記録 -->
+          <div class="subsec-label" id="s1-pet">1-1. ペット・健康記録</div>
 
           <div class="fill-block">
-            <div class="fill-label">TaskController <span class="required">必須</span></div>
-            <div class="fill-hint">タスク管理コントローラーの全メソッド</div>
+            <div class="fill-label">PetController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/pets") — ペット CRUD・症状チェック・ケア記録</div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>メソッド名</th><th>HTTP</th><th>URL</th><th>引数</th><th>戻り値</th><th>処理概要</th></tr>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>list</td>
-                    <td>GET</td>
-                    <td>/tasks</td>
-                    <td>Model model</td>
-                    <td>String</td>
-                    <td>タスク一覧を取得してModelに追加、list.htmlを返却</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>show</td>
-                    <td>GET</td>
-                    <td>/tasks/{id}</td>
-                    <td>@PathVariable Long id, Model model</td>
-                    <td>String</td>
-                    <td>指定IDのタスクを取得、detail.htmlを返却</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>createForm</td>
-                    <td>GET</td>
-                    <td>/tasks/new</td>
-                    <td>Model model</td>
-                    <td>String</td>
-                    <td>空のTaskFormをModelに追加、create.htmlを返却</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>create</td>
-                    <td>POST</td>
-                    <td>/tasks</td>
-                    <td>@Valid TaskForm form, BindingResult result</td>
-                    <td>String</td>
-                    <td>バリデーション後、タスクを登録してリダイレクト</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>editForm</td>
-                    <td>GET</td>
-                    <td>/tasks/{id}/edit</td>
-                    <td>@PathVariable Long id, Model model</td>
-                    <td>String</td>
-                    <td>既存タスクをFormに変換、edit.htmlを返却</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>update</td>
-                    <td>POST</td>
-                    <td>/tasks/{id}</td>
-                    <td>@PathVariable Long id, @Valid TaskForm form, BindingResult result</td>
-                    <td>String</td>
-                    <td>バリデーション後、タスクを更新してリダイレクト</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>delete</td>
-                    <td>POST</td>
-                    <td>/tasks/{id}/delete</td>
-                    <td>@PathVariable Long id</td>
-                    <td>String</td>
-                    <td>タスクを削除して一覧にリダイレクト</td>
-                  </tr>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">/app/pets</span></td><td>page, size, model, currentUser</td><td>String</td><td>ページネーション付き一覧。STAFF/VET/ADMIN は全件、USER は自分のペットのみ</td></tr>
+                  <tr><td>newForm</td><td><span class="badge badge-get">GET</span> <span class="url">/app/pets/new</span></td><td>model</td><td>String</td><td>ペット登録フォーム表示</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/app/pets</span></td><td>form, result, imageFile, model, currentUser, ra</td><td>String</td><td>バリデーション後に登録。画像は 80×80px PNG に変換。エラー時はフォーム再表示</td></tr>
+                  <tr><td>detail</td><td><span class="badge badge-get">GET</span> <span class="url">/app/pets/{id}</span></td><td>id, model, currentUser</td><td>String</td><td>ペット詳細・ケア記録・直近症状チェック 5 件表示</td></tr>
+                  <tr><td>symptomCheck</td><td><span class="badge badge-post">POST</span> <span class="url">/app/pets/{id}/symptom-check</span></td><td>id, form, result, model, currentUser, ra</td><td>String</td><td>AI 症状チェック実行（プランゲート付き）</td></tr>
+                  <tr><td>addCareRecord</td><td><span class="badge badge-post">POST</span> <span class="url">/app/pets/{id}/care-records</span></td><td>id, form, currentUser, ra</td><td>String</td><td>ワクチン・診察記録を追加</td></tr>
+                  <tr><td>editForm</td><td><span class="badge badge-get">GET</span> <span class="url">/app/pets/{id}/edit</span></td><td>id, model, currentUser</td><td>String</td><td>ペット編集フォーム表示</td></tr>
+                  <tr><td>update</td><td><span class="badge badge-patch">PATCH</span> <span class="url">/app/pets/{id}</span></td><td>id, form, result, imageFile, model, currentUser, ra</td><td>String</td><td>ペット情報更新（_method=PATCH）</td></tr>
+                  <tr><td>delete</td><td><span class="badge badge-del">DELETE</span> <span class="url">/app/pets/{id}</span></td><td>id, currentUser, ra</td><td>String</td><td>論理削除。紐付きデータがある場合はエラー</td></tr>
+                  <tr><td>markDeceased</td><td><span class="badge badge-post">POST</span> <span class="url">/app/pets/{id}/decease</span></td><td>id, currentUser, ra</td><td>String</td><td>死亡フラグを設定（以後の操作をブロック）</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           <div class="fill-block">
-            <div class="fill-label">UserController <span class="optional">任意</span></div>
-            <div class="fill-hint">ユーザー管理コントローラーの全メソッド</div>
+            <div class="fill-label">HealthRecordController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/pets/{petId}/health-records") — 健康記録 CRUD</div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>メソッド名</th><th>HTTP</th><th>URL</th><th>引数</th><th>戻り値</th><th>処理概要</th></tr>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>list</td>
-                    <td>GET</td>
-                    <td>/admin/users</td>
-                    <td>Model model</td>
-                    <td>String</td>
-                    <td>ユーザー一覧を取得（管理者のみ）</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>profile</td>
-                    <td>GET</td>
-                    <td>/users/profile</td>
-                    <td>@AuthenticationPrincipal User user, Model model</td>
-                    <td>String</td>
-                    <td>ログインユーザーのプロフィール表示</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>updateProfile</td>
-                    <td>POST</td>
-                    <td>/users/profile</td>
-                    <td>@Valid UserForm form, BindingResult result</td>
-                    <td>String</td>
-                    <td>プロフィール更新</td>
-                  </tr>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">…/health-records</span></td><td>petId, page, size, recordDate, model, currentUser</td><td>String</td><td>健康記録一覧。日付フィルター付きページネーション</td></tr>
+                  <tr><td>newForm</td><td><span class="badge badge-get">GET</span> <span class="url">…/health-records/new</span></td><td>petId, model, currentUser</td><td>String</td><td>健康記録登録フォーム表示</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">…/health-records</span></td><td>petId, form, imageFile, result, model, currentUser, ra</td><td>String</td><td>登録（画像は最大 600×600px PNG に変換）</td></tr>
+                  <tr><td>editForm</td><td><span class="badge badge-get">GET</span> <span class="url">…/health-records/{id}/edit</span></td><td>petId, id, model, currentUser</td><td>String</td><td>編集フォーム表示</td></tr>
+                  <tr><td>update</td><td><span class="badge badge-patch">PATCH</span> <span class="url">…/health-records/{id}</span></td><td>petId, id, form, imageFile, result, model, currentUser, ra</td><td>String</td><td>健康記録更新</td></tr>
+                  <tr><td>delete</td><td><span class="badge badge-del">DELETE</span> <span class="url">…/health-records/{id}</span></td><td>petId, id, currentUser, ra</td><td>String</td><td>論理削除</td></tr>
+                  <tr><td>printMedicalSummary</td><td><span class="badge badge-get">GET</span> <span class="url">…/health-records/print</span></td><td>petId, model, currentUser</td><td>String</td><td>ワクチン履歴込みの印刷用サマリー表示</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 予約・カレンダー -->
+          <div class="subsec-label" id="s1-appt">1-2. 予約・カレンダー</div>
+
+          <div class="fill-block">
+            <div class="fill-label">AppointmentController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/api/appointments") — 予約 REST API（JSON）</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">/api/appointments</span></td><td>page, size</td><td>ResponseEntity&lt;PageResponse&gt;</td><td>全予約ページネーション（JSON）</td></tr>
+                  <tr><td>get</td><td><span class="badge badge-get">GET</span> <span class="url">/api/appointments/{id}</span></td><td>id</td><td>ResponseEntity&lt;AppointmentResponse&gt;</td><td>ID で予約取得（JSON）</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/api/appointments</span></td><td>@RequestBody request</td><td>ResponseEntity 201</td><td>予約作成（JSON、ステータス 201）</td></tr>
+                  <tr><td>update</td><td><span class="badge badge-put">PUT</span> <span class="url">/api/appointments/{id}</span></td><td>id, @RequestBody request</td><td>ResponseEntity&lt;AppointmentResponse&gt;</td><td>予約更新（JSON）</td></tr>
+                  <tr><td>delete</td><td><span class="badge badge-del">DELETE</span> <span class="url">/api/appointments/{id}</span></td><td>id</td><td>ResponseEntity 204</td><td>予約削除（No Content）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">AppointmentPageController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/appointments") — 予約 MVC ページ</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>page</td><td><span class="badge badge-get">GET</span> <span class="url">/app/appointments</span></td><td>page, size, sortBy, date, model, currentUser</td><td>String</td><td>一覧表示。ADMIN は全件、USER は自分の予約のみ</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/app/appointments</span></td><td>form, result, currentUser, model, ra</td><td>String</td><td>一般診療予約作成（プランアクセスチェック付き）</td></tr>
+                  <tr><td>approve</td><td><span class="badge badge-post">POST</span> <span class="url">/app/appointments/{id}/approve</span></td><td>id, currentUser, ra</td><td>String</td><td>予約承認（ADMIN/VET のみ）。オンライン診療は Zoom URL 生成</td></tr>
+                  <tr><td>reject</td><td><span class="badge badge-post">POST</span> <span class="url">/app/appointments/{id}/reject</span></td><td>id, currentUser, ra</td><td>String</td><td>予約却下（ADMIN/VET のみ）</td></tr>
+                  <tr><td>cancel</td><td><span class="badge badge-post">POST</span> <span class="url">/app/appointments/{id}/cancel</span></td><td>id, currentUser, ra</td><td>String</td><td>自分の申請中予約をキャンセル</td></tr>
+                  <tr><td>deleteSelected</td><td><span class="badge badge-post">POST</span> <span class="url">/app/appointments/delete-selected</span></td><td>appointmentIds[], currentUser, ra</td><td>String</td><td>過去の予約を複数選択して一括削除</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">AppointmentSlotController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/admin/appointment-slots") — 予約枠管理（ADMIN のみ）</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>page</td><td><span class="badge badge-get">GET</span> <span class="url">/app/admin/appointment-slots</span></td><td>model, currentUser</td><td>String</td><td>予約枠一覧表示</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/app/admin/appointment-slots</span></td><td>slotDatetime, note, currentUser, ra</td><td>String</td><td>新規予約枠を追加</td></tr>
+                  <tr><td>delete</td><td><span class="badge badge-post">POST</span> <span class="url">…/{id}/delete</span></td><td>id, currentUser, ra</td><td>String</td><td>未予約の枠を削除</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">CalendarController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/calendar") — ペットカレンダー</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>page</td><td><span class="badge badge-get">GET</span> <span class="url">/app/calendar</span></td><td>month (yyyy-MM), model, currentUser</td><td>String</td><td>月間カレンダー表示（健康記録・ワクチン・予約・手動マーク集約）</td></tr>
+                  <tr><td>addMark</td><td><span class="badge badge-post">POST</span> <span class="url">/app/calendar/marks/add</span></td><td>form, result, month, currentUser, ra</td><td>String</td><td>手動カレンダーマーク追加（重複チェック付き）</td></tr>
+                  <tr><td>deleteMark</td><td><span class="badge badge-post">POST</span> <span class="url">/app/calendar/marks/{id}/delete</span></td><td>id, month, currentUser, ra</td><td>String</td><td>手動マークを削除（所有者チェック）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ダッシュボード・通知・サブスク -->
+          <div class="subsec-label" id="s1-dash">1-3. ダッシュボード・通知・サブスクリプション</div>
+
+          <div class="fill-block">
+            <div class="fill-label">DashboardController <span class="required">必須</span></div>
+            <div class="fill-hint">@GetMapping("/app/dashboard")</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>dashboard</td><td><span class="badge badge-get">GET</span> <span class="url">/app/dashboard</span></td><td>model, currentUser</td><td>String</td><td>ペット数・記録数・プラン情報・アクティブなお知らせを表示</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">NotificationController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/notifications") — 通知・リマインダー管理</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">/app/notifications</span></td><td>page, size, model, currentUser</td><td>String</td><td>通知一覧 + スケジュールリマインダー（ワクチン/予約/更新 30 日以内）表示</td></tr>
+                  <tr><td>markAsRead</td><td><span class="badge badge-post">POST</span> <span class="url">…/{id}/read</span></td><td>id, currentUser, ra</td><td>String</td><td>指定通知を既読にする</td></tr>
+                  <tr><td>markAllAsRead</td><td><span class="badge badge-post">POST</span> <span class="url">…/read-all</span></td><td>currentUser, ra</td><td>String</td><td>全通知を既読にする</td></tr>
+                  <tr><td>dismissReminder</td><td><span class="badge badge-post">POST</span> <span class="url">…/reminders/dismiss</span></td><td>reminderKey, currentUser, ra</td><td>String</td><td>リマインダーを非表示化（dismissed_reminders テーブルに永続保存）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">SubscriptionController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/subscriptions") — サブスクリプション管理</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">/app/subscriptions</span></td><td>page, size, model, currentUser</td><td>String</td><td>一覧表示。ADMIN は全ユーザー分、USER は自分のサブスクと更新履歴</td></tr>
+                  <tr><td>renewRequest</td><td><span class="badge badge-post">POST</span> <span class="url">…/{id}/renew-request</span></td><td>id, currentUser, ra</td><td>String</td><td>更新申請（管理者に通知を送信）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 診療・相談 -->
+          <div class="subsec-label" id="s1-consult">1-4. 診療・相談チャット</div>
+
+          <div class="fill-block">
+            <div class="fill-label">ConsultationController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/consultations") — 診療記録 CRUD（VET / STAFF / ADMIN のみ）</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">/app/consultations</span></td><td>page, size, model, currentUser</td><td>String</td><td>診療記録一覧</td></tr>
+                  <tr><td>newForm</td><td><span class="badge badge-get">GET</span> <span class="url">/app/consultations/new</span></td><td>model, currentUser</td><td>String</td><td>診療記録登録フォーム表示</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/app/consultations</span></td><td>form, result, model, currentUser, ra</td><td>String</td><td>診療記録登録</td></tr>
+                  <tr><td>editForm</td><td><span class="badge badge-get">GET</span> <span class="url">…/{id}/edit</span></td><td>id, model, currentUser</td><td>String</td><td>編集フォーム表示</td></tr>
+                  <tr><td>update</td><td><span class="badge badge-patch">PATCH</span> <span class="url">/app/consultations/{id}</span></td><td>id, form, result, model, currentUser, ra</td><td>String</td><td>診療記録更新</td></tr>
+                  <tr><td>delete</td><td><span class="badge badge-del">DELETE</span> <span class="url">/app/consultations/{id}</span></td><td>id, currentUser, ra</td><td>String</td><td>論理削除</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">ConsultChatController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/consult/chatbot") — AI 症状相談チャットボット</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>page</td><td><span class="badge badge-get">GET</span> <span class="url">/app/consult/chatbot</span></td><td>model, currentUser</td><td>String</td><td>チャット画面表示（直近 50 件のメッセージ履歴込み）</td></tr>
+                  <tr><td>send</td><td><span class="badge badge-post">POST</span> <span class="url">/app/consult/chatbot</span></td><td>form, result, currentUser, ra, model</td><td>String</td><td>ユーザーメッセージ送信 → ボット返答（トリアージフロー）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 管理者機能 -->
+          <div class="subsec-label" id="s1-admin">1-5. 管理者機能</div>
+
+          <div class="fill-block">
+            <div class="fill-label">UserController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/admin/users") — ユーザー管理（ADMIN のみ）</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">/app/admin/users</span></td><td>page, size, model</td><td>String</td><td>ユーザー一覧（ページネーション）</td></tr>
+                  <tr><td>newForm</td><td><span class="badge badge-get">GET</span> <span class="url">/app/admin/users/new</span></td><td>model, currentUser</td><td>String</td><td>ユーザー登録フォーム表示</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/app/admin/users</span></td><td>form, result, model, currentUser, ra</td><td>String</td><td>ユーザー登録（BCrypt パスワードハッシュ化）</td></tr>
+                  <tr><td>editForm</td><td><span class="badge badge-get">GET</span> <span class="url">…/{id}/edit</span></td><td>id, model, currentUser</td><td>String</td><td>ユーザー編集フォーム表示</td></tr>
+                  <tr><td>update</td><td><span class="badge badge-patch">PATCH</span> <span class="url">/app/admin/users/{id}</span></td><td>id, form, result, model, currentUser, ra</td><td>String</td><td>ユーザー情報・プランティア更新</td></tr>
+                  <tr><td>delete</td><td><span class="badge badge-del">DELETE</span> <span class="url">/app/admin/users/{id}</span></td><td>id, currentUser, ra</td><td>String</td><td>論理削除（ADMIN のみ）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">AnnouncementController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/admin/announcements") — お知らせ管理（ADMIN のみ）</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td><span class="badge badge-get">GET</span> <span class="url">/app/admin/announcements</span></td><td>model</td><td>String</td><td>お知らせ一覧表示</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/app/admin/announcements</span></td><td>title, body, currentUser, ra</td><td>String</td><td>お知らせ作成</td></tr>
+                  <tr><td>toggle</td><td><span class="badge badge-post">POST</span> <span class="url">…/{id}/toggle</span></td><td>id, ra</td><td>String</td><td>お知らせの公開/非公開をトグル</td></tr>
+                  <tr><td>delete</td><td><span class="badge badge-post">POST</span> <span class="url">…/{id}/delete</span></td><td>id, ra</td><td>String</td><td>お知らせを削除</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">ReportController / DatabaseBackupController <span class="required">必須</span></div>
+            <div class="fill-hint">管理者向けレポート・DB バックアップ</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>ReportController.index</td><td><span class="badge badge-get">GET</span> <span class="url">/app/reports</span></td><td>model</td><td>String</td><td>ユーザー数・ペット数・予約数・サブスク数の集計レポート（ADMIN のみ）</td></tr>
+                  <tr><td>DatabaseBackupController.page</td><td><span class="badge badge-get">GET</span> <span class="url">/app/admin/database</span></td><td>—</td><td>String</td><td>DB バックアップ/リストア画面表示</td></tr>
+                  <tr><td>DatabaseBackupController.backup</td><td><span class="badge badge-post">POST</span> <span class="url">…/backup</span></td><td>response, ra</td><td>String</td><td>pg_dump を実行し SQL ファイルをダウンロード</td></tr>
+                  <tr><td>DatabaseBackupController.restore</td><td><span class="badge badge-post">POST</span> <span class="url">…/restore</span></td><td>file, ra</td><td>String</td><td>アップロードされた SQL でリストア</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">PremiumSupportController <span class="required">必須</span></div>
+            <div class="fill-hint">@RequestMapping("/app/premium/online-care") — Zoom オンライン診療（PREMIUM のみ）</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>form</td><td><span class="badge badge-get">GET</span> <span class="url">/app/premium/online-care</span></td><td>date, model, currentUser</td><td>String</td><td>Zoom 診療予約フォーム表示（プランゲート付き）</td></tr>
+                  <tr><td>create</td><td><span class="badge badge-post">POST</span> <span class="url">/app/premium/online-care</span></td><td>form, result, model, currentUser, ra</td><td>String</td><td>Zoom ミーティング作成 → 予約登録</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 認証・パスワード -->
+          <div class="subsec-label" id="s1-auth">1-6. 認証・パスワード</div>
+
+          <div class="fill-block">
+            <div class="fill-label">AuthController / PasswordResetController / ForgotPasswordController <span class="required">必須</span></div>
+            <div class="fill-hint">ログイン・パスワード変更・パスワードリセット</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>AuthController.loginPage</td><td><span class="badge badge-get">GET</span> <span class="url">/app/login</span></td><td>—</td><td>String</td><td>ログインページ表示（メンテナンス中はリダイレクト）</td></tr>
+                  <tr><td>PasswordResetController.form</td><td><span class="badge badge-get">GET</span> <span class="url">/app/password-resets</span></td><td>—</td><td>String</td><td>パスワード変更フォーム表示（ログイン済みユーザー）</td></tr>
+                  <tr><td>PasswordResetController.change</td><td><span class="badge badge-post">POST</span> <span class="url">/app/password-resets</span></td><td>currentPassword, newPassword, confirmPassword, currentUser, model, ra</td><td>String</td><td>現パスワード確認後に BCrypt で再ハッシュして保存</td></tr>
+                  <tr><td>ForgotPasswordController.forgotForm</td><td><span class="badge badge-get">GET</span> <span class="url">/app/forgot-password</span></td><td>—</td><td>String</td><td>メールアドレス入力フォーム表示</td></tr>
+                  <tr><td>ForgotPasswordController.forgotSubmit</td><td><span class="badge badge-post">POST</span> <span class="url">/app/forgot-password</span></td><td>email</td><td>String</td><td>リセットメール送信（列挙攻撃対策：常に成功を返す）</td></tr>
+                  <tr><td>ForgotPasswordController.forgotSent</td><td><span class="badge badge-get">GET</span> <span class="url">/app/forgot-password/sent</span></td><td>—</td><td>String</td><td>送信完了メッセージ表示</td></tr>
+                  <tr><td>ForgotPasswordController.resetForm</td><td><span class="badge badge-get">GET</span> <span class="url">/app/reset-password</span></td><td>token, model</td><td>String</td><td>トークン検証 → 新パスワード入力フォーム表示</td></tr>
+                  <tr><td>ForgotPasswordController.resetSubmit</td><td><span class="badge badge-post">POST</span> <span class="url">/app/reset-password</span></td><td>token, newPassword, confirmPassword, model</td><td>String</td><td>トークンでパスワードリセット実行</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 外部API・その他 -->
+          <div class="subsec-label" id="s1-ext">1-7. 外部 API・その他</div>
+
+          <div class="fill-block">
+            <div class="fill-label">SlackEventController / LineEventController / RootController <span class="optional">任意</span></div>
+            <div class="fill-hint">Slack/LINE Webhook 受信・ルートリダイレクト</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>HTTP / URL</th><th>主な引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>SlackEventController.events</td><td><span class="badge badge-post">POST</span> <span class="url">/api/slack/events</span></td><td>X-Slack-Request-Timestamp, X-Slack-Signature, X-Slack-Retry-Num, payloadJson</td><td>ResponseEntity&lt;?&gt;</td><td>署名検証 → メッセージ処理 → お知らせ作成（Slack Events API）</td></tr>
+                  <tr><td>LineEventController.events</td><td><span class="badge badge-post">POST</span> <span class="url">/api/line/events</span></td><td>X-Line-Signature, payloadJson</td><td>ResponseEntity&lt;?&gt;</td><td>署名検証 → メッセージ処理 → お知らせ作成（LINE Messaging API）</td></tr>
+                  <tr><td>RootController.root</td><td><span class="badge badge-get">GET</span> <span class="url">/</span></td><td>—</td><td>String</td><td>フロントエンド index.html へリダイレクト</td></tr>
+                  <tr><td>RootController.shortI</td><td><span class="badge badge-get">GET</span> <span class="url">/i</span></td><td>—</td><td>String</td><td>/index.html へリダイレクト（短縮 URL）</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
         </section>
 
+        <!-- ===== SECTION 2: SERVICE ===== -->
         <section class="section" id="sec2">
           <h2 class="section-title"><span class="section-icon">2</span> Service メソッド一覧</h2>
 
           <div class="fill-block">
-            <div class="fill-label">TaskService <span class="required">必須</span></div>
-            <div class="fill-hint">タスクサービスの全メソッド</div>
+            <div class="fill-label">PetService <span class="required">必須</span></div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>呼び出すRepository</th></tr>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>findAll</td>
-                    <td>なし</td>
-                    <td>List&lt;Task&gt;</td>
-                    <td>全タスクを取得</td>
-                    <td>taskMapper.selectAll()</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>findById</td>
-                    <td>Long id</td>
-                    <td>Task</td>
-                    <td>ID指定でタスクを取得</td>
-                    <td>taskMapper.selectById(id)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>findByUserId</td>
-                    <td>Long userId</td>
-                    <td>List&lt;Task&gt;</td>
-                    <td>ユーザー別タスク取得</td>
-                    <td>taskMapper.selectByUserId(userId)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>create</td>
-                    <td>TaskForm form, Long userId</td>
-                    <td>void</td>
-                    <td>FormからEntityに変換して登録</td>
-                    <td>taskMapper.insert(task)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>update</td>
-                    <td>Long id, TaskForm form</td>
-                    <td>void</td>
-                    <td>既存タスクを更新</td>
-                    <td>taskMapper.update(task)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>delete</td>
-                    <td>Long id</td>
-                    <td>void</td>
-                    <td>タスクを削除</td>
-                    <td>taskMapper.delete(id)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>search</td>
-                    <td>String keyword</td>
-                    <td>List&lt;Task&gt;</td>
-                    <td>キーワードでタスク検索</td>
-                    <td>taskMapper.search(keyword)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>changeStatus</td>
-                    <td>Long id, String status</td>
-                    <td>void</td>
-                    <td>タスクのステータス変更</td>
-                    <td>taskMapper.updateStatus(id, status)</td>
-                  </tr>
+                  <tr><td>list</td><td>page, size, currentUser</td><td>PageResponse&lt;PetResponse&gt;</td><td>ページネーション付き一覧取得。STAFF/VET/ADMIN は全件、USER は自分のみ</td><td>petMapper.findAll / findByOwnerUserId</td></tr>
+                  <tr><td>get</td><td>id, currentUser</td><td>PetResponse</td><td>単件取得（所有者チェック込み）</td><td>petMapper.findById</td></tr>
+                  <tr><td>getEntity</td><td>id, currentUser</td><td>PetEntity</td><td>Entity 取得（所有者チェック込み）</td><td>petMapper.findById</td></tr>
+                  <tr><td>listOwnedEntities</td><td>currentUser</td><td>List&lt;PetEntity&gt;</td><td>ユーザー所有ペット全件取得（スタッフは全件）</td><td>petMapper.findAll / findActiveByOwnerUserId</td></tr>
+                  <tr><td>create</td><td>req, imageFile, currentUser</td><td>PetResponse</td><td>ペット登録。画像は 80×80px PNG に変換して保存。スタッフは owner 指定可</td><td>petImageStorageService.store, petMapper.insertReturningId</td></tr>
+                  <tr><td>update</td><td>id, req, imageFile, currentUser</td><td>PetResponse</td><td>ペット情報・画像更新</td><td>petMapper.update</td></tr>
+                  <tr><td>delete</td><td>id, currentUser</td><td>void</td><td>論理削除。紐付きデータ（health_records 等）がある場合は例外</td><td>petMapper.countLinkedDataFlags, petMapper.softDelete</td></tr>
+                  <tr><td>markDeceased</td><td>id, currentUser</td><td>void</td><td>deceased_at を設定（以後の操作をブロック）</td><td>petMapper.markDeceased</td></tr>
+                  <tr><td>canDeletePet</td><td>petId, currentUser</td><td>boolean</td><td>削除可否チェック</td><td>petMapper.countLinkedDataFlags</td></tr>
+                  <tr><td>listByOwnerUserIdForAdmin</td><td>ownerUserId</td><td>List&lt;PetResponse&gt;</td><td>管理者向け特定ユーザーのペット一覧</td><td>petMapper.findActiveByOwnerUserId</td></tr>
+                  <tr><td>ensurePetUsable</td><td>pet</td><td>void</td><td>死亡ペットに対する操作を拒否</td><td>—</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           <div class="fill-block">
-            <div class="fill-label">UserService <span class="optional">任意</span></div>
-            <div class="fill-hint">ユーザーサービスの全メソッド</div>
+            <div class="fill-label">HealthRecordService <span class="required">必須</span></div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>呼び出すRepository</th></tr>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>findByEmail</td>
-                    <td>String email</td>
-                    <td>User</td>
-                    <td>メールアドレスでユーザー取得</td>
-                    <td>userMapper.selectByEmail(email)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>register</td>
-                    <td>UserForm form</td>
-                    <td>void</td>
-                    <td>パスワードハッシュ化して登録</td>
-                    <td>userMapper.insert(user)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>updateProfile</td>
-                    <td>Long id, UserForm form</td>
-                    <td>void</td>
-                    <td>プロフィール情報更新</td>
-                    <td>userMapper.update(user)</td>
-                  </tr>
+                  <tr><td>listForPet</td><td>petId, page, size, recordDate, currentUser</td><td>PageResponse&lt;HealthRecordResponse&gt;</td><td>健康記録一覧（日付フィルター・所有者チェック付き）</td><td>healthRecordMapper.findByPetId / findByPetIdAndRecordDate</td></tr>
+                  <tr><td>get</td><td>id, petId, currentUser</td><td>HealthRecordResponse</td><td>単件取得（ペット・所有者チェック）</td><td>healthRecordMapper.findById</td></tr>
+                  <tr><td>getEntity</td><td>id, petId, currentUser</td><td>HealthRecordEntity</td><td>Entity 取得</td><td>healthRecordMapper.findById</td></tr>
+                  <tr><td>create</td><td>petId, req, imageFile, currentUser</td><td>HealthRecordResponse</td><td>健康記録登録（画像は max 600×600px PNG）</td><td>hrImageStorageService.store, healthRecordMapper.insertReturningId</td></tr>
+                  <tr><td>update</td><td>id, petId, req, imageFile, currentUser</td><td>HealthRecordResponse</td><td>健康記録更新</td><td>healthRecordMapper.update</td></tr>
+                  <tr><td>delete</td><td>id, petId, currentUser</td><td>void</td><td>論理削除</td><td>healthRecordMapper.softDelete</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">AppointmentService <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td>page, size</td><td>PageResponse&lt;AppointmentResponse&gt;</td><td>REST API 用全件取得</td><td>appointmentMapper.findAll</td></tr>
+                  <tr><td>get</td><td>id</td><td>AppointmentResponse</td><td>ID で予約取得</td><td>appointmentMapper.findById</td></tr>
+                  <tr><td>listForApp</td><td>page, size, currentUser, sortBy</td><td>PageResponse&lt;AppointmentListRow&gt;</td><td>MVC 用一覧。ADMIN は全件、USER は自分のみ。sortBy で並び替え</td><td>appointmentMapper.findAllRows / findRowsByOwnerUserId</td></tr>
+                  <tr><td>create</td><td>req</td><td>AppointmentResponse</td><td>REST API 用予約作成</td><td>appointmentMapper.insert</td></tr>
+                  <tr><td>createGeneralCare</td><td>petId, scheduledAt, note, channel, currentUser</td><td>AppointmentResponse</td><td>一般診療予約作成（プランアクセスチェック込み）</td><td>planAccessService.canUse*, appointmentMapper.insert</td></tr>
+                  <tr><td>createPremiumOnlineCare</td><td>petId, scheduledAt, note, currentUser</td><td>PremiumOnlineCareResult</td><td>プレミアム Zoom 予約作成（Zoom ミーティング生成 or フォールバック）</td><td>zoomLinkService.createMeetingOrFallback, appointmentMapper.insert</td></tr>
+                  <tr><td>approve</td><td>id, actorUserId</td><td>AppointmentResponse</td><td>予約承認。オンライン診療は Zoom リンク生成</td><td>appointmentMapper.updateStatus</td></tr>
+                  <tr><td>reject</td><td>id, actorUserId</td><td>AppointmentResponse</td><td>予約却下</td><td>appointmentMapper.updateStatus</td></tr>
+                  <tr><td>cancelRequestedByOwner</td><td>id, currentUser</td><td>AppointmentResponse</td><td>所有者による申請中予約のキャンセル</td><td>appointmentMapper.updateStatus</td></tr>
+                  <tr><td>update</td><td>id, req</td><td>AppointmentResponse</td><td>REST API 用予約更新</td><td>appointmentMapper.update</td></tr>
+                  <tr><td>delete</td><td>id</td><td>void</td><td>論理削除</td><td>appointmentMapper.softDelete</td></tr>
+                  <tr><td>deleteSelected</td><td>appointmentIds[], currentUser</td><td>int</td><td>複数選択削除（所有者チェック）</td><td>appointmentMapper.softDelete</td></tr>
+                  <tr><td>generateAvailableSlots</td><td>date</td><td>List&lt;SlotInfo&gt;</td><td>指定日の 9:30〜17:00 を 30 分刻みで生成（予約済みは除外）</td><td>appointmentMapper.findBookedTimesOnDate</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">CalendarService <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>buildMonthView</td><td>user, ym (YearMonth)</td><td>CalendarView</td><td>月間カレンダー構築（健康記録・ワクチン・予約・手動マークを日別に集約）</td><td>healthRecordMapper, petCareRecordMapper, appointmentMapper, calendarMarkMapper</td></tr>
+                  <tr><td>addMark</td><td>user, form</td><td>void</td><td>手動マーク追加（重複チェック・ペット所有者チェック）</td><td>calendarMarkMapper.insertReturningId</td></tr>
+                  <tr><td>deleteMark</td><td>user, markId</td><td>void</td><td>手動マーク削除（所有者チェック）</td><td>calendarMarkMapper.softDeleteOwnedMark</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">ConsultChatService <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>getRecentMessages</td><td>user</td><td>List&lt;ConsultChatMessageEntity&gt;</td><td>直近 50 件を時系列順で取得</td><td>consultChatMapper.findRecentByUserId</td></tr>
+                  <tr><td>getFlowProgress</td><td>user</td><td>List&lt;FlowStepProgress&gt;</td><td>トリアージフローの進捗（症状種別・発症時期・頻度・既往歴）を解析</td><td>consultChatMapper.findRecentByUserId</td></tr>
+                  <tr><td>postUserMessage</td><td>user, message</td><td>void</td><td>ユーザーメッセージを保存 → ボット返答を生成して保存</td><td>consultChatMapper.insertReturningId</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">UserService <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>list</td><td>page, size</td><td>PageResponse&lt;UserResponse&gt;</td><td>ユーザー一覧（ロール表示名付き）</td><td>userMapper.findAll</td></tr>
+                  <tr><td>get</td><td>id</td><td>UserResponse</td><td>単件取得</td><td>userMapper.findById</td></tr>
+                  <tr><td>findEntity</td><td>id</td><td>UserEntity</td><td>Entity 取得（404 スロー）</td><td>userMapper.findById</td></tr>
+                  <tr><td>create</td><td>req</td><td>UserResponse</td><td>BCrypt でパスワードハッシュ化して登録</td><td>userMapper.insertReturningId</td></tr>
+                  <tr><td>update</td><td>id, req</td><td>UserResponse</td><td>ユーザー情報・プラン更新</td><td>userMapper.update, userMapper.updateActiveSubscriptionPlanByUserId</td></tr>
+                  <tr><td>delete</td><td>id</td><td>void</td><td>論理削除</td><td>userMapper.softDelete</td></tr>
+                  <tr><td>findActivePlanNameByUserId</td><td>userId</td><td>String</td><td>有効なサブスクのプラン名を取得</td><td>userMapper.findActivePlanNameByUserId</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">SymptomCheckService <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>runCheck</td><td>petId, form, currentUser</td><td>SymptomCheckEntity</td><td>症状チェック実行して DB に保存</td><td>symptomCheckMapper.insertReturningId</td></tr>
+                  <tr><td>runCheckWithGuidance</td><td>petId, form, currentUser</td><td>SymptomCheckResult</td><td>OpenAI API で重症度・推奨アクションを生成（未設定時はキーワードベースフォールバック）</td><td>OpenAI API / heuristic fallback</td></tr>
+                  <tr><td>recentByPet</td><td>petId, currentUser</td><td>List&lt;SymptomCheckEntity&gt;</td><td>直近 5 件の症状チェック履歴取得</td><td>symptomCheckMapper.findRecentByPetId</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">PlanAccessService <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th><th>主な呼び出し先</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>resolvePlanTier</td><td>user</td><td>PlanTier</td><td>プランティア取得（LIGHT/STANDARD/PREMIUM）。STAFF は常に PREMIUM 扱い</td><td>planFeatureMapper.findActiveFeatureCodesByUserId</td></tr>
+                  <tr><td>resolvePlanTierByUserId</td><td>userId</td><td>PlanTier</td><td>userId でプランティア取得</td><td>planFeatureMapper.findActiveFeatureCodesByUserId</td></tr>
+                  <tr><td>planLabel</td><td>user</td><td>String</td><td>日本語プラン名（ライト/スタンダード/プレミアム）を返す</td><td>resolvePlanTier</td></tr>
+                  <tr><td>planLabelByUserId</td><td>userId</td><td>String</td><td>userId で日本語プラン名を返す</td><td>resolvePlanTierByUserId</td></tr>
+                  <tr><td>planLabelEnByUserId</td><td>userId</td><td>String</td><td>userId で英語プラン名を返す</td><td>resolvePlanTierByUserId</td></tr>
+                  <tr><td>canUseAiSymptom</td><td>user</td><td>boolean</td><td>AI 症状チェック機能が利用可能か（機能コード: AI_SYMPTOM）</td><td>planFeatureMapper</td></tr>
+                  <tr><td>canUsePrioritySupport</td><td>user</td><td>boolean</td><td>Zoom 相談が利用可能か（機能コード: ZOOM_CONSULT）</td><td>planFeatureMapper</td></tr>
+                  <tr><td>canUseSlack</td><td>user</td><td>boolean</td><td>Slack Bot が利用可能か（機能コード: SLACK_BOT）</td><td>planFeatureMapper</td></tr>
+                  <tr><td>canUseLine</td><td>user</td><td>boolean</td><td>LINE Bot が利用可能か（機能コード: LINE_BOT）</td><td>planFeatureMapper</td></tr>
+                  <tr><td>canUseZoom</td><td>user</td><td>boolean</td><td>Zoom 機能が利用可能か</td><td>planFeatureMapper</td></tr>
+                  <tr><td>resolveIntegrationStatus</td><td>user, slackUserId, lineUserId</td><td>UserIntegrationStatus</td><td>Slack/LINE/Zoom 機能の利用可否と登録状況を集約</td><td>canUseSlack, canUseLine, canUseZoom</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">AnnouncementService / PasswordResetService / ZoomLinkService / DatabaseBackupService <span class="optional">任意</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>AnnouncementService.findActive</td><td>—</td><td>List&lt;AnnouncementEntity&gt;</td><td>公開中のお知らせ一覧</td></tr>
+                  <tr><td>AnnouncementService.create</td><td>title, body, createdByUserId</td><td>void</td><td>お知らせ作成</td></tr>
+                  <tr><td>AnnouncementService.updateIsActive</td><td>id, isActive</td><td>void</td><td>公開/非公開トグル</td></tr>
+                  <tr><td>AnnouncementService.delete</td><td>id</td><td>void</td><td>お知らせ削除</td></tr>
+                  <tr><td>AnnouncementService.tryCreateFromBot</td><td>text</td><td>boolean</td><td>Slack/LINE メッセージからお知らせ作成（書式: "お知らせ\n(title)\n(body)"）</td></tr>
+                  <tr><td>PasswordResetService.initiateReset</td><td>email</td><td>void</td><td>パスワードリセットメール送信（列挙攻撃対策）</td></tr>
+                  <tr><td>PasswordResetService.isValidToken</td><td>token</td><td>boolean</td><td>トークンの有効性確認（未使用・有効期限内）</td></tr>
+                  <tr><td>PasswordResetService.resetPassword</td><td>token, newPassword</td><td>boolean</td><td>トークンでパスワードリセット</td></tr>
+                  <tr><td>ZoomLinkService.createMeetingOrFallback</td><td>scheduledAt, topic</td><td>ZoomMeetingResult</td><td>Zoom API でミーティング作成（認証情報未設定時はランダム URL でフォールバック）</td></tr>
+                  <tr><td>ZoomLinkService.fetchAccessToken</td><td>—</td><td>String</td><td>Zoom OAuth アクセストークン取得</td></tr>
+                  <tr><td>ZoomLinkService.createMeeting</td><td>accessToken, scheduledAt, topic</td><td>String</td><td>Zoom ミーティング作成 → join URL 返却</td></tr>
+                  <tr><td>DatabaseBackupService.backup</td><td>—</td><td>byte[]</td><td>pg_dump 実行 → SQL バイト列返却</td></tr>
+                  <tr><td>DatabaseBackupService.restore</td><td>sqlContent</td><td>void</td><td>psql でリストア実行</td></tr>
+                  <tr><td>PetImageStorageService.store</td><td>file (MultipartFile)</td><td>String</td><td>EXIF 補正 → センタークロップ → 80×80px PNG → /uploads/pets/{uuid}.png</td></tr>
+                  <tr><td>HealthRecordImageStorageService.store</td><td>file (MultipartFile)</td><td>String</td><td>EXIF 補正 → max 600×600px PNG → /uploads/health-records/{uuid}.png</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
         </section>
 
+        <!-- ===== SECTION 3: MAPPER ===== -->
         <section class="section" id="sec3">
-          <h2 class="section-title"><span class="section-icon">3</span> Repository メソッド一覧</h2>
+          <h2 class="section-title"><span class="section-icon">3</span> Mapper メソッド一覧</h2>
+          <p class="table-note">全 Mapper は MyBatis <code>@Mapper</code> インターフェース。SQL は @Select/@Insert/@Update/@Delete アノテーションで直書き（XML なし）。soft-delete は <code>deleted_at</code> を更新する UPDATE。</p>
+
+          <div class="subsec-label subsec-map">3-1. ペット・健康記録</div>
 
           <div class="fill-block">
-            <div class="fill-label">TaskMapper <span class="required">必須</span></div>
-            <div class="fill-hint">タスクマッパーの全メソッド</div>
+            <div class="fill-label">PetMapper <span class="required">必須</span></div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL種別</th><th>備考</th></tr>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>selectAll</td>
-                    <td>なし</td>
-                    <td>List&lt;Task&gt;</td>
-                    <td>SELECT</td>
-                    <td>全件取得、作成日時降順</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>selectById</td>
-                    <td>Long id</td>
-                    <td>Task</td>
-                    <td>SELECT</td>
-                    <td>主キー検索</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>selectByUserId</td>
-                    <td>Long userId</td>
-                    <td>List&lt;Task&gt;</td>
-                    <td>SELECT</td>
-                    <td>外部キー検索</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>insert</td>
-                    <td>Task task</td>
-                    <td>void</td>
-                    <td>INSERT</td>
-                    <td>@Options(useGeneratedKeys=true)</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>update</td>
-                    <td>Task task</td>
-                    <td>void</td>
-                    <td>UPDATE</td>
-                    <td>updated_atも更新</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>updateStatus</td>
-                    <td>Long id, String status</td>
-                    <td>void</td>
-                    <td>UPDATE</td>
-                    <td>ステータスのみ更新</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>delete</td>
-                    <td>Long id</td>
-                    <td>void</td>
-                    <td>DELETE</td>
-                    <td>物理削除</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>search</td>
-                    <td>String keyword</td>
-                    <td>List&lt;Task&gt;</td>
-                    <td>SELECT</td>
-                    <td>LIKE検索（title, content）</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>countByUserId</td>
-                    <td>Long userId</td>
-                    <td>int</td>
-                    <td>SELECT</td>
-                    <td>ユーザー別件数取得</td>
-                  </tr>
+                  <tr><td>findAll</td><td>limit, offset</td><td>List&lt;PetEntity&gt;</td><td>SELECT</td><td>WHERE deleted_at IS NULL ORDER BY id</td></tr>
+                  <tr><td>countAll</td><td>—</td><td>long</td><td>SELECT</td><td>全件数</td></tr>
+                  <tr><td>findByOwnerUserId</td><td>ownerUserId, limit, offset</td><td>List&lt;PetEntity&gt;</td><td>SELECT</td><td>owner_user_id + deleted_at IS NULL</td></tr>
+                  <tr><td>findActiveByOwnerUserId</td><td>ownerUserId</td><td>List&lt;PetEntity&gt;</td><td>SELECT</td><td>ページネーションなし全件</td></tr>
+                  <tr><td>countByOwnerUserId</td><td>ownerUserId</td><td>long</td><td>SELECT</td><td>オーナー別件数</td></tr>
+                  <tr><td>findById</td><td>id</td><td>PetEntity</td><td>SELECT</td><td>deleted_at IS NULL</td></tr>
+                  <tr><td>findByIdAndOwnerUserId</td><td>id, ownerUserId</td><td>PetEntity</td><td>SELECT</td><td>所有者チェック込み</td></tr>
+                  <tr><td>insertReturningId</td><td>PetEntity pet</td><td>Long</td><td>INSERT</td><td>RETURNING id</td></tr>
+                  <tr><td>update</td><td>PetEntity pet</td><td>int</td><td>UPDATE</td><td>deleted_at IS NULL 条件付き</td></tr>
+                  <tr><td>softDelete</td><td>id, deletedAt</td><td>int</td><td>UPDATE</td><td>deleted_at を現在時刻に設定</td></tr>
+                  <tr><td>countLinkedDataFlags</td><td>petId</td><td>int</td><td>SELECT</td><td>health_records/care_records/symptom_checks/appointments/medical_histories/subscriptions の紐付き数</td></tr>
+                  <tr><td>markDeceased</td><td>id, deceasedAt</td><td>int</td><td>UPDATE</td><td>deceased_at を設定</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           <div class="fill-block">
-            <div class="fill-label">UserMapper <span class="optional">任意</span></div>
-            <div class="fill-hint">ユーザーマッパーの全メソッド</div>
+            <div class="fill-label">HealthRecordMapper <span class="required">必須</span></div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL種別</th><th>備考</th></tr>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>selectAll</td>
-                    <td>なし</td>
-                    <td>List&lt;User&gt;</td>
-                    <td>SELECT</td>
-                    <td>管理者用一覧取得</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>selectById</td>
-                    <td>Long id</td>
-                    <td>User</td>
-                    <td>SELECT</td>
-                    <td>主キー検索</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>selectByEmail</td>
-                    <td>String email</td>
-                    <td>User</td>
-                    <td>SELECT</td>
-                    <td>ログイン認証用</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>insert</td>
-                    <td>User user</td>
-                    <td>void</td>
-                    <td>INSERT</td>
-                    <td>ユーザー登録</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>update</td>
-                    <td>User user</td>
-                    <td>void</td>
-                    <td>UPDATE</td>
-                    <td>プロフィール更新</td>
-                  </tr>
+                  <tr><td>findAll</td><td>limit, offset</td><td>List&lt;HealthRecordEntity&gt;</td><td>SELECT</td><td>deleted_at IS NULL</td></tr>
+                  <tr><td>countAll</td><td>—</td><td>long</td><td>SELECT</td><td>全件数</td></tr>
+                  <tr><td>findByPetId</td><td>petId, limit, offset</td><td>List&lt;HealthRecordEntity&gt;</td><td>SELECT</td><td>ペット ID + deleted_at IS NULL</td></tr>
+                  <tr><td>countByPetId</td><td>petId</td><td>long</td><td>SELECT</td><td>ペット別件数</td></tr>
+                  <tr><td>findByPetIdAndRecordDate</td><td>petId, recordDate, limit, offset</td><td>List&lt;HealthRecordEntity&gt;</td><td>SELECT</td><td>日付フィルター付き</td></tr>
+                  <tr><td>countByPetIdAndRecordDate</td><td>petId, recordDate</td><td>long</td><td>SELECT</td><td>日付フィルター付き件数</td></tr>
+                  <tr><td>findById</td><td>id</td><td>HealthRecordEntity</td><td>SELECT</td><td>deleted_at IS NULL</td></tr>
+                  <tr><td>insertReturningId</td><td>HealthRecordEntity row</td><td>Long</td><td>INSERT</td><td>RETURNING id</td></tr>
+                  <tr><td>update</td><td>HealthRecordEntity row</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>softDelete</td><td>id, deletedAt</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>findRecordDatesByOwnerUserIdAndDateRange</td><td>ownerUserId, fromDate, toDate</td><td>List&lt;LocalDate&gt;</td><td>SELECT DISTINCT</td><td>カレンダー表示用</td></tr>
+                  <tr><td>findRecordPetDatesByOwnerUserIdAndDateRange</td><td>ownerUserId, fromDate, toDate</td><td>List&lt;HealthRecordPetDateEntity&gt;</td><td>SELECT</td><td>ペット×日付ペア（カレンダー色分け）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">PetCareRecordMapper <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>insertReturningId</td><td>PetCareRecordEntity row</td><td>Long</td><td>INSERT</td><td>RETURNING id</td></tr>
+                  <tr><td>findByPetId</td><td>petId</td><td>List&lt;PetCareRecordEntity&gt;</td><td>SELECT</td><td>deleted_at IS NULL, DESC</td></tr>
+                  <tr><td>findUpcomingByPetId</td><td>petId, fromDate, toDate</td><td>List&lt;PetCareRecordEntity&gt;</td><td>SELECT</td><td>次回予定日が範囲内</td></tr>
+                  <tr><td>findVaccinePetDatesByOwnerAndDateRange</td><td>ownerUserId, fromDate, toDate</td><td>List&lt;HealthRecordPetDateEntity&gt;</td><td>SELECT</td><td>カレンダー ワクチン表示用</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsec-label subsec-map">3-2. 予約・カレンダー</div>
+
+          <div class="fill-block">
+            <div class="fill-label">AppointmentMapper <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>findAll</td><td>limit, offset</td><td>List&lt;AppointmentEntity&gt;</td><td>SELECT</td><td>deleted_at IS NULL</td></tr>
+                  <tr><td>countAll</td><td>—</td><td>long</td><td>SELECT</td><td>—</td></tr>
+                  <tr><td>findById</td><td>id</td><td>AppointmentEntity</td><td>SELECT</td><td>deleted_at IS NULL</td></tr>
+                  <tr><td>insert</td><td>AppointmentEntity row</td><td>Long</td><td>INSERT</td><td>RETURNING id</td></tr>
+                  <tr><td>update</td><td>AppointmentEntity row</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>softDelete</td><td>id, deletedAt</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>updateStatus</td><td>id, status</td><td>int</td><td>UPDATE</td><td>ステータスのみ更新</td></tr>
+                  <tr><td>findAllRows</td><td>limit, offset</td><td>List&lt;AppointmentListRow&gt;</td><td>SELECT</td><td>ペット名・オーナー名 JOIN、日時順</td></tr>
+                  <tr><td>findRowsByOwnerUserId</td><td>ownerUserId, limit, offset</td><td>List&lt;AppointmentListRow&gt;</td><td>SELECT</td><td>ユーザー別</td></tr>
+                  <tr><td>findAllRowsOrderByPet</td><td>limit, offset</td><td>List&lt;AppointmentListRow&gt;</td><td>SELECT</td><td>ペット名順</td></tr>
+                  <tr><td>findRowsByOwnerUserIdOrderByPet</td><td>ownerUserId, limit, offset</td><td>List&lt;AppointmentListRow&gt;</td><td>SELECT</td><td>ユーザー別・ペット名順</td></tr>
+                  <tr><td>countByOwnerUserId</td><td>ownerUserId</td><td>long</td><td>SELECT</td><td>—</td></tr>
+                  <tr><td>countByStatus</td><td>status</td><td>long</td><td>SELECT</td><td>ステータス別件数</td></tr>
+                  <tr><td>countByScheduledAt</td><td>scheduledAt</td><td>int</td><td>SELECT</td><td>時刻の予約競合チェック</td></tr>
+                  <tr><td>findBookedTimesOnDate</td><td>date</td><td>List&lt;LocalDateTime&gt;</td><td>SELECT</td><td>指定日の予約済み時刻一覧</td></tr>
+                  <tr><td>findByIds</td><td>ids (List&lt;Long&gt;)</td><td>List&lt;AppointmentEntity&gt;</td><td>SELECT</td><td>IN 句で複数取得</td></tr>
+                  <tr><td>findByScheduledDateRange</td><td>start, finish</td><td>List&lt;AppointmentCalendarRow&gt;</td><td>SELECT</td><td>カレンダー表示用</td></tr>
+                  <tr><td>findConfirmedDatesByOwnerUserId</td><td>ownerUserId, start, finish</td><td>List&lt;LocalDate&gt;</td><td>SELECT</td><td>確定済み予約日一覧</td></tr>
+                  <tr><td>countDuplicatedSlot</td><td>staffUserId, scheduledAt, excludeId</td><td>int</td><td>SELECT</td><td>スタッフの枠競合チェック</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">AppointmentSlotMapper / CalendarMarkMapper <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>AppointmentSlotMapper.insert</td><td>AppointmentSlotEntity row</td><td>Long</td><td>INSERT</td><td>RETURNING id</td></tr>
+                  <tr><td>AppointmentSlotMapper.findById</td><td>id</td><td>AppointmentSlotEntity</td><td>SELECT</td><td>deleted_at IS NULL</td></tr>
+                  <tr><td>AppointmentSlotMapper.findAvailable</td><td>—</td><td>List&lt;AppointmentSlotEntity&gt;</td><td>SELECT</td><td>未来かつ未予約の枠</td></tr>
+                  <tr><td>AppointmentSlotMapper.findAvailableInDateRange</td><td>start, finish</td><td>List&lt;AppointmentSlotEntity&gt;</td><td>SELECT</td><td>期間内の利用可能枠</td></tr>
+                  <tr><td>AppointmentSlotMapper.findAll</td><td>—</td><td>List&lt;AppointmentSlotEntity&gt;</td><td>SELECT</td><td>全枠（DESC）</td></tr>
+                  <tr><td>AppointmentSlotMapper.countBookings</td><td>slotId</td><td>int</td><td>SELECT</td><td>その枠の予約数</td></tr>
+                  <tr><td>AppointmentSlotMapper.softDelete</td><td>id, deletedAt</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>CalendarMarkMapper.insertReturningId</td><td>CalendarMarkEntity row</td><td>Long</td><td>INSERT</td><td>—</td></tr>
+                  <tr><td>CalendarMarkMapper.softDeleteOwnedMark</td><td>id, ownerUserId</td><td>int</td><td>UPDATE</td><td>所有者チェック込み</td></tr>
+                  <tr><td>CalendarMarkMapper.findByOwnerUserIdAndDateRange</td><td>ownerUserId, fromDate, toDate</td><td>List&lt;CalendarMarkEntity&gt;</td><td>SELECT</td><td>カレンダー表示用</td></tr>
+                  <tr><td>CalendarMarkMapper.countByPetIdAndMarkDate</td><td>petId, markDate</td><td>int</td><td>SELECT</td><td>重複チェック用</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsec-label subsec-map">3-3. ユーザー・認証</div>
+
+          <div class="fill-block">
+            <div class="fill-label">UserMapper <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>findAll</td><td>limit, offset</td><td>List&lt;UserEntity&gt;</td><td>SELECT</td><td>deleted_at IS NULL</td></tr>
+                  <tr><td>countAll</td><td>—</td><td>long</td><td>SELECT</td><td>—</td></tr>
+                  <tr><td>findById</td><td>id</td><td>UserEntity</td><td>SELECT</td><td>—</td></tr>
+                  <tr><td>findByEmail</td><td>email</td><td>UserEntity</td><td>SELECT</td><td>ログイン認証用</td></tr>
+                  <tr><td>existsByEmail</td><td>email</td><td>int</td><td>SELECT</td><td>メール重複チェック</td></tr>
+                  <tr><td>existsByEmailExcludingId</td><td>email, id</td><td>int</td><td>SELECT</td><td>更新時の重複チェック</td></tr>
+                  <tr><td>findActivePlanNameByUserId</td><td>userId</td><td>String</td><td>SELECT</td><td>有効サブスクのプラン名</td></tr>
+                  <tr><td>findPlanIdByName</td><td>planName</td><td>Long</td><td>SELECT</td><td>プラン ID 解決</td></tr>
+                  <tr><td>updateActiveSubscriptionPlanByUserId</td><td>userId, planId</td><td>int</td><td>UPDATE</td><td>アクティブサブスクのプラン変更</td></tr>
+                  <tr><td>insertReturningId</td><td>UserEntity user</td><td>Long</td><td>INSERT</td><td>RETURNING id</td></tr>
+                  <tr><td>update</td><td>UserEntity user</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>softDelete</td><td>id, deletedAt</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>updatePasswordById</td><td>id, passwordHash</td><td>int</td><td>UPDATE</td><td>パスワードのみ更新</td></tr>
+                  <tr><td>countByRoleId</td><td>roleId</td><td>long</td><td>SELECT</td><td>ロール別ユーザー数</td></tr>
+                  <tr><td>findAdminUserIds</td><td>—</td><td>List&lt;Long&gt;</td><td>SELECT</td><td>ADMIN ロールの全ユーザー ID</td></tr>
+                  <tr><td>updateSeedUserByEmail</td><td>roleId, name, email, passwordHash, phone</td><td>int</td><td>UPDATE</td><td>DataInitializer でシードユーザー更新</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">AuthMapper <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>findByEmail</td><td>email</td><td>UserEntity</td><td>SELECT</td><td>UserDetailsService での認証用</td></tr>
+                  <tr><td>countEffectiveSubscriptions</td><td>userId</td><td>long</td><td>SELECT</td><td>有効サブスク件数（認証チェック用）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsec-label subsec-map">3-4. 通知・サブスクリプション</div>
+
+          <div class="fill-block">
+            <div class="fill-label">NotificationMapper / SubscriptionMapper / DismissedReminderMapper <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>NotificationMapper.findByUserId</td><td>userId, limit, offset</td><td>List&lt;NotificationRow&gt;</td><td>SELECT</td><td>通知一覧（JOIN）</td></tr>
+                  <tr><td>NotificationMapper.countByUserId</td><td>userId</td><td>long</td><td>SELECT</td><td>—</td></tr>
+                  <tr><td>NotificationMapper.countUnreadByUserId</td><td>userId</td><td>long</td><td>SELECT</td><td>未読件数</td></tr>
+                  <tr><td>NotificationMapper.markAsRead</td><td>notificationId, userId</td><td>int</td><td>UPDATE</td><td>notification_recipients の read_at 更新</td></tr>
+                  <tr><td>NotificationMapper.markAllAsRead</td><td>userId</td><td>int</td><td>UPDATE</td><td>全未読を既読に</td></tr>
+                  <tr><td>NotificationMapper.insertReturningId</td><td>NotificationEntity notification</td><td>Long</td><td>INSERT</td><td>RETURNING id</td></tr>
+                  <tr><td>NotificationMapper.insertRecipient</td><td>notificationId, userId</td><td>int</td><td>INSERT</td><td>notification_recipients に追加</td></tr>
+                  <tr><td>NotificationMapper.findRenewalHistoryByUserId</td><td>userId</td><td>List&lt;RenewalHistoryRow&gt;</td><td>SELECT</td><td>更新申請履歴</td></tr>
+                  <tr><td>SubscriptionMapper.findRowsByUserId</td><td>userId, limit, offset</td><td>List&lt;SubscriptionRow&gt;</td><td>SELECT</td><td>ユーザー別サブスク（JOIN）</td></tr>
+                  <tr><td>SubscriptionMapper.findAllRows</td><td>limit, offset</td><td>List&lt;SubscriptionRow&gt;</td><td>SELECT</td><td>ADMIN 向け全件</td></tr>
+                  <tr><td>SubscriptionMapper.findUpcomingRenewalsByUserId</td><td>userId</td><td>List&lt;SubscriptionRow&gt;</td><td>SELECT</td><td>30 日以内に更新期限が来るサブスク</td></tr>
+                  <tr><td>DismissedReminderMapper.insert</td><td>userId, reminderKey</td><td>int</td><td>INSERT</td><td>ON CONFLICT DO NOTHING</td></tr>
+                  <tr><td>DismissedReminderMapper.findKeysByUserId</td><td>userId</td><td>Set&lt;String&gt;</td><td>SELECT</td><td>非表示済みキー一覧</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsec-label subsec-map">3-5. 診療・相談・その他</div>
+
+          <div class="fill-block">
+            <div class="fill-label">MedicalHistoryMapper / ConsultChatMapper / SymptomCheckMapper / AnnouncementMapper / PlanFeatureMapper <span class="optional">任意</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>引数</th><th>戻り値</th><th>SQL</th><th>備考</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>MedicalHistoryMapper.findAllRows</td><td>limit, offset</td><td>List&lt;MedicalHistoryRow&gt;</td><td>SELECT</td><td>ペット名・担当者名 JOIN</td></tr>
+                  <tr><td>MedicalHistoryMapper.findRowsByPetId</td><td>petId, limit, offset</td><td>List&lt;MedicalHistoryRow&gt;</td><td>SELECT</td><td>ペット別</td></tr>
+                  <tr><td>MedicalHistoryMapper.findById</td><td>id</td><td>MedicalHistoryEntity</td><td>SELECT</td><td>—</td></tr>
+                  <tr><td>MedicalHistoryMapper.insertReturningId</td><td>MedicalHistoryEntity row</td><td>Long</td><td>INSERT</td><td>—</td></tr>
+                  <tr><td>MedicalHistoryMapper.update</td><td>MedicalHistoryEntity row</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>MedicalHistoryMapper.softDelete</td><td>id, deletedAt</td><td>int</td><td>UPDATE</td><td>—</td></tr>
+                  <tr><td>ConsultChatMapper.insertReturningId</td><td>ConsultChatMessageEntity row</td><td>Long</td><td>INSERT</td><td>—</td></tr>
+                  <tr><td>ConsultChatMapper.findRecentByUserId</td><td>userId, limit</td><td>List&lt;ConsultChatMessageEntity&gt;</td><td>SELECT</td><td>DESC で取得（表示時に反転）</td></tr>
+                  <tr><td>SymptomCheckMapper.insertReturningId</td><td>SymptomCheckEntity row</td><td>Long</td><td>INSERT</td><td>—</td></tr>
+                  <tr><td>SymptomCheckMapper.findRecentByPetId</td><td>petId, limit</td><td>List&lt;SymptomCheckEntity&gt;</td><td>SELECT</td><td>直近件数指定</td></tr>
+                  <tr><td>AnnouncementMapper.findActive</td><td>—</td><td>List&lt;AnnouncementEntity&gt;</td><td>SELECT</td><td>is_active=true, DESC</td></tr>
+                  <tr><td>AnnouncementMapper.findAll</td><td>—</td><td>List&lt;AnnouncementEntity&gt;</td><td>SELECT</td><td>全件 DESC</td></tr>
+                  <tr><td>AnnouncementMapper.insertReturningId</td><td>AnnouncementEntity row</td><td>Long</td><td>INSERT</td><td>—</td></tr>
+                  <tr><td>AnnouncementMapper.updateIsActive</td><td>id, isActive</td><td>int</td><td>UPDATE</td><td>公開フラグのみ</td></tr>
+                  <tr><td>AnnouncementMapper.deleteById</td><td>id</td><td>int</td><td>DELETE</td><td>物理削除</td></tr>
+                  <tr><td>PlanFeatureMapper.findActiveFeatureCodesByUserId</td><td>userId</td><td>Set&lt;String&gt;</td><td>SELECT</td><td>plan_features → feature_code 取得（AI_SYMPTOM / SLACK_BOT / LINE_BOT / ZOOM_CONSULT）</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
         </section>
 
+        <!-- ===== SECTION 4: UTILITY ===== -->
         <section class="section" id="sec4">
           <h2 class="section-title"><span class="section-icon">4</span> 共通処理・ユーティリティ</h2>
 
           <div class="fill-block">
-            <div class="fill-label">日付変換・フォーマット <span class="optional">任意</span></div>
-            <div class="fill-hint">日付関連のユーティリティメソッド</div>
+            <div class="fill-label">Spring Security 設定 <span class="required">必須</span></div>
+            <div class="fill-hint">SecurityConfig / UserDetailsServiceImpl / LoginUser</div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>処理</th><th>使用クラス/メソッド</th><th>変換元</th><th>変換先</th><th>用途</th></tr>
+                  <tr><th>クラス</th><th>役割</th><th>主なポイント</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>文字列→日付</td>
-                    <td>LocalDate.parse()</td>
-                    <td>String "2026-01-15"</td>
-                    <td>LocalDate</td>
-                    <td>フォーム入力値の変換</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>日付→文字列</td>
-                    <td>DateTimeFormatter</td>
-                    <td>LocalDate</td>
-                    <td>String "2026年1月15日"</td>
-                    <td>画面表示用</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>現在日時取得</td>
-                    <td>LocalDateTime.now()</td>
-                    <td>-</td>
-                    <td>LocalDateTime</td>
-                    <td>作成日時・更新日時</td>
-                  </tr>
+                  <tr><td>SecurityConfig</td><td>Spring Security 設定クラス（@Configuration）</td><td>セッション認証、フォームログイン（/app/login）、HiddenHttpMethodFilter 有効化、静的リソース除外</td></tr>
+                  <tr><td>UserDetailsServiceImpl</td><td>Spring Security の UserDetailsService 実装</td><td>メールアドレスでユーザーを検索し LoginUser（UserDetails）を返す。AuthMapper.findByEmail を使用</td></tr>
+                  <tr><td>LoginUser</td><td>Principal オブジェクト（UserDetails 実装）</td><td>ユーザーの id, email, role, name を保持。<code>isAdmin()</code> / <code>hasStaffAccess()</code>（VET/STAFF/ADMIN）/ <code>isUser()</code> などの便利メソッドを提供</td></tr>
+                  <tr><td>BCryptPasswordEncoder</td><td>パスワードハッシュ化</td><td>UserService.create / PasswordResetController.change / AuthService で使用。コスト係数はデフォルト（10）</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           <div class="fill-block">
-            <div class="fill-label">バリデーション関連 <span class="optional">任意</span></div>
-            <div class="fill-hint">Bean Validationアノテーション一覧</div>
+            <div class="fill-label">画像処理ユーティリティ <span class="required">必須</span></div>
+            <div class="fill-hint">ImageOrientationUtil — EXIF 方向補正</div>
             <div class="fill-content">
               <table class="doc-table">
                 <thead>
-                  <tr><th>アノテーション</th><th>対象フィールド</th><th>検証内容</th><th>エラーメッセージ</th></tr>
+                  <tr><th>メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th></tr>
                 </thead>
                 <tbody>
-                  <tr class="template-row">
-                    <td>@NotBlank</td>
-                    <td>title</td>
-                    <td>空文字・null禁止</td>
-                    <td>タイトルは必須です</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>@Size(max=100)</td>
-                    <td>title</td>
-                    <td>最大100文字</td>
-                    <td>タイトルは100文字以内で入力してください</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>@Size(max=1000)</td>
-                    <td>content</td>
-                    <td>最大1000文字</td>
-                    <td>内容は1000文字以内で入力してください</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>@NotNull</td>
-                    <td>dueDate</td>
-                    <td>null禁止</td>
-                    <td>期限を選択してください</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>@Email</td>
-                    <td>email</td>
-                    <td>メール形式</td>
-                    <td>正しいメールアドレスを入力してください</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>@Pattern</td>
-                    <td>password</td>
-                    <td>正規表現</td>
-                    <td>パスワードは8文字以上で入力してください</td>
-                  </tr>
+                  <tr><td>correctOrientation</td><td>BufferedImage img, InputStream exifInput</td><td>BufferedImage</td><td>Apache Commons Imaging で EXIF の Orientation タグを読み取り、90°/180°/270° 回転や上下/左右反転を適用して返す</td></tr>
+                </tbody>
+              </table>
+              <p class="table-note">PetImageStorageService と HealthRecordImageStorageService から呼び出される。スマートフォンで撮影した画像の向きを正しく補正する。</p>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">外部 API 署名検証 <span class="optional">任意</span></div>
+            <div class="fill-hint">SlackRequestVerifier / LineRequestVerifier</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>クラス / メソッド名</th><th>引数</th><th>戻り値</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>SlackRequestVerifier.verify</td><td>timestamp, signature, body</td><td>boolean</td><td>HMAC-SHA256 で Slack の署名を検証（SLACK_SIGNING_SECRET を使用）。5 分以上古いリクエストはリプレイ攻撃として拒否</td></tr>
+                  <tr><td>LineRequestVerifier.verify</td><td>signature, body</td><td>boolean</td><td>HMAC-SHA256 で LINE の X-Line-Signature を検証（LINE_CHANNEL_SECRET を使用）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">プランと機能コードの対応 <span class="required">必須</span></div>
+            <div class="fill-hint">plan_features テーブルで管理。PlanAccessService + PlanFeatureMapper が参照</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>プラン</th><th>利用可能な機能コード</th><th>月額（税込）</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>ライト（LIGHT）</td><td>—（なし）</td><td>980 円</td></tr>
+                  <tr><td>スタンダード（STANDARD）</td><td><code>AI_SYMPTOM</code>, <code>SLACK_BOT</code>, <code>LINE_BOT</code></td><td>1,980 円</td></tr>
+                  <tr><td>プレミアム（PREMIUM）</td><td><code>AI_SYMPTOM</code>, <code>SLACK_BOT</code>, <code>LINE_BOT</code>, <code>ZOOM_CONSULT</code></td><td>3,480 円</td></tr>
+                  <tr><td>ADMIN / VET / STAFF</td><td>全機能（プランに関係なく全て利用可能）</td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">HTTP メソッドオーバーライド <span class="required">必須</span></div>
+            <div class="fill-hint">Thymeleaf フォームで PATCH / DELETE を擬似的に送信する仕組み</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>項目</th><th>内容</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>フィルター</td><td>Spring の <code>HiddenHttpMethodFilter</code>（SecurityConfig で有効化）</td></tr>
+                  <tr><td>使用方法</td><td>Thymeleaf フォームに <code>&lt;input type="hidden" name="_method" value="PATCH"&gt;</code> を埋め込む</td></tr>
+                  <tr><td>対象メソッド</td><td>PATCH（update）、DELETE（delete）を使用する全コントローラー</td></tr>
+                  <tr><td>理由</td><td>HTML フォームは GET/POST しか送信できないため、Spring の HiddenHttpMethodFilter でサーバー側で変換する</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">ページネーション共通仕様 <span class="required">必須</span></div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>項目</th><th>内容</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>共通レスポンス型</td><td><code>PageResponse&lt;T&gt;</code>（items, totalCount, page, size, totalPages を保持）</td></tr>
+                  <tr><td>デフォルト page</td><td>1（1 以下は 1 に補正）</td></tr>
+                  <tr><td>デフォルト size</td><td>20（1〜100 の範囲に補正）</td></tr>
+                  <tr><td>offset 計算</td><td><code>offset = (page - 1) * size</code></td></tr>
+                  <tr><td>soft-delete フィルター</td><td>全 Mapper クエリに <code>WHERE deleted_at IS NULL</code> を付与</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="fill-block">
+            <div class="fill-label">GlobalControllerAdvice <span class="optional">任意</span></div>
+            <div class="fill-hint">全コントローラー共通の Model 属性を注入する @ControllerAdvice</div>
+            <div class="fill-content">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>メソッド名</th><th>引数</th><th>追加する Model 属性</th><th>処理概要</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>addGlobalAttributes（仮称）</td><td>Model model, currentUser</td><td>未読通知数、プランラベル等</td><td>全画面共通で必要な情報（ヘッダー表示用）を @ModelAttribute で自動注入</td></tr>
                 </tbody>
               </table>
             </div>

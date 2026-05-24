@@ -700,59 +700,204 @@ src/main/java/
             <div class="fill-hint">Controller → Service → Repository → Entity の依存関係</div>
             <div class="fill-content">
               <div class="flow-image-wrap">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 980" role="img" aria-labelledby="d-title d-desc">
-  <title id="d-title">クラス間の依存関係図</title>
-  <desc id="d-desc">petlifeプロジェクトの Controller → Service → Mapper → Entity 依存関係（縦並び）</desc>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 970" role="img" aria-labelledby="dep6-title dep6-desc">
+  <title id="dep6-title">クラス間の依存関係図</title>
+  <desc id="dep6-desc">petlife プロジェクト全 Controller → Service → Mapper → Entity / DB テーブルの依存関係</desc>
   <defs>
-    <style>
-      .dh { font: 700 20px 'Segoe UI', sans-serif; fill: #0f172a; }
-      .dt { font: 600 18px 'Segoe UI', sans-serif; fill: #0f172a; }
-      .dn { font: 500 18px 'Segoe UI', sans-serif; fill: #334155; }
-      .small { font: 500 16px 'Segoe UI', sans-serif; fill: #334155; }
-      .box { stroke: #94a3b8; stroke-width: 2; rx: 14; ry: 14; }
-      .arrow { stroke: #334155; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
-    </style>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    <marker id="dep6-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
     </marker>
   </defs>
+  <rect width="1360" height="970" fill="#f8fafc"/>
+  <text x="680" y="26" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="14" font-weight="700" fill="#0f172a">Controller → Service → Mapper (MyBatis) → Entity (DB) 依存関係図</text>
 
-  <rect width="980" height="980" fill="#f8fafc"/>
-  <text x="490" y="42" text-anchor="middle" class="dh">Controller → Service → Repository(Mapper) → Entity</text>
+  <!-- ===== CONTROLLER LAYER ===== -->
+  <rect x="10" y="40" width="1340" height="150" rx="8" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
+  <rect x="10" y="40" width="1340" height="26" rx="8" fill="#1E40AF"/>
+  <rect x="10" y="54" width="1340" height="12" fill="#1E40AF"/>
+  <text x="680" y="58" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">Controller（24 クラス）</text>
+  <!-- row 1 y=72 -->
+  <rect x="16" y="72" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="122" y="87" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">PetController</text>
+  <rect x="239" y="72" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="345" y="87" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">HealthRecordController</text>
+  <rect x="462" y="72" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="568" y="87" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">AppointmentController</text>
+  <rect x="685" y="72" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="791" y="87" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">AppointmentPageController</text>
+  <rect x="908" y="72" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1014" y="87" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">AppointmentSlotController</text>
+  <rect x="1131" y="72" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1237" y="87" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">CalendarController</text>
+  <!-- row 2 y=100 -->
+  <rect x="16" y="100" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="122" y="115" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">DashboardController</text>
+  <rect x="239" y="100" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="345" y="115" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">NotificationController</text>
+  <rect x="462" y="100" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="568" y="115" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">SubscriptionController</text>
+  <rect x="685" y="100" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="791" y="115" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">ConsultationController</text>
+  <rect x="908" y="100" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1014" y="115" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">ConsultChatController</text>
+  <rect x="1131" y="100" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1237" y="115" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">ClinicGuideController</text>
+  <!-- row 3 y=128 -->
+  <rect x="16" y="128" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="122" y="143" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">UserController</text>
+  <rect x="239" y="128" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="345" y="143" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">PremiumSupportController</text>
+  <rect x="462" y="128" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="568" y="143" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">AnnouncementController</text>
+  <rect x="685" y="128" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="791" y="143" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">ReportController</text>
+  <rect x="908" y="128" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1014" y="143" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">PasswordResetController</text>
+  <rect x="1131" y="128" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1237" y="143" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">ForgotPasswordController</text>
+  <!-- row 4 y=156 -->
+  <rect x="16" y="156" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="122" y="171" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">SlackEventController</text>
+  <rect x="239" y="156" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="345" y="171" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">LineEventController</text>
+  <rect x="462" y="156" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="568" y="171" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">DatabaseBackupController</text>
+  <rect x="685" y="156" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="791" y="171" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">AuthController</text>
+  <rect x="908" y="156" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1014" y="171" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">RootController</text>
+  <rect x="1131" y="156" width="213" height="22" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="1237" y="171" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#1E3A8A">GlobalControllerAdvice</text>
 
-  <rect class="box" x="110" y="80" width="760" height="170" fill="#e0f2fe"/>
-  <text x="490" y="114" text-anchor="middle" class="dt">Controller</text>
-  <text x="140" y="152" class="dn">PetController / HealthRecordController / AppointmentController</text>
-  <text x="140" y="186" class="dn">UserController / NotificationController / SubscriptionController</text>
+  <!-- Arrow 1 -->
+  <line x1="680" y1="194" x2="680" y2="214" stroke="#475569" stroke-width="2" marker-end="url(#dep6-arr)"/>
+  <text x="694" y="207" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#475569">コンストラクタ DI（@Autowired）</text>
 
-  <line class="arrow" x1="490" y1="250" x2="490" y2="292"/>
-  <text x="508" y="280" class="small">呼び出し</text>
+  <!-- ===== SERVICE LAYER ===== -->
+  <rect x="10" y="218" width="1340" height="150" rx="8" fill="#F0FDFA" stroke="#5EEAD4" stroke-width="1.5"/>
+  <rect x="10" y="218" width="1340" height="26" rx="8" fill="#0F766E"/>
+  <rect x="10" y="232" width="1340" height="12" fill="#0F766E"/>
+  <text x="680" y="236" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">Service（21 クラス）</text>
+  <!-- row 1 y=250 -->
+  <rect x="16" y="250" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="122" y="265" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">PetService</text>
+  <rect x="239" y="250" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="345" y="265" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">HealthRecordService</text>
+  <rect x="462" y="250" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="568" y="265" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">AppointmentService</text>
+  <rect x="685" y="250" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="791" y="265" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">CalendarService</text>
+  <rect x="908" y="250" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="1014" y="265" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">PetCareRecordService</text>
+  <rect x="1131" y="250" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="1237" y="265" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">UserService</text>
+  <!-- row 2 y=278 -->
+  <rect x="16" y="278" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="122" y="293" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">ConsultChatService</text>
+  <rect x="239" y="278" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="345" y="293" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">AnnouncementService</text>
+  <rect x="462" y="278" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="568" y="293" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">PasswordResetService</text>
+  <rect x="685" y="278" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="791" y="293" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">AuthService</text>
+  <rect x="908" y="278" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="1014" y="293" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">SymptomCheckService</text>
+  <rect x="1131" y="278" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="1237" y="293" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">PlanAccessService</text>
+  <!-- row 3 y=306 -->
+  <rect x="16" y="306" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="122" y="321" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">ZoomLinkService</text>
+  <rect x="239" y="306" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="345" y="321" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">DatabaseBackupService</text>
+  <rect x="462" y="306" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="568" y="321" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">SlackBotService</text>
+  <rect x="685" y="306" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="791" y="321" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">LineBotService</text>
+  <rect x="908" y="306" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="1014" y="321" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">SlackRequestVerifier</text>
+  <rect x="1131" y="306" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="1237" y="321" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">LineRequestVerifier</text>
+  <!-- row 4 y=334 (3 items) -->
+  <rect x="16" y="334" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="122" y="349" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">PetImageStorageService</text>
+  <rect x="239" y="334" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="345" y="349" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">HealthRecordImageStorageService</text>
+  <rect x="462" y="334" width="213" height="22" rx="4" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="568" y="349" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#134E4A">ImageOrientationUtil</text>
 
-  <rect class="box" x="110" y="300" width="760" height="190" fill="#dcfce7"/>
-  <text x="490" y="334" text-anchor="middle" class="dt">Service</text>
-  <text x="140" y="372" class="dn">PetService / HealthRecordService / AppointmentService</text>
-  <text x="140" y="406" class="dn">SymptomCheckService / PlanAccessService / UserService</text>
-  <text x="140" y="440" class="dn">NotificationService / CalendarService</text>
+  <!-- Arrow 2 -->
+  <line x1="680" y1="372" x2="680" y2="390" stroke="#475569" stroke-width="2" marker-end="url(#dep6-arr)"/>
+  <text x="694" y="384" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#475569">DB アクセス（Mapper 呼び出し）</text>
 
-  <line class="arrow" x1="490" y1="490" x2="490" y2="532"/>
-  <text x="508" y="520" class="small">DBアクセス</text>
+  <!-- ===== MAPPER LAYER ===== -->
+  <rect x="10" y="394" width="1340" height="150" rx="8" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="1.5"/>
+  <rect x="10" y="394" width="1340" height="26" rx="8" fill="#6D28D9"/>
+  <rect x="10" y="408" width="1340" height="12" fill="#6D28D9"/>
+  <text x="680" y="412" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">Mapper — MyBatis @Mapper interface（23 インターフェース）</text>
+  <!-- row 1 y=426 -->
+  <rect x="16" y="426" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="122" y="441" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">PetMapper</text>
+  <rect x="239" y="426" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="345" y="441" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">HealthRecordMapper</text>
+  <rect x="462" y="426" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="568" y="441" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">AppointmentMapper</text>
+  <rect x="685" y="426" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="791" y="441" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">AppointmentSlotMapper</text>
+  <rect x="908" y="426" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="1014" y="441" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">CalendarMarkMapper</text>
+  <rect x="1131" y="426" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="1237" y="441" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">PetCareRecordMapper</text>
+  <!-- row 2 y=454 -->
+  <rect x="16" y="454" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="122" y="469" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">UserMapper</text>
+  <rect x="239" y="454" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="345" y="469" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">RoleMapper</text>
+  <rect x="462" y="454" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="568" y="469" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">AuthMapper</text>
+  <rect x="685" y="454" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="791" y="469" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">SubscriptionMapper</text>
+  <rect x="908" y="454" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="1014" y="469" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">NotificationMapper</text>
+  <rect x="1131" y="454" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="1237" y="469" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">DismissedReminderMapper</text>
+  <!-- row 3 y=482 -->
+  <rect x="16" y="482" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="122" y="497" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">MedicalHistoryMapper</text>
+  <rect x="239" y="482" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="345" y="497" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">ConsultChatMapper</text>
+  <rect x="462" y="482" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="568" y="497" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">AnnouncementMapper</text>
+  <rect x="685" y="482" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="791" y="497" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">SymptomCheckMapper</text>
+  <rect x="908" y="482" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="1014" y="497" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">PlanFeatureMapper</text>
+  <rect x="1131" y="482" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="1237" y="497" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#4C1D95">PasswordResetTokenMapper</text>
+  <!-- row 4 y=510 (5 items — schema-only) -->
+  <rect x="16" y="510" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4 2"/><text x="122" y="525" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#6D28D9">InvoiceMapper *</text>
+  <rect x="239" y="510" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4 2"/><text x="345" y="525" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#6D28D9">PaymentMapper *</text>
+  <rect x="462" y="510" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4 2"/><text x="568" y="525" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#6D28D9">EmailMessageMapper *</text>
+  <rect x="685" y="510" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4 2"/><text x="791" y="525" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#6D28D9">EmailTemplateMapper *</text>
+  <rect x="908" y="510" width="213" height="22" rx="4" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4 2"/><text x="1014" y="525" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#6D28D9">MedicalAttachmentMapper *</text>
 
-  <rect class="box" x="110" y="540" width="760" height="190" fill="#fef3c7"/>
-  <text x="490" y="574" text-anchor="middle" class="dt">Repository (Mapper)</text>
-  <text x="140" y="612" class="dn">PetMapper / HealthRecordMapper / AppointmentMapper</text>
-  <text x="140" y="646" class="dn">UserMapper / RoleMapper / NotificationMapper</text>
-  <text x="140" y="680" class="dn">SubscriptionMapper / SymptomCheckMapper</text>
+  <!-- Arrow 3 -->
+  <line x1="680" y1="548" x2="680" y2="566" stroke="#475569" stroke-width="2" marker-end="url(#dep6-arr)"/>
+  <text x="694" y="561" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#475569">行マッピング（MyBatis → Entity record）</text>
 
-  <line class="arrow" x1="490" y1="730" x2="490" y2="772"/>
-  <text x="508" y="760" class="small">行マッピング</text>
+  <!-- ===== ENTITY / DB LAYER ===== -->
+  <rect x="10" y="570" width="1340" height="150" rx="8" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+  <rect x="10" y="570" width="1340" height="26" rx="8" fill="#065F46"/>
+  <rect x="10" y="584" width="1340" height="12" fill="#065F46"/>
+  <text x="680" y="588" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">Entity / DB Table — PostgreSQL（23 テーブル）</text>
+  <!-- row 1 y=602 -->
+  <rect x="16" y="602" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="122" y="617" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">users</text>
+  <rect x="239" y="602" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="345" y="617" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">roles</text>
+  <rect x="462" y="602" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="568" y="617" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">pets</text>
+  <rect x="685" y="602" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="791" y="617" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">health_records</text>
+  <rect x="908" y="602" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="1014" y="617" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">appointments</text>
+  <rect x="1131" y="602" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="1237" y="617" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">appointment_slots</text>
+  <!-- row 2 y=630 -->
+  <rect x="16" y="630" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="122" y="645" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">pet_care_records</text>
+  <rect x="239" y="630" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="345" y="645" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">pet_calendar_marks</text>
+  <rect x="462" y="630" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="568" y="645" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">subscriptions</text>
+  <rect x="685" y="630" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="791" y="645" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">plans / plan_features</text>
+  <rect x="908" y="630" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="1014" y="645" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">notifications</text>
+  <rect x="1131" y="630" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="1237" y="645" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">notification_recipients</text>
+  <!-- row 3 y=658 -->
+  <rect x="16" y="658" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="122" y="673" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">dismissed_reminders</text>
+  <rect x="239" y="658" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="345" y="673" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">medical_histories</text>
+  <rect x="462" y="658" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="568" y="673" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">medical_attachments</text>
+  <rect x="685" y="658" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="791" y="673" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">consult_chat_messages</text>
+  <rect x="908" y="658" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="1014" y="673" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">symptom_checks</text>
+  <rect x="1131" y="658" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="1237" y="673" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#064E3B">announcements</text>
+  <!-- row 4 y=686 (5 items — schema-only) -->
+  <rect x="16" y="686" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1" stroke-dasharray="4 2"/><text x="122" y="701" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#065F46">invoices *</text>
+  <rect x="239" y="686" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1" stroke-dasharray="4 2"/><text x="345" y="701" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#065F46">payments *</text>
+  <rect x="462" y="686" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1" stroke-dasharray="4 2"/><text x="568" y="701" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#065F46">email_templates *</text>
+  <rect x="685" y="686" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1" stroke-dasharray="4 2"/><text x="791" y="701" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#065F46">email_messages *</text>
+  <rect x="908" y="686" width="213" height="22" rx="4" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1" stroke-dasharray="4 2"/><text x="1014" y="701" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#065F46">password_reset_tokens *</text>
 
-  <rect class="box" x="110" y="780" width="760" height="160" fill="#ede9fe"/>
-  <text x="490" y="814" text-anchor="middle" class="dt">Entity</text>
-  <text x="140" y="852" class="dn">PetEntity / UserEntity / RoleEntity / AppointmentEntity</text>
-  <text x="140" y="886" class="dn">HealthRecordEntity / NotificationEntity / SubscriptionEntity</text>
+  <!-- ===== CROSS-CUTTING ===== -->
+  <rect x="10" y="736" width="1340" height="78" rx="8" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+  <rect x="10" y="736" width="1340" height="26" rx="8" fill="#B45309"/>
+  <rect x="10" y="750" width="1340" height="12" fill="#B45309"/>
+  <text x="680" y="754" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">横断的関心事（Cross-cutting Concerns）</text>
+  <rect x="16" y="768" width="213" height="22" rx="4" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/><text x="122" y="783" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#78350F">SecurityConfig</text>
+  <rect x="239" y="768" width="213" height="22" rx="4" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/><text x="345" y="783" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#78350F">UserDetailsServiceImpl</text>
+  <rect x="462" y="768" width="213" height="22" rx="4" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/><text x="568" y="783" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#78350F">LoginUser（Principal）</text>
+  <rect x="685" y="768" width="213" height="22" rx="4" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/><text x="791" y="783" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#78350F">BCryptPasswordEncoder</text>
+  <rect x="908" y="768" width="213" height="22" rx="4" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/><text x="1014" y="783" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#78350F">PlanAccessService（認可ゲート）</text>
+
+  <!-- ===== EXTERNAL APIs ===== -->
+  <rect x="10" y="824" width="1340" height="78" rx="8" fill="#FFF1F2" stroke="#FCA5A5" stroke-width="1.5"/>
+  <rect x="10" y="824" width="1340" height="26" rx="8" fill="#B91C1C"/>
+  <rect x="10" y="838" width="1340" height="12" fill="#B91C1C"/>
+  <text x="680" y="842" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">外部 API 連携（External Integrations）</text>
+  <rect x="16" y="856" width="213" height="22" rx="4" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/><text x="122" y="871" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#7F1D1D">OpenAI API（症状チェック）</text>
+  <rect x="239" y="856" width="213" height="22" rx="4" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/><text x="345" y="871" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#7F1D1D">Slack API（Bot / Events）</text>
+  <rect x="462" y="856" width="213" height="22" rx="4" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/><text x="568" y="871" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#7F1D1D">LINE Messaging API</text>
+  <rect x="685" y="856" width="213" height="22" rx="4" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/><text x="791" y="871" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#7F1D1D">Zoom API（OAuth + Meeting）</text>
+  <rect x="908" y="856" width="213" height="22" rx="4" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/><text x="1014" y="871" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#7F1D1D">pg_dump / psql（DB Backup）</text>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="10" y="912" width="1340" height="48" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="24" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" font-weight="700" fill="#334155">凡例:</text>
+  <rect x="62" y="920" width="12" height="12" rx="2" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/><text x="80" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">Controller</text>
+  <rect x="160" y="920" width="12" height="12" rx="2" fill="#CCFBF1" stroke="#5EEAD4" stroke-width="1"/><text x="178" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">Service</text>
+  <rect x="240" y="920" width="12" height="12" rx="2" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/><text x="258" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">Mapper（MyBatis）</text>
+  <rect x="390" y="920" width="12" height="12" rx="2" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/><text x="408" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">Entity / DB Table</text>
+  <rect x="530" y="920" width="12" height="12" rx="2" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/><text x="548" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">横断的関心事</text>
+  <rect x="640" y="920" width="12" height="12" rx="2" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/><text x="658" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">外部 API</text>
+  <rect x="740" y="920" width="22" height="12" rx="2" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4 2"/><text x="768" y="930" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">* schema 定義済 / controller 未接続</text>
+  <line x1="62" y1="948" x2="92" y2="948" stroke="#475569" stroke-width="2" marker-end="url(#dep6-arr)"/>
+  <text x="98" y="952" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#334155">依存 / 呼び出し方向</text>
 </svg>
               </div>
-              <p class="table-note" style="font-size:12px; line-height:1.6; margin-top:8px; margin-bottom:0;">実装準拠ポイント:<br>Controller は Service を呼び出し、Service は Mapper を介して Entity を取得・更新する。認可・業務制御は主に Service 層で実施する。</p>
+              <p class="table-note" style="font-size:12px; line-height:1.8; margin-top:8px; margin-bottom:0;">
+                実装準拠ポイント：<br>
+                ① Controller は Spring DI（コンストラクタインジェクション）で Service を注入。<br>
+                ② Service は MyBatis @Mapper を通じて PostgreSQL にアクセス（XML なし、@Select/@Insert/@Update/@Delete アノテーション）。<br>
+                ③ 全テーブルは soft-delete（<code>deleted_at IS NULL</code> フィルタ）を適用。<br>
+                ④ 認可制御は Service 層の <code>hasStaffAccess()</code> / <code>PlanAccessService</code> で実施（plan_features テーブル参照）。<br>
+                ⑤ 破線枠（*）は schema 定義済み・Mapper 実装済みだが Controller/Service 未接続（schema-only 状態）。
+              </p>
             </div>
           </div>
 
