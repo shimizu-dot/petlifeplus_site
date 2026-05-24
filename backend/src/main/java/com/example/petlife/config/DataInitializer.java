@@ -4,6 +4,7 @@ import com.example.petlife.entity.UserEntity;
 import com.example.petlife.mapper.AuthMapper;
 import com.example.petlife.mapper.UserMapper;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  *   一般:   owner1@petlifeplus.local / user123
  */
 @Component
+@Order(100)
 public class DataInitializer implements CommandLineRunner {
 
     private final AuthMapper authMapper;
