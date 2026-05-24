@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 740" role="img" aria-labelledby="t d">
+  <title id="t">PetEntity クラス図</title>
+  <desc id="d">petlife プロジェクトの PetEntity（Java record）の構造図</desc>
+  <defs>
+    <style>
+      .h { font: 700 20px 'Segoe UI', sans-serif; fill: #0f172a; }
+      .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #334155; }
+      .txt { font: 600 20px 'Consolas', 'Courier New', monospace; fill: #0f172a; }
+      .note { font: 500 16px 'Segoe UI', sans-serif; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect width="980" height="740" fill="#f8fafc"/>
+
+  <rect x="40" y="32" width="900" height="692" rx="12" ry="12" fill="#ffffff" stroke="#b6c2cf" stroke-width="2"/>
+
+  <rect x="40" y="32" width="900" height="86" rx="12" ry="12" fill="#dbeafe" stroke="none"/>
+  <text x="490" y="70" text-anchor="middle" class="h">《Entity》 PetEntity</text>
+  <text x="490" y="96" text-anchor="middle" class="sub">Java record</text>
+
+  <line x1="40" y1="130" x2="940" y2="130" stroke="#b6c2cf" stroke-width="2"/>
+  <line x1="40" y1="588" x2="940" y2="588" stroke="#b6c2cf" stroke-width="2"/>
+  <line x1="40" y1="628" x2="940" y2="628" stroke="#b6c2cf" stroke-width="2"/>
+  <line x1="40" y1="704" x2="940" y2="704" stroke="#b6c2cf" stroke-width="2"/>
+
+  <text x="70" y="168" class="txt">id: Long</text>
+  <text x="70" y="200" class="txt">ownerUserId: Long</text>
+  <text x="70" y="232" class="txt">name: String</text>
+  <text x="70" y="264" class="txt">species: String</text>
+  <text x="70" y="296" class="txt">breed: String</text>
+  <text x="70" y="328" class="txt">sex: String</text>
+  <text x="70" y="360" class="txt">birthDate: LocalDate</text>
+  <text x="70" y="392" class="txt">weightBaselineKg: BigDecimal</text>
+  <text x="70" y="424" class="txt">imagePath: String</text>
+  <text x="70" y="456" class="txt">deceasedAt: LocalDateTime</text>
+  <text x="70" y="488" class="txt">deletedAt: LocalDateTime</text>
+  <text x="70" y="520" class="txt">createdAt: LocalDateTime</text>
+  <text x="70" y="552" class="txt">updatedAt: LocalDateTime</text>
+
+  <text x="70" y="616" class="note">アクセサは record により自動生成（id(), ownerUserId(), ...）</text>
+
+  <text x="70" y="652" class="note">注釈</text>
+  <text x="70" y="678" class="note">タイトル: Task.java → PetEntity.java</text>
+  <text x="70" y="698" class="note">説明: タスクエンティティ → ペットエンティティ（実装準拠）</text>
+</svg>
