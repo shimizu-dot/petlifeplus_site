@@ -1,5 +1,6 @@
 package com.example.petlife.mapper;
 
+import com.example.petlife.entity.HealthRecordPetDateEntity;
 import com.example.petlife.entity.PetCareRecordEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -45,6 +46,24 @@ public interface PetCareRecordMapper {
         """)
     List<PetCareRecordEntity> findUpcomingByPetId(
             @Param("petId") Long petId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
+
+    @Select("""
+        SELECT DISTINCT c.pet_id AS "petId", c.administered_on AS "recordDate"
+        FROM pet_care_records c
+        JOIN pets p ON p.id = c.pet_id
+        WHERE p.owner_user_id = #{ownerUserId}
+          AND p.deleted_at IS NULL
+          AND c.deleted_at IS NULL
+          AND c.care_type IN ('RABIES','HEARTWORM','COMBO_VACCINE')
+          AND c.administered_on >= #{fromDate}
+          AND c.administered_on <= #{toDate}
+        ORDER BY c.administered_on ASC
+        """)
+    List<HealthRecordPetDateEntity> findVaccinePetDatesByOwnerAndDateRange(
+            @Param("ownerUserId") Long ownerUserId,
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate
     );

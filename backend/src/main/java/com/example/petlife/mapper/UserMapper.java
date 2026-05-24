@@ -29,6 +29,12 @@ public interface UserMapper {
         """)
     UserEntity findById(@Param("id") Long id);
 
+    @Select("""
+        SELECT id, role_id, name, email, password_hash, phone, status, last_login_at, deleted_at, created_at, updated_at
+        FROM users WHERE email = #{email} AND deleted_at IS NULL
+        """)
+    UserEntity findByEmail(@Param("email") String email);
+
     @Select("SELECT COUNT(*) FROM users WHERE email = #{email} AND deleted_at IS NULL")
     int existsByEmail(@Param("email") String email);
 
@@ -126,4 +132,14 @@ public interface UserMapper {
             @Param("passwordHash") String passwordHash,
             @Param("phone") String phone
     );
+
+    @Select("""
+        SELECT u.id
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE u.deleted_at IS NULL
+          AND r.role_code = 'ADMIN'
+        ORDER BY u.id
+        """)
+    List<Long> findAdminUserIds();
 }

@@ -2,6 +2,7 @@ package com.example.petlife.dto.calendar;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -11,6 +12,7 @@ public class CalendarMarkForm {
     private Long petId;
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate markDate;
 
     @NotBlank

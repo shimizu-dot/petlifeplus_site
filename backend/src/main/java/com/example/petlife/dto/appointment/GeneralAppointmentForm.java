@@ -1,6 +1,7 @@
 package com.example.petlife.dto.appointment;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -18,6 +19,9 @@ public class GeneralAppointmentForm {
     @Size(max = 500, message = "相談内容は500文字以内で入力してください")
     private String note;
 
+    @Pattern(regexp = "^(VISIT|ONLINE)$", message = "予約方法は来院またはオンラインを選択してください")
+    private String channel = "VISIT";
+
     public Long getPetId() { return petId; }
     public void setPetId(Long petId) { this.petId = petId; }
 
@@ -26,4 +30,7 @@ public class GeneralAppointmentForm {
 
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
+
+    public String getChannel() { return channel; }
+    public void setChannel(String channel) { this.channel = channel; }
 }

@@ -12,6 +12,8 @@ import com.example.petlife.mapper.AppointmentMapper;
 import com.example.petlife.mapper.AppointmentSlotMapper;
 import com.example.petlife.mapper.CalendarMarkMapper;
 import com.example.petlife.mapper.HealthRecordMapper;
+import com.example.petlife.mapper.MedicalHistoryMapper;
+import com.example.petlife.mapper.PetCareRecordMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -35,17 +37,23 @@ public class CalendarService {
     private final HealthRecordMapper healthRecordMapper;
     private final AppointmentMapper appointmentMapper;
     private final AppointmentSlotMapper appointmentSlotMapper;
+    private final PetCareRecordMapper petCareRecordMapper;
+    private final MedicalHistoryMapper medicalHistoryMapper;
 
     public CalendarService(PetService petService,
                            CalendarMarkMapper calendarMarkMapper,
                            HealthRecordMapper healthRecordMapper,
                            AppointmentMapper appointmentMapper,
-                           AppointmentSlotMapper appointmentSlotMapper) {
+                           AppointmentSlotMapper appointmentSlotMapper,
+                           PetCareRecordMapper petCareRecordMapper,
+                           MedicalHistoryMapper medicalHistoryMapper) {
         this.petService = petService;
         this.calendarMarkMapper = calendarMarkMapper;
         this.healthRecordMapper = healthRecordMapper;
         this.appointmentMapper = appointmentMapper;
         this.appointmentSlotMapper = appointmentSlotMapper;
+        this.petCareRecordMapper = petCareRecordMapper;
+        this.medicalHistoryMapper = medicalHistoryMapper;
     }
 
     public CalendarView buildMonthView(LoginUser user, YearMonth ym) {
@@ -103,6 +111,35 @@ public class CalendarService {
             }
         }
 
+        // ワクチン記録 (RABIES / HEARTWORM / COMBO_VACCINE) → 💉 自動シール
+        List<HealthRecordPetDateEntity> vaccineDates =
+                petCareRecordMapper.findVaccinePetDatesByOwnerAndDateRange(user.id(), start, finish);
+        for (HealthRecordPetDateEntity d : vaccineDates) {
+            addMark(marksByDate, d.recordDate(), new DayMark(
+                    null, "INJECTION", true,
+                    d.petId(), petColors.getOrDefault(d.petId(), "")
+            ));
+        }
+
+        // 診療履歴 (medical_histories) → 🩺 自動シール
+        List<HealthRecordPetDateEntity> medicalDates =
+                medicalHistoryMapper.findMedicalHistoryPetDatesByOwnerAndDateRange(user.id(), start, finish);
+        for (HealthRecordPetDateEntity d : medicalDates) {
+            addMark(marksByDate, d.recordDate(), new DayMark(
+                    null, "DOCTOR", true,
+                    d.petId(), petColors.getOrDefault(d.petId(), "")
+            ));
+        }
+
+        // 確定済み予約 → 🩺 自動シール（来院・オンライン問わず）
+        if (!user.isAdmin()) {
+            List<LocalDate> confirmedDates =
+                    appointmentMapper.findConfirmedDatesByOwnerUserId(user.id(), start, finish);
+            for (LocalDate date : confirmedDates) {
+                addMark(marksByDate, date, new DayMark(null, "DOCTOR", true, null, ""));
+            }
+        }
+
         List<DayCell> days = new ArrayList<>();
         for (LocalDate d = start; !d.isAfter(finish); d = d.plusDays(1)) {
             days.add(new DayCell(
@@ -144,6 +181,9 @@ public class CalendarService {
             throw new BadRequestException("不正なシール種別です");
         }
         PetEntity pet = petService.getEntity(form.getPetId(), user);
+        if (calendarMarkMapper.countByPetIdAndMarkDate(pet.id(), form.getMarkDate()) > 0) {
+            throw new BadRequestException("同じ日にすでにシールが貼られています");
+        }
         CalendarMarkEntity row = new CalendarMarkEntity(
                 null,
                 pet.id(),

@@ -2,11 +2,13 @@ package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.calendar.CalendarMarkForm;
+import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.service.CalendarService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,11 +41,20 @@ public class CalendarController {
 
     @PostMapping("/marks/add")
     public String addMark(@Valid @ModelAttribute("markForm") CalendarMarkForm form,
+                          BindingResult result,
                           @RequestParam String month,
                           @AuthenticationPrincipal LoginUser currentUser,
                           RedirectAttributes ra) {
-        calendarService.addMark(currentUser, form);
-        ra.addFlashAttribute("success", "シールを追加しました");
+        if (result.hasErrors()) {
+            ra.addFlashAttribute("error", "入力内容を確認してください");
+            return "redirect:/app/calendar?month=" + month;
+        }
+        try {
+            calendarService.addMark(currentUser, form);
+            ra.addFlashAttribute("success", "シールを追加しました");
+        } catch (BadRequestException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/app/calendar?month=" + month;
     }
 

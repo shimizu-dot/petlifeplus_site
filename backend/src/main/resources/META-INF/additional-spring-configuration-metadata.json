@@ -75,6 +75,39 @@
       "type": "java.lang.String",
       "description": "OpenAI API base URL. Override for Azure OpenAI or compatible proxies.",
       "defaultValue": "https://api.openai.com/v1"
+    },
+    {
+      "name": "sendgrid.api-key",
+      "type": "java.lang.String",
+      "description": "SendGrid API key used as the SMTP password. When empty, password reset emails are skipped and a warning is logged."
+    },
+    {
+      "name": "sendgrid.from-email",
+      "type": "java.lang.String",
+      "description": "Sender email address for SendGrid transactional emails.",
+      "defaultValue": "noreply@petlifeplus.local"
+    },
+    {
+      "name": "sendgrid.from-name",
+      "type": "java.lang.String",
+      "description": "Sender display name for SendGrid transactional emails.",
+      "defaultValue": "ペットライフプラス"
+    },
+    {
+      "name": "app.base-url",
+      "type": "java.lang.String",
+      "description": "Public base URL of the application, used when generating password reset links in emails.",
+      "defaultValue": "http://localhost:8080"
+    },
+    {
+      "name": "admin.slack-user-ids",
+      "type": "java.lang.String",
+      "description": "Comma-separated Slack user IDs that receive admin-level bot notifications."
+    },
+    {
+      "name": "admin.line-user-ids",
+      "type": "java.lang.String",
+      "description": "Comma-separated LINE user IDs that receive admin-level bot notifications."
     }
   ]
 }

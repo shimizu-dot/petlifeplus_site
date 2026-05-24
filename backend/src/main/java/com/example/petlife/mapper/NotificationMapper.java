@@ -1,6 +1,7 @@
 package com.example.petlife.mapper;
 
 import com.example.petlife.dto.notification.NotificationRow;
+import com.example.petlife.dto.subscription.RenewalHistoryRow;
 import com.example.petlife.entity.NotificationEntity;
 import org.apache.ibatis.annotations.*;
 
@@ -120,4 +121,29 @@ public interface NotificationMapper {
     int updateRecipientStatus(@Param("notificationId") Long notificationId,
                               @Param("userId") Long userId,
                               @Param("deliveryStatus") String deliveryStatus);
+
+    // --- サブスクリプション更新申請 ---
+
+    @Select("""
+        SELECT CAST(REGEXP_REPLACE(title, '^サブスクリプション更新申請 #', '') AS BIGINT)
+        FROM notifications
+        WHERE created_by_user_id = #{userId}
+          AND title LIKE 'サブスクリプション更新申請 #%'
+          AND deleted_at IS NULL
+        """)
+    List<Long> findRenewalRequestedSubscriptionIdsByUserId(@Param("userId") Long userId);
+
+    @Select("""
+        SELECT CAST(REGEXP_REPLACE(n.title, '^サブスクリプション更新申請 #', '') AS BIGINT) AS "subscriptionId",
+               UPPER(p.name) AS "planName",
+               n.created_at AS "requestedAt"
+        FROM notifications n
+        JOIN subscriptions s ON s.id = CAST(REGEXP_REPLACE(n.title, '^サブスクリプション更新申請 #', '') AS BIGINT)
+        JOIN plans p ON p.id = s.plan_id
+        WHERE n.created_by_user_id = #{userId}
+          AND n.title LIKE 'サブスクリプション更新申請 #%'
+          AND n.deleted_at IS NULL
+        ORDER BY n.created_at DESC
+        """)
+    List<RenewalHistoryRow> findRenewalHistoryByUserId(@Param("userId") Long userId);
 }

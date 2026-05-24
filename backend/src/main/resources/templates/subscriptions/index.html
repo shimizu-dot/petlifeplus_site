@@ -17,6 +17,15 @@
       <h1 class="page-title" th:text="${isAdminView} ? 'サブスクリプション一覧（全ユーザー）' : 'マイサブスクリプション'">
         サブスクリプション
       </h1>
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+      <div style="margin:12px 0 16px;padding:12px 14px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;border-radius:10px;line-height:1.9;">
+        有効期限はひと月です。<br>
+        期限が切れると、すべてのサービスをご利用いただけなくなります。<br>
+        既存データは保証されません。<br>
+        サービスレベルの変更をご希望の場合は、事務局へお問合せください。
+      </div>
 
       <div class="card">
         <div th:if="${page.items.isEmpty()}" style="color:#64748b;text-align:center;padding:24px;">
@@ -28,18 +37,17 @@
             <tr>
               <th th:if="${isAdminView}">飼い主</th>
               <th>プラン</th>
-              <th>対象ペット</th>
               <th>開始日</th>
               <th>終了日</th>
               <th>ステータス</th>
               <th>自動更新</th>
+              <th th:if="${!isAdminView}"></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="row : ${page.items}">
               <td th:if="${isAdminView}" th:text="${row.ownerName()}">山田 太郎</td>
               <td th:text="${row.planName()}">STANDARD</td>
-              <td th:text="${row.petName()}">ポチ</td>
               <td th:text="${row.startDate()}">2026-01-01</td>
               <td th:text="${row.endDate() != null ? row.endDate() : '—'}">—</td>
               <td>
@@ -49,6 +57,19 @@
                                  row.status() == 'PAUSED' ? '一時停止' : 'キャンセル済'}">有効</span>
               </td>
               <td th:text="${row.autoRenew()} ? '有効' : '無効'">有効</td>
+              <td th:if="${!isAdminView}">
+                <form th:action="@{/app/subscriptions/{id}/renew-request(id=${row.id()})}"
+                      method="post" style="margin:0;">
+                  <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                  <button type="submit"
+                          th:classappend="${pendingRenewalIds != null and pendingRenewalIds.contains(row.id())} ? 'btn btn-sm btn-secondary' : 'btn btn-sm btn-primary'"
+                          th:disabled="${pendingRenewalIds != null and pendingRenewalIds.contains(row.id())}"
+                          th:text="${pendingRenewalIds != null and pendingRenewalIds.contains(row.id())} ? '申請済み' : '更新申請'"
+                          th:onclick="${pendingRenewalIds != null and pendingRenewalIds.contains(row.id())} ? 'return false;' : 'return confirm(\'契約の更新申請を送信しますか？\')'">
+                    更新申請
+                  </button>
+                </form>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -67,6 +88,29 @@
         </span>
         <a th:if="${page.page * page.size < page.total}"
            th:href="@{/app/subscriptions(page=${page.page + 1},size=${page.size})}">次へ</a>
+      </div>
+
+      <div th:if="${!isAdminView and renewalHistory != null and !#lists.isEmpty(renewalHistory)}"
+           class="card" style="margin-top:24px;">
+        <div style="padding:14px 16px 4px;font-weight:600;color:#1e293b;">更新申請履歴</div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>プラン</th>
+              <th>申請日時</th>
+              <th>ステータス</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="h : ${renewalHistory}">
+              <td th:text="${h.planName()}">STANDARD</td>
+              <td th:text="${#temporals.format(h.requestedAt(), 'yyyy/MM/dd HH:mm')}">2026-05-23 14:00</td>
+              <td><span class="badge badge-yellow">申請済み</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>

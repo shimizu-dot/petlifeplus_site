@@ -107,6 +107,7 @@ public class PetController {
         model.addAttribute("careRecords", petCareRecordService.listByPet(id, currentUser));
         model.addAttribute("upcomingCareNotices", petCareRecordService.listUpcomingNotices(id, currentUser));
         model.addAttribute("symptomChecks", symptomCheckService.recentByPet(id, currentUser));
+        model.addAttribute("canDeletePet", petService.canDeletePet(id, currentUser));
         return "pets/detail";
     }
 

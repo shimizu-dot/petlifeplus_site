@@ -11,11 +11,61 @@
   <div th:replace="~{fragments/nav :: sidebar}"></div>
 
   <div class="main">
-    <div class="topbar"><span class="topbar-title">カレンダー</span></div>
+    <div class="topbar" style="justify-content:space-between;">
+      <span class="topbar-title">カレンダー</span>
+      <button id="calHelpBtn" type="button"
+              style="background:#EFF6FF;border:1px solid #93C5FD;color:#1D4ED8;border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;cursor:pointer;line-height:1.5;">
+        解説
+      </button>
+    </div>
+
+    <!-- 解説モーダル -->
+    <div id="calHelpOverlay"
+         style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:1000;align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:16px;box-shadow:0 16px 40px rgba(15,23,42,.18);padding:28px 30px;max-width:500px;width:90%;position:relative;">
+        <button id="calHelpClose" type="button"
+                style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#64748B;line-height:1;">✕</button>
+        <div style="font-size:16px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #E2E8F0;">カレンダー解説</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#F8FAFC;border-radius:8px;">
+            <span style="font-size:20px;">📁</span><span>カルテ <small style="color:#64748B;">（自動）</small></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#F8FAFC;border-radius:8px;">
+            <span style="font-size:20px;">🎂</span><span>誕生日 <small style="color:#64748B;">（自動）</small></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#F8FAFC;border-radius:8px;">
+            <span style="font-size:20px;">💉</span><span>予防接種・ワクチン</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#F8FAFC;border-radius:8px;">
+            <span style="font-size:20px;">🩺</span><span>病院で診察</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#F8FAFC;border-radius:8px;">
+            <span style="font-size:20px;">✂️</span><span>トリミング</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#F8FAFC;border-radius:8px;">
+            <span style="font-size:20px;">🌳</span><span>ドッグラン</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#F8FAFC;border-radius:8px;">
+            <span style="font-size:20px;">💊</span><span>薬を服用</span>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+          <div style="background:#EFF6FF;border-left:3px solid #1D4ED8;border-radius:6px;padding:9px 12px;color:#1E40AF;">
+            💡 シール一覧からカレンダーの日付へ<strong>ドラッグ＆ドロップ</strong>で貼れます
+          </div>
+          <div style="background:#FEF3C7;border-left:3px solid #F59E0B;border-radius:6px;padding:9px 12px;color:#92400E;">
+            ⚠️ 📁🎂 は自動配置のみ。💉🩺 は当院利用時は自動、他施設は手動で貼ってください
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="content">
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
-      <div class="card">
+      <div class="card card-sm">
         <div class="card-title">対象ペット</div>
         <div class="pet-picker">
           <button type="button"
@@ -27,7 +77,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card card-sm">
         <div class="card-title">シール</div>
         <div class="sticker-row">
           <div class="sticker-legend">
@@ -69,6 +119,7 @@
                     th:title="${(m.type() == 'KARTE' ? 'カルテ' : m.type() == 'INJECTION' ? '予防接種' : m.type() == 'DOCTOR' ? '病院で診察' : m.type() == 'SCISSORS' ? 'トリミング' : m.type() == 'PARK' ? 'ドッグラン' : m.type() == 'CAPSULE' ? '薬を服用' : '誕生日') + (!m.auto() ? '（ゴミ箱へドラッグで削除）' : '（自動）')}">
                 <a th:if="${m.type() == 'KARTE' and m.petId() != null}"
                    class="karte-link"
+                   draggable="false"
                    th:href="@{/app/pets/{pid}/health-records(pid=${m.petId()},recordDate=${d.date()})}">📁</a>
                 <span th:if="${m.type() != 'KARTE'}"
                       th:text="${m.type() == 'INJECTION' ? '💉' : m.type() == 'DOCTOR' ? '🩺' : m.type() == 'SCISSORS' ? '✂️' : m.type() == 'PARK' ? '🌳' : m.type() == 'CAPSULE' ? '💊' : '🎂'}">💉</span>
@@ -105,6 +156,18 @@
   </div>
 </div>
 <script>
+  // 使い方モーダル
+  const helpOverlay = document.getElementById('calHelpOverlay');
+  document.getElementById('calHelpBtn').addEventListener('click', () => {
+    helpOverlay.style.display = 'flex';
+  });
+  document.getElementById('calHelpClose').addEventListener('click', () => {
+    helpOverlay.style.display = 'none';
+  });
+  helpOverlay.addEventListener('click', (e) => {
+    if (e.target === helpOverlay) helpOverlay.style.display = 'none';
+  });
+
   const markAddForm = document.getElementById('markAddForm');
   const hiddenPetId = document.getElementById('hiddenPetId');
   const hiddenMarkDate = document.getElementById('hiddenMarkDate');
@@ -192,9 +255,8 @@
     e.preventDefault();
     trashZone.classList.remove('is-active');
     const markId = e.dataTransfer.getData('application/x-calendar-mark-id')
-            || e.dataTransfer.getData('text/plain')
             || draggingManualMarkId;
-    if (!markId) return;
+    if (!markId || !/^\d+$/.test(markId)) return;
     const form = document.getElementById('markDeleteForm');
     form.action = '/app/calendar/marks/' + markId + '/delete';
     form.submit();

@@ -184,12 +184,40 @@ body {
   margin-bottom: 20px;
 }
 
+.card-sm {
+  padding: 12px 20px;
+  margin-bottom: 12px;
+}
+
 .card-title {
   font-size: 16px;
   font-weight: 700;
   margin: 0 0 18px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
+}
+
+.card-sm .card-title {
+  font-size: 13px;
+  margin: 0 0 10px;
+  padding-bottom: 7px;
+}
+
+.card-sm .pet-chip {
+  padding: 4px 11px;
+  font-size: 13px;
+}
+
+.card-sm .sticker-item {
+  font-size: 20px;
+  padding: 3px 7px;
+}
+
+.card-sm .trash-zone {
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  border-radius: 10px;
 }
 
 /* ===== KPI GRID ===== */
@@ -598,6 +626,11 @@ body {
 .calendar-cell.is-out {
   background: #F8FAFC;
   opacity: .65;
+}
+
+.calendar-cell.is-today {
+  background: #EFF6FF;
+  border-color: #1D4ED8;
 }
 
 .calendar-appointment {

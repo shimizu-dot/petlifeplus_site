@@ -1,5 +1,6 @@
 package com.example.petlife.controller.slack;
 
+import com.example.petlife.service.AnnouncementService;
 import com.example.petlife.service.slack.SlackBotService;
 import com.example.petlife.service.slack.SlackRequestVerifier;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ class SlackEventControllerTest {
         SlackRequestVerifier verifier = mock(SlackRequestVerifier.class);
         when(verifier.isValid(any(), any(), any())).thenReturn(false);
 
-        SlackEventController controller = new SlackEventController(bot, verifier);
+        SlackEventController controller = new SlackEventController(bot, verifier, mock(AnnouncementService.class), "");
         ResponseEntity<?> res = controller.events("123", "v0=bad", null, "{\"type\":\"event_callback\"}");
 
         assertEquals(HttpStatus.UNAUTHORIZED, res.getStatusCode());
@@ -32,7 +33,7 @@ class SlackEventControllerTest {
         SlackRequestVerifier verifier = mock(SlackRequestVerifier.class);
         when(verifier.isValid(any(), any(), any())).thenReturn(true);
 
-        SlackEventController controller = new SlackEventController(bot, verifier);
+        SlackEventController controller = new SlackEventController(bot, verifier, mock(AnnouncementService.class), "");
         ResponseEntity<?> res = controller.events("123", "v0=ok", null, "{\"type\":\"url_verification\",\"challenge\":\"abc123\"}");
 
         assertEquals(HttpStatus.OK, res.getStatusCode());

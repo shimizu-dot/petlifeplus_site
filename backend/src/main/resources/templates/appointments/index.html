@@ -36,8 +36,61 @@
       background: #1D4ED8; color: #fff; border-color: #1D4ED8; font-weight: 600;
     }
     .slot-btn label:hover { background: #DBEAFE; }
+    .slot-btn.is-booked label {
+      background: #F1F5F9; border-color: #CBD5E1; color: #94A3B8;
+      cursor: not-allowed;
+    }
+    .slot-btn.is-booked label:hover { background: #F1F5F9; }
     .slot-empty {
       font-size: 0.9rem; color: #94A3B8; padding: 12px 0;
+    }
+    .table-wrap {
+      overflow: visible;
+    }
+    .table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    .note-preview {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+    }
+    .note-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .note-modal-card {
+      width: min(680px, 100%);
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(2, 6, 23, 0.24);
+      overflow: hidden;
+    }
+    .note-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 700;
+    }
+    .note-modal-body {
+      padding: 14px;
+      white-space: pre-wrap;
+      color: #334155;
+      line-height: 1.7;
+      max-height: 60vh;
+      overflow: auto;
     }
   </style>
 </head>
@@ -52,8 +105,6 @@
 
       <!-- Booking form — user only -->
       <div class="card" th:if="${!isAdminView}" style="max-width:780px;">
-        <div class="card-title">一般診療を予約</div>
-
         <!-- Date navigation (GET) -->
         <form method="get" th:action="@{/app/appointments}" class="date-nav">
           <a th:href="@{/app/appointments(date=${selectedDate.minusDays(1)})}">&lt; 前日</a>
@@ -70,20 +121,45 @@
           <input type="hidden" id="scheduledAt" th:field="*{scheduledAt}">
 
           <div class="form-group">
+            <label class="form-label">予約方法<span class="required">*</span></label>
+            <div th:if="${canChooseOnline}" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+              <label style="display:flex;align-items:center;gap:6px;">
+                <input type="radio" th:field="*{channel}" value="VISIT">
+                来院
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;">
+                <input type="radio" th:field="*{channel}" value="ONLINE">
+                オンライン
+              </label>
+            </div>
+            <div th:if="${!canChooseOnline}" style="display:flex;align-items:center;gap:8px;">
+              <span class="badge badge-blue">来院のみ</span>
+              <span style="font-size:13px;color:#64748B;">スタンダードプランは来院予約のみ利用できます</span>
+              <input type="hidden" th:field="*{channel}" value="VISIT">
+            </div>
+            <div class="invalid-feedback" style="display:block;"
+                 th:if="${#fields.hasErrors('channel')}"
+                 th:errors="*{channel}"></div>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">予約時間<span class="required">*</span></label>
             <div th:if="${availableSlots.isEmpty()}" class="slot-empty">
-              この日は空き枠がありません。別の日を選んでください。
+              この日の受付時間内に予約枠がありません。別の日を選んでください。
             </div>
             <div class="slot-grid" th:if="${!availableSlots.isEmpty()}">
-              <div class="slot-btn" th:each="slot, st : ${availableSlots}">
+              <div class="slot-btn"
+                   th:each="slot, st : ${availableSlots}"
+                   th:classappend="${!slot.available()} ? ' is-booked'">
                 <input type="radio"
                        th:id="'slot-' + ${st.index}"
                        name="slotChoice"
-                       th:value="${#temporals.format(slot, 'yyyy-MM-dd') + 'T' + #temporals.format(slot, 'HH:mm')}"
-                       th:checked="${form.scheduledAt != null and form.scheduledAt == slot}"
+                       th:disabled="${!slot.available()}"
+                       th:value="${#temporals.format(slot.slotTime(), 'yyyy-MM-dd') + 'T' + #temporals.format(slot.slotTime(), 'HH:mm')}"
+                       th:checked="${form.scheduledAt != null and form.scheduledAt == slot.slotTime()}"
                        onchange="document.getElementById('scheduledAt').value = this.value;">
                 <label th:for="'slot-' + ${st.index}"
-                       th:text="${#temporals.format(slot, 'HH:mm')}">10:00</label>
+                       th:text="${#temporals.format(slot.slotTime(), 'HH:mm')}">10:00</label>
               </div>
             </div>
             <div class="invalid-feedback" style="display:block;"
@@ -113,57 +189,130 @@
       </div>
 
       <!-- Appointment list -->
-      <div class="card">
-        <div class="card-title"
-             th:text="${isAdminView ? '予約リスト（全ユーザー）' : '予約リスト（自分の予約）'}">予約リスト</div>
+      <div class="card" id="appointments-list">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+          <div class="card-title"
+               th:text="${isAdminView ? '予約リスト（全ユーザー）' : '予約リスト（自分の予約）'}">予約リスト</div>
+          <form id="sortForm" method="get" th:action="@{/app/appointments}" style="display:flex;gap:8px;align-items:center;white-space:nowrap;">
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="size" th:value="${page.size}">
+            <label for="sortBy" style="font-size:13px;color:#64748B;white-space:nowrap;">ソート</label>
+            <select id="sortBy" name="sortBy" class="form-control" style="width:120px;min-width:120px;">
+              <option value="scheduledAt" th:selected="${sortBy == 'scheduledAt'}">予約日時</option>
+              <option value="pet" th:selected="${sortBy == 'pet'}">対象ペット</option>
+            </select>
+          </form>
+          <form id="bulkDeleteForm" th:action="@{/app/appointments/delete-selected}" method="post"
+                onsubmit="return confirm('選択した予約を削除しますか？未来の予約は削除できません。');">
+            <button type="submit" class="btn btn-danger" style="font-size:.85em;padding:4px 10px;">選択削除</button>
+          </form>
+          <button type="button" class="btn btn-secondary" style="font-size:.85em;padding:4px 10px;"
+                  onclick="toggleGuide()">解説</button>
+        </div>
+        <div id="appointmentGuide"
+             style="display:none;margin:6px 0 10px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#475569;font-size:12px;line-height:1.6;">
+          <div style="font-weight:700;margin-bottom:4px;">マーク説明・ルール</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span>・</span>
+            <img th:src="@{/img/icon-visit.svg}" alt="visit" style="width:20px;height:20px;vertical-align:middle;">
+            <span>は来院、</span>
+            <img th:src="@{/img/icon1.png}" alt="online" style="width:20px;height:20px;vertical-align:middle;">
+            <span>はオンライン予約です。</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span>・</span>
+            <img th:src="@{/img/icon-memo.svg}" alt="memo" style="width:20px;height:20px;vertical-align:middle;">
+            <span>を押すと相談内容の全文を表示します。</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span>・</span>
+            <img th:src="@{/img/icon-warning.svg}" alt="warning" style="width:18px;height:18px;vertical-align:middle;">
+            <span>未来の予約は削除できません。</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span>・</span>
+            <img th:src="@{/img/icon-warning.svg}" alt="warning" style="width:18px;height:18px;vertical-align:middle;">
+            <span>確定した予約はキャンセルできません。</span>
+          </div>
+        </div>
         <div class="table-wrap">
           <table class="table">
             <thead>
             <tr>
-              <th>ID</th>
-              <th>対象ペット</th>
-              <th th:if="${isAdminView}">飼い主</th>
-              <th>種別</th>
-              <th>方法</th>
+              <th><input type="checkbox" id="checkAllDeletable"></th>
               <th>予約日時</th>
+              <th>対象ペット</th>
+              <th>方法</th>
+              <th th:if="${isAdminView}">飼い主</th>
               <th>状態</th>
               <th>相談内容</th>
-              <th th:if="${isAdminView}">操作</th>
+              <th th:if="${!isAdminView}" style="width:84px;">操作</th>
+              <th th:if="${isAdminView}" style="width:84px;">操作</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${page.items.isEmpty()}">
-              <td th:colspan="${isAdminView ? 9 : 7}"
+              <td th:colspan="${isAdminView ? 9 : 8}"
                   style="text-align:center;color:#64748B;">予約はありません</td>
             </tr>
             <tr th:each="row : ${page.items}">
-              <td th:text="${row.id}">1</td>
-              <td th:text="${row.petName}">ポチ</td>
-              <td th:if="${isAdminView}" th:text="${row.ownerName}">山田 太郎</td>
-              <td th:text="${row.appointmentType == 'MEDICAL' ? '診療' : row.appointmentType}">診療</td>
-              <td th:text="${row.channel == 'VISIT' ? '来院' : row.channel == 'ONLINE' ? 'オンライン' : row.channel}">来院</td>
-              <td th:text="${#temporals.format(row.scheduledAt, 'yyyy-MM-dd HH:mm')}">2026-05-20 10:00</td>
               <td>
-                <span th:class="${row.status == 'REQUESTED' ? 'badge badge-blue' :
+                <input type="checkbox"
+                       class="deletable-check"
+                       form="bulkDeleteForm"
+                       name="appointmentIds"
+                       th:value="${row.id}"
+                       th:disabled="${row.scheduledAt != null and row.scheduledAt.isAfter(#temporals.createNow())}">
+              </td>
+              <td th:text="${#temporals.format(row.scheduledAt, 'MM/dd HH:mm')}">05/20 10:00</td>
+              <td th:text="${row.petName}">ポチ</td>
+              <td>
+                <img th:if="${row.channel == 'VISIT'}" th:src="@{/img/icon-visit.svg}" alt="visit"
+                     style="width:28px;height:28px;vertical-align:middle;">
+                <img th:if="${row.channel == 'ONLINE'}" th:src="@{/img/icon1.png}" alt="online"
+                     style="width:28px;height:28px;vertical-align:middle;">
+                <span th:if="${row.channel != 'VISIT' and row.channel != 'ONLINE'}" th:text="${row.channel}">—</span>
+              </td>
+              <td th:if="${isAdminView}" th:text="${row.ownerName}">山田 太郎</td>
+              <td>
+                <span th:class="${row.scheduledAt != null and row.scheduledAt.isBefore(#temporals.createNow()) and row.status != 'CANCELED' ? 'badge badge-gray' :
+                                  row.status == 'REQUESTED' ? 'badge badge-blue' :
                                   row.status == 'CONFIRMED' ? 'badge badge-green' :
                                   row.status == 'COMPLETED' ? 'badge badge-gray' : 'badge badge-yellow'}"
-                      th:text="${row.status == 'REQUESTED' ? '申請中' :
+                      th:text="${row.scheduledAt != null and row.scheduledAt.isBefore(#temporals.createNow()) and row.status != 'CANCELED' ? '終了' :
+                                row.status == 'REQUESTED' ? '申請' :
                                 row.status == 'CONFIRMED' ? '確定' :
                                 row.status == 'COMPLETED' ? '完了' :
                                 row.status == 'CANCELED' ? '取消' : row.status}">申請中</span>
               </td>
-              <td th:text="${row.note ?: '—'}">咳が続く</td>
+              <td style="min-width:260px;">
+                <span th:if="${row.note != null and !#strings.isEmpty(row.note)}"
+                      class="note-preview"
+                      th:attr="data-note=${row.note}"
+                      onclick="openNoteModal(this)">
+                  <img th:src="@{/img/icon-memo.svg}" alt="memo" style="width:24px;height:24px;">
+                </span>
+                <span th:if="${row.note == null or #strings.isEmpty(row.note)}">—</span>
+              </td>
+              <td th:if="${!isAdminView}">
+                <form th:if="${row.status == 'REQUESTED'}" th:action="@{/app/appointments/{id}/cancel(id=${row.id})}"
+                      method="post" style="margin:0;"
+                      onsubmit="return confirm('この予約をキャンセルしますか？');">
+                  <button type="submit" class="btn btn-danger" style="padding:2px 8px;font-size:0.75rem;">キャンセル</button>
+                </form>
+                <span th:if="${row.status != 'REQUESTED'}" style="color:#94A3B8;">—</span>
+              </td>
               <td th:if="${isAdminView}">
                 <span th:if="${row.status == 'REQUESTED'}" style="display:flex;gap:4px;">
                   <form th:action="@{/app/appointments/{id}/approve(id=${row.id})}"
                         method="post" style="margin:0;">
                     <button type="submit" class="btn btn-primary"
-                            style="padding:2px 10px;font-size:0.8rem;">承認</button>
+                            style="padding:2px 8px;font-size:0.75rem;">承認</button>
                   </form>
                   <form th:action="@{/app/appointments/{id}/reject(id=${row.id})}"
                         method="post" style="margin:0;">
                     <button type="submit" class="btn btn-danger"
-                            style="padding:2px 10px;font-size:0.8rem;">却下</button>
+                            style="padding:2px 8px;font-size:0.75rem;">却下</button>
                   </form>
                 </span>
                 <span th:if="${row.status != 'REQUESTED'}" style="color:#94A3B8;">—</span>
@@ -181,17 +330,75 @@
 
       <div class="pagination" th:if="${page.total > page.size}">
         <a th:if="${page.page > 1}"
-           th:href="@{/app/appointments(page=${page.page - 1},size=${page.size})}">前へ</a>
+           th:href="@{/app/appointments(page=${page.page - 1},size=${page.size},sortBy=${sortBy})}">前へ</a>
         <span th:each="i : ${#numbers.sequence(1, (page.total + page.size - 1) / page.size)}">
           <span th:if="${i == page.page}" class="current" th:text="${i}">1</span>
           <a th:if="${i != page.page}"
-             th:href="@{/app/appointments(page=${i},size=${page.size})}" th:text="${i}">2</a>
+             th:href="@{/app/appointments(page=${i},size=${page.size},sortBy=${sortBy})}" th:text="${i}">2</a>
         </span>
         <a th:if="${page.page * page.size < page.total}"
-           th:href="@{/app/appointments(page=${page.page + 1},size=${page.size})}">次へ</a>
+           th:href="@{/app/appointments(page=${page.page + 1},size=${page.size},sortBy=${sortBy})}">次へ</a>
       </div>
     </div>
   </div>
 </div>
+<div id="noteModal" class="note-modal" onclick="closeNoteModal(event)">
+  <div class="note-modal-card" onclick="event.stopPropagation()">
+    <div class="note-modal-head">
+      <span>相談内容（全文）</span>
+      <button type="button" class="btn btn-secondary" style="font-size:.8em;padding:3px 10px;" onclick="closeNoteModal()">閉じる</button>
+    </div>
+    <div id="noteModalBody" class="note-modal-body"></div>
+  </div>
+</div>
+<script>
+  (() => {
+    const sortForm = document.getElementById('sortForm');
+    const sortBy = document.getElementById('sortBy');
+    const scrollKey = 'appointments_scroll_y';
+    if (sortBy && sortForm) {
+      sortBy.addEventListener('change', () => {
+        sessionStorage.setItem(scrollKey, String(window.scrollY));
+        sortForm.submit();
+      });
+    }
+    const saved = sessionStorage.getItem(scrollKey);
+    if (saved) {
+      window.scrollTo(0, parseInt(saved, 10));
+      sessionStorage.removeItem(scrollKey);
+    }
+
+    const checkAll = document.getElementById('checkAllDeletable');
+    const checks = Array.from(document.querySelectorAll('.deletable-check'));
+    if (checkAll) {
+      checkAll.addEventListener('change', () => {
+        checks.forEach(c => {
+          if (!c.disabled) c.checked = checkAll.checked;
+        });
+      });
+    }
+  })();
+
+  function toggleGuide() {
+    const guide = document.getElementById('appointmentGuide');
+    if (!guide) return;
+    guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function openNoteModal(el) {
+    const modal = document.getElementById('noteModal');
+    const body = document.getElementById('noteModalBody');
+    if (!modal || !body || !el) return;
+    body.textContent = el.getAttribute('data-note') || '';
+    modal.style.display = 'flex';
+  }
+
+  function closeNoteModal(e) {
+    if (e && e.target && e.currentTarget && e.target !== e.currentTarget) return;
+    const modal = document.getElementById('noteModal');
+    if (!modal) return;
+    modal.style.display = 'none';
+  }
+</script>
 </body>
 </html>

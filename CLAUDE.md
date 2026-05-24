@@ -29,7 +29,7 @@ java -jar target/petlife-0.0.1-SNAPSHOT.jar
 - Username: `postgres`
 - Password: `hs0512`
 
-Schema and seed data (`schema.sql`, `data.sql`) are applied automatically on every startup (`spring.sql.init.mode=always`).
+Schema and seed data are **not** applied automatically (`spring.sql.init.mode=never`). Apply manually via `backup.sql` restore or run `schema.sql` / `data.sql` directly against PostgreSQL. To enable auto-init, set `spring.sql.init.mode=always` temporarily.
 
 ## Default Credentials (seeded by DataInitializer)
 
@@ -56,13 +56,21 @@ Controller → Service → Mapper (MyBatis) → PostgreSQL
 - `/` — redirects to frontend index
 - `/app/login` — form login (public)
 - `/app/dashboard` — authenticated entry point
-- `/app/pets`, `/app/pets/{petId}/health-records`, `/app/appointments` — user-facing CRUD
+- `/app/pets`, `/app/pets/{petId}/health-records` — ペット・健康記録 CRUD
+- `/app/appointments` — 予約 CRUD（AppointmentPageController）
+- `/app/calendar` — ペットカレンダー（CalendarController）
 - `/app/notifications` — 通知一覧・既読処理（全認証ユーザー）
 - `/app/subscriptions` — サブスクリプション確認（ADMIN は全ユーザー分）
 - `/app/password-resets` — パスワード変更（全認証ユーザー）
 - `/app/consultations/**` — 診療記録 CRUD（VET / STAFF / ADMIN のみ）
+- `/app/consult/chatbot` — チャットボット相談（ConsultChatController）
+- `/app/clinic-guide` — 動物病院案内（ClinicGuideController）
+- `/app/premium/online-care` — Zoomオンライン診療（PremiumSupportController）
 - `/app/reports` — サービス統計（ADMIN のみ）
-- `/app/admin/**` — ユーザー管理（ADMIN のみ）
+- `/app/admin/**` — ユーザー管理・お知らせ管理・予約枠管理（ADMIN のみ）
+- `/api/slack/events` — Slack Events API 受信（SlackEventController）
+- `/api/line/events` — LINE Messaging API 受信（LineEventController）
+- `/api/appointments` — 予約 REST API（AppointmentController）
 - `/assets/**`, `/css/**`, `/js/**` — static resources (public)
 
 **Authentication:** Spring Security with session-based form login. `UserDetailsServiceImpl` loads users by email. Roles: `ADMIN`, `USER`, `VET`, `STAFF`. Role filtering happens in the service layer (`currentUser.isAdmin()` checks).
@@ -78,7 +86,8 @@ The following integrations are configured via environment variables (with defaul
 | Service | Env Vars | Used by |
 |---|---|---|
 | **OpenAI** | `OPENAI_API_KEY`, `OPENAI_MODEL` (default: `gpt-4.1-mini`), `OPENAI_BASE_URL` | `SymptomCheckService` — AI症状チェック。キー未設定時はキーワードベースのフォールバックで動作 |
-| **Slack** | `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET` | `SlackEventController` (`/api/slack/events`) + `ConsultChatService` — Slackbot相談 |
+| **Slack** | `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `ADMIN_SLACK_USER_IDS` | `SlackEventController` (`/api/slack/events`) + `ConsultChatService` — Slackbot相談 |
+| **LINE** | `LINE_CHANNEL_TOKEN`, `LINE_CHANNEL_SECRET`, `ADMIN_LINE_USER_IDS` | `LineEventController` (`/api/line/events`) — LINE Messaging API連携 |
 | **Zoom** | `ZOOM_ACCOUNT_ID`, `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ZOOM_MEETING_BASE_URL`, `ZOOM_API_BASE_URL`, `ZOOM_OAUTH_BASE_URL` | `ZoomLinkService` + `PremiumSupportController` (`/app/premium/online-care`) — プレミアムオンライン診療 |
 
 未設定のまま起動しても OpenAI はフォールバックで動作し、Slack/Zoom は該当機能を使わない限りエラーにならない。
@@ -101,12 +110,12 @@ UI conventions (from `frontend/docs/ui-design.md`):
 
 ## Database Schema
 
-23 tables across these domains:
+22 tables across these domains:
 - **Auth:** `users`, `roles`
-- **Pets & Health:** `pets`, `health_records`, `symptom_checks`, `medical_histories`, `medical_attachments`
-- **Operations:** `appointments`, `plans`, `subscriptions`, `invoices`, `payments`
-- **Messaging:** `notifications`, `notification_recipients`, `email_templates`, `email_messages`
-- **UX:** `dismissed_reminders` — ユーザーが確認済みのスケジュールリマインダーを永続保存（user_id + reminder_key のユニーク制約）
+- **Pets & Health:** `pets`, `health_records`, `pet_care_records`, `symptom_checks`, `medical_histories`, `medical_attachments`
+- **Operations:** `appointments`, `appointment_slots`, `plans`, `subscriptions`, `invoices`, `payments`
+- **Messaging:** `notifications`, `notification_recipients`, `email_templates`, `email_messages`, `consult_chat_messages`
+- **UX:** `dismissed_reminders` — ユーザーが確認済みのスケジュールリマインダーを永続保存（user_id + reminder_key のユニーク制約）; `pet_calendar_marks` — カレンダーマーク; `announcements` — お知らせ（管理者が作成、全ユーザーに表示）
 
 Detailed schema: `backend/src/main/resources/schema.sql`. Business requirements: `petlife_plus.md` and `backend/docs/requirements.md`.
 

@@ -110,6 +110,7 @@ public class NotificationController {
                         due,
                         "次回" + careTypeLabel(r.careType()) + "予定日",
                         pet.name() + " の " + careTypeLabel(r.careType()) + " 予定日: " + r.nextDueOn(),
+                        null,
                         dismissed.contains(key)
                 ));
             });
@@ -128,6 +129,7 @@ public class NotificationController {
                             a.scheduledAt(),
                             isZoom ? "Zoom診療時間" : "診療予約日",
                             a.petName() + " の" + (isZoom ? " Zoom診療" : " 診療予約") + ": " + fmt.format(a.scheduledAt()),
+                            isZoom && "CONFIRMED".equals(a.status()) ? a.zoomJoinUrl() : null,
                             dismissed.contains(key)
                     ));
                 });
@@ -141,6 +143,7 @@ public class NotificationController {
                     s.endDate().atStartOfDay(),
                     "サブスクリプション更新のお知らせ",
                     s.petName() + " の " + s.planName() + " プランが " + s.endDate() + " に更新されます" + autoRenewNote,
+                    null,
                     dismissed.contains(key)
             ));
         });
@@ -165,6 +168,7 @@ public class NotificationController {
             LocalDateTime scheduledAt,
             String title,
             String body,
+            String actionUrl,
             boolean confirmed
     ) {}
 }

@@ -31,11 +31,13 @@ public class PetImageStorageService {
         Path dst = dir.resolve(filename);
         try {
             Files.createDirectories(dir);
+            int orientation = ImageOrientationUtil.readOrientation(file.getInputStream());
             BufferedImage src = ImageIO.read(file.getInputStream());
             if (src == null) {
                 throw new IllegalArgumentException("画像の読み込みに失敗しました。jpeg/png/gif 形式を利用してください");
             }
-            int size = 100;
+            src = ImageOrientationUtil.applyOrientation(src, orientation);
+            int size = 80;
             int sw = src.getWidth(), sh = src.getHeight();
             int cropX = 0, cropY = 0, cropSize = Math.min(sw, sh);
             if (sw > sh) cropX = (sw - cropSize) / 2;

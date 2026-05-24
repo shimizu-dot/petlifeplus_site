@@ -18,6 +18,18 @@
     </div>
     <div class="content">
 
+      <!-- 運営からのお知らせ -->
+      <div th:if="${!announcements.isEmpty()}" class="card" style="border-left:4px solid #F59E0B;padding:16px 20px;">
+        <div style="font-size:14px;font-weight:700;color:#92400E;margin-bottom:10px;">📢 運営からのお知らせ</div>
+        <div th:each="a : ${announcements}"
+             th:style="${!aStat.last} ? 'padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid #FDE68A;' : ''">
+          <div style="font-weight:600;color:#0F172A;margin-bottom:4px;" th:text="${a.title()}">タイトル</div>
+          <div style="font-size:14px;color:#475569;white-space:pre-wrap;" th:text="${a.body()}">本文</div>
+          <div style="font-size:12px;color:#94A3B8;margin-top:4px;"
+               th:text="${#temporals.format(a.createdAt(), 'yyyy/MM/dd')}"></div>
+        </div>
+      </div>
+
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">登録ペット数</div>
@@ -41,6 +53,7 @@
         </div>
       </div>
 
+
       <div class="card">
         <div class="card-title">クイックアクセス</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
@@ -49,7 +62,6 @@
           <a th:href="@{/app/pets}" class="btn btn-secondary">📝 健康記録</a>
           <a th:if="${canUseAiSymptom}" th:href="@{/app/pets}" class="btn btn-secondary">🤖 AI症状チェック（ペット詳細から）</a>
           <a th:if="${canUseAiSymptom}" th:href="@{/app/consult/chatbot}" class="btn btn-secondary">💬 相談導線</a>
-          <a th:if="${canUsePrioritySupport}" th:href="@{/app/premium/online-care}" class="btn btn-secondary">⭐ 優先サポート</a>
           <span th:if="${!canUseAiSymptom and currentUser != null and !currentUser.isAdmin()}"
                 style="font-size:13px;color:#64748B;">AI症状チェック・相談導線はスタンダード以上で利用できます</span>
           <span th:if="${!canUsePrioritySupport and currentUser != null and !currentUser.isAdmin()}"

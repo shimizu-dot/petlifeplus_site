@@ -62,4 +62,12 @@ public interface CalendarMarkMapper {
           AND m.deleted_at IS NULL
         """)
     CalendarMarkEntity findOwnedActiveById(@Param("id") Long id, @Param("ownerUserId") Long ownerUserId);
+
+    @Select("""
+        SELECT COUNT(*) FROM pet_calendar_marks
+        WHERE pet_id = #{petId}
+          AND mark_date = #{markDate}
+          AND deleted_at IS NULL
+        """)
+    int countByPetIdAndMarkDate(@Param("petId") Long petId, @Param("markDate") LocalDate markDate);
 }

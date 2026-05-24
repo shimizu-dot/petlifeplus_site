@@ -64,6 +64,11 @@ public class PetService {
         return petMapper.findActiveByOwnerUserId(ownerUserId).stream().map(this::toResponse).toList();
     }
 
+    public boolean canDeletePet(Long petId, LoginUser currentUser) {
+        resolvePet(petId, currentUser);
+        return petMapper.countLinkedDataFlags(petId) == 0;
+    }
+
     // ---- 作成 ----
 
     public PetResponse create(PetCreateRequest req, MultipartFile imageFile, LoginUser currentUser) {

@@ -31,11 +31,13 @@ public class HealthRecordImageStorageService {
         Path dst = dir.resolve(filename);
         try {
             Files.createDirectories(dir);
+            int orientation = ImageOrientationUtil.readOrientation(file.getInputStream());
             BufferedImage src = ImageIO.read(file.getInputStream());
             if (src == null) {
                 throw new IllegalArgumentException("画像の読み込みに失敗しました。jpeg/png/gif 形式を利用してください");
             }
-            int maxPx = 800;
+            src = ImageOrientationUtil.applyOrientation(src, orientation);
+            int maxPx = 600;
             int sw = src.getWidth(), sh = src.getHeight();
             double scale = Math.min(1.0, Math.min((double) maxPx / sw, (double) maxPx / sh));
             int w = Math.max(1, (int)(sw * scale));

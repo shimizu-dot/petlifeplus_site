@@ -18,10 +18,6 @@
        th:classappend="${requestURI.contains('/calendar') ? 'active' : ''}">
       📅 カレンダー
     </a>
-    <a th:href="@{/app/clinic-guide}"
-       th:classappend="${requestURI.contains('/clinic-guide') ? 'active' : ''}">
-      🏥 診療案内
-    </a>
     <a th:if="${canUseAiSymptom}" th:href="@{/app/appointments}"
        th:classappend="${requestURI.contains('/appointments') ? 'active' : ''}">
       📋 診療予約
@@ -30,13 +26,13 @@
        th:classappend="${requestURI.contains('/consult/chatbot') ? 'active' : ''}">
       💬 相談チャット
     </a>
-    <a th:if="${canUsePrioritySupport}" th:href="@{/app/premium/online-care}"
-       th:classappend="${requestURI.contains('/premium/online-care') ? 'active' : ''}">
-      ⭐ Zoom診療
-    </a>
     <a th:href="@{/app/notifications}"
        th:classappend="${requestURI.contains('/notifications') ? 'active' : ''}">
       🔔 通知
+    </a>
+    <a th:href="@{/app/clinic-guide}"
+       th:classappend="${requestURI.contains('/clinic-guide') ? 'active' : ''}">
+      🏥 診療案内
     </a>
     <a th:href="@{/app/subscriptions}"
        th:classappend="${requestURI.contains('/subscriptions') ? 'active' : ''}">
@@ -75,6 +71,10 @@
     <a th:href="@{/app/reports}"
        th:classappend="${requestURI.contains('/reports') ? 'active' : ''}">
       📊 レポート
+    </a>
+    <a th:href="@{/app/admin/announcements}"
+       th:classappend="${requestURI.contains('/admin/announcements') ? 'active' : ''}">
+      📢 お知らせ管理
     </a>
   </nav>
 

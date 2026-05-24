@@ -6,7 +6,8 @@
 - 目的: ペットの健康記録、AI症状チェック、予約、診療・相談履歴を一元管理し、早期異変の発見、受診判断の支援、継続的な健康管理を実現する。
 
 ## 2. システム構成
-- フロントエンド: HTML / CSS / JavaScript（Thymeleaf）
+- フロントエンド: HTML / CSS / JavaScript（静的ファイル、`frontend/public/` に配置）
+- テンプレートエンジン: Thymeleaf（バックエンド側のサーバーサイドレンダリング）
 - バックエンド: Spring Boot（Controller → Service → Repository）
 - データベース: PostgreSQL
 

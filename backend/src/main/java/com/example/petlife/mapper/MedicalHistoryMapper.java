@@ -1,9 +1,11 @@
 package com.example.petlife.mapper;
 
 import com.example.petlife.dto.consultation.MedicalHistoryRow;
+import com.example.petlife.entity.HealthRecordPetDateEntity;
 import com.example.petlife.entity.MedicalHistoryEntity;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -82,4 +84,21 @@ public interface MedicalHistoryMapper {
         WHERE id = #{id} AND deleted_at IS NULL
         """)
     int softDelete(@Param("id") Long id, @Param("deletedAt") LocalDateTime deletedAt);
+
+    @Select("""
+        SELECT DISTINCT m.pet_id AS "petId", m.performed_on AS "recordDate"
+        FROM medical_histories m
+        JOIN pets p ON p.id = m.pet_id
+        WHERE p.owner_user_id = #{ownerUserId}
+          AND p.deleted_at IS NULL
+          AND m.deleted_at IS NULL
+          AND m.performed_on >= #{fromDate}
+          AND m.performed_on <= #{toDate}
+        ORDER BY m.performed_on ASC
+        """)
+    List<HealthRecordPetDateEntity> findMedicalHistoryPetDatesByOwnerAndDateRange(
+            @Param("ownerUserId") Long ownerUserId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
 }

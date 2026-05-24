@@ -50,6 +50,12 @@
               <span th:if="${r.confirmed()}" class="badge badge-gray" style="margin-left:8px;">確認済み</span>
               <strong style="margin-left:8px;" th:text="${r.title()}">予定通知</strong>
               <div style="margin-top:6px;color:#475569;" th:text="${r.body()}">本文</div>
+              <div th:if="${r.actionUrl() != null and !#strings.isEmpty(r.actionUrl())}" style="margin-top:8px;">
+                <a class="btn btn-secondary zoom-join-btn"
+                   target="_blank" rel="noopener"
+                   th:attr="data-href=${r.actionUrl()},data-scheduled-at=${#temporals.format(r.scheduledAt(), 'yyyy-MM-dd''T''HH:mm:ss')}"
+                   style="font-size:.82em;padding:4px 10px;opacity:0.4;cursor:not-allowed;pointer-events:none;">Zoomに参加</a>
+              </div>
               <div style="font-size:.8em;color:#94a3b8;margin-top:4px;"
                    th:text="${#temporals.format(r.scheduledAt(), 'yyyy-MM-dd')}">2026-05-01</div>
             </div>
@@ -99,5 +105,53 @@
     </div>
   </div>
 </div>
+<script>
+(function () {
+  var DURATION_MIN = 30;
+  var BUFFER_MIN   = 10;
+
+  document.querySelectorAll('.zoom-join-btn').forEach(function (btn) {
+    /* data-scheduled-at は "yyyy-MM-ddTHH:mm:ss" 形式（ローカル時刻） */
+    var isoStr      = btn.dataset.scheduledAt.replace('T', ' '); /* スペース区切りはすべてのブラウザでローカル時刻 */
+    var start       = new Date(isoStr);
+    var windowStart = new Date(start.getTime() - BUFFER_MIN * 60000);
+    var windowEnd   = new Date(start.getTime() + (DURATION_MIN + BUFFER_MIN) * 60000);
+    var href        = btn.dataset.href;
+
+    /* クリックガード：pointer-events をすり抜けた場合も防ぐ */
+    btn.addEventListener('click', function (e) {
+      var now = new Date();
+      if (now < windowStart || now > windowEnd) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+
+    function update() {
+      var now    = new Date();
+      var active = now >= windowStart && now <= windowEnd;
+      if (active) {
+        btn.setAttribute('href', href);
+        btn.style.opacity       = '';
+        btn.style.cursor        = '';
+        btn.style.pointerEvents = '';
+        btn.removeAttribute('title');
+      } else {
+        btn.removeAttribute('href');
+        btn.style.opacity       = '0.4';
+        btn.style.cursor        = 'not-allowed';
+        btn.style.pointerEvents = 'none';
+        var diffMs = windowStart - now;
+        btn.title = diffMs > 0
+          ? '開始 ' + Math.ceil(diffMs / 60000) + ' 分前から参加できます'
+          : '参加時間が終了しました';
+      }
+    }
+
+    update();
+    setInterval(update, 30000);
+  });
+}());
+</script>
 </body>
 </html>

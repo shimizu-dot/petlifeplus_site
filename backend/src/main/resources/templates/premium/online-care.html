@@ -33,6 +33,11 @@
       background: #1D4ED8; color: #fff; border-color: #1D4ED8; font-weight: 600;
     }
     .slot-btn label:hover { background: #DBEAFE; }
+    .slot-btn.is-booked label {
+      background: #F1F5F9; border-color: #CBD5E1; color: #94A3B8;
+      cursor: not-allowed;
+    }
+    .slot-btn.is-booked label:hover { background: #F1F5F9; }
     .slot-empty {
       font-size: 0.9rem; color: #94A3B8; padding: 12px 0;
     }
@@ -47,10 +52,6 @@
     <div class="content">
 
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-      <div th:if="${zoomFallbackWarning}" class="alert alert-error" th:text="${zoomFallbackWarning}"></div>
-      <div th:if="${zoomJoinUrl}" class="alert alert-success">
-        Zoom参加リンク: <a th:href="${zoomJoinUrl}" th:text="${zoomJoinUrl}" target="_blank" rel="noopener"></a>
-      </div>
 
       <div class="card" style="max-width:720px;">
         <div class="card-title">オンライン診療を予約</div>
@@ -69,18 +70,21 @@
           <div class="form-group">
             <label class="form-label">予約時間<span class="required">*</span></label>
             <div th:if="${availableSlots.isEmpty()}" class="slot-empty">
-              この日は空き枠がありません。別の日を選んでください。
+              この日の受付時間内に予約枠がありません。別の日を選んでください。
             </div>
             <div class="slot-grid" th:if="${!availableSlots.isEmpty()}">
-              <div class="slot-btn" th:each="slot, st : ${availableSlots}">
+              <div class="slot-btn"
+                   th:each="slot, st : ${availableSlots}"
+                   th:classappend="${!slot.available()} ? ' is-booked'">
                 <input type="radio"
                        th:id="'slot-' + ${st.index}"
                        name="slotChoice"
-                       th:value="${#temporals.format(slot, 'yyyy-MM-dd') + 'T' + #temporals.format(slot, 'HH:mm')}"
-                       th:checked="${form.scheduledAt != null and form.scheduledAt == slot}"
+                       th:disabled="${!slot.available()}"
+                       th:value="${#temporals.format(slot.slotTime(), 'yyyy-MM-dd') + 'T' + #temporals.format(slot.slotTime(), 'HH:mm')}"
+                       th:checked="${form.scheduledAt != null and form.scheduledAt == slot.slotTime()}"
                        onchange="document.getElementById('scheduledAt').value = this.value;">
                 <label th:for="'slot-' + ${st.index}"
-                       th:text="${#temporals.format(slot, 'HH:mm')}">10:00</label>
+                       th:text="${#temporals.format(slot.slotTime(), 'HH:mm')}">10:00</label>
               </div>
             </div>
             <div class="invalid-feedback" style="display:block;"

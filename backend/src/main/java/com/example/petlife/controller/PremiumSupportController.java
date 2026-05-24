@@ -74,19 +74,14 @@ public class PremiumSupportController {
             return "premium/online-care";
         }
 
-        AppointmentService.PremiumOnlineCareResult resultObj = appointmentService.createPremiumOnlineCare(
+        appointmentService.createPremiumOnlineCare(
                 form.getPetId(),
                 form.getScheduledAt(),
                 form.getNote(),
                 currentUser
         );
 
-        ra.addFlashAttribute("success", "オンライン診療を予約しました");
-        ra.addFlashAttribute("zoomJoinUrl", resultObj.appointment().zoomJoinUrl());
-        if (resultObj.zoomFallbackUsed()) {
-            ra.addFlashAttribute("zoomFallbackWarning",
-                    "Zoom API連携に失敗したため代替リンクを発行しました。理由: " + resultObj.zoomFallbackReason());
-        }
+        ra.addFlashAttribute("success", "Zoom診療を申請しました。承認後に参加リンクを通知します。");
         return "redirect:/app/premium/online-care";
     }
 }

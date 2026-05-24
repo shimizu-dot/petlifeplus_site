@@ -34,6 +34,20 @@ public interface SubscriptionMapper {
         JOIN plans p ON p.id = s.plan_id
         JOIN pets pet ON pet.id = s.pet_id
         JOIN users u ON u.id = s.user_id
+        WHERE s.deleted_at IS NULL AND s.id = #{id} AND s.user_id = #{userId}
+        LIMIT 1
+        """)
+    SubscriptionRow findRowByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+
+    @Select("""
+        SELECT s.id, p.name AS "planName", pet.name AS "petName",
+               u.name AS "ownerName",
+               s.start_date AS "startDate", s.end_date AS "endDate",
+               s.status, s.auto_renew AS "autoRenew"
+        FROM subscriptions s
+        JOIN plans p ON p.id = s.plan_id
+        JOIN pets pet ON pet.id = s.pet_id
+        JOIN users u ON u.id = s.user_id
         WHERE s.deleted_at IS NULL AND s.user_id = #{userId}
         ORDER BY s.start_date DESC, s.id DESC
         LIMIT #{limit} OFFSET #{offset}

@@ -81,30 +81,37 @@
       </div>
 
       <div class="card" th:if="${pet.deceasedAt == null}">
-        <div class="card-title">AI症状チェック</div>
-        <p th:if="${!canUseAiSymptom}" style="color:#64748b;">無料プランでは簡易判定を提供します（受診判断の補助情報）。</p>
-        <form th:action="@{/app/pets/{id}/symptom-check(id=${pet.id})}" method="post" th:object="${symptomForm}">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="symptomType">症状<span class="required">*</span></label>
-              <input id="symptomType" type="text" th:field="*{symptomType}" class="form-control"
-                     th:classappend="${#fields.hasErrors('symptomType')} ? 'is-invalid'"
-                     placeholder="例：食欲不振、咳、下痢">
-              <div class="invalid-feedback" th:if="${#fields.hasErrors('symptomType')}" th:errors="*{symptomType}"></div>
+        <details>
+          <summary class="card-title" style="cursor:pointer;list-style:none;">
+            AI症状チェック
+            <span class="accordion-marker" style="font-size:0.9em;color:#64748b;">
+              <span class="marker-closed">▼</span><span class="marker-open" style="display:none;">▲</span>
+            </span>
+          </summary>
+          <p th:if="${!canUseAiSymptom}" style="color:#64748b;margin-top:10px;">無料プランでは簡易判定を提供します（受診判断の補助情報）。</p>
+          <form th:action="@{/app/pets/{id}/symptom-check(id=${pet.id})}" method="post" th:object="${symptomForm}" style="margin-top:10px;">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="symptomType">症状<span class="required">*</span></label>
+                <input id="symptomType" type="text" th:field="*{symptomType}" class="form-control"
+                       th:classappend="${#fields.hasErrors('symptomType')} ? 'is-invalid'"
+                       placeholder="例：食欲不振、咳、下痢">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('symptomType')}" th:errors="*{symptomType}"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="onsetText">いつから</label>
+                <input id="onsetText" type="text" th:field="*{onsetText}" class="form-control"
+                       placeholder="例：昨夜から、2日前から">
+              </div>
             </div>
             <div class="form-group">
-              <label class="form-label" for="onsetText">いつから</label>
-              <input id="onsetText" type="text" th:field="*{onsetText}" class="form-control"
-                     placeholder="例：昨夜から、2日前から">
+              <label class="form-label" for="memoSymptom">補足メモ</label>
+              <input id="memoSymptom" type="text" th:field="*{memo}" class="form-control" maxlength="500"
+                     placeholder="例：嘔吐1回、元気は少し低下">
             </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="memoSymptom">補足メモ</label>
-            <input id="memoSymptom" type="text" th:field="*{memo}" class="form-control" maxlength="500"
-                   placeholder="例：嘔吐1回、元気は少し低下">
-          </div>
-          <button type="submit" class="btn btn-primary">🤖 AIで判定する</button>
-        </form>
+            <button type="submit" class="btn btn-primary">🤖 AIで判定する</button>
+          </form>
+        </details>
       </div>
 
       <div class="card">
@@ -118,12 +125,11 @@
               <th>重症度</th>
               <th>推奨対応</th>
               <th>回答</th>
-              <th>モデル</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${#lists.isEmpty(symptomChecks)}">
-              <td colspan="6">履歴はまだありません</td>
+              <td colspan="5">履歴はまだありません</td>
             </tr>
             <tr th:each="s : ${symptomChecks}">
               <td th:text="${#temporals.format(s.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
@@ -131,7 +137,6 @@
               <td th:text="${s.severity == 'HIGH' ? '高リスク' : s.severity == 'MEDIUM' ? '中リスク' : '低リスク'}"></td>
               <td th:text="${s.recommendation == 'VISIT' ? '今すぐ受診' : s.recommendation == 'CONSULT' ? '相談推奨' : '様子見'}"></td>
               <td th:text="${s.guidance} ?: '—'"></td>
-              <td th:text="${s.aiModel}"></td>
             </tr>
             </tbody>
           </table>
@@ -139,38 +144,45 @@
       </div>
 
       <div class="card">
-        <div class="card-title">ワクチン・診療記録を追加</div>
-        <form th:action="@{/app/pets/{id}/care-records(id=${pet.id})}" method="post">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="careType">種別<span class="required">*</span></label>
-              <select id="careType" name="careType" class="form-control" required>
-                <option value="">選択してください</option>
-                <option value="RABIES">狂犬病</option>
-                <option value="HEARTWORM">フィラリア</option>
-                <option value="COMBO_VACCINE">混合ワクチン</option>
-                <option value="MEDICAL_VISIT">診療</option>
-                <option value="OTHER">その他</option>
-              </select>
+        <details>
+          <summary class="card-title" style="cursor:pointer;list-style:none;">
+            ワクチン・診療記録を追加
+            <span class="accordion-marker" style="font-size:0.9em;color:#64748b;">
+              <span class="marker-closed">▼</span><span class="marker-open" style="display:none;">▲</span>
+            </span>
+          </summary>
+          <form th:action="@{/app/pets/{id}/care-records(id=${pet.id})}" method="post" style="margin-top:10px;">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="careType">種別<span class="required">*</span></label>
+                <select id="careType" name="careType" class="form-control" required>
+                  <option value="">選択してください</option>
+                  <option value="RABIES">狂犬病</option>
+                  <option value="HEARTWORM">フィラリア</option>
+                  <option value="COMBO_VACCINE">混合ワクチン</option>
+                  <option value="MEDICAL_VISIT">診療</option>
+                  <option value="OTHER">その他</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="administeredOn">実施日<span class="required">*</span></label>
+                <input id="administeredOn" type="date" name="administeredOn" class="form-control" required>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="administeredOn">実施日<span class="required">*</span></label>
-              <input id="administeredOn" type="date" name="administeredOn" class="form-control" required>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="nextDueOn">次回予定日</label>
+                <input id="nextDueOn" type="date" name="nextDueOn" class="form-control">
+                <div class="form-hint">未入力の場合は実施日の1年後を自動設定します。</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="memo">メモ</label>
+                <input id="memo" type="text" name="memo" class="form-control" maxlength="500">
+              </div>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="nextDueOn">次回予定日</label>
-              <input id="nextDueOn" type="date" name="nextDueOn" class="form-control">
-              <div class="form-hint">未入力の場合は実施日の1年後を自動設定します。</div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="memo">メモ</label>
-              <input id="memo" type="text" name="memo" class="form-control" maxlength="500">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary">＋ 記録を追加</button>
-        </form>
+            <button type="submit" class="btn btn-primary">＋ 記録を追加</button>
+          </form>
+        </details>
       </div>
 
       <div class="card">
@@ -202,9 +214,9 @@
 
       <div style="display:flex;gap:10px;margin-top:8px;" th:if="${pet.deceasedAt == null}">
         <a th:href="@{/app/pets/{id}/health-records/new(id=${pet.id})}" class="btn btn-primary">
-          ＋ 健康記録を追加
+          ＋ 日常観察を追加
         </a>
-        <form th:action="@{/app/pets/{id}(id=${pet.id})}" method="post"
+        <form th:if="${canDeletePet}" th:action="@{/app/pets/{id}(id=${pet.id})}" method="post"
               onsubmit="return confirm('このペットを削除しますか？')">
           <input type="hidden" name="_method" value="DELETE">
           <button type="submit" class="btn btn-danger">削除</button>
@@ -218,5 +230,26 @@
     </div>
   </div>
 </div>
+<script>
+  (() => {
+    const detailsList = document.querySelectorAll('details');
+    detailsList.forEach(d => {
+      const closed = d.querySelector('.marker-closed');
+      const open = d.querySelector('.marker-open');
+      const sync = () => {
+        if (!closed || !open) return;
+        if (d.open) {
+          closed.style.display = 'none';
+          open.style.display = 'inline';
+        } else {
+          closed.style.display = 'inline';
+          open.style.display = 'none';
+        }
+      };
+      d.addEventListener('toggle', sync);
+      sync();
+    });
+  })();
+</script>
 </body>
 </html>

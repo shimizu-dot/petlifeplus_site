@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/app/appointments")
@@ -40,6 +41,7 @@ public class AppointmentPageController {
     @GetMapping
     public String page(@RequestParam(defaultValue = "1") int page,
                        @RequestParam(defaultValue = "10") int size,
+                       @RequestParam(defaultValue = "scheduledAt") String sortBy,
                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                        Model model,
                        @AuthenticationPrincipal LoginUser currentUser) {
@@ -49,12 +51,14 @@ public class AppointmentPageController {
         }
         LocalDate slotDate = (date != null) ? date : LocalDate.now();
         model.addAttribute("isAdminView", currentUser.isAdmin());
+        model.addAttribute("canChooseOnline", planAccessService.canUsePrioritySupport(currentUser));
         model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                 .filter(p -> p.deceasedAt() == null)
                 .toList());
         model.addAttribute("selectedDate", slotDate);
         model.addAttribute("availableSlots", appointmentService.generateAvailableSlots(slotDate));
-        model.addAttribute("page", appointmentService.listForApp(page, size, currentUser));
+        model.addAttribute("sortBy", "pet".equalsIgnoreCase(sortBy) ? "pet" : "scheduledAt");
+        model.addAttribute("page", appointmentService.listForApp(page, size, currentUser, sortBy));
         return "appointments/index";
     }
 
@@ -71,15 +75,17 @@ public class AppointmentPageController {
         if (result.hasErrors()) {
             LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
             model.addAttribute("isAdminView", false);
+            model.addAttribute("canChooseOnline", planAccessService.canUsePrioritySupport(currentUser));
             model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                     .filter(p -> p.deceasedAt() == null)
                     .toList());
             model.addAttribute("selectedDate", slotDate);
             model.addAttribute("availableSlots", appointmentService.generateAvailableSlots(slotDate));
-            model.addAttribute("page", appointmentService.listForApp(1, 10, currentUser));
+            model.addAttribute("sortBy", "scheduledAt");
+            model.addAttribute("page", appointmentService.listForApp(1, 10, currentUser, "scheduledAt"));
             return "appointments/index";
         }
-        appointmentService.createGeneralCare(form.getPetId(), form.getScheduledAt(), form.getNote(), currentUser);
+        appointmentService.createGeneralCare(form.getPetId(), form.getScheduledAt(), form.getNote(), form.getChannel(), currentUser);
         ra.addFlashAttribute("success", "診療予約を登録しました");
         return "redirect:/app/appointments";
     }
@@ -89,7 +95,7 @@ public class AppointmentPageController {
                           @AuthenticationPrincipal LoginUser currentUser,
                           RedirectAttributes ra) {
         if (!currentUser.isAdmin()) throw new BadRequestException("管理者のみ承認できます");
-        appointmentService.approve(id);
+        appointmentService.approve(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を承認しました");
         return "redirect:/app/appointments";
     }
@@ -99,8 +105,30 @@ public class AppointmentPageController {
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
         if (!currentUser.isAdmin()) throw new BadRequestException("管理者のみ却下できます");
-        appointmentService.reject(id);
+        appointmentService.reject(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を却下しました");
+        return "redirect:/app/appointments";
+    }
+
+    @PostMapping("/{id}/cancel")
+    public String cancel(@PathVariable Long id,
+                         @AuthenticationPrincipal LoginUser currentUser,
+                         RedirectAttributes ra) {
+        if (currentUser == null || currentUser.isAdmin()) {
+            throw new BadRequestException("ユーザー予約のみキャンセルできます");
+        }
+        appointmentService.cancelRequestedByOwner(id, currentUser);
+        ra.addFlashAttribute("success", "予約をキャンセルしました");
+        return "redirect:/app/appointments";
+    }
+
+    @PostMapping("/delete-selected")
+    public String deleteSelected(@RequestParam(value = "appointmentIds", required = false) List<Long> appointmentIds,
+                                 @AuthenticationPrincipal LoginUser currentUser,
+                                 RedirectAttributes ra) {
+        ensureAccessible(currentUser);
+        int deletedCount = appointmentService.deleteSelected(appointmentIds, currentUser);
+        ra.addFlashAttribute("success", deletedCount + "件の予約を削除しました");
         return "redirect:/app/appointments";
     }
 

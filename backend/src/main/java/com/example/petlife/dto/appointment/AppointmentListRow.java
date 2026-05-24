@@ -10,6 +10,7 @@ public record AppointmentListRow(
         String channel,
         LocalDateTime scheduledAt,
         String status,
-        String note
+        String note,
+        String zoomJoinUrl
 ) {
 }

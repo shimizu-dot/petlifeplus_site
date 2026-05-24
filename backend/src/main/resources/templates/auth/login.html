@@ -34,6 +34,9 @@
     <div th:if="${param.logout}" style="padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;margin-bottom:12px;">
       ログアウトしました。
     </div>
+    <div th:if="${param.reset}" style="padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;margin-bottom:12px;">
+      パスワードを再設定しました。新しいパスワードでログインしてください。
+    </div>
 
     <form th:action="@{/app/login}" method="post" class="contact-form" style="margin-top:12px;">
       <div class="field">
@@ -47,6 +50,9 @@
       <div class="actions">
         <button type="submit" class="btn btn-primary">ログイン</button>
         <a class="btn btn-secondary" href="/index.html">トップへ戻る</a>
+      </div>
+      <div style="margin-top:16px;text-align:center;">
+        <a href="/app/forgot-password" style="color:#1D4ED8;font-size:14px;">パスワードをお忘れの方はこちら</a>
       </div>
     </form>
   </div>

@@ -25,6 +25,8 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers("/api/slack/events", "/api/line/events").permitAll()
                 .requestMatchers("/app/login").permitAll()
+                .requestMatchers("/app/forgot-password", "/app/forgot-password/**").permitAll()
+                .requestMatchers("/app/reset-password", "/app/reset-password/**").permitAll()
                 .requestMatchers("/app/admin/**", "/app/reports/**").hasRole("ADMIN")
                 .requestMatchers("/app/**").authenticated()
                 .anyRequest().permitAll()
@@ -47,7 +49,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
