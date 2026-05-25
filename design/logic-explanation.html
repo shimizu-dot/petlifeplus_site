@@ -23,9 +23,9 @@
         <div class="doc-category">DESIGN DOCUMENT</div>
         <h1 class="doc-title">ロジック解説</h1>
         <div class="doc-meta">
-          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-XX-XX</span>
-          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：（氏名を入力）</span>
-          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-25</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：Hiromi SHIMIZU</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 2.0</span>
         </div>
       </header>
 
@@ -47,110 +47,271 @@
 
           <div class="fill-block">
             <div class="fill-label">フローチャート <span class="required">必須</span></div>
-            <div class="fill-hint">ログイン処理の判定フロー</div>
+            <div class="fill-hint">ログイン処理の判定フロー（Spring Security 実装ベース）</div>
             <div class="fill-content">
-              <div class="ascii-diagram">
-                <pre>
-                    ┌─────────────────┐
-                    │  ログイン画面表示 │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ メール/パスワード │
-                    │     入力        │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  入力値チェック   │
-                    └────────┬────────┘
-                             │
-                    ┌────────┴────────┐
-                    ▼                  ▼
-               入力エラー          入力OK
-                    │                  │
-                    ▼                  ▼
-            ┌───────────┐     ┌─────────────────┐
-            │エラー表示  │     │  ユーザー検索    │
-            │ログイン画面│     │ (DBからメールで) │
-            └───────────┘     └────────┬────────┘
-                                       │
-                              ┌────────┴────────┐
-                              ▼                  ▼
-                         ユーザー無し        ユーザー有り
-                              │                  │
-                              ▼                  ▼
-                      ┌───────────┐     ┌─────────────────┐
-                      │認証エラー  │     │ パスワード照合   │
-                      │ログイン画面│     │(BCrypt.matches) │
-                      └───────────┘     └────────┬────────┘
-                                                 │
-                                        ┌────────┴────────┐
-                                        ▼                  ▼
-                                   不一致             一致
-                                        │                  │
-                                        ▼                  ▼
-                                ┌───────────┐     ┌─────────────────┐
-                                │認証エラー  │     │  認証成功        │
-                                │ログイン画面│     │ SecurityContext │
-                                └───────────┘     │   に保存        │
-                                                  └────────┬────────┘
-                                                           │
-                                                           ▼
-                                                  ┌─────────────────┐
-                                                  │ /tasks へ       │
-                                                  │ リダイレクト     │
-                                                  └─────────────────┘
-
-（上記を参考に編集してください）
-                </pre>
+              <style>
+                .lf-legend { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+                .lf-legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#334155; }
+                .lf-legend-dot { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
+              </style>
+              <div class="lf-legend">
+                <div class="lf-legend-item"><div class="lf-legend-dot" style="background:#DBEAFE;border:1.5px solid #1D4ED8;"></div>処理ステップ</div>
+                <div class="lf-legend-item"><div class="lf-legend-dot" style="background:#FEE2E2;border:1.5px solid #B91C1C;"></div>Spring Security 処理</div>
+                <div class="lf-legend-item"><div class="lf-legend-dot" style="background:#EDE9FE;border:1.5px solid #6D28D9;"></div>DB アクセス（MyBatis）</div>
+                <div class="lf-legend-item"><div class="lf-legend-dot" style="background:#FEF3C7;border:1.5px solid #D97706;border-radius:50%;"></div>判定（分岐）</div>
+                <div class="lf-legend-item"><div class="lf-legend-dot" style="background:#FEF2F2;border:1.5px solid #EF4444;border-radius:50%;"></div>認証失敗</div>
+                <div class="lf-legend-item"><div class="lf-legend-dot" style="background:#D1FAE5;border:1.5px solid #059669;"></div>認証成功</div>
               </div>
+
+              <svg viewBox="0 0 780 1230" xmlns="http://www.w3.org/2000/svg"
+                   style="width:100%;max-width:780px;font-family:'Segoe UI',system-ui,sans-serif;display:block;">
+                <defs>
+                  <marker id="lf-a" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#64748B"/>
+                  </marker>
+                  <marker id="lf-ar" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#EF4444"/>
+                  </marker>
+                  <marker id="lf-ag" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#059669"/>
+                  </marker>
+                  <filter id="lf-sh">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000014"/>
+                  </filter>
+                </defs>
+
+                <!-- Background -->
+                <rect width="780" height="1230" rx="14" fill="#F8FAFC"/>
+
+                <!-- ── START ── cy=36 -->
+                <ellipse cx="380" cy="36" rx="118" ry="22" fill="#D1FAE5" stroke="#059669" stroke-width="2" filter="url(#lf-sh)"/>
+                <text x="380" y="40" text-anchor="middle" fill="#065F46" font-size="13" font-weight="700">ログイン画面へアクセス</text>
+
+                <!-- arrow 58→76 -->
+                <line x1="380" y1="58" x2="380" y2="73" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 2: GET /app/login ── top=76 h=50 -->
+                <rect x="245" y="76" width="270" height="50" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="97" text-anchor="middle" fill="#1E3A8A" font-size="12" font-weight="600">GET /app/login</text>
+                <text x="380" y="115" text-anchor="middle" fill="#1E40AF" font-size="11">AuthController.loginPage()</text>
+
+                <!-- arrow 126→144 -->
+                <line x1="380" y1="126" x2="380" y2="141" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 3: Diamond メンテナンスモード ── top=144, cy=179 -->
+                <polygon points="380,144 470,179 380,214 290,179" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="173" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">メンテナンス</text>
+                <text x="380" y="188" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">モード ON?</text>
+
+                <!-- YES → right error -->
+                <line x1="470" y1="179" x2="533" y2="179" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+                <text x="499" y="171" text-anchor="middle" fill="#64748B" font-size="10" font-weight="600">YES</text>
+                <rect x="536" y="157" width="210" height="44" rx="22" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="641" y="175" text-anchor="middle" fill="#334155" font-size="10" font-weight="600">/maintenance.html へリダイレクト</text>
+                <text x="641" y="191" text-anchor="middle" fill="#64748B" font-size="9">（メンテナンス中）</text>
+
+                <!-- NO → down 214→234 -->
+                <line x1="380" y1="214" x2="380" y2="231" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+                <text x="358" y="228" text-anchor="end" fill="#64748B" font-size="10" font-weight="600">NO</text>
+
+                <!-- ── NODE 4: ログインフォーム表示 ── top=234 h=50 -->
+                <rect x="245" y="234" width="270" height="50" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="255" text-anchor="middle" fill="#1E3A8A" font-size="12" font-weight="600">ログインフォーム表示</text>
+                <text x="380" y="273" text-anchor="middle" fill="#1E40AF" font-size="11">auth/login テンプレート</text>
+
+                <!-- arrow 284→302 -->
+                <line x1="380" y1="284" x2="380" y2="299" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 5: メール・PW入力 POST ── top=302 h=50 -->
+                <rect x="245" y="302" width="270" height="50" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="323" text-anchor="middle" fill="#1E3A8A" font-size="12" font-weight="600">メール・パスワード入力</text>
+                <text x="380" y="341" text-anchor="middle" fill="#1E40AF" font-size="11">POST /app/login 送信</text>
+
+                <!-- arrow 352→370 -->
+                <line x1="380" y1="352" x2="380" y2="367" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 6: Spring Security ── top=370 h=50 -->
+                <rect x="230" y="370" width="300" height="50" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="391" text-anchor="middle" fill="#7F1D1D" font-size="12" font-weight="700">🔐 Spring Security</text>
+                <text x="380" y="409" text-anchor="middle" fill="#B91C1C" font-size="10">UsernamePasswordAuthenticationFilter</text>
+
+                <!-- arrow 420→438 -->
+                <line x1="380" y1="420" x2="380" y2="435" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 7: UserDetailsServiceImpl ── top=438 h=50 -->
+                <rect x="230" y="438" width="300" height="50" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="459" text-anchor="middle" fill="#7F1D1D" font-size="11" font-weight="600">UserDetailsServiceImpl</text>
+                <text x="380" y="477" text-anchor="middle" fill="#B91C1C" font-size="10">.loadUserByUsername(email)</text>
+
+                <!-- arrow 488→506 -->
+                <line x1="380" y1="488" x2="380" y2="503" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 8: AuthMapper.findByEmail ── top=506 h=50 -->
+                <rect x="230" y="506" width="300" height="50" rx="8" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="527" text-anchor="middle" fill="#4C1D95" font-size="11" font-weight="600">AuthMapper.findByEmail(email)</text>
+                <text x="380" y="545" text-anchor="middle" fill="#6D28D9" font-size="10">SELECT … WHERE deleted_at IS NULL</text>
+
+                <!-- arrow 556→574 -->
+                <line x1="380" y1="556" x2="380" y2="571" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 9: Diamond ユーザー存在? ── top=574, cy=609 -->
+                <polygon points="380,574 470,609 380,644 290,609" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="603" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">ユーザー</text>
+                <text x="380" y="618" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">存在?</text>
+
+                <!-- NO → error -->
+                <line x1="470" y1="609" x2="533" y2="609" stroke="#EF4444" stroke-width="1.5" marker-end="url(#lf-ar)"/>
+                <text x="499" y="601" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">NO</text>
+                <rect x="536" y="587" width="210" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="641" y="605" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">UsernameNotFoundException</text>
+                <text x="641" y="622" text-anchor="middle" fill="#DC2626" font-size="9">→ /app/login?error=true</text>
+
+                <!-- YES → down 644→664 -->
+                <line x1="380" y1="644" x2="380" y2="661" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+                <text x="358" y="658" text-anchor="end" fill="#059669" font-size="10" font-weight="600">YES</text>
+
+                <!-- ── NODE 10: アカウント有効チェック ── top=664 h=74 -->
+                <rect x="210" y="664" width="340" height="74" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="682" text-anchor="middle" fill="#1E3A8A" font-size="11" font-weight="700">アカウント有効チェック</text>
+                <text x="380" y="699" text-anchor="middle" fill="#1E40AF" font-size="10">statusActive = status == 'ACTIVE'</text>
+                <text x="380" y="715" text-anchor="middle" fill="#1E40AF" font-size="10">subscriptionActive: roleId≠2 OR 有効サブスク有り</text>
+                <text x="380" y="731" text-anchor="middle" fill="#1E40AF" font-size="10">enabled = statusActive &amp;&amp; subscriptionActive</text>
+
+                <!-- arrow 738→756 -->
+                <line x1="380" y1="738" x2="380" y2="753" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 11: Diamond enabled == true? ── top=756, cy=791 -->
+                <polygon points="380,756 470,791 380,826 290,791" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="785" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">enabled</text>
+                <text x="380" y="800" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">== true?</text>
+
+                <!-- NO → error -->
+                <line x1="470" y1="791" x2="533" y2="791" stroke="#EF4444" stroke-width="1.5" marker-end="url(#lf-ar)"/>
+                <text x="499" y="783" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">NO</text>
+                <rect x="536" y="769" width="210" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="641" y="787" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">DisabledException</text>
+                <text x="641" y="804" text-anchor="middle" fill="#DC2626" font-size="9">→ /app/login?error=true</text>
+
+                <!-- YES → down 826→846 -->
+                <line x1="380" y1="826" x2="380" y2="843" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+                <text x="358" y="840" text-anchor="end" fill="#059669" font-size="10" font-weight="600">YES</text>
+
+                <!-- ── NODE 12: BCrypt.matches ── top=846 h=50 -->
+                <rect x="230" y="846" width="300" height="50" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="867" text-anchor="middle" fill="#7F1D1D" font-size="11" font-weight="600">BCryptPasswordEncoder</text>
+                <text x="380" y="885" text-anchor="middle" fill="#B91C1C" font-size="10">.matches(入力PW, passwordHash)</text>
+
+                <!-- arrow 896→914 -->
+                <line x1="380" y1="896" x2="380" y2="911" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+
+                <!-- ── NODE 13: Diamond PW一致? ── top=914, cy=949 -->
+                <polygon points="380,914 470,949 380,984 290,949" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="943" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">パスワード</text>
+                <text x="380" y="958" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">一致?</text>
+
+                <!-- NO → error -->
+                <line x1="470" y1="949" x2="533" y2="949" stroke="#EF4444" stroke-width="1.5" marker-end="url(#lf-ar)"/>
+                <text x="499" y="941" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">NO</text>
+                <rect x="536" y="927" width="210" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="641" y="945" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">BadCredentialsException</text>
+                <text x="641" y="962" text-anchor="middle" fill="#DC2626" font-size="9">→ /app/login?error=true</text>
+
+                <!-- YES → down 984→1004 -->
+                <line x1="380" y1="984" x2="380" y2="1001" stroke="#64748B" stroke-width="1.5" marker-end="url(#lf-a)"/>
+                <text x="358" y="998" text-anchor="end" fill="#059669" font-size="10" font-weight="600">YES</text>
+
+                <!-- ── NODE 14: SecurityContextHolder ── top=1004 h=50 -->
+                <rect x="230" y="1004" width="300" height="50" rx="8" fill="#D1FAE5" stroke="#059669" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="1025" text-anchor="middle" fill="#065F46" font-size="11" font-weight="600">SecurityContextHolder</text>
+                <text x="380" y="1043" text-anchor="middle" fill="#047857" font-size="10">に Authentication を保存</text>
+
+                <!-- arrow 1054→1072 -->
+                <line x1="380" y1="1054" x2="380" y2="1069" stroke="#059669" stroke-width="1.5" marker-end="url(#lf-ag)"/>
+
+                <!-- ── NODE 15: ロール付与 ── top=1072 h=54 -->
+                <rect x="210" y="1072" width="340" height="54" rx="8" fill="#D1FAE5" stroke="#059669" stroke-width="1.5" filter="url(#lf-sh)"/>
+                <text x="380" y="1093" text-anchor="middle" fill="#065F46" font-size="11" font-weight="600">ロール付与（roleId → ROLE_*）</text>
+                <text x="380" y="1111" text-anchor="middle" fill="#047857" font-size="10">1=ADMIN　2=USER　3=VET　4=STAFF</text>
+
+                <!-- arrow 1126→1144 -->
+                <line x1="380" y1="1126" x2="380" y2="1141" stroke="#059669" stroke-width="1.5" marker-end="url(#lf-ag)"/>
+
+                <!-- ── END oval ── cy=1165 -->
+                <ellipse cx="380" cy="1165" rx="148" ry="26" fill="#D1FAE5" stroke="#059669" stroke-width="2.5" filter="url(#lf-sh)"/>
+                <text x="380" y="1162" text-anchor="middle" fill="#065F46" font-size="13" font-weight="700">/app/dashboard へリダイレクト</text>
+                <text x="380" y="1179" text-anchor="middle" fill="#047857" font-size="10">認証成功</text>
+
+                <!-- ── Error note box on right top ── -->
+                <!-- Shared "認証失敗" annotation -->
+                <text x="641" y="548" text-anchor="middle" fill="#64748B" font-size="9" font-style="italic">※ 失敗時は画面に</text>
+                <text x="641" y="561" text-anchor="middle" fill="#64748B" font-size="9" font-style="italic">「メールアドレスまたは</text>
+                <text x="641" y="574" text-anchor="middle" fill="#64748B" font-size="9" font-style="italic">パスワードが正しくありません」</text>
+                <text x="641" y="587" text-anchor="middle" fill="#64748B" font-size="9" font-style="italic">と表示</text>
+              </svg>
             </div>
           </div>
 
           <div class="fill-block">
             <div class="fill-label">疑似コード <span class="required">必須</span></div>
-            <div class="fill-hint">IF-THEN-ELSE形式でロジックを記述</div>
+            <div class="fill-hint">Spring Security の実際の処理フローに基づく IF-THEN-ELSE 形式</div>
             <div class="fill-content">
               <div class="code-block">
                 <pre>
-<span class="comment">// ログイン処理の疑似コード</span>
+<span class="comment">// ─── ① UserDetailsServiceImpl.loadUserByUsername(email) ───</span>
+<span class="comment">// Spring Security が POST /app/login 受信時に自動呼び出し</span>
 
-<span class="keyword">FUNCTION</span> login(email, password)
+<span class="keyword">FUNCTION</span> loadUserByUsername(email)
 
-  <span class="comment">// 入力値チェック</span>
-  <span class="keyword">IF</span> email が空 <span class="keyword">THEN</span>
-    エラー「メールアドレスを入力してください」を追加
-  <span class="keyword">END IF</span>
-
-  <span class="keyword">IF</span> password が空 <span class="keyword">THEN</span>
-    エラー「パスワードを入力してください」を追加
-  <span class="keyword">END IF</span>
-
-  <span class="keyword">IF</span> エラーリストが空でない <span class="keyword">THEN</span>
-    <span class="keyword">RETURN</span> ログイン画面（エラー表示）
-  <span class="keyword">END IF</span>
-
-  <span class="comment">// ユーザー検索</span>
-  user = userMapper.selectByEmail(email)
+  <span class="comment">// DB 検索（ソフトデリート除外）</span>
+  user = authMapper.findByEmail(email)
+  <span class="comment">// SQL: SELECT ... FROM users WHERE email=? AND deleted_at IS NULL</span>
 
   <span class="keyword">IF</span> user が null <span class="keyword">THEN</span>
-    エラー「メールアドレスまたはパスワードが正しくありません」を追加
-    <span class="keyword">RETURN</span> ログイン画面（エラー表示）
+    <span class="keyword">THROW</span> UsernameNotFoundException  <span class="comment">// → /app/login?error=true</span>
   <span class="keyword">END IF</span>
 
-  <span class="comment">// パスワード照合</span>
-  <span class="keyword">IF</span> BCrypt.matches(password, user.password) が false <span class="keyword">THEN</span>
-    エラー「メールアドレスまたはパスワードが正しくありません」を追加
-    <span class="keyword">RETURN</span> ログイン画面（エラー表示）
+  <span class="comment">// ステータス確認</span>
+  statusActive = "ACTIVE".equalsIgnoreCase(user.status)
+
+  <span class="comment">// サブスクリプション確認（USER ロールのみ）</span>
+  <span class="keyword">IF</span> user.roleId == 2 <span class="keyword">THEN</span>
+    subscriptionActive = authMapper.countEffectiveSubscriptions(user.id) > 0
+    <span class="comment">// SQL: WHERE status='ACTIVE' AND start_date&lt;=TODAY AND (end_date IS NULL OR end_date&gt;=TODAY)</span>
+  <span class="keyword">ELSE</span>  <span class="comment">// ADMIN / VET / STAFF は常に有効</span>
+    subscriptionActive = true
   <span class="keyword">END IF</span>
 
-  <span class="comment">// 認証成功</span>
-  SecurityContext に user 情報を保存
-  <span class="keyword">RETURN</span> リダイレクト("/tasks")
+  enabled = statusActive AND subscriptionActive
+
+  <span class="keyword">RETURN</span> LoginUser(id, roleId, name, email, passwordHash, enabled)
 
 <span class="keyword">END FUNCTION</span>
+
+
+<span class="comment">// ─── ② Spring Security DaoAuthenticationProvider ───</span>
+
+<span class="comment">// Pre-auth チェック（パスワード照合より前）</span>
+<span class="keyword">IF</span> NOT loginUser.isEnabled() <span class="keyword">THEN</span>
+  <span class="keyword">THROW</span> DisabledException  <span class="comment">// → /app/login?error=true</span>
+<span class="keyword">END IF</span>
+
+<span class="comment">// パスワード照合（BCrypt ハッシュ比較）</span>
+<span class="keyword">IF</span> NOT BCryptPasswordEncoder.matches(入力PW, loginUser.passwordHash) <span class="keyword">THEN</span>
+  <span class="keyword">THROW</span> BadCredentialsException  <span class="comment">// → /app/login?error=true</span>
+<span class="keyword">END IF</span>
+
+<span class="comment">// ─── ③ 認証成功 ───</span>
+SecurityContextHolder に Authentication を保存
+
+<span class="comment">// ロール付与（LoginUser.getAuthorities() で解決）</span>
+<span class="keyword">SWITCH</span> roleId
+  <span class="keyword">CASE</span> 1: grantedAuthority = "ROLE_ADMIN"
+  <span class="keyword">CASE</span> 3: grantedAuthority = "ROLE_VET"
+  <span class="keyword">CASE</span> 4: grantedAuthority = "ROLE_STAFF"
+  <span class="keyword">DEFAULT</span>: grantedAuthority = "ROLE_USER"
+<span class="keyword">END SWITCH</span>
+
+<span class="keyword">REDIRECT</span> /app/dashboard  <span class="comment">// SecurityConfig.defaultSuccessUrl</span>
                 </pre>
               </div>
             </div>
@@ -162,89 +323,286 @@
 
           <div class="fill-block">
             <div class="fill-label">バリデーションの判定フロー <span class="required">必須</span></div>
-            <div class="fill-hint">タスク登録時のバリデーション処理</div>
+            <div class="fill-hint">診療予約フォーム送信時のバリデーション処理（Controller 層 → Service 層の 2 段階）</div>
             <div class="fill-content">
-              <div class="ascii-diagram">
-                <pre>
-                    ┌─────────────────┐
-                    │  フォーム送信    │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ @Valid による    │
-                    │ 自動バリデーション│
-                    └────────┬────────┘
-                             │
-                    ┌────────┴────────┐
-                    ▼                  ▼
-            BindingResult に      エラーなし
-             エラーあり                │
-                    │                  │
-                    ▼                  ▼
-            ┌───────────────┐  ┌─────────────────┐
-            │ 入力画面に戻る │  │  追加バリデーション │
-            │ エラー表示     │  │  （業務ロジック）   │
-            └───────────────┘  └────────┬────────┘
-                                        │
-                               ┌────────┴────────┐
-                               ▼                  ▼
-                         業務エラー          エラーなし
-                               │                  │
-                               ▼                  ▼
-                       ┌───────────────┐  ┌─────────────────┐
-                       │ 入力画面に戻る │  │  登録処理実行    │
-                       │ エラー表示     │  │  リダイレクト    │
-                       └───────────────┘  └─────────────────┘
-
-（上記を参考に編集してください）
-                </pre>
+              <style>
+                .vl-legend { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+                .vl-legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#334155; }
+                .vl-legend-dot { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
+              </style>
+              <div class="vl-legend">
+                <div class="vl-legend-item"><div class="vl-legend-dot" style="background:#DBEAFE;border:1.5px solid #1D4ED8;"></div>Controller 処理</div>
+                <div class="vl-legend-item"><div class="vl-legend-dot" style="background:#FEE2E2;border:1.5px solid #B91C1C;"></div>Service 業務ロジック</div>
+                <div class="vl-legend-item"><div class="vl-legend-dot" style="background:#EDE9FE;border:1.5px solid #6D28D9;"></div>DB アクセス</div>
+                <div class="vl-legend-item"><div class="vl-legend-dot" style="background:#FEF3C7;border:1.5px solid #D97706;border-radius:50%;"></div>判定（分岐）</div>
+                <div class="vl-legend-item"><div class="vl-legend-dot" style="background:#FEF2F2;border:1.5px solid #EF4444;border-radius:50%;"></div>バリデーションエラー</div>
+                <div class="vl-legend-item"><div class="vl-legend-dot" style="background:#D1FAE5;border:1.5px solid #059669;"></div>登録成功</div>
               </div>
+
+              <svg viewBox="0 0 780 980" xmlns="http://www.w3.org/2000/svg"
+                   style="width:100%;max-width:780px;font-family:'Segoe UI',system-ui,sans-serif;display:block;">
+                <defs>
+                  <marker id="vl-a" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#64748B"/>
+                  </marker>
+                  <marker id="vl-ar" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#EF4444"/>
+                  </marker>
+                  <marker id="vl-ag" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#059669"/>
+                  </marker>
+                  <filter id="vl-sh">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000014"/>
+                  </filter>
+                </defs>
+
+                <!-- Background -->
+                <rect width="780" height="980" rx="14" fill="#F8FAFC"/>
+
+                <!-- Layer labels -->
+                <rect x="8" y="62" width="56" height="260" rx="6" fill="#DBEAFE" opacity="0.5"/>
+                <text x="36" y="200" text-anchor="middle" fill="#1D4ED8" font-size="10" font-weight="700" transform="rotate(-90,36,200)">Controller 層</text>
+                <rect x="8" y="336" width="56" height="480" rx="6" fill="#FEE2E2" opacity="0.5"/>
+                <text x="36" y="590" text-anchor="middle" fill="#B91C1C" font-size="10" font-weight="700" transform="rotate(-90,36,590)">Service 層</text>
+
+                <!-- ── START oval cy=30 ── -->
+                <ellipse cx="380" cy="30" rx="140" ry="22" fill="#D1FAE5" stroke="#059669" stroke-width="2" filter="url(#vl-sh)"/>
+                <text x="380" y="34" text-anchor="middle" fill="#065F46" font-size="13" font-weight="700">診療予約フォームを送信</text>
+
+                <!-- arrow 52→65 -->
+                <line x1="380" y1="52" x2="380" y2="62" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+
+                <!-- ── NODE 2: POST /app/appointments ── top=65 h=50 -->
+                <rect x="240" y="65" width="280" height="50" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="85" text-anchor="middle" fill="#1E3A8A" font-size="12" font-weight="600">POST /app/appointments</text>
+                <text x="380" y="104" text-anchor="middle" fill="#1E40AF" font-size="10">AppointmentPageController.create()</text>
+
+                <!-- arrow 115→128 -->
+                <line x1="380" y1="115" x2="380" y2="128" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+
+                <!-- ── NODE 3: @Valid ── top=128 h=50 -->
+                <rect x="240" y="128" width="280" height="50" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="148" text-anchor="middle" fill="#1E3A8A" font-size="12" font-weight="600">@Valid Bean Validation</text>
+                <text x="380" y="167" text-anchor="middle" fill="#1E40AF" font-size="10">petId 必須・scheduledAt 必須など自動チェック</text>
+
+                <!-- arrow 178→192 -->
+                <line x1="380" y1="178" x2="380" y2="192" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+
+                <!-- ── DIAMOND 1: Bean Valid エラー? ── top=192 cy=225 -->
+                <polygon points="380,192 468,225 380,258 292,225" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="219" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">入力エラー</text>
+                <text x="380" y="234" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">あり?</text>
+
+                <!-- YES → gray pill -->
+                <line x1="468" y1="225" x2="532" y2="225" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#vl-a)"/>
+                <text x="498" y="217" text-anchor="middle" fill="#64748B" font-size="10" font-weight="600">YES</text>
+                <rect x="535" y="203" width="212" height="44" rx="22" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="641" y="221" text-anchor="middle" fill="#334155" font-size="10" font-weight="600">フォーム再表示（入力画面）</text>
+                <text x="641" y="238" text-anchor="middle" fill="#64748B" font-size="9">ペット・空き枠リストも再取得</text>
+
+                <!-- NO → down 258→272 -->
+                <line x1="380" y1="258" x2="380" y2="272" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+                <text x="290" y="269" text-anchor="end" fill="#64748B" font-size="10" font-weight="600">NO</text>
+
+                <!-- ── NODE 4: ensureAccessible ── top=272 h=50 -->
+                <rect x="240" y="272" width="280" height="50" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="292" text-anchor="middle" fill="#1E3A8A" font-size="11" font-weight="600">ensureAccessible(currentUser)</text>
+                <text x="380" y="311" text-anchor="middle" fill="#1E40AF" font-size="10">アクセス権限チェック（プラン × ロール）</text>
+
+                <!-- arrow 322→336 -->
+                <line x1="380" y1="322" x2="380" y2="336" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+
+                <!-- ── DIAMOND 2: 権限OK? ── top=336 cy=369 -->
+                <polygon points="380,336 468,369 380,402 292,369" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="363" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">VET/STAFF</text>
+                <text x="380" y="378" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">OR スタンダード以上?</text>
+
+                <!-- NO → error -->
+                <line x1="468" y1="369" x2="532" y2="369" stroke="#EF4444" stroke-width="1.5" marker-end="url(#vl-ar)"/>
+                <text x="498" y="361" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">NO</text>
+                <rect x="535" y="347" width="212" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="641" y="365" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">BadRequestException</text>
+                <text x="641" y="382" text-anchor="middle" fill="#DC2626" font-size="9">スタンダード以上で利用できます</text>
+
+                <!-- YES → down 402→416 -->
+                <line x1="380" y1="402" x2="380" y2="416" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+                <text x="290" y="413" text-anchor="end" fill="#059669" font-size="10" font-weight="600">YES</text>
+
+                <!-- ── NODE 5: Service呼び出し ── top=416 h=44 -->
+                <rect x="225" y="416" width="310" height="44" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="434" text-anchor="middle" fill="#7F1D1D" font-size="11" font-weight="600">AppointmentService.createGeneralCare()</text>
+                <text x="380" y="450" text-anchor="middle" fill="#B91C1C" font-size="10">以降はService層の業務バリデーション</text>
+
+                <!-- arrow 460→474 -->
+                <line x1="380" y1="460" x2="380" y2="474" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+
+                <!-- ── DIAMOND 3: 未来日時? ── top=474 cy=507 -->
+                <polygon points="380,474 468,507 380,540 292,507" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="501" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">scheduledAt</text>
+                <text x="380" y="516" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">&gt; 現在日時?</text>
+
+                <!-- NO → error -->
+                <line x1="468" y1="507" x2="532" y2="507" stroke="#EF4444" stroke-width="1.5" marker-end="url(#vl-ar)"/>
+                <text x="498" y="499" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">NO</text>
+                <rect x="535" y="485" width="212" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="641" y="503" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">BadRequestException</text>
+                <text x="641" y="520" text-anchor="middle" fill="#DC2626" font-size="9">予約日時は未来日時を指定してください</text>
+
+                <!-- YES → down 540→554 -->
+                <line x1="380" y1="540" x2="380" y2="554" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+                <text x="290" y="551" text-anchor="end" fill="#059669" font-size="10" font-weight="600">YES</text>
+
+                <!-- ── DIAMOND 4: 受付時間? ── top=554 cy=587 -->
+                <polygon points="380,554 468,587 380,620 292,587" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="581" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">受付時間内</text>
+                <text x="380" y="596" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">9:30〜17:00?</text>
+
+                <!-- NO → error -->
+                <line x1="468" y1="587" x2="532" y2="587" stroke="#EF4444" stroke-width="1.5" marker-end="url(#vl-ar)"/>
+                <text x="498" y="579" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">NO</text>
+                <rect x="535" y="565" width="212" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="641" y="583" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">BadRequestException</text>
+                <text x="641" y="600" text-anchor="middle" fill="#DC2626" font-size="9">診療受付時間外です（9:30〜17:00）</text>
+
+                <!-- YES → down 620→634 -->
+                <line x1="380" y1="620" x2="380" y2="634" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+                <text x="290" y="631" text-anchor="end" fill="#059669" font-size="10" font-weight="600">YES</text>
+
+                <!-- ── DIAMOND 5: 重複? ── top=634 cy=667 -->
+                <polygon points="380,634 468,667 380,700 292,667" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="661" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">同時間帯に</text>
+                <text x="380" y="676" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">予約済みあり?</text>
+
+                <!-- YES → error -->
+                <line x1="468" y1="667" x2="532" y2="667" stroke="#EF4444" stroke-width="1.5" marker-end="url(#vl-ar)"/>
+                <text x="498" y="659" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">YES</text>
+                <rect x="535" y="645" width="212" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="641" y="663" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">BadRequestException</text>
+                <text x="641" y="680" text-anchor="middle" fill="#DC2626" font-size="9">その時間帯はすでに予約済みです</text>
+
+                <!-- NO → down 700→714 -->
+                <line x1="380" y1="700" x2="380" y2="714" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+                <text x="290" y="711" text-anchor="end" fill="#059669" font-size="10" font-weight="600">NO</text>
+
+                <!-- ── DIAMOND 6: ペット所有権? ── top=714 cy=747 -->
+                <polygon points="380,714 468,747 380,780 292,747" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="741" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">ペット所有権OK</text>
+                <text x="380" y="756" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">かつ永眠未登録?</text>
+
+                <!-- NO → error -->
+                <line x1="468" y1="747" x2="532" y2="747" stroke="#EF4444" stroke-width="1.5" marker-end="url(#vl-ar)"/>
+                <text x="498" y="739" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="600">NO</text>
+                <rect x="535" y="725" width="212" height="44" rx="22" fill="#FEF2F2" stroke="#EF4444" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="641" y="743" text-anchor="middle" fill="#991B1B" font-size="10" font-weight="600">NotFoundException / BadRequest</text>
+                <text x="641" y="760" text-anchor="middle" fill="#DC2626" font-size="9">永眠登録済み or 権限なし</text>
+
+                <!-- YES → down 780→794 -->
+                <line x1="380" y1="780" x2="380" y2="794" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+                <text x="290" y="791" text-anchor="end" fill="#059669" font-size="10" font-weight="600">YES</text>
+
+                <!-- ── NODE 6: チャンネル決定 ── top=794 h=44 -->
+                <rect x="225" y="794" width="310" height="44" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="813" text-anchor="middle" fill="#7F1D1D" font-size="11" font-weight="600">チャンネル決定（VISIT / ONLINE）</text>
+                <text x="380" y="829" text-anchor="middle" fill="#B91C1C" font-size="10">プランに応じて分岐（STANDARD → VISIT のみ）</text>
+
+                <!-- arrow 838→852 -->
+                <line x1="380" y1="838" x2="380" y2="852" stroke="#64748B" stroke-width="1.5" marker-end="url(#vl-a)"/>
+
+                <!-- ── NODE 7: DB insert ── top=852 h=44 -->
+                <rect x="240" y="852" width="280" height="44" rx="8" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5" filter="url(#vl-sh)"/>
+                <text x="380" y="870" text-anchor="middle" fill="#4C1D95" font-size="11" font-weight="600">appointmentMapper.insert()</text>
+                <text x="380" y="887" text-anchor="middle" fill="#6D28D9" font-size="10">status = "REQUESTED" で DB 登録</text>
+
+                <!-- arrow 896→910 -->
+                <line x1="380" y1="896" x2="380" y2="910" stroke="#059669" stroke-width="1.5" marker-end="url(#vl-ag)"/>
+
+                <!-- ── END oval cy=930 ── -->
+                <ellipse cx="380" cy="930" rx="170" ry="26" fill="#D1FAE5" stroke="#059669" stroke-width="2.5" filter="url(#vl-sh)"/>
+                <text x="380" y="926" text-anchor="middle" fill="#065F46" font-size="13" font-weight="700">/app/appointments にリダイレクト</text>
+                <text x="380" y="943" text-anchor="middle" fill="#047857" font-size="10">診療予約登録完了（status: REQUESTED）✓</text>
+              </svg>
             </div>
           </div>
 
           <div class="fill-block">
             <div class="fill-label">疑似コード <span class="required">必須</span></div>
-            <div class="fill-hint">バリデーション処理のロジック</div>
+            <div class="fill-hint">診療予約フォーム送信時のバリデーション（AppointmentPageController + AppointmentService）</div>
             <div class="fill-content">
               <div class="code-block">
                 <pre>
-<span class="comment">// タスク登録のバリデーション処理</span>
+<span class="comment">// ─── ① Controller 層：Bean Validation チェック ───</span>
+<span class="comment">// POST /app/appointments （AppointmentPageController.create）</span>
 
-<span class="keyword">FUNCTION</span> createTask(taskForm, bindingResult)
+<span class="keyword">FUNCTION</span> create(form, bindingResult, currentUser)
 
-  <span class="comment">// Bean Validationのエラーチェック</span>
+  <span class="comment">// @Valid による自動バリデーション（petId 必須、scheduledAt 必須 など）</span>
   <span class="keyword">IF</span> bindingResult.hasErrors() <span class="keyword">THEN</span>
-    <span class="keyword">RETURN</span> 入力画面（フォーム + エラーメッセージ）
+    model.pets          = petService.list(...)        <span class="comment">// フォーム再表示用</span>
+    model.availableSlots = generateAvailableSlots(...) <span class="comment">// 空き枠を再取得</span>
+    <span class="keyword">RETURN</span> "appointments/index"  <span class="comment">// 入力画面に戻る（エラー表示）</span>
   <span class="keyword">END IF</span>
 
-  <span class="comment">// 業務ロジックバリデーション</span>
+  <span class="comment">// バリデーション通過 → Service に処理委譲</span>
+  appointmentService.createGeneralCare(form.petId, form.scheduledAt,
+                                       form.note, form.channel, currentUser)
+  ra.addFlashAttribute("success", "診療予約を登録しました")
+  <span class="keyword">REDIRECT</span> /app/appointments
 
-  <span class="comment">// 期限の妥当性チェック</span>
-  <span class="keyword">IF</span> taskForm.dueDate が過去の日付 <span class="keyword">THEN</span>
-    bindingResult.rejectValue("dueDate", "error.dueDate",
-                              "期限は今日以降の日付を指定してください")
+<span class="keyword">END FUNCTION</span>
+
+
+<span class="comment">// ─── ② Service 層：業務ロジックバリデーション ───</span>
+<span class="comment">// AppointmentService.createGeneralCare</span>
+
+<span class="keyword">FUNCTION</span> createGeneralCare(petId, scheduledAt, note, requestedChannel, currentUser)
+
+  <span class="comment">// プランアクセスチェック（USER はスタンダード以上が必要）</span>
+  <span class="keyword">IF</span> NOT currentUser.isAdmin()
+     AND NOT planAccessService.canUseAiSymptom(currentUser) <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("この機能はスタンダード以上で利用できます")
   <span class="keyword">END IF</span>
 
-  <span class="comment">// タイトルの重複チェック（同一ユーザー内）</span>
-  existingTask = taskMapper.selectByTitleAndUserId(taskForm.title, userId)
-  <span class="keyword">IF</span> existingTask が存在する <span class="keyword">THEN</span>
-    bindingResult.rejectValue("title", "error.title",
-                              "同じタイトルのタスクが既に存在します")
+  <span class="comment">// 未来日時チェック</span>
+  <span class="keyword">IF</span> scheduledAt == null OR scheduledAt &lt;= LocalDateTime.now() <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("予約日時は未来日時を指定してください")
   <span class="keyword">END IF</span>
 
-  <span class="comment">// エラーがあれば入力画面に戻る</span>
-  <span class="keyword">IF</span> bindingResult.hasErrors() <span class="keyword">THEN</span>
-    <span class="keyword">RETURN</span> 入力画面（フォーム + エラーメッセージ）
+  <span class="comment">// 受付時間チェック（9:30〜17:00）</span>
+  <span class="keyword">IF</span> scheduledAt.time &lt; 09:30 OR scheduledAt.time &gt;= 17:00 <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("診療受付時間外です（9:30〜17:00）")
   <span class="keyword">END IF</span>
 
-  <span class="comment">// 登録処理</span>
-  task = FormからEntityに変換(taskForm)
-  task.userId = ログインユーザーID
-  task.createdAt = 現在日時
-  taskMapper.insert(task)
+  <span class="comment">// 重複チェック（同一日時に REQUESTED/CONFIRMED が存在）</span>
+  <span class="comment">// SQL: WHERE deleted_at IS NULL AND scheduled_at=? AND status IN ('REQUESTED','CONFIRMED')</span>
+  <span class="keyword">IF</span> appointmentMapper.countByScheduledAt(scheduledAt) > 0 <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("その時間帯はすでに予約済みです")
+  <span class="keyword">END IF</span>
 
-  <span class="keyword">RETURN</span> リダイレクト("/tasks")（成功メッセージ付き）
+  <span class="comment">// ペット所有権チェック（VET/STAFF/ADMIN は全ペット参照可）</span>
+  pet = currentUser.hasStaffAccess()
+        ? petMapper.findById(petId)
+        : petMapper.findByIdAndOwnerUserId(petId, currentUser.id)
+  <span class="keyword">IF</span> pet == null <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> NotFoundException("Pet not found")
+  <span class="keyword">END IF</span>
+  <span class="keyword">IF</span> pet.deceasedAt != null <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("永眠登録済みのペットはこの操作を利用できません")
+  <span class="keyword">END IF</span>
+
+  <span class="comment">// チャンネル決定（VISIT / ONLINE）</span>
+  channel = "VISIT"
+  <span class="keyword">IF</span> NOT currentUser.isAdmin() <span class="keyword">THEN</span>
+    <span class="keyword">IF</span> planTier == STANDARD AND requestedChannel == "ONLINE" <span class="keyword">THEN</span>
+      <span class="keyword">THROW</span> BadRequestException("スタンダードプランは来院予約のみ利用できます")
+    <span class="keyword">ELSE IF</span> planTier == PREMIUM AND requestedChannel == "ONLINE" <span class="keyword">THEN</span>
+      channel = "ONLINE"
+    <span class="keyword">END IF</span>
+  <span class="keyword">ELSE IF</span> requestedChannel == "ONLINE" <span class="keyword">THEN</span>
+    channel = "ONLINE"
+  <span class="keyword">END IF</span>
+
+  <span class="comment">// DB 登録（初期ステータス = "REQUESTED"）</span>
+  appointmentMapper.insert(AppointmentEntity(..., status="REQUESTED", channel=channel))
 
 <span class="keyword">END FUNCTION</span>
                 </pre>
@@ -254,25 +612,74 @@
 
           <div class="fill-block">
             <div class="fill-label">エラーメッセージの表示ロジック <span class="optional">任意</span></div>
-            <div class="fill-hint">Thymeleafでのエラー表示</div>
+            <div class="fill-hint">プロジェクトで使用している Thymeleaf エラー表示パターン（4 種類）</div>
             <div class="fill-content">
               <div class="code-block">
                 <pre>
-<span class="comment">&lt;!-- Thymeleafでのエラー表示 --&gt;</span>
+<span class="comment">&lt;!-- ─── ① フィールドエラー（@Valid + BindingResult）───</span>
+<span class="comment">     診療予約フォーム appointments/index.html の実装 --&gt;</span>
 
-<span class="comment">&lt;!-- フィールドエラー（特定フィールド） --&gt;</span>
-&lt;div th:if="${#fields.hasErrors('title')}" class="error-message"&gt;
-  &lt;p th:each="err : ${#fields.errors('title')}" th:text="${err}"&gt;&lt;/p&gt;
+<span class="comment">&lt;!-- select にエラークラスを付与 --&gt;</span>
+&lt;select th:field="*{petId}" class="form-control"
+        th:classappend="${#fields.hasErrors('petId')} ? 'is-invalid'"&gt;
+  &lt;option value=""&gt;選択してください&lt;/option&gt;
+  &lt;option th:each="p : ${pets}" th:value="${p.id}" th:text="${p.name}"&gt;&lt;/option&gt;
+&lt;/select&gt;
+<span class="comment">&lt;!-- エラーメッセージ表示（th:errors で自動展開） --&gt;</span>
+&lt;div class="invalid-feedback"
+     th:if="${#fields.hasErrors('petId')}"
+     th:errors="*{petId}"&gt;&lt;/div&gt;
+
+<span class="comment">&lt;!-- hidden フィールドのエラー（予約時間が未選択） --&gt;</span>
+&lt;div class="invalid-feedback" style="display:block;"
+     th:if="${#fields.hasErrors('scheduledAt')}"
+     th:errors="*{scheduledAt}"&gt;&lt;/div&gt;
+
+
+<span class="comment">&lt;!-- ─── ② グローバルエラー（フィールドに紐づかない業務エラー）───</span>
+<span class="comment">     ペット登録フォーム pets/form.html の実装（画像アップロード失敗など）--&gt;</span>
+
+&lt;input type="file" name="imageFile" class="form-control"
+       th:classappend="${#fields.hasGlobalErrors()} ? 'is-invalid'"&gt;
+&lt;div th:if="${#fields.hasGlobalErrors()}"
+     class="invalid-feedback"
+     th:each="err : ${#fields.globalErrors()}"
+     th:text="${err}"&gt;&lt;/div&gt;
+
+
+<span class="comment">&lt;!-- ─── ③ フラッシュメッセージ（リダイレクト後の成功 / エラー通知）───</span>
+<span class="comment">     RedirectAttributes.addFlashAttribute("success"/"error", ...) → テンプレートで受信 --&gt;</span>
+
+<span class="comment">&lt;!-- Controller: ra.addFlashAttribute("success", "診療予約を登録しました") --&gt;</span>
+&lt;div th:if="${success}" class="alert alert-success" th:text="${success}"&gt;&lt;/div&gt;
+
+<span class="comment">&lt;!-- Controller: ra.addFlashAttribute("error", e.getMessage()) --&gt;</span>
+&lt;div th:if="${error}" class="alert alert-danger" th:text="${error}"&gt;&lt;/div&gt;
+
+
+<span class="comment">&lt;!-- ─── ④ ログインエラー（Spring Security の queryパラメータ）───</span>
+<span class="comment">     SecurityConfig.failureUrl("/app/login?error=true") → auth/login.html で受信 --&gt;</span>
+
+<span class="comment">&lt;!-- ?error=true → 認証失敗（ユーザー不存在 / PW不一致 / アカウント無効） --&gt;</span>
+&lt;div th:if="${param.error}"
+     style="padding:10px 12px;border-radius:10px;border:1px solid #fecaca;
+            background:#fef2f2;color:#991b1b;"&gt;
+  メールアドレスまたはパスワードが正しくありません。
 &lt;/div&gt;
 
-<span class="comment">&lt;!-- グローバルエラー（フィールドに紐づかないエラー） --&gt;</span>
-&lt;div th:if="${#fields.hasGlobalErrors()}" class="global-error"&gt;
-  &lt;p th:each="err : ${#fields.globalErrors()}" th:text="${err}"&gt;&lt;/p&gt;
+<span class="comment">&lt;!-- ?logout=true → ログアウト成功 --&gt;</span>
+&lt;div th:if="${param.logout}"
+     style="padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0;
+            background:#f0fdf4;color:#166534;"&gt;
+  ログアウトしました。
 &lt;/div&gt;
 
-<span class="comment">&lt;!-- 入力フィールドのエラークラス付与 --&gt;</span>
-&lt;input type="text" th:field="*{title}"
-       th:classappend="${#fields.hasErrors('title')} ? 'error' : ''"&gt;
+<span class="comment">&lt;!-- ?reset=true → パスワード再設定完了 --&gt;</span>
+&lt;div th:if="${param.reset}"
+     style="padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0;
+            background:#f0fdf4;color:#166534;"&gt;
+  パスワードを再設定しました。新しいパスワードでログインしてください。
+&lt;/div&gt;
                 </pre>
               </div>
             </div>
@@ -284,97 +691,204 @@
 
           <div class="fill-block">
             <div class="fill-label">動的SQLの条件分岐 <span class="required">必須</span></div>
-            <div class="fill-hint">複合検索時のSQL生成ロジック</div>
+            <div class="fill-hint">ロール別の予約一覧取得ロジック（ADMIN=全件 / USER=自分のみ）</div>
             <div class="fill-content">
-              <div class="ascii-diagram">
-                <pre>
-                    ┌─────────────────┐
-                    │  検索条件入力    │
-                    │ ・キーワード     │
-                    │ ・カテゴリ      │
-                    │ ・ステータス    │
-                    │ ・期間          │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  WHERE句の組立  │
-                    │  (動的SQL)      │
-                    └────────┬────────┘
-                             │
-            ┌────────────────┼────────────────┐
-            ▼                ▼                ▼
-    ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
-    │キーワードあり  │ │カテゴリあり   │ │ステータスあり │
-    │ title LIKE    │ │ category_id = │ │ status =      │
-    │ OR content    │ │ #{categoryId} │ │ #{status}     │
-    │ LIKE '%xxx%'  │ │               │ │               │
-    └───────────────┘ └───────────────┘ └───────────────┘
-            │                │                │
-            └────────────────┼────────────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  AND で連結     │
-                    │  ORDER BY 追加  │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  SQL実行        │
-                    │  結果返却       │
-                    └─────────────────┘
+              <svg viewBox="0 0 780 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:0 auto;font-family:'Noto Sans JP',sans-serif;">
+                <!-- ─── Entry ─── -->
+                <rect x="265" y="10" width="250" height="52" rx="10" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+                <text x="390" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">GET /app/appointments</text>
+                <text x="390" y="50" text-anchor="middle" font-size="11" fill="#065F46">?page=1&amp;sortBy=...</text>
+                <line x1="390" y1="62" x2="390" y2="88" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
 
-（上記を参考に編集してください）
-                </pre>
-              </div>
+                <!-- ─── Service call ─── -->
+                <rect x="250" y="88" width="280" height="42" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="390" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">AppointmentService.listForApp()</text>
+                <text x="390" y="122" text-anchor="middle" font-size="10" fill="#1E40AF">page, size, currentUser, sortBy</text>
+                <line x1="390" y1="130" x2="390" y2="156" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+                <!-- ─── Decision: isAdmin ─── -->
+                <polygon points="390,156 500,188 390,220 280,188" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="390" y="183" text-anchor="middle" font-size="11" font-weight="700" fill="#92400E">currentUser</text>
+                <text x="390" y="200" text-anchor="middle" font-size="11" font-weight="700" fill="#92400E">.isAdmin()?</text>
+
+                <!-- ─── ADMIN branch (left) ─── -->
+                <line x1="280" y1="188" x2="160" y2="188" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                <text x="218" y="180" text-anchor="middle" font-size="10" fill="#374151">YES</text>
+                <line x1="160" y1="188" x2="160" y2="240" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+                <!-- ─── Decision: sortByPet (ADMIN) ─── -->
+                <polygon points="160,240 250,264 160,288 70,264" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="160" y="259" text-anchor="middle" font-size="10" font-weight="700" fill="#92400E">sortByPet?</text>
+                <text x="160" y="274" text-anchor="middle" font-size="10" fill="#92400E">("pet"==sortBy)</text>
+
+                <!-- YES → findAllRowsOrderByPet -->
+                <line x1="160" y1="288" x2="160" y2="318" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                <text x="168" y="306" font-size="9" fill="#374151">YES</text>
+                <rect x="60" y="318" width="200" height="52" rx="7" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="160" y="337" text-anchor="middle" font-size="10" font-weight="700" fill="#4C1D95">findAllRowsOrderByPet</text>
+                <text x="160" y="352" text-anchor="middle" font-size="9" fill="#4C1D95">ORDER BY p.name ASC</text>
+                <text x="160" y="366" text-anchor="middle" font-size="9" fill="#4C1D95">LIMIT #{size} OFFSET #{offset}</text>
+
+                <!-- NO → findAllRows -->
+                <line x1="70" y1="264" x2="10" y2="264" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="10" y1="264" x2="10" y2="348" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="10" y1="348" x2="58" y2="348" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                <text x="36" y="257" text-anchor="middle" font-size="9" fill="#374151">NO</text>
+
+                <!-- countAll -->
+                <rect x="60" y="382" width="200" height="38" rx="7" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="160" y="397" text-anchor="middle" font-size="10" font-weight="700" fill="#4C1D95">countAll()</text>
+                <text x="160" y="412" text-anchor="middle" font-size="9" fill="#4C1D95">件数取得（フィルタなし）</text>
+                <line x1="160" y1="370" x2="160" y2="382" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+                <!-- ─── USER branch (right) ─── -->
+                <line x1="500" y1="188" x2="620" y2="188" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                <text x="562" y="180" text-anchor="middle" font-size="10" fill="#374151">NO</text>
+                <line x1="620" y1="188" x2="620" y2="240" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+                <!-- ─── Decision: sortByPet (USER) ─── -->
+                <polygon points="620,240 710,264 620,288 530,264" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="620" y="259" text-anchor="middle" font-size="10" font-weight="700" fill="#92400E">sortByPet?</text>
+                <text x="620" y="274" text-anchor="middle" font-size="10" fill="#92400E">("pet"==sortBy)</text>
+
+                <!-- YES → findRowsByOwnerUserIdOrderByPet -->
+                <line x1="620" y1="288" x2="620" y2="318" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                <text x="628" y="306" font-size="9" fill="#374151">YES</text>
+                <rect x="518" y="318" width="204" height="52" rx="7" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="620" y="335" text-anchor="middle" font-size="10" font-weight="700" fill="#4C1D95">findRowsByOwnerUserId</text>
+                <text x="620" y="349" text-anchor="middle" font-size="9" fill="#4C1D95">OrderByPet  ORDER BY p.name ASC</text>
+                <text x="620" y="363" text-anchor="middle" font-size="9" fill="#4C1D95">AND a.owner_user_id=#{userId}</text>
+
+                <!-- NO → findRowsByOwnerUserId -->
+                <line x1="710" y1="264" x2="770" y2="264" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="770" y1="264" x2="770" y2="348" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="770" y1="348" x2="724" y2="348" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                <text x="744" y="257" text-anchor="middle" font-size="9" fill="#374151">NO</text>
+
+                <!-- countByOwnerUserId -->
+                <rect x="518" y="382" width="204" height="38" rx="7" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="620" y="397" text-anchor="middle" font-size="10" font-weight="700" fill="#4C1D95">countByOwnerUserId(userId)</text>
+                <text x="620" y="412" text-anchor="middle" font-size="9" fill="#4C1D95">AND a.owner_user_id=#{userId}</text>
+                <line x1="620" y1="370" x2="620" y2="382" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+                <!-- ─── Common SQL conditions box ─── -->
+                <line x1="160" y1="420" x2="160" y2="450" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="620" y1="420" x2="620" y2="450" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="160" y1="450" x2="620" y2="450" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="390" y1="450" x2="390" y2="468" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+                <rect x="170" y="468" width="440" height="62" rx="8" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="1.5"/>
+                <text x="390" y="486" text-anchor="middle" font-size="10" font-weight="700" fill="#374151">共通 SQL 条件</text>
+                <text x="390" y="502" text-anchor="middle" font-size="10" fill="#4C1D95">JOIN pets p ON a.pet_id = p.id  JOIN users u ON a.owner_user_id = u.id</text>
+                <text x="390" y="518" text-anchor="middle" font-size="10" fill="#4C1D95">WHERE a.deleted_at IS NULL  /  LIMIT #{size} OFFSET #{offset}</text>
+
+                <!-- ─── Output ─── -->
+                <line x1="390" y1="530" x2="390" y2="546" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+                <rect x="245" y="546" width="290" height="38" rx="10" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+                <text x="390" y="562" text-anchor="middle" font-size="11" font-weight="700" fill="#065F46">PageResponse(items, page, size, total)</text>
+                <text x="390" y="578" text-anchor="middle" font-size="10" fill="#065F46">→ Thymeleaf ビューへ渡す</text>
+
+                <!-- ─── Labels ─── -->
+                <rect x="62" y="12" width="90" height="20" rx="4" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1"/>
+                <text x="107" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#B91C1C">ADMIN ルート</text>
+                <rect x="628" y="12" width="110" height="20" rx="4" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1"/>
+                <text x="683" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#1D4ED8">USER / VET / STAFF ルート</text>
+
+                <!-- ─── Arrow marker ─── -->
+                <defs>
+                  <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#6B7280"/>
+                  </marker>
+                </defs>
+              </svg>
             </div>
           </div>
 
           <div class="fill-block">
-            <div class="fill-label">複合検索のロジック <span class="required">必須</span></div>
-            <div class="fill-hint">疑似コードでの検索条件組立</div>
+            <div class="fill-label">疑似コード <span class="required">必須</span></div>
+            <div class="fill-hint">ロール別の予約一覧取得ロジック（AppointmentService.listForApp + SQL）</div>
             <div class="fill-content">
               <div class="code-block">
                 <pre>
-<span class="comment">// 複合検索のロジック（MyBatis XML形式）</span>
+<span class="comment">// ─── AppointmentService.listForApp ───────────────────────────────</span>
+<span class="comment">// ロールに応じて取得範囲を切り替え、ページネーション済み結果を返す</span>
 
-&lt;select id="search" resultType="Task"&gt;
-  SELECT * FROM tasks
-  WHERE user_id = #{userId}
+<span class="keyword">FUNCTION</span> listForApp(page, size, currentUser, sortBy)
 
-  <span class="comment">&lt;!-- キーワード検索 --&gt;</span>
-  &lt;if test="keyword != null and keyword != ''"&gt;
-    AND (title LIKE CONCAT('%', #{keyword}, '%')
-         OR content LIKE CONCAT('%', #{keyword}, '%'))
-  &lt;/if&gt;
+  <span class="comment">// ── 入力サニタイズ ──</span>
+  safePage = Math.max(page, 1)              <span class="comment">// 1 以上に補正</span>
+  safeSize = Math.min(Math.max(size, 1), 100)  <span class="comment">// 1〜100 に補正</span>
+  offset   = (safePage - 1) * safeSize
+  sortByPet = "pet".equalsIgnoreCase(sortBy)
 
-  <span class="comment">&lt;!-- カテゴリ絞り込み --&gt;</span>
-  &lt;if test="categoryId != null"&gt;
-    AND category_id = #{categoryId}
-  &lt;/if&gt;
+  <span class="keyword">IF</span> currentUser.isAdmin() <span class="keyword">THEN</span>
+    <span class="comment">// ADMIN：全ユーザーの予約を取得</span>
+    items = sortByPet
+            ? appointmentMapper.findAllRowsOrderByPet(safeSize, offset)
+            <span class="comment">//   → ORDER BY p.name ASC, a.scheduled_at ASC, a.id ASC</span>
+            : appointmentMapper.findAllRows(safeSize, offset)
+            <span class="comment">//   → ORDER BY a.scheduled_at DESC, a.id DESC</span>
+    total = appointmentMapper.countAll()
+    <span class="comment">//   → SELECT COUNT(*) FROM appointments WHERE deleted_at IS NULL</span>
+    <span class="keyword">RETURN</span> new PageResponse(items, safePage, safeSize, total)
+  <span class="keyword">END IF</span>
 
-  <span class="comment">&lt;!-- ステータス絞り込み --&gt;</span>
-  &lt;if test="status != null and status != ''"&gt;
-    AND status = #{status}
-  &lt;/if&gt;
+  <span class="comment">// USER / VET / STAFF：owner_user_id で絞り込む</span>
+  items = sortByPet
+          ? appointmentMapper.findRowsByOwnerUserIdOrderByPet(currentUser.id(), safeSize, offset)
+          <span class="comment">//   → AND a.owner_user_id = #{ownerUserId}  ORDER BY p.name ASC</span>
+          : appointmentMapper.findRowsByOwnerUserId(currentUser.id(), safeSize, offset)
+          <span class="comment">//   → AND a.owner_user_id = #{ownerUserId}  ORDER BY scheduled_at DESC</span>
+  total = appointmentMapper.countByOwnerUserId(currentUser.id())
+  <span class="comment">//   → SELECT COUNT(*) ... WHERE deleted_at IS NULL AND owner_user_id = #{ownerUserId}</span>
 
-  <span class="comment">&lt;!-- 期間絞り込み --&gt;</span>
-  &lt;if test="startDate != null"&gt;
-    AND due_date &gt;= #{startDate}
-  &lt;/if&gt;
-  &lt;if test="endDate != null"&gt;
-    AND due_date &lt;= #{endDate}
-  &lt;/if&gt;
+  <span class="keyword">RETURN</span> new PageResponse(items, safePage, safeSize, total)
 
-  <span class="comment">&lt;!-- ソート --&gt;</span>
-  ORDER BY
-  &lt;choose&gt;
-    &lt;when test="sortBy == 'dueDate'"&gt;due_date&lt;/when&gt;
-    &lt;when test="sortBy == 'priority'"&gt;priority DESC&lt;/when&gt;
-    &lt;otherwise&gt;created_at DESC&lt;/otherwise&gt;
-  &lt;/choose&gt;
-&lt;/select&gt;
+<span class="keyword">END FUNCTION</span>
+
+
+<span class="comment">// ─── SQL（MyBatis @Select — 実コード）────────────────────────────</span>
+
+<span class="comment">// ① 全予約取得（ADMIN / 日時降順）findAllRows</span>
+SELECT a.id,
+       p.name               AS "petName",
+       u.name               AS "ownerName",
+       a.appointment_type   AS "appointmentType",
+       a.channel,
+       a.scheduled_at       AS "scheduledAt",
+       a.status, a.note,
+       a.zoom_join_url      AS "zoomJoinUrl"
+FROM appointments a
+  INNER JOIN pets  p ON p.id = a.pet_id
+  INNER JOIN users u ON u.id = a.owner_user_id
+WHERE a.deleted_at IS NULL
+ORDER BY a.scheduled_at DESC, a.id DESC
+LIMIT #{limit} OFFSET #{offset}
+
+<span class="comment">// ② ペット名昇順（ADMIN）findAllRowsOrderByPet</span>
+<span class="comment">//    SELECT … 同上  WHERE a.deleted_at IS NULL</span>
+ORDER BY p.name ASC, a.scheduled_at ASC, a.id ASC
+LIMIT #{limit} OFFSET #{offset}
+
+<span class="comment">// ③ 個人絞り込み（USER 等 / 日時降順）findRowsByOwnerUserId</span>
+<span class="comment">//    SELECT … 同上</span>
+WHERE a.deleted_at IS NULL
+  AND a.owner_user_id = #{ownerUserId}   <span class="comment">-- 自分の予約のみ</span>
+ORDER BY a.scheduled_at DESC, a.id DESC
+LIMIT #{limit} OFFSET #{offset}
+
+<span class="comment">// ④ 個人絞り込み（USER 等 / ペット名昇順）findRowsByOwnerUserIdOrderByPet</span>
+<span class="comment">//    SELECT … 同上</span>
+WHERE a.deleted_at IS NULL
+  AND a.owner_user_id = #{ownerUserId}
+ORDER BY p.name ASC, a.scheduled_at ASC, a.id ASC
+LIMIT #{limit} OFFSET #{offset}
+
+<span class="comment">// ⑤ 重複チェック（予約作成前）countByScheduledAt</span>
+SELECT COUNT(*) FROM appointments
+WHERE deleted_at IS NULL
+  AND scheduled_at = #{scheduledAt}
+  AND status IN ('REQUESTED', 'CONFIRMED')  <span class="comment">-- 取消済みは除外</span>
                 </pre>
               </div>
             </div>
@@ -386,80 +900,286 @@
 
           <div class="fill-block">
             <div class="fill-label">ロール判定のフロー <span class="required">必須</span></div>
-            <div class="fill-hint">管理者/一般ユーザーの権限チェック</div>
+            <div class="fill-hint">ADMIN / VET / STAFF / USER の 4 ロールによる URL 認可とサービス層チェック</div>
             <div class="fill-content">
-              <div class="ascii-diagram">
-                <pre>
-                    ┌─────────────────┐
-                    │  リクエスト受信  │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  認証状態確認   │
-                    │(SecurityContext)│
-                    └────────┬────────┘
-                             │
-                    ┌────────┴────────┐
-                    ▼                  ▼
-              未認証              認証済み
-                    │                  │
-                    ▼                  ▼
-            ┌───────────┐     ┌─────────────────┐
-            │/login へ   │     │  ロール取得      │
-            │リダイレクト │     │ user.getRole()  │
-            └───────────┘     └────────┬────────┘
-                                       │
-                              ┌────────┴────────┐
-                              ▼                  ▼
-                           ADMIN              USER
-                              │                  │
-                              ▼                  ▼
-                    ┌─────────────────┐  ┌─────────────────┐
-                    │ 管理者機能      │  │ 一般ユーザー機能│
-                    │ ・ユーザー管理  │  │ ・自分のタスク  │
-                    │ ・全タスク閲覧  │  │   のみアクセス  │
-                    │ ・システム設定  │  │                 │
-                    └─────────────────┘  └─────────────────┘
+              <svg viewBox="0 0 780 775" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:0 auto;font-family:'Noto Sans JP',sans-serif;">
+                <defs>
+                  <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#6B7280"/>
+                  </marker>
+                </defs>
 
-（上記を参考に編集してください）
-                </pre>
-              </div>
+                <!-- Entry -->
+                <rect x="290" y="10" width="200" height="38" rx="10" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+                <text x="390" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">HTTP リクエスト受信</text>
+                <line x1="390" y1="48" x2="390" y2="70" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+                <!-- Spring Security Filter Chain -->
+                <rect x="185" y="70" width="410" height="44" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1.5"/>
+                <text x="390" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#991B1B">① Spring Security Filter Chain</text>
+                <text x="390" y="106" text-anchor="middle" font-size="10" fill="#991B1B">URL 認可ルール（SecurityConfig）を自動適用</text>
+                <line x1="390" y1="114" x2="390" y2="138" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+                <!-- Auth Diamond -->
+                <polygon points="390,138 514,172 390,206 266,172" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="390" y="167" text-anchor="middle" font-size="11" font-weight="700" fill="#92400E">認証済み?</text>
+                <text x="390" y="183" text-anchor="middle" font-size="10" fill="#92400E">SecurityContext</text>
+
+                <!-- NO branch -->
+                <line x1="266" y1="172" x2="96" y2="172" stroke="#6B7280" stroke-width="1.5"/>
+                <line x1="96" y1="172" x2="96" y2="226" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr4)"/>
+                <text x="179" y="163" text-anchor="middle" font-size="10" fill="#374151">NO</text>
+                <rect x="10" y="226" width="172" height="50" rx="8" fill="#FEE2E2" stroke="#B91C1C" stroke-width="1.5"/>
+                <text x="96" y="245" text-anchor="middle" font-size="10" font-weight="700" fill="#991B1B">/app/login へリダイレクト</text>
+                <text x="96" y="261" text-anchor="middle" font-size="9" fill="#991B1B">failureUrl: ?error=true</text>
+
+                <!-- YES branch -->
+                <line x1="390" y1="206" x2="390" y2="226" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr4)"/>
+                <text x="399" y="219" font-size="10" fill="#374151">YES</text>
+
+                <!-- LoginUser / roleId mapping -->
+                <rect x="208" y="226" width="364" height="52" rx="8" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="390" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="#4C1D95">LoginUser を SecurityContext から取得</text>
+                <text x="390" y="264" text-anchor="middle" font-size="10" fill="#4C1D95">roleId: 1→ADMIN / 3→VET / 4→STAFF / 2→USER</text>
+                <line x1="390" y1="278" x2="390" y2="298" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+                <!-- ===== URL Permission Table ===== -->
+                <!-- Outer border -->
+                <rect x="10" y="298" width="760" height="308" rx="4" fill="none" stroke="#9CA3AF" stroke-width="1.5"/>
+                <!-- Header bg -->
+                <rect x="10" y="298" width="760" height="36" rx="4" fill="#1F2937"/>
+                <!-- Role-colored header cells -->
+                <rect x="284" y="302" width="124" height="28" rx="3" fill="#FEE2E2" opacity="0.85"/>
+                <rect x="408" y="302" width="124" height="28" rx="3" fill="#D1FAE5" opacity="0.85"/>
+                <rect x="532" y="302" width="124" height="28" rx="3" fill="#DBEAFE" opacity="0.85"/>
+                <rect x="656" y="302" width="111" height="28" rx="3" fill="#FEF3C7" opacity="0.85"/>
+                <!-- Header text -->
+                <text x="145" y="321" text-anchor="middle" font-size="11" font-weight="700" fill="white">URL パターン</text>
+                <text x="346" y="321" text-anchor="middle" font-size="11" font-weight="700" fill="#991B1B">ADMIN</text>
+                <text x="470" y="321" text-anchor="middle" font-size="11" font-weight="700" fill="#065F46">VET</text>
+                <text x="594" y="321" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">STAFF</text>
+                <text x="712" y="321" text-anchor="middle" font-size="11" font-weight="700" fill="#92400E">USER</text>
+                <!-- Column separator lines -->
+                <line x1="284" y1="334" x2="284" y2="606" stroke="#E5E7EB" stroke-width="1"/>
+                <line x1="408" y1="334" x2="408" y2="606" stroke="#E5E7EB" stroke-width="1"/>
+                <line x1="532" y1="334" x2="532" y2="606" stroke="#E5E7EB" stroke-width="1"/>
+                <line x1="656" y1="334" x2="656" y2="606" stroke="#E5E7EB" stroke-width="1"/>
+
+                <!-- Row 1: /app/admin/users/** | ✓✓✓✗ -->
+                <rect x="11" y="334" width="758" height="40" fill="#F9FAFB"/>
+                <text x="19" y="359" font-size="10" fill="#374151">/app/admin/users/**</text>
+                <text x="346" y="360" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="470" y="360" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="594" y="360" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="712" y="360" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <line x1="10" y1="374" x2="770" y2="374" stroke="#E5E7EB" stroke-width="1"/>
+
+                <!-- Row 2: /app/admin/announcements/**, appointment-slots/** | ✓✗✓✗ -->
+                <rect x="11" y="374" width="758" height="44" fill="white"/>
+                <text x="19" y="391" font-size="10" fill="#374151">/app/admin/announcements/**</text>
+                <text x="19" y="406" font-size="10" fill="#374151">/app/admin/appointment-slots/**</text>
+                <text x="346" y="400" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="470" y="400" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <text x="594" y="400" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="712" y="400" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <line x1="10" y1="418" x2="770" y2="418" stroke="#E5E7EB" stroke-width="1"/>
+
+                <!-- Row 3: /app/admin/** (その他), /app/reports/** | ✓✗✗✗ -->
+                <rect x="11" y="418" width="758" height="44" fill="#F9FAFB"/>
+                <text x="19" y="435" font-size="10" fill="#374151">/app/admin/**（その他）</text>
+                <text x="19" y="450" font-size="10" fill="#374151">/app/reports/**</text>
+                <text x="346" y="443" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="470" y="443" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <text x="594" y="443" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <text x="712" y="443" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <line x1="10" y1="462" x2="770" y2="462" stroke="#E5E7EB" stroke-width="1"/>
+
+                <!-- Row 4: /app/consultations/** | ✗✓✓✗ -->
+                <rect x="11" y="462" width="758" height="40" fill="white"/>
+                <text x="19" y="487" font-size="10" fill="#374151">/app/consultations/**</text>
+                <text x="346" y="487" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <text x="470" y="487" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="594" y="487" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="712" y="487" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <line x1="10" y1="502" x2="770" y2="502" stroke="#E5E7EB" stroke-width="1"/>
+
+                <!-- Row 5: /app/appointments/**, /app/calendar/** | ✗✓✓✓※ -->
+                <rect x="11" y="502" width="758" height="44" fill="#F9FAFB"/>
+                <text x="19" y="519" font-size="10" fill="#374151">/app/appointments/**</text>
+                <text x="19" y="534" font-size="10" fill="#374151">/app/calendar/**</text>
+                <text x="346" y="527" text-anchor="middle" font-size="16" fill="#DC2626">✗</text>
+                <text x="470" y="527" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="594" y="527" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="712" y="520" text-anchor="middle" font-size="14" fill="#059669">✓</text>
+                <text x="712" y="533" text-anchor="middle" font-size="8" fill="#92400E">※STANDARD+</text>
+                <line x1="10" y1="546" x2="770" y2="546" stroke="#E5E7EB" stroke-width="1"/>
+
+                <!-- Row 6: その他 /app/** | ✓✓✓✓ -->
+                <rect x="11" y="546" width="758" height="60" fill="white"/>
+                <text x="19" y="563" font-size="10" fill="#374151">その他 /app/**（全認証ユーザー）</text>
+                <text x="19" y="578" font-size="9" fill="#6B7280">dashboard / pets / health-records /</text>
+                <text x="19" y="592" font-size="9" fill="#6B7280">notifications / subscriptions / password-resets</text>
+                <text x="346" y="578" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="470" y="578" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="594" y="578" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+                <text x="712" y="578" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+
+                <!-- Arrow to service section -->
+                <line x1="390" y1="606" x2="390" y2="626" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+                <!-- Service layer label -->
+                <rect x="10" y="626" width="760" height="30" rx="4" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="1"/>
+                <text x="390" y="646" text-anchor="middle" font-size="11" font-weight="700" fill="#374151">② コントローラー / サービス層チェック（URL 認可通過後）</text>
+
+                <!-- Guard 1: ensureAccessible -->
+                <rect x="10" y="664" width="238" height="100" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="129" y="681" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">AppointmentPage</text>
+                <text x="129" y="695" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">ensureAccessible()</text>
+                <line x1="18" y1="704" x2="240" y2="704" stroke="#93C5FD" stroke-width="1"/>
+                <text x="129" y="717" text-anchor="middle" font-size="9" fill="#1E40AF">canManageClinical() → VET / STAFF</text>
+                <text x="129" y="730" text-anchor="middle" font-size="9" fill="#1E40AF">OR canUseAiSymptom() → STANDARD+</text>
+                <text x="129" y="750" text-anchor="middle" font-size="9" font-weight="700" fill="#991B1B">→ 偽: BadRequestException</text>
+
+                <!-- Guard 2: approve/reject -->
+                <rect x="258" y="664" width="244" height="100" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="380" y="681" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">AppointmentPage</text>
+                <text x="380" y="695" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">approve() / reject()</text>
+                <line x1="266" y1="704" x2="494" y2="704" stroke="#93C5FD" stroke-width="1"/>
+                <text x="380" y="717" text-anchor="middle" font-size="9" fill="#1E40AF">canManageClinical()</text>
+                <text x="380" y="730" text-anchor="middle" font-size="9" fill="#1E40AF">VET または STAFF のみ承認・却下可</text>
+                <text x="380" y="750" text-anchor="middle" font-size="9" font-weight="700" fill="#991B1B">→ 偽: BadRequestException</text>
+
+                <!-- Guard 3: consultations + cancelByOwner -->
+                <rect x="512" y="664" width="258" height="100" rx="8" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="641" y="681" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">診療記録 CRUD /</text>
+                <text x="641" y="695" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">cancelByOwner()</text>
+                <line x1="520" y1="704" x2="762" y2="704" stroke="#93C5FD" stroke-width="1"/>
+                <text x="641" y="717" text-anchor="middle" font-size="9" fill="#1E40AF">診療記録: canManageClinical() → VET/STAFF</text>
+                <text x="641" y="730" text-anchor="middle" font-size="9" fill="#1E40AF">キャンセル: !canManageClinical() → USER のみ</text>
+                <text x="641" y="750" text-anchor="middle" font-size="9" font-weight="700" fill="#991B1B">→ 違反: BadRequestException</text>
+              </svg>
             </div>
           </div>
 
           <div class="fill-block">
-            <div class="fill-label">データアクセス制御のロジック <span class="required">必須</span></div>
-            <div class="fill-hint">自分のタスクのみ操作可能にする制御</div>
+            <div class="fill-label">疑似コード <span class="required">必須</span></div>
+            <div class="fill-hint">多層権限チェック（SecurityConfig URL認可 → LoginUser ロール判定 → サービス層チェック）</div>
             <div class="fill-content">
               <div class="code-block">
                 <pre>
-<span class="comment">// データアクセス制御のロジック</span>
+<span class="comment">// ─── ① URL レベルの認可（SecurityConfig — Spring Security が自動適用）────────────</span>
+<span class="comment">// ★ 順序が重要: より限定的なパスを先に列挙し、後の広いルールに上書きされないようにする</span>
 
-<span class="keyword">FUNCTION</span> updateTask(taskId, taskForm, loginUser)
+<span class="comment">// 公開パス（認証不要）</span>
+.requestMatchers("/", "/index.html", "/webapp.html", "/css/**", "/js/**",
+                 "/assets/**", "/images/**", "/uploads/**").permitAll()
+.requestMatchers("/api/slack/events", "/api/line/events").permitAll()
+.requestMatchers("/app/login").permitAll()
+.requestMatchers("/app/forgot-password", "/app/forgot-password/**").permitAll()
+.requestMatchers("/app/reset-password",  "/app/reset-password/**" ).permitAll()
 
-  <span class="comment">// タスクを取得</span>
-  task = taskMapper.selectById(taskId)
+<span class="comment">// ユーザー管理：ADMIN / VET / STAFF（一覧閲覧を全スタッフ系に開放）</span>
+.requestMatchers("/app/admin/users", "/app/admin/users/**")
+  .hasAnyRole("ADMIN", "VET", "STAFF")
 
-  <span class="comment">// 存在チェック</span>
-  <span class="keyword">IF</span> task が null <span class="keyword">THEN</span>
-    <span class="keyword">THROW</span> NotFoundException("タスクが見つかりません")
-  <span class="keyword">END IF</span>
+<span class="comment">// お知らせ管理・予約枠管理：ADMIN / STAFF のみ</span>
+.requestMatchers("/app/admin/announcements", "/app/admin/announcements/**")
+  .hasAnyRole("ADMIN", "STAFF")
+.requestMatchers("/app/admin/appointment-slots", "/app/admin/appointment-slots/**")
+  .hasAnyRole("ADMIN", "STAFF")
 
-  <span class="comment">// 権限チェック</span>
-  <span class="keyword">IF</span> loginUser.role が "ADMIN" でない
-     AND task.userId ≠ loginUser.id <span class="keyword">THEN</span>
-    <span class="keyword">THROW</span> AccessDeniedException("このタスクを編集する権限がありません")
-  <span class="keyword">END IF</span>
+<span class="comment">// 管理者専用（残りの admin + レポート）</span>
+.requestMatchers("/app/admin/**", "/app/reports", "/app/reports/**")
+  .hasRole("ADMIN")
 
-  <span class="comment">// 更新処理（権限OK）</span>
-  task = FormからEntityに変換(taskForm)
-  task.updatedAt = 現在日時
-  taskMapper.update(task)
+<span class="comment">// 診療記録：VET / STAFF のみ（ADMIN はアクセス不可）</span>
+.requestMatchers("/app/consultations", "/app/consultations/**")
+  .hasAnyRole("VET", "STAFF")
 
-  <span class="keyword">RETURN</span> 成功
+<span class="comment">// 診療予約：VET / STAFF / USER（ADMIN はアクセス不可）</span>
+.requestMatchers("/app/appointments", "/app/appointments/**")
+  .hasAnyRole("VET", "STAFF", "USER")
 
+<span class="comment">// カレンダー：VET / STAFF / USER（ADMIN はアクセス不可）</span>
+.requestMatchers("/app/calendar", "/app/calendar/**")
+  .hasAnyRole("VET", "STAFF", "USER")
+
+<span class="comment">// その他 /app/** は認証済みであれば全ロール許可</span>
+.requestMatchers("/app/**").authenticated()
+.anyRequest().permitAll()
+
+
+<span class="comment">// ─── ② LoginUser のロール判定（roleId → ROLE_* 変換 + ヘルパーメソッド）────────</span>
+
+<span class="comment">// getAuthorities(): Spring Security が内部で使用するロール文字列を返す</span>
+<span class="keyword">FUNCTION</span> getAuthorities(roleId)
+  <span class="keyword">RETURN</span> <span class="keyword">SWITCH</span> roleId
+    1 → "ROLE_ADMIN"
+    3 → "ROLE_VET"
+    4 → "ROLE_STAFF"
+    default → "ROLE_USER"
 <span class="keyword">END FUNCTION</span>
+
+<span class="comment">// 診療記録・予約承認を操作できるロール（VET + STAFF）</span>
+<span class="keyword">FUNCTION</span> canManageClinical()   <span class="comment">// LoginUser のインスタンスメソッド</span>
+  <span class="keyword">RETURN</span> this.isVet() OR this.isStaff()   <span class="comment">// roleId = 3 or 4</span>
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// ユーザー管理画面を閲覧できるロール（全スタッフ系）</span>
+<span class="keyword">FUNCTION</span> hasStaffAccess()
+  <span class="keyword">RETURN</span> this.isAdmin() OR this.isVet() OR this.isStaff()  <span class="comment">// roleId = 1, 3, 4</span>
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// 予約枠・お知らせを管理できるロール（ADMIN + STAFF）</span>
+<span class="keyword">FUNCTION</span> canManageOperations()
+  <span class="keyword">RETURN</span> this.isAdmin() OR this.isStaff()   <span class="comment">// roleId = 1 or 4</span>
+<span class="keyword">END FUNCTION</span>
+
+
+<span class="comment">// ─── ③ サービス / コントローラー層のプラン × ロール複合チェック ─────────────────</span>
+
+<span class="comment">// AppointmentPageController.ensureAccessible() ──</span>
+<span class="comment">// VET/STAFF はプラン不問、USER は STANDARD 以上（plan_features.code='AI_SYMPTOM'）必要</span>
+<span class="keyword">FUNCTION</span> ensureAccessible(currentUser)
+  <span class="keyword">IF</span> NOT currentUser.canManageClinical()
+     AND NOT planAccessService.canUseAiSymptom(currentUser) <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("この機能はスタンダード以上で利用できます")
+  <span class="keyword">END IF</span>
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// AppointmentPageController.approve() / reject() ──</span>
+<span class="comment">// URL 認可（VET/STAFF/USER → /app/appointments）通過後にさらにロールを絞る</span>
+<span class="keyword">FUNCTION</span> approve(appointmentId, currentUser)
+  <span class="keyword">IF</span> NOT currentUser.canManageClinical() <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("獣医師・スタッフのみ承認できます")
+  <span class="keyword">END IF</span>
+  appointmentService.approve(appointmentId, currentUser.id())  <span class="comment">// id() はレコードメソッド</span>
+<span class="keyword">END FUNCTION</span>
+
+<span class="keyword">FUNCTION</span> reject(appointmentId, currentUser)
+  <span class="keyword">IF</span> NOT currentUser.canManageClinical() <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("獣医師・スタッフのみ却下できます")
+  <span class="keyword">END IF</span>
+  appointmentService.reject(appointmentId)
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// AppointmentPageController.cancelByOwner() ──</span>
+<span class="comment">// VET/STAFF はオーナーとしてのキャンセル不可（自分の予約を持たない前提）</span>
+<span class="keyword">FUNCTION</span> cancelByOwner(appointmentId, currentUser)
+  <span class="keyword">IF</span> currentUser.canManageClinical() <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("自分の予約のみキャンセルできます")
+  <span class="keyword">END IF</span>
+  appointmentService.cancelRequestedByOwner(appointmentId, currentUser.id())
+<span class="keyword">END FUNCTION</span>
+
+<span class="comment">// ConsultationController（診療記録 CRUD 全操作）──</span>
+<span class="comment">// URL 認可（VET/STAFF のみ）に加え、コントローラーでも二重確認</span>
+<span class="keyword">FUNCTION</span> guardClinical(currentUser)
+  <span class="keyword">IF</span> NOT currentUser.canManageClinical() <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("獣医師・スタッフのみアクセスできます")
+  <span class="keyword">END IF</span>
+<span class="keyword">END FUNCTION</span>
+<span class="comment">// ↑ list / create / update / delete の各操作の先頭で必ず呼び出す</span>
                 </pre>
               </div>
             </div>
@@ -471,97 +1191,241 @@
 
           <div class="fill-block">
             <div class="fill-label">状態遷移図 <span class="required">必須</span></div>
-            <div class="fill-hint">タスクのステータス変化の流れ</div>
+            <div class="fill-hint">診療予約ステータス（REQUESTED → CONFIRMED / CANCELED）の遷移ルール</div>
             <div class="fill-content">
-              <div class="ascii-diagram">
-                <pre>
-                    ┌─────────────────────────────────────────┐
-                    │           タスクステータス遷移図          │
-                    └─────────────────────────────────────────┘
+              <svg viewBox="0 0 780 528" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;display:block;margin:0 auto;font-family:'Noto Sans JP',sans-serif;">
+                <defs>
+                  <marker id="arr5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#6B7280"/>
+                  </marker>
+                </defs>
 
-                              ┌───────────┐
-                              │   TODO    │ ← 新規作成
-                              │  (未着手) │
-                              └─────┬─────┘
-                                    │
-                                    │ 着手
-                                    ▼
-                              ┌───────────┐
-                     ┌────────│   DOING   │────────┐
-                     │        │  (作業中) │        │
-                     │        └─────┬─────┘        │
-                     │              │              │
-                     │ 保留         │ 完了         │ 中止
-                     ▼              ▼              ▼
-               ┌───────────┐  ┌───────────┐  ┌───────────┐
-               │   HOLD    │  │   DONE    │  │ CANCELLED │
-               │   (保留)  │  │   (完了)  │  │  (中止)   │
-               └─────┬─────┘  └───────────┘  └───────────┘
-                     │              ▲
-                     │ 再開         │ 完了
-                     └──────────────┘
+                <!-- ── 予約申請（Entry）── -->
+                <rect x="215" y="10" width="350" height="42" rx="10" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"/>
+                <text x="390" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#065F46">USER が予約申請</text>
+                <text x="390" y="45" text-anchor="middle" font-size="10" fill="#065F46">createGeneralCare() / createPremiumOnlineCare()</text>
+                <line x1="390" y1="52" x2="390" y2="72" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
 
-          ※ DONEとCANCELLEDは最終状態（遷移不可）
+                <!-- ── DB INSERT ── -->
+                <rect x="160" y="72" width="460" height="38" rx="8" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="390" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="#4C1D95">appointmentMapper.insert()</text>
+                <text x="390" y="103" text-anchor="middle" font-size="9" fill="#4C1D95">status='REQUESTED' / channel / scheduledAt / petId / ownerUserId …</text>
+                <line x1="390" y1="110" x2="390" y2="130" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
 
-（上記を参考に編集してください）
-                </pre>
-              </div>
+                <!-- ── REQUESTED 状態バー ── -->
+                <rect x="5" y="130" width="770" height="44" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+                <text x="390" y="149" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">REQUESTED（申請中）</text>
+                <text x="390" y="167" text-anchor="middle" font-size="10" fill="#92400E">承認・却下・キャンセルを待つ状態</text>
+
+                <!-- 3本の分岐矢印 -->
+                <line x1="129" y1="174" x2="129" y2="196" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <line x1="385" y1="174" x2="385" y2="196" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <line x1="646" y1="174" x2="646" y2="196" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+
+                <!-- ══════ 左列: approve() ══════ -->
+                <!-- ①アクション -->
+                <rect x="5" y="196" width="248" height="38" rx="6" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="129" y="212" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">VET / STAFF が承認</text>
+                <text x="129" y="226" text-anchor="middle" font-size="9" fill="#1E40AF">AppointmentPage.approve()</text>
+                <line x1="129" y1="234" x2="129" y2="242" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ②ステータス確認 -->
+                <rect x="5" y="242" width="248" height="40" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="129" y="258" text-anchor="middle" font-size="9" font-weight="700" fill="#92400E">① status = 'REQUESTED'?</text>
+                <text x="129" y="272" text-anchor="middle" font-size="9" fill="#DC2626">else → BadRequestException</text>
+                <line x1="129" y1="282" x2="129" y2="290" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ③ ONLINE / Zoom -->
+                <rect x="5" y="290" width="248" height="52" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="129" y="306" text-anchor="middle" font-size="9" font-weight="700" fill="#92400E">② channel = 'ONLINE'?</text>
+                <text x="129" y="320" text-anchor="middle" font-size="9" fill="#92400E">→ zoomLinkService</text>
+                <text x="129" y="334" text-anchor="middle" font-size="9" fill="#92400E">　 .createMeetingOrFallback()</text>
+                <line x1="129" y1="342" x2="129" y2="350" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ④ DB update CONFIRMED -->
+                <rect x="5" y="350" width="248" height="40" rx="6" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="129" y="366" text-anchor="middle" font-size="9" font-weight="700" fill="#4C1D95">③ appointmentMapper.update()</text>
+                <text x="129" y="380" text-anchor="middle" font-size="9" fill="#4C1D95">status='CONFIRMED', zoomJoinUrl</text>
+                <line x1="129" y1="390" x2="129" y2="398" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ⑤ notify owner -->
+                <rect x="5" y="398" width="248" height="40" rx="6" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="129" y="414" text-anchor="middle" font-size="9" font-weight="700" fill="#1E40AF">④ 予約者へ通知（INFO）</text>
+                <text x="129" y="428" text-anchor="middle" font-size="9" fill="#1E40AF">「診療予約が承認されました」</text>
+                <line x1="129" y1="438" x2="129" y2="446" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- CONFIRMED terminal -->
+                <rect x="5" y="446" width="248" height="44" rx="10" fill="#D1FAE5" stroke="#059669" stroke-width="2"/>
+                <text x="129" y="465" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">✓  CONFIRMED</text>
+                <text x="129" y="481" text-anchor="middle" font-size="10" fill="#065F46">承認済（最終状態）</text>
+
+                <!-- ══════ 中列: reject() ══════ -->
+                <!-- ①アクション -->
+                <rect x="261" y="196" width="248" height="44" rx="6" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="385" y="214" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">VET / STAFF が却下</text>
+                <text x="385" y="230" text-anchor="middle" font-size="9" fill="#1E40AF">AppointmentPage.reject()</text>
+                <line x1="385" y1="240" x2="385" y2="248" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ②ステータス確認 -->
+                <rect x="261" y="248" width="248" height="44" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="385" y="266" text-anchor="middle" font-size="9" font-weight="700" fill="#92400E">① status = 'REQUESTED'?</text>
+                <text x="385" y="280" text-anchor="middle" font-size="9" fill="#DC2626">else → BadRequestException</text>
+                <line x1="385" y1="292" x2="385" y2="300" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ③ DB CANCELED -->
+                <rect x="261" y="300" width="248" height="46" rx="6" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="385" y="318" text-anchor="middle" font-size="9" font-weight="700" fill="#4C1D95">② appointmentMapper.updateStatus()</text>
+                <text x="385" y="332" text-anchor="middle" font-size="9" fill="#4C1D95">id, 'CANCELED'</text>
+                <line x1="385" y1="346" x2="385" y2="354" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ④ notify owner -->
+                <rect x="261" y="354" width="248" height="46" rx="6" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="385" y="372" text-anchor="middle" font-size="9" font-weight="700" fill="#1E40AF">③ 予約者へ通知（INFO）</text>
+                <text x="385" y="386" text-anchor="middle" font-size="9" fill="#1E40AF">「診療予約が却下されました」</text>
+                <line x1="385" y1="400" x2="385" y2="446" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- CANCELED terminal (reject) -->
+                <rect x="261" y="446" width="248" height="44" rx="10" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
+                <text x="385" y="465" text-anchor="middle" font-size="12" font-weight="700" fill="#991B1B">✗  CANCELED</text>
+                <text x="385" y="481" text-anchor="middle" font-size="10" fill="#991B1B">却下済（最終状態）</text>
+
+                <!-- ══════ 右列: cancelByOwner() ══════ -->
+                <!-- ①アクション -->
+                <rect x="517" y="196" width="258" height="38" rx="6" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.5"/>
+                <text x="646" y="212" text-anchor="middle" font-size="10" font-weight="700" fill="#1E40AF">USER がキャンセル</text>
+                <text x="646" y="226" text-anchor="middle" font-size="9" fill="#1E40AF">AppointmentPage.cancelByOwner()</text>
+                <line x1="646" y1="234" x2="646" y2="242" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ②所有者確認（status チェックより先） -->
+                <rect x="517" y="242" width="258" height="42" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="646" y="259" text-anchor="middle" font-size="9" font-weight="700" fill="#92400E">① ownerUserId == currentUser.id()?</text>
+                <text x="646" y="274" text-anchor="middle" font-size="9" fill="#DC2626">else → BadRequestException（所有者確認）</text>
+                <line x1="646" y1="284" x2="646" y2="292" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ③ステータス確認 -->
+                <rect x="517" y="292" width="258" height="40" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="646" y="308" text-anchor="middle" font-size="9" font-weight="700" fill="#92400E">② status = 'REQUESTED'?</text>
+                <text x="646" y="322" text-anchor="middle" font-size="9" fill="#DC2626">else → BadRequestException</text>
+                <line x1="646" y1="332" x2="646" y2="340" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ④ DB CANCELED -->
+                <rect x="517" y="340" width="258" height="40" rx="6" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>
+                <text x="646" y="356" text-anchor="middle" font-size="9" font-weight="700" fill="#4C1D95">③ appointmentMapper.updateStatus()</text>
+                <text x="646" y="370" text-anchor="middle" font-size="9" fill="#4C1D95">id, 'CANCELED'</text>
+                <line x1="646" y1="380" x2="646" y2="388" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- ⑤ notify admins ALERT -->
+                <rect x="517" y="388" width="258" height="48" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                <text x="646" y="405" text-anchor="middle" font-size="9" font-weight="700" fill="#92400E">④ 管理者全員へ通知（ALERT）</text>
+                <text x="646" y="419" text-anchor="middle" font-size="9" fill="#92400E">「予約がキャンセルされました」</text>
+                <text x="646" y="431" text-anchor="middle" font-size="9" fill="#92400E">userMapper.findAdminUserIds() → 全 ADMIN</text>
+                <line x1="646" y1="436" x2="646" y2="446" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr5)"/>
+                <!-- CANCELED terminal (cancelByOwner) -->
+                <rect x="517" y="446" width="258" height="44" rx="10" fill="#FEE2E2" stroke="#B91C1C" stroke-width="2"/>
+                <text x="646" y="465" text-anchor="middle" font-size="12" font-weight="700" fill="#991B1B">✗  CANCELED</text>
+                <text x="646" y="481" text-anchor="middle" font-size="10" fill="#991B1B">取消済（最終状態）</text>
+
+                <!-- ── 補足バー ── -->
+                <rect x="5" y="498" width="770" height="24" rx="4" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="1"/>
+                <text x="390" y="514" text-anchor="middle" font-size="9" fill="#374151">CONFIRMED・CANCELED は最終状態（以降の遷移なし）　/　論理削除: appointmentMapper.softDelete(id, deletedAt)</text>
+              </svg>
             </div>
           </div>
 
           <div class="fill-block">
-            <div class="fill-label">遷移可否の判定ロジック <span class="required">必須</span></div>
-            <div class="fill-hint">状態遷移が許可されるかの判定処理</div>
+            <div class="fill-label">遷移ロジックの疑似コード <span class="required">必須</span></div>
+            <div class="fill-hint">承認・却下・キャンセル各ルートの判定処理（AppointmentService）</div>
             <div class="fill-content">
               <div class="code-block">
                 <pre>
-<span class="comment">// ステータス遷移の判定ロジック</span>
+<span class="comment">// ─── 承認（REQUESTED → CONFIRMED）VET / STAFF が実行 ─────────────────────</span>
 
-<span class="keyword">FUNCTION</span> canTransition(currentStatus, newStatus)
+<span class="keyword">FUNCTION</span> approve(id, actorUserId)
 
-  <span class="comment">// 遷移ルールの定義</span>
-  allowedTransitions = {
-    "TODO"      → ["DOING", "CANCELLED"],
-    "DOING"     → ["TODO", "HOLD", "DONE", "CANCELLED"],
-    "HOLD"      → ["DOING", "CANCELLED"],
-    "DONE"      → [],  <span class="comment">// 遷移不可</span>
-    "CANCELLED" → []   <span class="comment">// 遷移不可</span>
-  }
-
-  <span class="comment">// 現在のステータスから遷移可能なステータスを取得</span>
-  allowed = allowedTransitions[currentStatus]
-
-  <span class="comment">// 遷移可否を判定</span>
-  <span class="keyword">IF</span> newStatus が allowed に含まれる <span class="keyword">THEN</span>
-    <span class="keyword">RETURN</span> true
-  <span class="keyword">ELSE</span>
-    <span class="keyword">RETURN</span> false
+  existing = appointmentMapper.findById(id)
+  <span class="keyword">IF</span> existing == null <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> NotFoundException("Appointment not found: " + id)
   <span class="keyword">END IF</span>
+
+  <span class="keyword">IF</span> existing.status() != "REQUESTED" <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("申請中の予約のみ承認できます")
+  <span class="keyword">END IF</span>
+
+  <span class="comment">// ONLINE 予約なら Zoom ミーティング URL を発行（失敗時はフォールバック URL）</span>
+  zoomJoinUrl = existing.zoomJoinUrl()
+  <span class="keyword">IF</span> existing.channel() == "ONLINE" <span class="keyword">THEN</span>
+    zoomResult = zoomLinkService.createMeetingOrFallback(
+                   existing.scheduledAt(), "Pet Life Plus Premium Online Care")
+    zoomJoinUrl = zoomResult.joinUrl()   <span class="comment">// ZoomMeetingResult はレコード型</span>
+  <span class="keyword">END IF</span>
+
+  <span class="comment">// 全フィールドをコピーしたうえで status・zoomJoinUrl だけ差し替えた新エンティティを作成</span>
+  updated = <span class="keyword">NEW</span> AppointmentEntity(
+              existing.id(), existing.petId(), existing.ownerUserId(), existing.staffUserId(),
+              existing.appointmentType(), existing.channel(), existing.scheduledAt(),
+              "CONFIRMED", zoomJoinUrl,
+              existing.note(), existing.slotId(),
+              existing.deletedAt(), existing.createdAt(), existing.updatedAt())
+
+  appointmentMapper.update(updated)   <span class="comment">// UPDATE appointments SET … WHERE id=#{id}</span>
+
+  <span class="comment">// 更新後エンティティを渡して予約者へ通知（承認時は Zoom リンクも本文に含む）</span>
+  notifyOwnerStatusChanged(updated, approved=true, actorUserId)
+  <span class="comment">// → notifications + notification_recipients テーブルへ INSERT、type="INFO"</span>
+  <span class="comment">// → title: "診療予約が承認されました"</span>
+
+  <span class="keyword">RETURN</span> toResponse(updated)
 
 <span class="keyword">END FUNCTION</span>
 
 
-<span class="comment">// ステータス変更処理</span>
+<span class="comment">// ─── 却下（REQUESTED → CANCELED）VET / STAFF が実行 ──────────────────────</span>
 
-<span class="keyword">FUNCTION</span> changeStatus(taskId, newStatus)
+<span class="keyword">FUNCTION</span> reject(id, actorUserId)
 
-  task = taskMapper.selectById(taskId)
-
-  <span class="keyword">IF</span> NOT canTransition(task.status, newStatus) <span class="keyword">THEN</span>
-    <span class="keyword">THROW</span> IllegalStateException(
-      "「" + task.status + "」から「" + newStatus + "」への遷移はできません"
-    )
+  existing = appointmentMapper.findById(id)
+  <span class="keyword">IF</span> existing == null <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> NotFoundException("Appointment not found: " + id)
   <span class="keyword">END IF</span>
 
-  task.status = newStatus
-  task.updatedAt = 現在日時
-
-  <span class="comment">// 完了時は完了日時を記録</span>
-  <span class="keyword">IF</span> newStatus == "DONE" <span class="keyword">THEN</span>
-    task.completedAt = 現在日時
+  <span class="keyword">IF</span> existing.status() != "REQUESTED" <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("申請中の予約のみ却下できます")
   <span class="keyword">END IF</span>
 
-  taskMapper.updateStatus(task)
+  <span class="comment">// 通知に渡すため CANCELED 状態のエンティティを先に構築（DB 更新は updateStatus のみ）</span>
+  canceled = <span class="keyword">NEW</span> AppointmentEntity(
+               existing.id(), existing.petId(), existing.ownerUserId(), existing.staffUserId(),
+               existing.appointmentType(), existing.channel(), existing.scheduledAt(),
+               "CANCELED", existing.zoomJoinUrl(),
+               existing.note(), existing.slotId(),
+               existing.deletedAt(), existing.createdAt(), existing.updatedAt())
+
+  appointmentMapper.updateStatus(id, "CANCELED")   <span class="comment">// UPDATE appointments SET status=? WHERE id=?</span>
+
+  <span class="comment">// canceled エンティティを渡して予約者へ却下通知</span>
+  notifyOwnerStatusChanged(canceled, approved=false, actorUserId)
+  <span class="comment">// → type="INFO"、title: "診療予約が却下されました"</span>
+
+  <span class="keyword">RETURN</span> toResponse(canceled)
+
+<span class="keyword">END FUNCTION</span>
+
+
+<span class="comment">// ─── ユーザー自身によるキャンセル（REQUESTED → CANCELED）USER が実行 ───────</span>
+
+<span class="keyword">FUNCTION</span> cancelRequestedByOwner(id, currentUser)
+
+  existing = appointmentMapper.findById(id)
+  <span class="keyword">IF</span> existing == null <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> NotFoundException("Appointment not found: " + id)
+  <span class="keyword">END IF</span>
+
+  <span class="comment">// 所有者確認（status チェックより先に行う）</span>
+  <span class="keyword">IF</span> currentUser == null
+     OR NOT existing.ownerUserId().equals(currentUser.id()) <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("自分の予約のみキャンセルできます")
+  <span class="keyword">END IF</span>
+
+  <span class="comment">// REQUESTED 状態のみキャンセル可（CONFIRMED 後は不可）</span>
+  <span class="keyword">IF</span> existing.status() != "REQUESTED" <span class="keyword">THEN</span>
+    <span class="keyword">THROW</span> BadRequestException("申請中の予約のみキャンセルできます")
+  <span class="keyword">END IF</span>
+
+  appointmentMapper.updateStatus(id, "CANCELED")
+
+  <span class="comment">// ADMIN 全員へ ALERT 通知（予約者本人ではなく管理者へ）</span>
+  notifyAdminsCanceledByOwner(existing, currentUser.id())
+  <span class="comment">// → userMapper.findAdminUserIds() で全 ADMIN を取得してループ</span>
+  <span class="comment">// → type="ALERT"、title: "予約がキャンセルされました"</span>
+
+  <span class="keyword">RETURN</span> get(id)   <span class="comment">// DB から最新状態を再取得して返す</span>
 
 <span class="keyword">END FUNCTION</span>
                 </pre>
