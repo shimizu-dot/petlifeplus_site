@@ -1,5 +1,89 @@
 # CHANGELOG
 
+## [2026-05-27]
+
+### 機能追加
+
+#### F-1 — LINE プッシュメッセージ送信機能
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/line/LineBotService.java`
+  - `backend/src/main/java/com/example/petlife/controller/line/LinePushController.java` *(新規)*
+  - `backend/src/main/java/com/example/petlife/mapper/UserMapper.java`
+  - `backend/src/main/resources/templates/admin/line-push.html` *(新規)*
+  - `backend/src/main/resources/templates/fragments/nav.html`
+- **変更:**
+  - `LineBotService` に `pushMessage()`（個別送信）・`multicastMessage()`（最大500人ずつ一斉送信）を追加
+  - `UserMapper` に `findAllWithLineId()`（LINE ID 登録済みアクティブユーザー一覧）・`saveLineUserId()` を追加
+  - `LinePushController` を新規作成（`GET/POST /app/admin/line/push`）
+  - 管理画面テンプレート `admin/line-push.html` を新規作成（登録人数表示・送信フォーム・使い方ガイド）
+  - サイドバーの運営管理メニューに「💬 LINE 一斉送信」リンクを追加
+- **動作:** ADMIN が `/app/admin/line/push` から任意のメッセージを入力すると、`line_user_id` が設定されている全アクティブユーザーに LINE メッセージが送信される。500名超は自動分割送信
+
+#### F-2 — LINE follow イベント: 友達追加時ウェルカムメッセージ
+- **ファイル:** `backend/src/main/java/com/example/petlife/controller/line/LineEventController.java`
+- **変更:** `follow` イベントタイプを処理するブランチを追加。友達追加時にウェルカムメッセージを自動返信
+- **補足:** `message` イベントのみ処理していた既存ロジックを `eventType` 分岐に整理
+
+#### F-3 — 相談チャットボット: OpenAI マルチターン対話対応
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/ConsultChatService.java`
+- **変更:**
+  - OpenAI API 連携を追加（`@Value` で `openai.*` 設定を注入、`RestTemplate` で呼び出し）
+  - `generateReply()` を会話履歴付き OpenAI 呼び出し → フォールバックの構成に刷新
+  - OpenAI システムプロンプト: 情報収集フェーズでは毎回トリアージを出さず、情報が揃った段階で初めて判定するよう指示
+  - フォールバック（APIキー未設定時）: ターン数を計測し、症状→時期→頻度→全身状態の順に自然な一問一答で収集後、初めてトリアージ判定を提示するロジックに変更
+  - キーワードセットをクラス定数（`SYMPTOM_WORDS` 等）に整理
+- **原因:** 毎ターン「受け取った内容を一次トリアージしました」という同一テンプレートを返しており、会話が進展しなかった
+
+#### F-4 — 相談チャットボット: 食欲不振 2 日以上で即時受診ルール
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/ConsultChatService.java`
+- **変更:**
+  - `APPETITE_LOSS_WORDS`（食べない・食欲がない・食欲不振など）と `TWO_OR_MORE_DAYS_WORDS`（2日・ふつか・3日間・48時間など）の定数セットを追加
+  - フォールバック: 両セットが会話履歴内で揃った場合、緊急ワードと同等の即時受診メッセージを返す
+  - OpenAI システムプロンプト: 食欲不振 2 日以上 → 「今すぐ受診」強く推奨のルールを追記
+
+#### F-5 — ユーザー管理: LINE / Slack / Zoom 連携ステータスアイコン表示
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PlanAccessService.java`
+  - `backend/src/main/java/com/example/petlife/dto/user/UserResponse.java`
+  - `backend/src/main/java/com/example/petlife/service/UserService.java`
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+  - `backend/src/main/resources/static/css/app.css`
+  - `backend/src/main/resources/templates/admin/users/list.html`
+  - `backend/src/main/resources/templates/admin/users/form.html`
+- **変更:**
+  - `PlanAccessService` に `resolveIntegrationStatusForUser(userId, roleId, slackUserId, lineUserId)` を追加。ロール 3（一般ユーザー）はプラン購読から機能可否を判定し、スタッフ系ロール（ADMIN/VET/STAFF）は全機能有効扱い
+  - `UserResponse` に `integrationStatus` フィールドを追加
+  - `UserService.toResponse()` で `planAccessService.resolveIntegrationStatusForUser()` を呼び出し、レスポンスに含める
+  - `UserController.editForm` に `integrationStatus` モデル属性を追加
+  - CSS に `.int-chip` / `.int-chip-line` / `.int-chip-slack` / `.int-chip-zoom` / `.int-chip-off` スタイルを追加
+  - ユーザー一覧（table/list/grid 全ビュー）に連携チップを表示。table ビューは既存の Slack/LINE ID 生テキスト列を「連携」1列に集約
+  - ユーザー編集フォームに連携ステータス欄を追加（Slack/LINE ID 入力欄の直下）
+- **表示ロジック:**
+  - LINE・Slack: プランに機能が含まれ、かつ該当 ID が登録済み → 色付き / それ以外（プラン外 or ID 未登録）→ グレー
+  - Zoom: プランに機能が含まれる → 色付き / 未対応プラン → グレー
+  - ホバーで「ID未登録」「プラン対象外」などのツールチップを表示
+
+---
+
+### バグ修正
+
+#### B-1 — pets/list.html: canManagePets() 呼び出しによるレンダリングエラー
+- **ファイル:** `backend/src/main/resources/templates/pets/list.html`
+- **変更:** `currentUser.canManagePets()` → `currentUser.hasStaffAccess()` に4箇所置換（リストビュー・グリッドビュー・テーブルヘッダー・テーブルセル）
+- **原因:** CHANGELOG L-2（2026-05-26）で `LoginUser.canManagePets()` を「使用箇所ゼロ」として削除したが、テンプレートの4箇所に残存。Thymeleaf がメソッド未定義で 500 エラーを返し、ユーザー系アカウントがペット一覧を表示・操作できなくなっていた
+- **補足:** `canManagePets()` の意味（ADMIN/VET/STAFF のみサービスレベルバッジを表示）は `hasStaffAccess()` で完全に代替可能
+
+#### B-2 — ダッシュボードテーマ: 管理系とユーザー系の色が区別しにくい
+- **ファイル:** `backend/src/main/resources/static/css/app.css`
+- **変更:**
+  - `body.role-admin .sidebar`: 青グラデーション（`#1D4ED8 → #1E3A8A`）を明示
+  - `body.role-user`: teal（`#0B8585`）→ **緑系**（`#16A34A` エメラルドグリーン）に変更
+  - `body.role-user .sidebar`: 緑グラデーション（`#16A34A → #15803D`）
+  - `body.role-user .btn-primary`: 緑グラデーション（`#22C55E → #15803D`）
+- **原因:** ユーザー系テーマが teal（青緑）のため、管理系の青と視覚的に区別しにくかった。管理系=青、ユーザー系=緑 の設計意図を CSS で明確に表現
+
+---
+
 ## [2026-05-26]
 
 ### セキュリティ・バグ修正

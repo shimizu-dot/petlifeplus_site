@@ -70,4 +70,16 @@ public interface CalendarMarkMapper {
           AND deleted_at IS NULL
         """)
     int countByPetIdAndMarkDate(@Param("petId") Long petId, @Param("markDate") LocalDate markDate);
+
+    @Select("""
+        SELECT COUNT(*) FROM pet_calendar_marks
+        WHERE pet_id = #{petId}
+          AND mark_date = #{markDate}
+          AND mark_type = #{markType}
+          AND deleted_at IS NULL
+        """)
+    int countByPetIdAndMarkDateAndMarkType(
+            @Param("petId") Long petId,
+            @Param("markDate") LocalDate markDate,
+            @Param("markType") String markType);
 }

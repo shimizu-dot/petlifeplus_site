@@ -153,4 +153,22 @@ public interface UserMapper {
         ORDER BY u.id
         """)
     List<Long> findAdminUserIds();
+
+    @Select("""
+        SELECT id, role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, last_login_at, deleted_at, created_at, updated_at
+        FROM users
+        WHERE line_user_id IS NOT NULL
+          AND line_user_id <> ''
+          AND status = 'ACTIVE'
+          AND deleted_at IS NULL
+        ORDER BY id
+        """)
+    List<UserEntity> findAllWithLineId();
+
+    @Update("""
+        UPDATE users
+        SET line_user_id = #{lineUserId}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{userId} AND deleted_at IS NULL
+        """)
+    int saveLineUserId(@Param("userId") Long userId, @Param("lineUserId") String lineUserId);
 }

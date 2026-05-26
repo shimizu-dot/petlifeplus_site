@@ -65,14 +65,8 @@ public class LineEventController {
 
         for (Object eventObj : events) {
             if (!(eventObj instanceof Map<?, ?> event)) continue;
-            if (!"message".equals(event.get("type"))) continue;
 
-            Object msgObj = event.get("message");
-            if (!(msgObj instanceof Map<?, ?> message)) continue;
-            if (!"text".equals(message.get("type"))) continue;
-
-            String replyToken = (String) event.get("replyToken");
-            String text       = (String) message.get("text");
+            String eventType = (String) event.get("type");
 
             // source.userId を取得
             String senderId = null;
@@ -80,6 +74,29 @@ public class LineEventController {
             if (sourceObj instanceof Map<?, ?> source) {
                 senderId = (String) source.get("userId");
             }
+
+            // --- follow イベント: 友達追加時にウェルカムメッセージを送信 ---
+            if ("follow".equals(eventType)) {
+                String replyToken = (String) event.get("replyToken");
+                if (replyToken != null) {
+                    lineBotService.replyMessage(replyToken,
+                            "ペットライフプラスの LINE Bot へようこそ！\n\n" +
+                            "体調の変化や気になる症状をメッセージで送ると、受診の目安をお伝えします。\n" +
+                            "アプリでログイン後、マイページで LINE ID を登録するとより便利にご利用いただけます。");
+                }
+                auditLog.info("action=line_follow userId={}", senderId);
+                continue;
+            }
+
+            // --- message イベント: テキストメッセージへの返答 ---
+            if (!"message".equals(eventType)) continue;
+
+            Object msgObj = event.get("message");
+            if (!(msgObj instanceof Map<?, ?> message)) continue;
+            if (!"text".equals(message.get("type"))) continue;
+
+            String replyToken = (String) event.get("replyToken");
+            String text       = (String) message.get("text");
 
             if (replyToken == null || text == null) continue;
 

@@ -50,6 +50,14 @@
                     th:text="${user.roleDisplay}">Light</span>
               <span th:class="${user.status == 'ACTIVE' ? 'badge badge-green' : 'badge badge-gray'}"
                     th:text="${user.status == 'ACTIVE' ? '有効' : '無効'}">有効</span>
+              <div class="int-chips">
+                <span th:class="${user.integrationStatus.lineReady()} ? 'int-chip int-chip-line' : 'int-chip int-chip-off'"
+                      th:title="${user.integrationStatus.lineReady() ? 'LINE: 利用可能' : (user.integrationStatus.lineEnabled() ? 'LINE: ID未登録' : 'LINE: プラン対象外')}">LINE</span>
+                <span th:class="${user.integrationStatus.slackReady()} ? 'int-chip int-chip-slack' : 'int-chip int-chip-off'"
+                      th:title="${user.integrationStatus.slackReady() ? 'Slack: 利用可能' : (user.integrationStatus.slackEnabled() ? 'Slack: ID未登録' : 'Slack: プラン対象外')}">Slack</span>
+                <span th:class="${user.integrationStatus.zoomEnabled()} ? 'int-chip int-chip-zoom' : 'int-chip int-chip-off'"
+                      th:title="${user.integrationStatus.zoomEnabled() ? 'Zoom: 利用可能' : 'Zoom: プラン対象外'}">Zoom</span>
+              </div>
               <div class="table-actions">
                 <a th:href="@{/app/admin/users/{id}/edit(id=${user.id})}" class="btn btn-secondary btn-sm">編集</a>
                 <form th:action="@{/app/admin/users/{id}(id=${user.id})}" method="post"
@@ -78,6 +86,14 @@
               <span th:class="${user.status == 'ACTIVE' ? 'badge badge-green' : 'badge badge-gray'}"
                     th:text="${user.status == 'ACTIVE' ? '有効' : '無効'}">有効</span>
             </div>
+            <div class="int-chips" style="margin-bottom:8px;">
+              <span th:class="${user.integrationStatus.lineReady()} ? 'int-chip int-chip-line' : 'int-chip int-chip-off'"
+                    th:title="${user.integrationStatus.lineReady() ? 'LINE: 利用可能' : (user.integrationStatus.lineEnabled() ? 'LINE: ID未登録' : 'LINE: プラン対象外')}">LINE</span>
+              <span th:class="${user.integrationStatus.slackReady()} ? 'int-chip int-chip-slack' : 'int-chip int-chip-off'"
+                    th:title="${user.integrationStatus.slackReady() ? 'Slack: 利用可能' : (user.integrationStatus.slackEnabled() ? 'Slack: ID未登録' : 'Slack: プラン対象外')}">Slack</span>
+              <span th:class="${user.integrationStatus.zoomEnabled()} ? 'int-chip int-chip-zoom' : 'int-chip int-chip-off'"
+                    th:title="${user.integrationStatus.zoomEnabled() ? 'Zoom: 利用可能' : 'Zoom: プラン対象外'}">Zoom</span>
+            </div>
             <div class="table-actions">
               <a th:href="@{/app/admin/users/{id}/edit(id=${user.id})}" class="btn btn-secondary btn-sm">編集</a>
               <form th:action="@{/app/admin/users/{id}(id=${user.id})}" method="post"
@@ -98,8 +114,7 @@
                 <th>氏名</th>
                 <th>メール</th>
                 <th>電話番号</th>
-                <th>Slack</th>
-                <th>LINE</th>
+                <th>連携</th>
                 <th>ロール</th>
                 <th>ステータス</th>
                 <th>操作</th>
@@ -111,8 +126,16 @@
                 <td style="font-weight:600;" th:text="${user.name}">管理 太郎</td>
                 <td th:text="${user.email}">admin@example.com</td>
                 <td th:text="${user.phone ?: '—'}">090-0000-0000</td>
-                <td th:text="${user.slackUserId ?: '—'}">—</td>
-                <td th:text="${user.lineUserId ?: '—'}">—</td>
+                <td>
+                  <div class="int-chips">
+                    <span th:class="${user.integrationStatus.lineReady()} ? 'int-chip int-chip-line' : 'int-chip int-chip-off'"
+                          th:title="${user.integrationStatus.lineReady() ? 'LINE: 利用可能' : (user.integrationStatus.lineEnabled() ? 'LINE: ID未登録' : 'LINE: プラン対象外')}">LINE</span>
+                    <span th:class="${user.integrationStatus.slackReady()} ? 'int-chip int-chip-slack' : 'int-chip int-chip-off'"
+                          th:title="${user.integrationStatus.slackReady() ? 'Slack: 利用可能' : (user.integrationStatus.slackEnabled() ? 'Slack: ID未登録' : 'Slack: プラン対象外')}">Slack</span>
+                    <span th:class="${user.integrationStatus.zoomEnabled()} ? 'int-chip int-chip-zoom' : 'int-chip int-chip-off'"
+                          th:title="${user.integrationStatus.zoomEnabled() ? 'Zoom: 利用可能' : 'Zoom: プラン対象外'}">Zoom</span>
+                  </div>
+                </td>
                 <td>
                   <span th:class="${user.roleId == 1 || user.roleId == 2 ? 'badge badge-red' :
                                     user.roleId == 4 ? 'badge badge-blue' :

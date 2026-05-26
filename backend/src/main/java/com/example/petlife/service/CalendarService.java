@@ -181,8 +181,8 @@ public class CalendarService {
             throw new BadRequestException("不正なシール種別です");
         }
         PetEntity pet = petService.getEntity(form.getPetId(), user);
-        if (calendarMarkMapper.countByPetIdAndMarkDate(pet.id(), form.getMarkDate()) > 0) {
-            throw new BadRequestException("同じ日にすでにシールが貼られています");
+        if (calendarMarkMapper.countByPetIdAndMarkDateAndMarkType(pet.id(), form.getMarkDate(), form.getMarkType()) > 0) {
+            throw new BadRequestException("同じ日に同じ種類のシールがすでに貼られています");
         }
         CalendarMarkEntity row = new CalendarMarkEntity(
                 null,

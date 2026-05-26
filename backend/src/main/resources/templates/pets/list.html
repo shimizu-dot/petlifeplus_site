@@ -63,7 +63,7 @@
               </div>
               <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">
                 <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">永眠</span>
-                <span th:if="${currentUser != null and currentUser.canManagePets()}"
+                <span th:if="${currentUser != null and currentUser.hasStaffAccess()}"
                       th:class="${petPlanLabels[pet.id] == 'Premium' ? 'badge badge-red' :
                                 petPlanLabels[pet.id] == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
                       th:text="${petPlanLabels[pet.id] ?: 'Light'}">Light</span>
@@ -108,7 +108,7 @@
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
               <span th:if="${pet.deceasedAt != null}" class="badge badge-gray">永眠</span>
-              <span th:if="${currentUser != null and currentUser.canManagePets()}"
+              <span th:if="${currentUser != null and currentUser.hasStaffAccess()}"
                     th:class="${petPlanLabels[pet.id] == 'Premium' ? 'badge badge-red' :
                               petPlanLabels[pet.id] == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
                     th:text="${petPlanLabels[pet.id] ?: 'Light'}">Light</span>
@@ -139,7 +139,7 @@
                 <th>品種</th>
                 <th>性別</th>
                 <th>生年月日</th>
-                <th th:if="${currentUser != null and currentUser.canManagePets()}">サービスレベル</th>
+                <th th:if="${currentUser != null and currentUser.hasStaffAccess()}">サービスレベル</th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -158,7 +158,7 @@
                 <td th:text="${pet.breed ?: '—'}">柴犬</td>
                 <td th:text="${pet.sex == 'MALE' ? 'オス' : pet.sex == 'FEMALE' ? 'メス' : '—'}">オス</td>
                 <td th:text="${pet.birthDate ?: '—'}">2021-03-01</td>
-                <td th:if="${currentUser != null and currentUser.canManagePets()}">
+                <td th:if="${currentUser != null and currentUser.hasStaffAccess()}">
                   <span th:class="${petPlanLabels[pet.id] == 'Premium' ? 'badge badge-red' :
                                     petPlanLabels[pet.id] == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
                         th:text="${petPlanLabels[pet.id] ?: 'Light'}">Light</span>

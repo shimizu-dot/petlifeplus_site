@@ -9,6 +9,7 @@ public record UserResponse(
         String phone,
         String slackUserId,
         String lineUserId,
-        String status
+        String status,
+        UserIntegrationStatus integrationStatus
 ) {
 }

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LINE 一斉送信 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body th:class="${bodyClass}">
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">LINE 一斉送信</span></div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+      <!-- チャンネル未設定の警告 -->
+      <div th:if="${!lineConfigured}"
+           class="alert alert-error">
+        LINE_CHANNEL_TOKEN が設定されていません。環境変数を設定してアプリを再起動してください。
+      </div>
+
+      <!-- 送信フォーム -->
+      <div class="card" style="max-width:680px;">
+        <div class="card-title">メッセージを送信</div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px 16px;background:#F0FDF4;border-radius:10px;border:1px solid #BBF7D0;">
+          <span style="font-size:22px;">📱</span>
+          <div>
+            <div style="font-weight:700;color:#166534;">
+              LINE 登録ユーザー
+              <span style="font-size:22px;margin-left:6px;" th:text="${lineUserCount}">0</span> 名
+            </div>
+            <div style="font-size:13px;color:#15803D;">line_user_id が設定されているアクティブユーザー数</div>
+          </div>
+        </div>
+
+        <form th:action="@{/app/admin/line/push}" method="post"
+              onsubmit="return confirm('LINE 登録ユーザー全員にメッセージを送信します。よろしいですか？')">
+          <div class="form-group">
+            <label class="form-label">送信メッセージ<span class="required">*</span></label>
+            <textarea name="message" class="form-control" rows="5" maxlength="2000"
+                      placeholder="例：診療時間のお知らせ&#10;〇月〇日は休診日です。ご了承ください。"
+                      required></textarea>
+            <div class="form-hint">最大 2,000 文字。500 名を超える場合は自動で分割送信されます。</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button type="submit" class="btn btn-primary"
+                    th:disabled="${!lineConfigured or lineUserCount == 0}">
+              📤 送信する
+            </button>
+            <a th:href="@{/app/admin/announcements}" class="btn btn-secondary">キャンセル</a>
+            <span th:if="${lineUserCount == 0}" style="font-size:13px;color:#64748B;">
+              LINE ID が登録されているユーザーがいません
+            </span>
+          </div>
+        </form>
+      </div>
+
+      <!-- 使い方ガイド -->
+      <div class="card" style="max-width:680px;">
+        <div class="card-title">LINE ID の登録方法</div>
+        <div style="font-size:14px;color:#475569;line-height:1.8;">
+          <ol style="margin:0;padding-left:20px;">
+            <li>ユーザーが LINE で Bot を友達追加する</li>
+            <li>管理者が <a th:href="@{/app/admin/users}" style="color:#1D4ED8;">ユーザー管理</a> でそのユーザーの「LINE ユーザー ID」を入力・保存する</li>
+            <li>以降、このページから一斉送信が可能になる</li>
+          </ol>
+          <div style="margin-top:12px;padding:10px 14px;background:#FEF3C7;border-radius:8px;border:1px solid #FDE68A;color:#92400E;font-size:13px;">
+            ⚠️ LINE ユーザー ID（Uxxxxx...）は LINE Developers コンソールまたは Webhook の
+            <code>source.userId</code> から確認できます。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -331,6 +331,310 @@
               </pre>
             </div>
           </div>
+          <div class="fill-block" style="margin-top:20px;">
+            <div class="fill-label">ビジュアルER図（ドメイン別カラーマップ）</div>
+            <div class="fill-hint">ドメインごとに色分け。凡例: <code>||&#8212;o{</code> 1対多（必須FK）&nbsp; <code>|o&#8212;o{</code> 1対多（任意FK）&nbsp; <code>|o&#8212;o|</code> 任意1対1（UNIQUE nullable FK）</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px;">
+              <span style="background:#dbeafe;border:2px solid #1d4ed8;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:#1e3a8a;">&#128272; Auth</span>
+              <span style="background:#dcfce7;border:2px solid #16a34a;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:#14532d;">&#128062; Pets &amp; Health</span>
+              <span style="background:#fef3c7;border:2px solid #d97706;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:#78350f;">&#128179; Plans &amp; Billing</span>
+              <span style="background:#ede9fe;border:2px solid #7c3aed;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:#4c1d95;">&#128197; Appointments &amp; Medical</span>
+              <span style="background:#ccfbf1;border:2px solid #0d9488;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:#134e4a;">&#128172; Messaging</span>
+              <span style="background:#ffe4e6;border:2px solid #e11d48;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:#881337;">&#9881; UX Helpers</span>
+            </div>
+
+            <!-- 1. Auth -->
+            <div style="border:2px solid #1d4ed8;border-radius:12px;margin-bottom:16px;overflow:hidden;">
+              <div style="background:linear-gradient(90deg,#1d4ed8,#3b82f6);color:#fff;padding:8px 14px;font-weight:700;font-size:13px;">&#128272; Auth / 認証（2テーブル）</div>
+              <div style="padding:12px;overflow-x:auto;background:#f8fbff;">
+                <pre class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#dbeafe","primaryBorderColor":"#1d4ed8","lineColor":"#1e40af","background":"#f8fbff","fontFamily":"system-ui,sans-serif","attributeBackgroundColorEven":"#eff6ff","attributeBackgroundColorOdd":"#dbeafe"}}}%%
+erDiagram
+    roles {
+        bigint id PK "ロールID"
+        varchar role_code UK "ADMIN/SUPER/USER/VET/STAFF"
+        varchar role_name "ロール名"
+    }
+    users {
+        bigint id PK "ユーザーID"
+        bigint role_id FK "ロールID"
+        varchar email UK "メールアドレス"
+        varchar password_hash "BCryptハッシュ"
+        varchar slack_user_id "Slack連携ID"
+        varchar line_user_id "LINE連携ID"
+        varchar status "ACTIVE/INACTIVE/SUSPENDED"
+    }
+    roles ||--o{ users : "role_id"
+                </pre>
+              </div>
+            </div>
+
+            <!-- 2. Pets & Health -->
+            <div style="border:2px solid #16a34a;border-radius:12px;margin-bottom:16px;overflow:hidden;">
+              <div style="background:linear-gradient(90deg,#16a34a,#22c55e);color:#fff;padding:8px 14px;font-weight:700;font-size:13px;">&#128062; Pets &amp; Health / ペット・健康管理（4テーブル）</div>
+              <div style="padding:12px;overflow-x:auto;background:#f0fdf4;">
+                <pre class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#dcfce7","primaryBorderColor":"#16a34a","lineColor":"#15803d","background":"#f0fdf4","fontFamily":"system-ui,sans-serif","attributeBackgroundColorEven":"#f0fdf4","attributeBackgroundColorOdd":"#dcfce7"}}}%%
+erDiagram
+    users { bigint id PK "Auth 参照" }
+    pets {
+        bigint id PK "ペットID"
+        bigint owner_user_id FK "飼い主ユーザー"
+        varchar name "ペット名"
+        varchar species "DOG/CAT 等"
+        varchar sex "MALE/FEMALE"
+        date birth_date "生年月日"
+    }
+    health_records {
+        bigint id PK "健康記録ID"
+        bigint pet_id FK "ペット"
+        bigint recorded_by_user_id FK "記録者"
+        date record_date "記録日"
+        decimal weight_kg "体重(kg)"
+        integer meal_score "食事 1-5"
+        integer exercise_score "運動 1-5"
+        integer overall_score "総合 1-5"
+    }
+    pet_care_records {
+        bigint id PK "ケア記録ID"
+        bigint pet_id FK "ペット"
+        bigint recorded_by_user_id FK "記録者"
+        varchar care_type "RABIES/HEARTWORM/COMBO_VACCINE..."
+        date administered_on "実施日"
+        date next_due_on "次回予定日"
+    }
+    symptom_checks {
+        bigint id PK "症状チェックID"
+        bigint pet_id FK "ペット"
+        bigint requested_by_user_id FK "依頼者"
+        varchar severity "LOW/MEDIUM/HIGH"
+        varchar recommendation "OBSERVE/CONSULT/VISIT"
+        text guidance "AIガイダンス"
+    }
+    users ||--o{ pets : "owner_user_id"
+    pets ||--o{ health_records : "pet_id"
+    users ||--o{ health_records : "recorded_by_user_id"
+    pets ||--o{ pet_care_records : "pet_id"
+    users ||--o{ pet_care_records : "recorded_by_user_id"
+    pets ||--o{ symptom_checks : "pet_id"
+    users ||--o{ symptom_checks : "requested_by_user_id"
+                </pre>
+              </div>
+            </div>
+
+            <!-- 3. Plans & Billing -->
+            <div style="border:2px solid #d97706;border-radius:12px;margin-bottom:16px;overflow:hidden;">
+              <div style="background:linear-gradient(90deg,#d97706,#f59e0b);color:#fff;padding:8px 14px;font-weight:700;font-size:13px;">&#128179; Plans &amp; Billing / プラン・課金（5テーブル）</div>
+              <div style="padding:12px;overflow-x:auto;background:#fffbeb;">
+                <pre class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#fef3c7","primaryBorderColor":"#d97706","lineColor":"#b45309","background":"#fffbeb","fontFamily":"system-ui,sans-serif","attributeBackgroundColorEven":"#fffbeb","attributeBackgroundColorOdd":"#fef3c7"}}}%%
+erDiagram
+    users { bigint id PK "Auth 参照" }
+    pets { bigint id PK "Pets 参照" }
+    plans {
+        bigint id PK "プランID"
+        varchar name "LIGHT/STANDARD/PREMIUM"
+        decimal monthly_fee "月額(円)"
+        jsonb features_json "機能フラグ(表示用)"
+        boolean is_active "有効フラグ"
+    }
+    plan_features {
+        bigint plan_id FK "プランID"
+        varchar feature_code "AI_SYMPTOM/SLACK_BOT/LINE_BOT/ZOOM_CONSULT"
+    }
+    subscriptions {
+        bigint id PK "サブスクID"
+        bigint user_id FK "契約ユーザー"
+        bigint pet_id FK "対象ペット"
+        bigint plan_id FK "プランID"
+        date start_date "開始日"
+        varchar status "ACTIVE/PAUSED/CANCELED"
+        boolean auto_renew "自動更新"
+    }
+    invoices {
+        bigint id PK "請求書ID"
+        bigint subscription_id FK "サブスク"
+        varchar invoice_number UK "請求書番号"
+        decimal amount "請求金額"
+        varchar payment_status "UNPAID/PARTIAL/PAID"
+    }
+    payments {
+        bigint id PK "支払ID"
+        bigint invoice_id FK "請求書"
+        decimal paid_amount "支払金額"
+        varchar payment_method "CARD/BANK/OTHER"
+        varchar status "PENDING/SUCCEEDED/FAILED"
+    }
+    plans ||--o{ plan_features : "plan_id"
+    plans ||--o{ subscriptions : "plan_id"
+    users ||--o{ subscriptions : "user_id"
+    pets ||--o{ subscriptions : "pet_id"
+    subscriptions ||--o{ invoices : "subscription_id"
+    invoices ||--o{ payments : "invoice_id"
+                </pre>
+              </div>
+            </div>
+
+            <!-- 4. Appointments & Medical -->
+            <div style="border:2px solid #7c3aed;border-radius:12px;margin-bottom:16px;overflow:hidden;">
+              <div style="background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff;padding:8px 14px;font-weight:700;font-size:13px;">&#128197; Appointments &amp; Medical / 予約・診療記録（4テーブル）</div>
+              <div style="padding:12px;overflow-x:auto;background:#faf5ff;">
+                <pre class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#ede9fe","primaryBorderColor":"#7c3aed","lineColor":"#6d28d9","background":"#faf5ff","fontFamily":"system-ui,sans-serif","attributeBackgroundColorEven":"#faf5ff","attributeBackgroundColorOdd":"#ede9fe"}}}%%
+erDiagram
+    users { bigint id PK "Auth 参照" }
+    pets { bigint id PK "Pets 参照" }
+    appointment_slots {
+        bigint id PK "予約枠ID"
+        bigint created_by_user_id FK "作成者(ADMIN)"
+        timestamp slot_datetime "枠日時"
+        varchar note "備考"
+    }
+    appointments {
+        bigint id PK "予約ID"
+        bigint pet_id FK "対象ペット"
+        bigint owner_user_id FK "飼い主"
+        bigint staff_user_id FK "担当スタッフ(NULL可)"
+        bigint slot_id FK "予約枠(NULL可)"
+        varchar appointment_type "CONSULTATION/MEDICAL"
+        varchar channel "ONLINE/VISIT/HOSPITAL"
+        varchar status "REQUESTED/CONFIRMED/CANCELED/COMPLETED"
+        varchar zoom_join_url "Zoom URL"
+    }
+    medical_histories {
+        bigint id PK "診療記録ID"
+        bigint pet_id FK "ペット"
+        bigint appointment_id FK "関連予約(NULL可,UNIQUE)"
+        bigint handled_by_user_id FK "対応者(VET/STAFF)"
+        date performed_on "実施日"
+        varchar treatment_detail "対応内容"
+        varchar diagnosis "診断内容"
+    }
+    medical_attachments {
+        bigint id PK "添付ファイルID"
+        bigint medical_history_id FK "診療記録"
+        varchar file_name "ファイル名"
+        varchar file_mime_type "MIMEタイプ"
+        bigint file_size_bytes "サイズ"
+    }
+    users ||--o{ appointment_slots : "created_by_user_id"
+    appointment_slots |o--o{ appointments : "slot_id"
+    pets ||--o{ appointments : "pet_id"
+    users ||--o{ appointments : "owner_user_id"
+    users |o--o{ appointments : "staff_user_id"
+    appointments |o--o| medical_histories : "appointment_id(UNIQUE)"
+    pets ||--o{ medical_histories : "pet_id"
+    users ||--o{ medical_histories : "handled_by_user_id"
+    medical_histories ||--o{ medical_attachments : "medical_history_id"
+                </pre>
+              </div>
+            </div>
+
+            <!-- 5. Messaging -->
+            <div style="border:2px solid #0d9488;border-radius:12px;margin-bottom:16px;overflow:hidden;">
+              <div style="background:linear-gradient(90deg,#0d9488,#14b8a6);color:#fff;padding:8px 14px;font-weight:700;font-size:13px;">&#128172; Messaging / メッセージング・通知（5テーブル）</div>
+              <div style="padding:12px;overflow-x:auto;background:#f0fdfa;">
+                <pre class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#ccfbf1","primaryBorderColor":"#0d9488","lineColor":"#0f766e","background":"#f0fdfa","fontFamily":"system-ui,sans-serif","attributeBackgroundColorEven":"#f0fdfa","attributeBackgroundColorOdd":"#ccfbf1"}}}%%
+erDiagram
+    users { bigint id PK "Auth 参照" }
+    pets { bigint id PK "Pets 参照" }
+    appointments { bigint id PK "Appointments 参照" }
+    invoices { bigint id PK "Billing 参照" }
+    consult_chat_messages {
+        bigint id PK "チャットメッセージID"
+        bigint user_id FK "ユーザー"
+        varchar sender_type "USER/BOT"
+        varchar message "メッセージ本文"
+    }
+    notifications {
+        bigint id PK "通知ID"
+        bigint created_by_user_id FK "作成者"
+        varchar notification_type "REMINDER/INFO/ALERT"
+        varchar title "タイトル"
+        varchar delivery_status "DRAFT/SCHEDULED/SENT/FAILED"
+    }
+    notification_recipients {
+        bigint notification_id FK "通知ID (PK)"
+        bigint user_id FK "受信ユーザー (PK)"
+        timestamp read_at "既読日時(NULL=未読)"
+        varchar delivery_status "PENDING/SENT/FAILED"
+    }
+    email_templates {
+        bigint id PK "テンプレートID"
+        varchar template_code UK "コード"
+        varchar subject_template "件名テンプレート"
+    }
+    email_messages {
+        bigint id PK "メール送信ID"
+        bigint template_id FK "テンプレート"
+        bigint recipient_user_id FK "宛先ユーザー"
+        bigint pet_id FK "関連ペット(NULL可)"
+        bigint appointment_id FK "関連予約(NULL可)"
+        bigint invoice_id FK "関連請求書(NULL可)"
+        varchar status "QUEUED/SENT/FAILED"
+    }
+    users ||--o{ consult_chat_messages : "user_id"
+    users ||--o{ notifications : "created_by_user_id"
+    notifications ||--o{ notification_recipients : "notification_id"
+    users ||--o{ notification_recipients : "user_id"
+    email_templates ||--o{ email_messages : "template_id"
+    users ||--o{ email_messages : "recipient_user_id"
+    pets |o--o{ email_messages : "pet_id"
+    appointments |o--o{ email_messages : "appointment_id"
+    invoices |o--o{ email_messages : "invoice_id"
+                </pre>
+              </div>
+            </div>
+
+            <!-- 6. UX Helpers -->
+            <div style="border:2px solid #e11d48;border-radius:12px;margin-bottom:16px;overflow:hidden;">
+              <div style="background:linear-gradient(90deg,#e11d48,#f43f5e);color:#fff;padding:8px 14px;font-weight:700;font-size:13px;">&#9881; UX Helpers / UX補助（4テーブル）</div>
+              <div style="padding:12px;overflow-x:auto;background:#fff1f2;">
+                <pre class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#ffe4e6","primaryBorderColor":"#e11d48","lineColor":"#be123c","background":"#fff1f2","fontFamily":"system-ui,sans-serif","attributeBackgroundColorEven":"#fff1f2","attributeBackgroundColorOdd":"#ffe4e6"}}}%%
+erDiagram
+    users { bigint id PK "Auth 参照" }
+    pets { bigint id PK "Pets 参照" }
+    pet_calendar_marks {
+        bigint id PK "マークID"
+        bigint pet_id FK "ペット"
+        bigint created_by_user_id FK "作成者"
+        date mark_date "マーク日付"
+        varchar mark_type "KARTE/VACCINE/HOSPITAL/TRIMMING/DOG_RUN/MEDICINE"
+        varchar memo "メモ"
+    }
+    dismissed_reminders {
+        bigint id PK "ID"
+        bigint user_id FK "ユーザー"
+        varchar reminder_key "リマインダーキー"
+        timestamp dismissed_at "非表示設定日時"
+    }
+    announcements {
+        bigint id PK "お知らせID"
+        bigint created_by_user_id FK "作成者(ADMIN)"
+        varchar title "タイトル"
+        text body "本文"
+        boolean is_active "表示フラグ"
+    }
+    password_reset_tokens {
+        bigint id PK "トークンID"
+        bigint user_id FK "ユーザー"
+        varchar token UK "リセットトークン"
+        timestamp expires_at "有効期限"
+        timestamp used_at "使用日時(NULL=未使用)"
+    }
+    pets ||--o{ pet_calendar_marks : "pet_id"
+    users ||--o{ pet_calendar_marks : "created_by_user_id"
+    users ||--o{ dismissed_reminders : "user_id"
+    users ||--o{ announcements : "created_by_user_id"
+    users ||--o{ password_reset_tokens : "user_id"
+                </pre>
+              </div>
+            </div>
+
+          </div>
+
         </section>
 
         <!-- ══ Section 2: 正規化評価 ═══════════════════════════════════════════ -->
@@ -1051,6 +1355,8 @@
   </div>
 
   <script src="../js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });</script>
 </body>
 
 </html>

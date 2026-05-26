@@ -85,6 +85,10 @@
        th:classappend="${requestURI.contains('/admin/announcements') ? 'active' : ''}">
       📢 お知らせ管理
     </a>
+    <a th:href="@{/app/admin/line/push}"
+       th:classappend="${requestURI.contains('/admin/line/push') ? 'active' : ''}">
+      💬 LINE 一斉送信
+    </a>
     <a th:href="@{/app/admin/appointment-slots}"
        th:classappend="${requestURI.contains('/appointment-slots') ? 'active' : ''}">
       🗓️ 予約枠管理

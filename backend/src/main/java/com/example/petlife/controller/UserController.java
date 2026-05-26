@@ -5,6 +5,7 @@ import com.example.petlife.dto.user.UserForm;
 import com.example.petlife.entity.UserEntity;
 import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.service.PetService;
+import com.example.petlife.service.PlanAccessService;
 import com.example.petlife.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,10 +22,13 @@ public class UserController {
 
     private final UserService userService;
     private final PetService petService;
+    private final PlanAccessService planAccessService;
 
-    public UserController(UserService userService, PetService petService) {
+    public UserController(UserService userService, PetService petService,
+                          PlanAccessService planAccessService) {
         this.userService = userService;
         this.petService = petService;
+        this.planAccessService = planAccessService;
     }
 
     @GetMapping
@@ -110,6 +114,9 @@ public class UserController {
             form.setPlanTier("PREMIUM");
         }
         model.addAttribute("linkedPets", petService.listByOwnerUserIdForAdmin(entity.id()));
+        model.addAttribute("integrationStatus",
+                planAccessService.resolveIntegrationStatusForUser(
+                        entity.id(), entity.roleId(), entity.slackUserId(), entity.lineUserId()));
         model.addAttribute("form",     form);
         model.addAttribute("userId",   id);
         model.addAttribute("editMode", true);

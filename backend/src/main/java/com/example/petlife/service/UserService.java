@@ -22,10 +22,13 @@ public class UserService {
     private static final Logger auditLog = LoggerFactory.getLogger("AUDIT");
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final PlanAccessService planAccessService;
 
-    public UserService(UserMapper userMapper, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserMapper userMapper, BCryptPasswordEncoder passwordEncoder,
+                       PlanAccessService planAccessService) {
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.planAccessService = planAccessService;
     }
 
     public PageResponse<UserResponse> list(int page, int size) {
@@ -118,7 +121,10 @@ public class UserService {
                 }
             }
         };
-        return new UserResponse(row.id(), row.roleId(), roleDisplay, row.name(), row.email(), row.phone(), row.slackUserId(), row.lineUserId(), row.status());
+        var integrationStatus = planAccessService.resolveIntegrationStatusForUser(
+                row.id(), row.roleId(), row.slackUserId(), row.lineUserId());
+        return new UserResponse(row.id(), row.roleId(), roleDisplay, row.name(), row.email(),
+                row.phone(), row.slackUserId(), row.lineUserId(), row.status(), integrationStatus);
     }
 
     public UserEntity findEntity(Long id) {

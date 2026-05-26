@@ -31,25 +31,57 @@ body.role-admin {
   --shadow-md: 0 12px 24px rgba(29,78,216,.12);
 }
 
-/* ===== USER THEME (teal gradient) ===== */
+body.role-admin .sidebar {
+  background: linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 100%);
+}
+
+body.role-admin .kpi-card {
+  background: linear-gradient(135deg, #2563EB 0%, #0EA5A4 100%);
+  box-shadow: 0 8px 24px rgba(29,78,216,.18);
+  color: #fff;
+}
+
+body.role-admin .kpi-label {
+  color: rgba(255,255,255,.78);
+}
+
+body.role-admin .kpi-value {
+  color: #fff;
+}
+
+/* ===== USER THEME (teal-navy / serch.jpg) ===== */
 body.role-user {
-  --primary: #0B8585;
-  --primary-dark: #096F6F;
+  --primary: #0EA5A4;
+  --primary-dark: #0F766E;
   --primary-light: #F0FDFA;
-  --shadow-md: 0 12px 24px rgba(11,133,133,.12);
+  --shadow-md: 0 12px 24px rgba(14,165,164,.12);
 }
 
 body.role-user .sidebar {
-  background: linear-gradient(160deg, #0B8585 0%, #0C5F8A 100%);
+  background: linear-gradient(160deg, #1A3A48 0%, #0D2535 100%);
+}
+
+body.role-user .kpi-card {
+  background: linear-gradient(135deg, #0EA5A4 0%, #0D2535 100%);
+  box-shadow: 0 8px 24px rgba(13,37,53,.30);
+  color: #fff;
+}
+
+body.role-user .kpi-label {
+  color: rgba(255,255,255,.78);
+}
+
+body.role-user .kpi-value {
+  color: #fff;
 }
 
 body.role-user .btn-primary {
-  background: linear-gradient(135deg, #0EA5A4 0%, #0C5F8A 100%);
+  background: linear-gradient(135deg, #14B8A6 0%, #0F766E 100%);
   border-color: transparent;
 }
 
 body.role-user .btn-primary:hover {
-  background: linear-gradient(135deg, #0B8585 0%, #0A4F75 100%);
+  background: linear-gradient(135deg, #0EA5A4 0%, #0D5E5A 100%);
   border-color: transparent;
 }
 
@@ -433,6 +465,25 @@ body {
 .badge-red    { background: #FEE2E2; color: #991B1B; }
 .badge-blue   { background: #DBEAFE; color: #1E40AF; }
 .badge-gray   { background: #F1F5F9; color: #475569; }
+
+/* ===== INTEGRATION CHIPS ===== */
+.int-chips { display: inline-flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
+.int-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  cursor: default;
+}
+.int-chip-line  { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
+.int-chip-slack { background: #F5F3FF; color: #5B21B6; border: 1px solid #C4B5FD; }
+.int-chip-zoom  { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+.int-chip-off   { background: #F1F5F9; color: #94A3B8; border: 1px solid #E2E8F0; }
 
 /* ===== LOGIN PAGE ===== */
 .login-page {

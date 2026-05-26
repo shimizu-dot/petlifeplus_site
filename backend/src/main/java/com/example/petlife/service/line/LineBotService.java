@@ -1,5 +1,7 @@
 package com.example.petlife.service.line;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -8,36 +10,104 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class LineBotService {
 
+    private static final Logger log = LoggerFactory.getLogger(LineBotService.class);
+
+    private static final String REPLY_URL     = "https://api.line.me/v2/bot/message/reply";
+    private static final String PUSH_URL      = "https://api.line.me/v2/bot/message/push";
+    private static final String MULTICAST_URL = "https://api.line.me/v2/bot/message/multicast";
+    private static final int    MULTICAST_MAX = 500;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${line.channel-token:}")
     private String channelToken;
 
-    private static final String REPLY_URL = "https://api.line.me/v2/bot/message/reply";
+    // ---------------------------------------------------------------
+    // Reply（受信メッセージへの返信）
+    // ---------------------------------------------------------------
 
     @Async
     public void replyMessage(String replyToken, String text) {
-        if (channelToken == null || channelToken.isBlank()) {
-            return;
-        }
+        if (!isConfigured()) return;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(channelToken);
-
+        HttpHeaders headers = buildHeaders();
         Map<String, Object> body = Map.of(
                 "replyToken", replyToken,
                 "messages", List.of(Map.of("type", "text", "text", text))
         );
-
-        restTemplate.postForEntity(REPLY_URL, new HttpEntity<>(body, headers), String.class);
+        try {
+            restTemplate.postForEntity(REPLY_URL, new HttpEntity<>(body, headers), String.class);
+        } catch (Exception e) {
+            log.warn("LINE reply failed: {}", e.getMessage());
+        }
     }
+
+    // ---------------------------------------------------------------
+    // Push（特定ユーザーへの能動的送信）
+    // ---------------------------------------------------------------
+
+    @Async
+    public void pushMessage(String lineUserId, String text) {
+        if (!isConfigured() || lineUserId == null || lineUserId.isBlank()) return;
+
+        HttpHeaders headers = buildHeaders();
+        Map<String, Object> body = Map.of(
+                "to", lineUserId,
+                "messages", List.of(Map.of("type", "text", "text", text))
+        );
+        try {
+            restTemplate.postForEntity(PUSH_URL, new HttpEntity<>(body, headers), String.class);
+        } catch (Exception e) {
+            log.warn("LINE push failed to {}: {}", lineUserId, e.getMessage());
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // Multicast（最大 500 人ずつ一斉送信）
+    // ---------------------------------------------------------------
+
+    /**
+     * 指定した LINE ユーザー ID リスト全員にメッセージを送信する。
+     * @return 送信対象人数（チャンネルトークン未設定の場合は 0）
+     */
+    public int multicastMessage(List<String> lineUserIds, String text) {
+        if (!isConfigured() || lineUserIds == null || lineUserIds.isEmpty()) return 0;
+
+        List<String> valid = lineUserIds.stream()
+                .filter(id -> id != null && !id.isBlank())
+                .toList();
+        if (valid.isEmpty()) return 0;
+
+        for (int i = 0; i < valid.size(); i += MULTICAST_MAX) {
+            List<String> chunk = valid.subList(i, Math.min(i + MULTICAST_MAX, valid.size()));
+            sendMulticastChunk(new ArrayList<>(chunk), text);
+        }
+        return valid.size();
+    }
+
+    private void sendMulticastChunk(List<String> lineUserIds, String text) {
+        HttpHeaders headers = buildHeaders();
+        Map<String, Object> body = Map.of(
+                "to", lineUserIds,
+                "messages", List.of(Map.of("type", "text", "text", text))
+        );
+        try {
+            restTemplate.postForEntity(MULTICAST_URL, new HttpEntity<>(body, headers), String.class);
+        } catch (Exception e) {
+            log.warn("LINE multicast failed (chunk size={}): {}", lineUserIds.size(), e.getMessage());
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // キーワード返答テキスト生成
+    // ---------------------------------------------------------------
 
     public String buildReply(String text) {
         String m = text == null ? "" : text.toLowerCase();
@@ -51,5 +121,20 @@ public class LineBotService {
             return "症状の経過（いつから・頻度・食欲/元気）を記録して、悪化時は受診してください。\nアプリの健康記録機能もご活用ください。";
         }
         return "ご相談ありがとうございます。\n症状の種類・開始時期・頻度を教えていただければ、次の対応をご案内します。";
+    }
+
+    // ---------------------------------------------------------------
+    // Utilities
+    // ---------------------------------------------------------------
+
+    public boolean isConfigured() {
+        return channelToken != null && !channelToken.isBlank();
+    }
+
+    private HttpHeaders buildHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(channelToken);
+        return headers;
     }
 }
