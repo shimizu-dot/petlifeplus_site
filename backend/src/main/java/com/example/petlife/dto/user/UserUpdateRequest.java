@@ -12,6 +12,7 @@ public record UserUpdateRequest(
         String planTier,
         @NotBlank @Size(max = 100) String name,
         @NotBlank @Email @Size(max = 255) String email,
+        String password,
         @Pattern(regexp = "^[0-9-]{10,13}$", message = "phone must be 10-13 digits/hyphen") String phone,
         @Size(max = 100) String slackUserId,
         @Size(max = 100) String lineUserId,

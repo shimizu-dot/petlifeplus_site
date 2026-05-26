@@ -65,10 +65,13 @@ public class UserService {
         if (userMapper.existsByEmailExcludingId(req.email(), id) > 0) {
             throw new BadRequestException("Email already exists");
         }
+        String nextPasswordHash = (req.password() == null || req.password().isBlank())
+                ? existing.passwordHash()
+                : passwordEncoder.encode(req.password());
         Long nextRoleId = req.roleId() != null ? req.roleId() : existing.roleId();
         UserEntity row = new UserEntity(
                 id, nextRoleId, req.name(), req.email(),
-                existing.passwordHash(), req.phone(),
+                nextPasswordHash, req.phone(),
                 req.slackUserId(), req.lineUserId(),
                 req.status(), existing.lastLoginAt(), existing.deletedAt(),
                 existing.createdAt(), existing.updatedAt()

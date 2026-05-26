@@ -24,6 +24,6 @@ public class UserForm {
     }
 
     public UserUpdateRequest toUpdateRequest() {
-        return new UserUpdateRequest(roleId, planTier, name, email, phone, slackUserId, lineUserId, status);
+        return new UserUpdateRequest(roleId, planTier, name, email, password, phone, slackUserId, lineUserId, status);
     }
 }

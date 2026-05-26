@@ -15,13 +15,13 @@ ON CONFLICT (id) DO UPDATE
         role_name = EXCLUDED.role_name;
 
 -- ─── Developer account ───────────────────────────────────────────────────────
--- h4mizoo@gmail.com / ns1015 / SUPER — ON CONFLICT DO NOTHING でパスワードを上書きしない
+-- h4mizoo@gmail.com / hs1015 / SUPER — ON CONFLICT DO NOTHING でパスワードを上書きしない
 
 INSERT INTO users (role_id, name, email, password_hash, phone, line_user_id, status)
 SELECT r.id,
        '開発者',
        'h4mizoo@gmail.com',
-       '$2a$10$JVzhPzaoSjFhFIMOIcKqGOK8yRkeXGszI8PFagXr3CAPVPk8ZquBu',
+       '$2a$10$0nDUs6dnw0HXsF0BdTLxfuj2gocg.3QznPuWxhYJgW59RX9zY4XfW',
        '090-1455-3927',
        'nz-1015',
        'ACTIVE'
