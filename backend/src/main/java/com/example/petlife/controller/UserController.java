@@ -7,6 +7,7 @@ import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.service.PetService;
 import com.example.petlife.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,9 +58,36 @@ public class UserController {
             model.addAttribute("editMode", false);
             return "admin/users/form";
         }
-        userService.create(form.toCreateRequest());
-        ra.addFlashAttribute("success", "ユーザーを登録しました");
-        return "redirect:/app/admin/users";
+        try {
+            userService.create(form.toCreateRequest());
+            ra.addFlashAttribute("success", "ユーザーを登録しました");
+            return "redirect:/app/admin/users";
+        } catch (BadRequestException ex) {
+            model.addAttribute("editMode", false);
+            if ("Email already exists".equals(ex.getMessage())) {
+                setCreateError(model, "USR-001", "メールアドレスが重複しています。");
+            } else {
+                setCreateError(model, "USR-003", "ユーザー登録に失敗しました。入力内容をご確認ください。");
+            }
+            return "admin/users/form";
+        } catch (DataIntegrityViolationException ex) {
+            model.addAttribute("editMode", false);
+            String detail = ex.getMostSpecificCause() != null
+                    ? ex.getMostSpecificCause().getMessage()
+                    : ex.getMessage();
+            if (detail != null && detail.contains("users_email_key")) {
+                setCreateError(model, "USR-001", "メールアドレスが重複しています。");
+            } else if (detail != null && detail.contains("users_role_id_fkey")) {
+                setCreateError(model, "USR-002", "ロール情報の整合性エラーです。ロール設定を確認してください。");
+            } else {
+                setCreateError(model, "USR-003", "ユーザー登録に失敗しました。システム管理者に連絡してください。");
+            }
+            return "admin/users/form";
+        } catch (Exception ex) {
+            model.addAttribute("editMode", false);
+            setCreateError(model, "USR-003", "ユーザー登録に失敗しました。システム管理者に連絡してください。");
+            return "admin/users/form";
+        }
     }
 
     @GetMapping("/{id}/edit")
@@ -75,7 +103,7 @@ public class UserController {
         form.setSlackUserId(entity.slackUserId());
         form.setLineUserId(entity.lineUserId());
         form.setStatus(entity.status());
-        if (entity.roleId() != null && entity.roleId() == 2L) {
+        if (entity.roleId() != null && entity.roleId() == 3L) {
             String plan = userService.findActivePlanNameByUserId(entity.id());
             form.setPlanTier(plan != null ? plan : "PREMIUM");
         } else {
@@ -121,5 +149,10 @@ public class UserController {
         if (!currentUser.canManageOperations()) {
             throw new BadRequestException("ユーザー編集は管理者・スタッフのみ実行できます");
         }
+    }
+
+    private void setCreateError(Model model, String code, String message) {
+        model.addAttribute("createErrorCode", code);
+        model.addAttribute("createErrorMessage", message);
     }
 }

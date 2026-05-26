@@ -459,7 +459,7 @@
                 <thead><tr><th>カラム名</th><th>データ型</th><th>NULL許可</th><th>デフォルト値</th><th>制約</th><th>説明</th></tr></thead>
                 <tbody>
                   <tr><td>id</td><td>BIGINT</td><td>NO</td><td>IDENTITY</td><td>PK</td><td>ロールID</td></tr>
-                  <tr><td>role_code</td><td>VARCHAR(50)</td><td>NO</td><td></td><td>UNIQUE</td><td>ロールコード（ADMIN/USER/VET/STAFF）</td></tr>
+                  <tr><td>role_code</td><td>VARCHAR(50)</td><td>NO</td><td></td><td>UNIQUE</td><td>ロールコード（ADMIN/SUPER/USER/VET/STAFF）</td></tr>
                   <tr><td>role_name</td><td>VARCHAR(100)</td><td>NO</td><td></td><td></td><td>ロール名</td></tr>
                   <tr><td>created_at</td><td>TIMESTAMP</td><td>NO</td><td>CURRENT_TIMESTAMP</td><td></td><td>作成日時</td></tr>
                   <tr><td>updated_at</td><td>TIMESTAMP</td><td>NO</td><td>CURRENT_TIMESTAMP</td><td></td><td>更新日時</td></tr>
@@ -1009,8 +1009,8 @@
             <div class="fill-hint">DataInitializer (BCrypt) でユーザーを作成し、data.sql でマスタ・テストデータを投入</div>
             <div class="fill-content">
               <pre>
-【roles】4件
-  ADMIN(1) / USER(2) / VET(3) / STAFF(4)
+【roles】5件
+  ADMIN(1) / SUPER(2) / USER(3) / VET(4) / STAFF(5)
 
 【plans】3件
   LIGHT(980円) / STANDARD(1980円) / PREMIUM(2980円)
@@ -1020,26 +1020,24 @@
   PREMIUM:  AI_SYMPTOM, SLACK_BOT, LINE_BOT, ZOOM_CONSULT
 
 【users】DataInitializer で自動生成（BCryptハッシュ）
-  admin@petlifeplus.local (ADMIN)
-  owner1@petlifeplus.local / owner2@petlifeplus.local (USER / STANDARD)
-  vet1@petlifeplus.local (VET)
-  staff1@petlifeplus.local (STAFF)
-  owner.light@petlifeplus.local (USER / LIGHT)
-  owner.standard@petlifeplus.local (USER / STANDARD)
-  owner.premium@petlifeplus.local (USER / PREMIUM)
+  super@petlife.local (SUPER)
+  admin@petlife.local (ADMIN)
+  vet1@petlife.local (VET)
+  staff1@petlife.local (STAFF)
+  owner1@petlife.local / owner2@petlife.local / owner3@petlife.local (USER)
 
 【pets】6件
-  ポチ(DOG), ミケ(CAT) — owner1
-  レオ(DOG) — owner2
-  ライト犬(DOG) / 標準猫(CAT) / 上位プー(DOG) — プラン別テストアカウント用
+  ポチ(DOG), タロウ(DOG) — owner1
+  レオン(DOG) — owner2
+  ピーコ(DOG) / カレン(DOG) / ボス(DOG) — プラン別テストアカウント用
 
 【health_records】3件（各ペットの直近記録）
 
 【pet_care_records】3件（ポチのワクチン・フィラリア・混合ワクチン）
 
 【subscriptions】5件
-  owner1→ポチ(STANDARD) / owner2→レオ(STANDARD)
-  light→ライト犬(LIGHT) / standard→標準猫(STANDARD) / premium→上位プー(PREMIUM)
+  owner1→ポチ(STANDARD) / owner2→レオン(STANDARD)
+  owner1→ピーコ(LIGHT) / owner2→カレン(STANDARD) / owner3→ボス(PREMIUM)
 
 実行コマンド:
   psql -U postgres -d petlifeplus -f backend/src/main/resources/data.sql

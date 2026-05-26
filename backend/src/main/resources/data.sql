@@ -1,15 +1,32 @@
 -- PetLifePlus seed data  (idempotent — ON CONFLICT / NOT EXISTS でリラン安全)
--- ユーザーは DataInitializer (BCrypt) で作成されるためここでは INSERT しません。
+-- 開発者アカウント (h4mizoo@gmail.com) はここで管理。その他のユーザーは DataInitializer (BCrypt) で作成。
 -- 実行: psql -U postgres -d petlifeplus -f data.sql
 
 -- ─── Roles ───────────────────────────────────────────────────────────────────
 
 INSERT INTO roles (id, role_code, role_name) VALUES
 (1, 'ADMIN', '管理者'),
-(2, 'USER',  '一般ユーザー'),
-(3, 'VET',   '獣医師'),
-(4, 'STAFF', 'スタッフ')
-ON CONFLICT DO NOTHING;
+(2, 'SUPER', '開発者'),
+(3, 'USER',  '一般ユーザー'),
+(4, 'VET',   '獣医師'),
+(5, 'STAFF', 'スタッフ')
+ON CONFLICT (id) DO UPDATE
+    SET role_code = EXCLUDED.role_code,
+        role_name = EXCLUDED.role_name;
+
+-- ─── Developer account ───────────────────────────────────────────────────────
+-- h4mizoo@gmail.com / ns1015 / SUPER — ON CONFLICT DO NOTHING でパスワードを上書きしない
+
+INSERT INTO users (role_id, name, email, password_hash, phone, line_user_id, status)
+SELECT r.id,
+       '開発者',
+       'h4mizoo@gmail.com',
+       '$2a$10$JVzhPzaoSjFhFIMOIcKqGOK8yRkeXGszI8PFagXr3CAPVPk8ZquBu',
+       '090-1455-3927',
+       'nz-1015',
+       'ACTIVE'
+FROM roles r WHERE r.role_code = 'SUPER'
+ON CONFLICT (email) DO NOTHING;
 
 -- ─── Plans ───────────────────────────────────────────────────────────────────
 
@@ -40,126 +57,117 @@ INSERT INTO plan_features (plan_id, feature_code) VALUES
 ON CONFLICT DO NOTHING;
 
 -- ─── Pets ────────────────────────────────────────────────────────────────────
--- owner1@petlifeplus.local
+-- owner1@petlife.local
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 1, u.id, 'ポチ', 'DOG', '柴犬', 'MALE', '2021-03-01', 8.50
-FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+SELECT 1, u.id, 'ポチ', 'DOG', '雑種', 'MALE', '2021-03-01', 8.50
+FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 1);
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 2, u.id, 'タロウ', 'DOG', '雑種', 'FEMALE', '2022-07-12', 3.80
-FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+SELECT 2, u.id, 'タロウ', 'DOG', '柴犬', 'FEMALE', '2022-07-12', 3.80
+FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 2);
 
--- owner2@petlifeplus.local
+-- owner2@petlife.local
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 3, u.id, 'レオン', 'DOG', 'トイプードル', 'MALE', '2020-11-23', 5.20
-FROM users u WHERE u.email = 'owner2@petlifeplus.local'
+SELECT 3, u.id, 'レオン', 'DOG', 'ノーフォークテリア', 'MALE', '2020-11-23', 5.20
+FROM users u WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 3);
 
 -- プラン別テストアカウント用
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 101, u.id, 'ちび', 'DOG', 'チワワ', 'MALE', '2022-01-01', 7.40
-FROM users u WHERE u.email = 'owner.light@petlifeplus.local'
-  AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 101 OR (p.owner_user_id = u.id AND p.name = 'ライト犬'));
+SELECT 101, u.id, 'ピーコ', 'DOG', 'チワワ', 'FEMALE', '2022-01-01', 7.40
+FROM users u WHERE u.email = 'owner1@petlife.local'
+  AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 101 OR (p.owner_user_id = u.id AND p.name = 'ピーコ'));
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 102, u.id, 'アポロ', 'DOG', '雑種', 'FEMALE', '2021-06-10', 4.10
-FROM users u WHERE u.email = 'owner.standard@petlifeplus.local'
-  AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 102 OR (p.owner_user_id = u.id AND p.name = '標準猫'));
+SELECT 102, u.id, 'カレン', 'DOG', 'ポメプー', 'FEMALE', '2021-06-10', 4.10
+FROM users u WHERE u.email = 'owner2@petlife.local'
+  AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 102 OR (p.owner_user_id = u.id AND p.name = 'カレン'));
 
 INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
 SELECT 103, u.id, 'ボス', 'DOG', 'パグ', 'MALE', '2020-04-20', 5.60
-FROM users u WHERE u.email = 'owner.premium@petlifeplus.local'
-  AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 103 OR (p.owner_user_id = u.id AND p.name = '上位プー'));
+FROM users u WHERE u.email = 'owner3@petlife.local'
+  AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 103 OR (p.owner_user_id = u.id AND p.name = 'ボス'));
 
 -- ─── Health records ──────────────────────────────────────────────────────────
 
 INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, note)
 SELECT 1, 1, u.id, '2026-05-10', 8.60, '食欲良好', 30, '特記事項なし'
-FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM health_records WHERE id = 1);
 
 INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, note)
 SELECT 2, 2, u.id, '2026-05-10', 3.75, '少し食欲低下', 15, '様子見'
-FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM health_records WHERE id = 2);
 
 INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, note)
 SELECT 3, 3, u.id, '2026-05-11', 5.25, '通常', 25, '元気'
-FROM users u WHERE u.email = 'owner2@petlifeplus.local'
+FROM users u WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM health_records WHERE id = 3);
 
 -- ─── Pet care records ────────────────────────────────────────────────────────
 
 INSERT INTO pet_care_records (id, pet_id, recorded_by_user_id, care_type, administered_on, next_due_on, memo)
 SELECT 1, 1, u.id, 'RABIES', '2025-08-01', '2026-08-01', '狂犬病予防接種'
-FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pet_care_records WHERE id = 1);
 
 INSERT INTO pet_care_records (id, pet_id, recorded_by_user_id, care_type, administered_on, next_due_on, memo)
 SELECT 2, 1, u.id, 'HEARTWORM', '2025-07-15', '2026-07-15', 'フィラリア予防薬'
-FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pet_care_records WHERE id = 2);
 
 INSERT INTO pet_care_records (id, pet_id, recorded_by_user_id, care_type, administered_on, next_due_on, memo)
 SELECT 3, 1, u.id, 'COMBO_VACCINE', '2025-09-01', '2026-09-01', '混合ワクチン接種'
-FROM users u WHERE u.email = 'owner1@petlifeplus.local'
+FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pet_care_records WHERE id = 3);
 
 -- ─── Subscriptions ───────────────────────────────────────────────────────────
--- owner1 / owner2 → STANDARD（診療予約・AI症状チェック使用可）
+-- owner2 → STANDARD（診療予約・AI症状チェック使用可）
 
 INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
 SELECT u.id, p.id, 2, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
 FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ポチ' AND p.deleted_at IS NULL
-WHERE u.email = 'owner1@petlifeplus.local'
-  AND NOT EXISTS (
-      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
-  );
-
-INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
-SELECT u.id, p.id, 2, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
-FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = 'レオ' AND p.deleted_at IS NULL
-WHERE u.email = 'owner2@petlifeplus.local'
-  AND NOT EXISTS (
-      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
-  );
-
--- owner.light → LIGHT
-
-INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
-SELECT u.id, p.id, 1, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
-FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ライト犬' AND p.deleted_at IS NULL
-WHERE u.email = 'owner.light@petlifeplus.local'
-  AND NOT EXISTS (
-      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 1 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
-  );
-
--- owner.standard → STANDARD
-
-INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
-SELECT u.id, p.id, 2, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
-FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = '標準猫' AND p.deleted_at IS NULL
-WHERE u.email = 'owner.standard@petlifeplus.local'
+JOIN pets p ON p.owner_user_id = u.id AND p.name = 'レオン' AND p.deleted_at IS NULL
+WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (
       SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 2 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
   );
 
--- owner.premium → PREMIUM
+-- owner1 (Light プランテスト) → LIGHT
+
+INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
+SELECT u.id, p.id, 1, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
+FROM users u
+JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ピーコ' AND p.deleted_at IS NULL
+WHERE u.email = 'owner1@petlife.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 1 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+  );
+
+-- owner2 (Standard プランテスト) → STANDARD
+
+INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
+SELECT u.id, p.id, 2, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
+FROM users u
+JOIN pets p ON p.owner_user_id = u.id AND p.name = 'カレン' AND p.deleted_at IS NULL
+WHERE u.email = 'owner2@petlife.local'
+  AND NOT EXISTS (
+      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 2 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+  );
+
+-- owner3 (Premium プランテスト) → PREMIUM
 
 INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
 SELECT u.id, p.id, 3, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
 FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = '上位プー' AND p.deleted_at IS NULL
-WHERE u.email = 'owner.premium@petlifeplus.local'
+JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ボス' AND p.deleted_at IS NULL
+WHERE u.email = 'owner3@petlife.local'
   AND NOT EXISTS (
       SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 3 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
   );

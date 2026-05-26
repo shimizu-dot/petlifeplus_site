@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>アクセス不可 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body th:class="${bodyClass}">
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">アクセス不可</span></div>
+    <div class="content">
+
+      <div class="empty-state" style="padding: 60px 0;">
+        <div class="empty-state-icon" style="font-size: 48px;">🚫</div>
+        <div class="empty-state-text" style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">
+          この機能は利用できません
+        </div>
+        <p style="color: #64748b; margin-bottom: 32px;">
+          管理者アカウントはシステム管理専用です。<br>
+          診療予約・カレンダー・診療記録などの機能は<br>
+          獣医師・スタッフ・ペットオーナーアカウントをご使用ください。
+        </p>
+        <a th:href="@{/app/dashboard}" class="btn btn-primary">ダッシュボードへ戻る</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

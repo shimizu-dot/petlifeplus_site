@@ -28,6 +28,7 @@ public interface SymptomCheckMapper {
                severity, recommendation, guidance, ai_model, created_at
         FROM symptom_checks
         WHERE pet_id = #{petId}
+          AND deleted_at IS NULL
         ORDER BY id DESC
         LIMIT #{limit}
         """)

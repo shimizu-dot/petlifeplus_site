@@ -46,14 +46,15 @@ public class UserService {
         if (userMapper.existsByEmail(req.email()) > 0) {
             throw new BadRequestException("Email already exists");
         }
-        Long roleId = req.roleId() != null ? req.roleId() : 2L;
+        Long roleId = req.roleId() != null ? req.roleId() : 3L;
         UserEntity row = new UserEntity(
                 null, roleId, req.name(), req.email(),
                 passwordEncoder.encode(req.password()),
                 req.phone(), req.slackUserId(), req.lineUserId(),
                 "ACTIVE", null, null, null, null
         );
-        Long newId = userMapper.insertReturningId(row);
+        userMapper.insertUser(row);
+        Long newId = userMapper.findByEmail(req.email()).id();
         auditLog.info("action=user_create userId={} email={} roleId={}", newId, req.email(), roleId);
         return get(newId);
     }
@@ -74,7 +75,7 @@ public class UserService {
         );
         userMapper.update(row);
 
-        if (nextRoleId == 2L) {
+        if (nextRoleId == 3L) {
             String desiredPlan = req.planTier() == null || req.planTier().isBlank() ? "LIGHT" : req.planTier().toUpperCase();
             Long planId = userMapper.findPlanIdByName(desiredPlan);
             if (planId == null) {
@@ -100,8 +101,9 @@ public class UserService {
     public UserResponse toResponse(UserEntity row) {
         String roleDisplay = switch (row.roleId().intValue()) {
             case 1 -> "管理者";
-            case 3 -> "獣医師";
-            case 4 -> "スタッフ";
+            case 2 -> "開発者";
+            case 4 -> "獣医師";
+            case 5 -> "スタッフ";
             default -> {
                 String plan = userMapper.findActivePlanNameByUserId(row.id());
                 if ("PREMIUM".equals(plan)) {

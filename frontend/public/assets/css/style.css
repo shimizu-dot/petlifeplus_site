@@ -236,6 +236,11 @@ li { margin-bottom: 4px; }
   border: 1px solid var(--line);
 }
 
+.gallery-section .image-card img.gallery-fill {
+  object-fit: cover;
+  object-position: right center;
+}
+
 .image-card .caption {
   margin-top: 8px;
   color: var(--muted);
@@ -694,3 +699,4 @@ h1::before {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+

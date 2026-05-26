@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS symptom_checks (
     recommendation       VARCHAR(10)  NOT NULL CHECK (recommendation IN ('OBSERVE','CONSULT','VISIT')),
     guidance             TEXT,
     ai_model             VARCHAR(100),
+    deleted_at           TIMESTAMP,
     created_at           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -153,8 +154,13 @@ CREATE TABLE IF NOT EXISTS payments (
     payment_method  VARCHAR(20)   NOT NULL CHECK (payment_method IN ('CARD','BANK','OTHER')),
     transaction_ref VARCHAR(100),
     status          VARCHAR(20)   NOT NULL CHECK (status IN ('PENDING','SUCCEEDED','FAILED')),
-    created_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+    deleted_at      TIMESTAMP,
+    created_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+-- 既存 DB へのカラム追加（schema.sql の再実行では追加されないため手動で実行すること）:
+-- ALTER TABLE payments ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
+-- ALTER TABLE payments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 -- ─── Appointments ─────────────────────────────────────────────────────────────
 -- appointment_slots: 管理者手動枠（現在は使用していない — 空き枠は営業時間9:30-17:00から自動生成）
@@ -354,6 +360,7 @@ CREATE INDEX IF NOT EXISTS idx_appointments_pet_scheduled_at    ON appointments(
 CREATE INDEX IF NOT EXISTS idx_appointments_owner_scheduled_at  ON appointments(owner_user_id, scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_appointments_staff_scheduled_at  ON appointments(staff_user_id, scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_appointments_status_scheduled_at ON appointments(status, scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_appointments_slot_id             ON appointments(slot_id);
 
 CREATE INDEX IF NOT EXISTS idx_medical_histories_pet_performed_on ON medical_histories(pet_id, performed_on);
 CREATE INDEX IF NOT EXISTS idx_medical_attachments_history_id     ON medical_attachments(medical_history_id);

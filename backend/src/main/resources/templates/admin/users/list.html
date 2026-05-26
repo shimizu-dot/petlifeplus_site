@@ -42,9 +42,9 @@
               <div class="user-list-sub" th:text="${user.phone ?: '—'}">090-0000-0000</div>
             </div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-              <span th:class="${user.roleId == 1 ? 'badge badge-red' :
-                                user.roleId == 3 ? 'badge badge-blue' :
-                                user.roleId == 4 ? 'badge badge-yellow' :
+              <span th:class="${user.roleDisplay == '管理者' || user.roleDisplay == '開発者' ? 'badge badge-red' :
+                                user.roleDisplay == '獣医師' ? 'badge badge-blue' :
+                                user.roleDisplay == 'スタッフ' ? 'badge badge-yellow' :
                                 user.roleDisplay == 'Premium' ? 'badge badge-red' :
                                 user.roleDisplay == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
                     th:text="${user.roleDisplay}">Light</span>
@@ -69,9 +69,9 @@
             <div class="user-grid-sub" th:text="${user.email}">admin@example.com</div>
             <div class="user-grid-sub" th:text="${user.phone ?: '—'}">090-0000-0000</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
-              <span th:class="${user.roleId == 1 ? 'badge badge-red' :
-                                user.roleId == 3 ? 'badge badge-blue' :
-                                user.roleId == 4 ? 'badge badge-yellow' :
+              <span th:class="${user.roleDisplay == '管理者' || user.roleDisplay == '開発者' ? 'badge badge-red' :
+                                user.roleDisplay == '獣医師' ? 'badge badge-blue' :
+                                user.roleDisplay == 'スタッフ' ? 'badge badge-yellow' :
                                 user.roleDisplay == 'Premium' ? 'badge badge-red' :
                                 user.roleDisplay == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
                     th:text="${user.roleDisplay}">Light</span>
@@ -114,9 +114,9 @@
                 <td th:text="${user.slackUserId ?: '—'}">—</td>
                 <td th:text="${user.lineUserId ?: '—'}">—</td>
                 <td>
-                  <span th:class="${user.roleId == 1 ? 'badge badge-red' :
-                                    user.roleId == 3 ? 'badge badge-blue' :
-                                    user.roleId == 4 ? 'badge badge-yellow' :
+                  <span th:class="${user.roleId == 1 || user.roleId == 2 ? 'badge badge-red' :
+                                    user.roleId == 4 ? 'badge badge-blue' :
+                                    user.roleId == 5 ? 'badge badge-yellow' :
                                     user.roleDisplay == 'Premium' ? 'badge badge-red' :
                                     user.roleDisplay == 'Standard' ? 'badge badge-blue' : 'badge badge-green'}"
                         th:text="${user.roleDisplay}">Light</span>

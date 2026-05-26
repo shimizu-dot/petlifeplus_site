@@ -44,6 +44,15 @@ public interface HealthRecordMapper {
     long countByPetId(@Param("petId") Long petId);
 
     @Select("""
+        SELECT COUNT(*) FROM health_records hr
+        JOIN pets p ON p.id = hr.pet_id
+        WHERE p.owner_user_id = #{ownerUserId}
+          AND hr.deleted_at IS NULL
+          AND p.deleted_at IS NULL
+        """)
+    long countByOwnerUserId(@Param("ownerUserId") Long ownerUserId);
+
+    @Select("""
         SELECT id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo,
                exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, image_path,
                note, deleted_at, created_at, updated_at

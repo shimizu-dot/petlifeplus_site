@@ -61,6 +61,8 @@ public class PasswordResetService {
             return;
         }
 
+        tokenMapper.invalidateByUserId(user.id());
+
         String token = UUID.randomUUID().toString();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(EXPIRE_MINUTES);
         tokenMapper.insert(new PasswordResetTokenEntity(null, user.id(), token, expiresAt, null, null));
@@ -92,8 +94,7 @@ public class PasswordResetService {
 
     private void sendResetEmail(UserEntity user, String token) {
         if (sendgridApiKey == null || sendgridApiKey.isBlank()) {
-            log.warn("SENDGRID_API_KEY not configured. Password reset email not sent for user id={}. " +
-                     "Reset URL: {}/app/reset-password?token={}", user.id(), baseUrl, token);
+            log.warn("SENDGRID_API_KEY not configured. Password reset email not sent for user id={}", user.id());
             return;
         }
 

@@ -36,8 +36,7 @@
           <h1>健康記録から受診判断まで、<br>ひとつにつながる。</h1>
           <p>ペットライフプラスは、体重・食事・運動の記録、AI症状チェック、オンライン相談・診療の導線を一体化した健康管理プラットフォームです。</p>
           <div class="actions">
-            <a class="btn btn-primary" href="https://line.me/R/ti/p/@434idigg" target="_blank"
-              rel="noopener noreferrer">LINE お友達登録</a>
+            <button class="btn btn-primary" type="button" id="line-qr-open">LINE お友達登録</button>
             <a class="btn btn-secondary" href="f_service.html#pricing">機能と料金を見る</a>
           </div>
         </div>
@@ -46,6 +45,16 @@
         </article>
       </div>
     </section>
+    <dialog id="line-qr-modal" aria-labelledby="line-qr-title">
+      <div style="text-align: center; padding: 8px 12px;">
+        <h2 id="line-qr-title">LINE お友達登録 QR</h2>
+        <p>スマートフォンで読み取って友達登録してください。</p>
+        <div id="line-qr-canvas" style="display:inline-block;"></div>
+        <form method="dialog">
+          <button class="btn btn-secondary" type="submit">戻る</button>
+        </form>
+      </div>
+    </dialog>
 
     <section class="section service-intro-section">
       <div class="container">
@@ -88,13 +97,13 @@
         <h2>イメージギャラリー</h2>
         <div class="card-grid">
           <article class="image-card">
-            <img src="assets/img/calte.jpg" alt="参考イメージ 1">
+            <img src="assets/img/appointment.jpg" alt="参考イメージ 1">
           </article>
           <article class="image-card">
-            <img src="assets/img/gallery-03.jpg" alt="参考イメージ 2">
+            <img class="gallery-fill" src="assets/img/gallery-04.png" alt="参考イメージ 2">
           </article>
           <article class="image-card">
-            <img src="assets/img/dog-app.png" alt="参考イメージ 3">
+            <img src="assets/img/calte.jpg" alt="参考イメージ 3">
           </article>
         </div>
       </div>
@@ -109,11 +118,11 @@
             <p class="caption">健康記録: <br> 体重・食事・運動を時系列で確認</p>
           </article>
           <article class="image-card">
-            <img src="assets/img/hero-mobile.png" alt="オンライン相談画面のイメージ">
+            <img src="assets/img/mobile.png" alt="オンライン相談画面のイメージ">
             <p class="caption">オンライン相談: <br>受診前の不安を迅速に解消</p>
           </article>
           <article class="image-card">
-            <img src="assets/img/gallery-03.jpg" alt="モバイルアプリ画面のイメージ">
+            <img src="assets/img/clate4.png" alt="モバイルアプリ画面のイメージ">
             <p class="caption">モバイル最適化:<br> 外出先でもすぐに記録と確認</p>
           </article>
         </div>
@@ -182,6 +191,27 @@
     </div>
   </footer>
   <script src="assets/js/main.js"></script>
+  <!-- qrcode.js: ブラウザ内で QR コードを生成（LINE ID を外部サーバーに送信しない） -->
+  <!-- 本番運用時は https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js を assets/js/ に配置してください -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    const lineQrOpen = document.getElementById('line-qr-open');
+    const lineQrModal = document.getElementById('line-qr-modal');
+    if (lineQrOpen && lineQrModal) {
+      let qrGenerated = false;
+      lineQrOpen.addEventListener('click', () => {
+        lineQrModal.showModal();
+        if (!qrGenerated && typeof QRCode !== 'undefined') {
+          new QRCode(document.getElementById('line-qr-canvas'), {
+            text: 'https://line.me/R/ti/p/@434idigg',
+            width: 240,
+            height: 240
+          });
+          qrGenerated = true;
+        }
+      });
+    }
+  </script>
 </body>
 
 </html>

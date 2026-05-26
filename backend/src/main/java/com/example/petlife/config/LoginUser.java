@@ -20,8 +20,9 @@ public record LoginUser(
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role = switch (roleId.intValue()) {
             case 1 -> "ROLE_ADMIN";
-            case 3 -> "ROLE_VET";
-            case 4 -> "ROLE_STAFF";
+            case 2 -> "ROLE_SUPER";
+            case 4 -> "ROLE_VET";
+            case 5 -> "ROLE_STAFF";
             default -> "ROLE_USER";
         };
         return List.of(new SimpleGrantedAuthority(role));
@@ -31,9 +32,10 @@ public record LoginUser(
     @Override public String getUsername() { return email; }
     @Override public boolean isEnabled() { return enabled; }
 
-    public boolean isAdmin()  { return roleId == 1L; }
-    public boolean isVet()   { return roleId == 3L; }
-    public boolean isStaff() { return roleId == 4L; }
+    public boolean isSuper() { return roleId == 2L; }
+    public boolean isAdmin()  { return roleId == 1L || isSuper(); }
+    public boolean isVet()   { return roleId == 4L || isSuper(); }
+    public boolean isStaff() { return roleId == 5L || isSuper(); }
 
     /** 診療記録・診療予約・カレンダーを操作できるロール（VET + STAFF）。 */
     public boolean canManageClinical() { return isVet() || isStaff(); }
@@ -43,8 +45,4 @@ public record LoginUser(
 
     /** 予約枠・お知らせを管理できるロール（ADMIN + STAFF）。 */
     public boolean canManageOperations() { return isAdmin() || isStaff(); }
-
-    /** @deprecated canManageClinical() を使用してください。ADMIN を含む点に注意。 */
-    @Deprecated
-    public boolean canManagePets() { return isAdmin() || isVet() || isStaff(); }
 }

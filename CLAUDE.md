@@ -35,14 +35,13 @@ Schema and seed data are **not** applied automatically (`spring.sql.init.mode=ne
 
 | Email | Password | Role |
 |---|---|---|
-| admin@petlifeplus.local | admin123 | ADMIN |
-| owner1@petlifeplus.local | user123 | USER |
-| vet1@petlifeplus.local | vet123 | VET |
-| staff1@petlifeplus.local | staff123 | STAFF |
-| owner2@petlifeplus.local | user123 | USER |
-| owner.light@petlifeplus.local | light123 | USER |
-| owner.standard@petlifeplus.local | standard123 | USER |
-| owner.premium@petlifeplus.local | premium123 | USER |
+| super@petlife.local | super123 | SUPER |
+| admin@petlife.local | admin123 | ADMIN |
+| vet1@petlife.local | vet123 | VET |
+| staff1@petlife.local | staff123 | STAFF |
+| owner1@petlife.local | user123 | Light |
+| owner2@petlife.local | user123 | Standard |
+| owner3@petlife.local | user123 | Premium |
 
 
 ## Backend Architecture

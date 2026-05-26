@@ -1,6 +1,7 @@
 package com.example.petlife.mapper;
 
 import com.example.petlife.entity.UserEntity;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -79,12 +80,11 @@ public interface UserMapper {
         """)
     int updateActiveSubscriptionPlanByUserId(@Param("userId") Long userId, @Param("planId") Long planId);
 
-    @Select("""
+    @Insert("""
         INSERT INTO users(role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, created_at, updated_at)
         VALUES(#{roleId}, #{name}, #{email}, #{passwordHash}, #{phone}, #{slackUserId}, #{lineUserId}, #{status}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        RETURNING id
         """)
-    Long insertReturningId(UserEntity user);
+    int insertUser(UserEntity user);
 
     @Update("""
         UPDATE users
@@ -117,12 +117,20 @@ public interface UserMapper {
     @Select("SELECT COUNT(*) FROM users WHERE role_id = #{roleId} AND deleted_at IS NULL")
     long countByRoleId(@Param("roleId") Long roleId);
 
+    @Select("""
+        SELECT COUNT(*) FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE r.role_code = #{roleCode} AND u.deleted_at IS NULL
+        """)
+    long countByRoleCode(@Param("roleCode") String roleCode);
+
     @Update("""
         UPDATE users
         SET role_id = #{roleId},
             name = #{name},
             password_hash = #{passwordHash},
             phone = #{phone},
+            line_user_id = COALESCE(#{lineUserId}, line_user_id),
             status = 'ACTIVE',
             updated_at = CURRENT_TIMESTAMP
         WHERE email = #{email} AND deleted_at IS NULL
@@ -132,7 +140,8 @@ public interface UserMapper {
             @Param("name") String name,
             @Param("email") String email,
             @Param("passwordHash") String passwordHash,
-            @Param("phone") String phone
+            @Param("phone") String phone,
+            @Param("lineUserId") String lineUserId
     );
 
     @Select("""
@@ -140,7 +149,7 @@ public interface UserMapper {
         FROM users u
         JOIN roles r ON r.id = u.role_id
         WHERE u.deleted_at IS NULL
-          AND r.role_code = 'ADMIN'
+          AND r.role_code IN ('ADMIN', 'SUPER')
         ORDER BY u.id
         """)
     List<Long> findAdminUserIds();

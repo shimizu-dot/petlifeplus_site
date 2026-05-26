@@ -74,7 +74,7 @@ New-Item -ItemType Directory -Path $BackupDir -Force | Out-Null
 
 $env:PGPASSWORD = $DbPassword
 try {
-    & $PgDumpAllCmd -h $DbHost -p $DbPort -U $DbUser --file $OutFile
+    & $PgDumpAllCmd -h $DbHost -p $DbPort -U $DbUser --no-security-labels --file $OutFile
 
     if ($LASTEXITCODE -ne 0) {
         throw "pg_dumpall が終了コード $LASTEXITCODE で失敗しました。"

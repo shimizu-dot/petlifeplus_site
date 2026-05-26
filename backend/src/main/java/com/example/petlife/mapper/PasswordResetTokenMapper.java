@@ -29,4 +29,12 @@ public interface PasswordResetTokenMapper {
             WHERE id = #{id}
             """)
     void markUsed(@Param("id") Long id);
+
+    @Update("""
+            UPDATE password_reset_tokens
+            SET used_at = CURRENT_TIMESTAMP
+            WHERE user_id = #{userId}
+              AND used_at IS NULL
+            """)
+    int invalidateByUserId(@Param("userId") Long userId);
 }

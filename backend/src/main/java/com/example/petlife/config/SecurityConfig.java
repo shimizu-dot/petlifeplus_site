@@ -29,22 +29,22 @@ public class SecurityConfig {
                 .requestMatchers("/app/reset-password", "/app/reset-password/**").permitAll()
                 // /app/admin/** の中で VET・STAFF にも開放するパスを先に列挙（順序重要）
                 .requestMatchers("/app/admin/users", "/app/admin/users/**")
-                    .hasAnyRole("ADMIN", "VET", "STAFF")
+                    .hasAnyRole("ADMIN", "SUPER", "VET", "STAFF")
                 .requestMatchers("/app/admin/announcements", "/app/admin/announcements/**")
-                    .hasAnyRole("ADMIN", "STAFF")
+                    .hasAnyRole("ADMIN", "SUPER", "STAFF")
                 .requestMatchers("/app/admin/appointment-slots", "/app/admin/appointment-slots/**")
-                    .hasAnyRole("ADMIN", "STAFF")
+                    .hasAnyRole("ADMIN", "SUPER", "STAFF")
                 // 残りの admin・reports は ADMIN のみ
                 .requestMatchers("/app/admin/**", "/app/reports", "/app/reports/**")
-                    .hasRole("ADMIN")
+                    .hasAnyRole("ADMIN", "SUPER")
                 // 診療記録: VET・STAFF のみ（ADMIN は閲覧不可）
                 .requestMatchers("/app/consultations", "/app/consultations/**")
-                    .hasAnyRole("VET", "STAFF")
+                    .hasAnyRole("SUPER", "VET", "STAFF")
                 // 診療予約・カレンダー: USER(一般)・VET・STAFF のみ（ADMIN は閲覧不可）
                 .requestMatchers("/app/appointments", "/app/appointments/**")
-                    .hasAnyRole("VET", "STAFF", "USER")
+                    .hasAnyRole("SUPER", "VET", "STAFF", "USER")
                 .requestMatchers("/app/calendar", "/app/calendar/**")
-                    .hasAnyRole("VET", "STAFF", "USER")
+                    .hasAnyRole("SUPER", "VET", "STAFF", "USER")
                 .requestMatchers("/app/**").authenticated()
                 .anyRequest().permitAll()
             )
@@ -61,6 +61,9 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/app/login?logout=true")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
+            )
+            .exceptionHandling(e -> e
+                .accessDeniedPage("/app/access-denied")
             );
         return http.build();
     }

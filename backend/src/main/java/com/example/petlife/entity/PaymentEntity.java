@@ -11,6 +11,8 @@ public record PaymentEntity(
         String paymentMethod,
         String transactionRef,
         String status,
-        LocalDateTime createdAt
+        LocalDateTime deletedAt,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }

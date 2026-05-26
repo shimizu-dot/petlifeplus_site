@@ -91,7 +91,7 @@ public class AppointmentPageController {
     public String approve(@PathVariable Long id,
                           @AuthenticationPrincipal LoginUser currentUser,
                           RedirectAttributes ra) {
-        if (!currentUser.canManageClinical()) throw new BadRequestException("獣医師・スタッフのみ承認できます");
+        if (!currentUser.hasStaffAccess()) throw new BadRequestException("管理者・獣医師・スタッフのみ承認できます");
         appointmentService.approve(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を承認しました");
         return "redirect:/app/appointments";
@@ -101,7 +101,7 @@ public class AppointmentPageController {
     public String reject(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.canManageClinical()) throw new BadRequestException("獣医師・スタッフのみ却下できます");
+        if (!currentUser.hasStaffAccess()) throw new BadRequestException("管理者・獣医師・スタッフのみ却下できます");
         appointmentService.reject(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を却下しました");
         return "redirect:/app/appointments";
@@ -111,8 +111,8 @@ public class AppointmentPageController {
     public String cancel(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (currentUser.canManageClinical()) {
-            throw new BadRequestException("自分の予約のみキャンセルできます");
+        if (currentUser.hasStaffAccess()) {
+            throw new BadRequestException("この操作はペットオーナーのみ実行できます");
         }
         appointmentService.cancelRequestedByOwner(id, currentUser);
         ra.addFlashAttribute("success", "予約をキャンセルしました");

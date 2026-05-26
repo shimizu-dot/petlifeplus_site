@@ -20,6 +20,16 @@ public interface AppointmentMapper {
 
     @Select("""
         SELECT id, pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, zoom_join_url, note, slot_id, deleted_at, created_at, updated_at
+        FROM appointments WHERE owner_user_id = #{ownerUserId} AND deleted_at IS NULL
+        ORDER BY scheduled_at DESC, id DESC
+        LIMIT #{limit} OFFSET #{offset}
+        """)
+    List<AppointmentEntity> findByOwnerUserId(@Param("ownerUserId") Long ownerUserId,
+                                              @Param("limit") int limit,
+                                              @Param("offset") int offset);
+
+    @Select("""
+        SELECT id, pet_id, owner_user_id, staff_user_id, appointment_type, channel, scheduled_at, status, zoom_join_url, note, slot_id, deleted_at, created_at, updated_at
         FROM appointments WHERE id = #{id} AND deleted_at IS NULL
         """)
     AppointmentEntity findById(@Param("id") Long id);
@@ -41,6 +51,19 @@ public interface AppointmentMapper {
 
     @Update("UPDATE appointments SET deleted_at = #{deletedAt}, updated_at = CURRENT_TIMESTAMP WHERE id = #{id} AND deleted_at IS NULL")
     int softDelete(@Param("id") Long id, @Param("deletedAt") LocalDateTime deletedAt);
+
+    @Update("""
+        <script>
+        UPDATE appointments
+        SET deleted_at = #{deletedAt}, updated_at = CURRENT_TIMESTAMP
+        WHERE deleted_at IS NULL
+          AND id IN
+          <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+          </foreach>
+        </script>
+        """)
+    int softDeleteByIds(@Param("ids") List<Long> ids, @Param("deletedAt") LocalDateTime deletedAt);
 
     @Update("UPDATE appointments SET status = #{status}, updated_at = CURRENT_TIMESTAMP WHERE id = #{id} AND deleted_at IS NULL")
     int updateStatus(@Param("id") Long id, @Param("status") String status);

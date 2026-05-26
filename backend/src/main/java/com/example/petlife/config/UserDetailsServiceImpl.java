@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         boolean statusActive = "ACTIVE".equalsIgnoreCase(user.status());
-        boolean subscriptionActive = user.roleId() != null && user.roleId() == 2L
+        boolean subscriptionActive = user.roleId() != null && user.roleId() == 3L
                 ? authMapper.countEffectiveSubscriptions(user.id()) > 0
                 : true;
         boolean enabled = statusActive && subscriptionActive;

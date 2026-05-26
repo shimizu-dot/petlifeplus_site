@@ -49,12 +49,18 @@ public class AppointmentService {
         this.userMapper = userMapper;
     }
 
-    public PageResponse<AppointmentResponse> list(int page, int size) {
+    public PageResponse<AppointmentResponse> list(int page, int size, LoginUser currentUser) {
         int safePage = Math.max(page, 1);
         int safeSize = Math.min(Math.max(size, 1), 100);
         int offset = (safePage - 1) * safeSize;
-        List<AppointmentResponse> items = appointmentMapper.findAll(safeSize, offset).stream().map(this::toResponse).toList();
-        return new PageResponse<>(items, safePage, safeSize, appointmentMapper.countAll());
+        if (currentUser.canManageClinical()) {
+            return new PageResponse<>(
+                    appointmentMapper.findAll(safeSize, offset).stream().map(this::toResponse).toList(),
+                    safePage, safeSize, appointmentMapper.countAll());
+        }
+        return new PageResponse<>(
+                appointmentMapper.findByOwnerUserId(currentUser.id(), safeSize, offset).stream().map(this::toResponse).toList(),
+                safePage, safeSize, appointmentMapper.countByOwnerUserId(currentUser.id()));
     }
 
     public AppointmentResponse get(Long id) {
@@ -77,7 +83,7 @@ public class AppointmentService {
         int safeSize = Math.min(Math.max(size, 1), 100);
         int offset = (safePage - 1) * safeSize;
         boolean sortByPet = "pet".equalsIgnoreCase(sortBy);
-        if (currentUser.isAdmin()) {
+        if (currentUser.canManageClinical()) {
             List<AppointmentListRow> items = sortByPet
                     ? appointmentMapper.findAllRowsOrderByPet(safeSize, offset)
                     : appointmentMapper.findAllRows(safeSize, offset);
@@ -256,18 +262,15 @@ public class AppointmentService {
         List<AppointmentEntity> entities = appointmentMapper.findByIds(uniqueIds);
         LocalDateTime now = LocalDateTime.now();
         for (AppointmentEntity e : entities) {
-            if (!currentUser.isAdmin() && !e.ownerUserId().equals(currentUser.id())) {
+            if (!currentUser.canManageClinical() && !e.ownerUserId().equals(currentUser.id())) {
                 throw new BadRequestException("自分の予約のみ削除できます");
             }
             if (e.scheduledAt() != null && e.scheduledAt().isAfter(now)) {
                 throw new BadRequestException("未来の予約は削除できません");
             }
         }
-        int deleted = 0;
-        for (AppointmentEntity e : entities) {
-            deleted += appointmentMapper.softDelete(e.id(), now);
-        }
-        return deleted;
+        List<Long> ids = entities.stream().map(AppointmentEntity::id).toList();
+        return appointmentMapper.softDeleteByIds(ids, now);
     }
 
     private void ensureNoDuplicate(Long staffUserId, LocalDateTime scheduledAt, Long excludeId) {

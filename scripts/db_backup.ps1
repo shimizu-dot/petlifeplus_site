@@ -82,6 +82,7 @@ try {
         --format=plain `
         --no-owner `
         --no-acl `
+        --no-security-labels `
         --file $OutFile
 
     if ($LASTEXITCODE -ne 0) {
