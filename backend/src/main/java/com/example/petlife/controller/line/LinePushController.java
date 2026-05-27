@@ -1,7 +1,5 @@
 package com.example.petlife.controller.line;
 
-import com.example.petlife.entity.UserEntity;
-import com.example.petlife.mapper.UserMapper;
 import com.example.petlife.service.line.LineBotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/app/admin/line/push")
 public class LinePushController {
@@ -22,17 +18,13 @@ public class LinePushController {
     private static final Logger auditLog = LoggerFactory.getLogger("AUDIT");
 
     private final LineBotService lineBotService;
-    private final UserMapper userMapper;
 
-    public LinePushController(LineBotService lineBotService, UserMapper userMapper) {
+    public LinePushController(LineBotService lineBotService) {
         this.lineBotService = lineBotService;
-        this.userMapper = userMapper;
     }
 
     @GetMapping
     public String page(Model model) {
-        List<UserEntity> users = userMapper.findAllWithLineId();
-        model.addAttribute("lineUserCount", users.size());
         model.addAttribute("lineConfigured", lineBotService.isConfigured());
         return "admin/line-push";
     }
@@ -49,14 +41,13 @@ public class LinePushController {
             return "redirect:/app/admin/line/push";
         }
 
-        List<UserEntity> users = userMapper.findAllWithLineId();
-        List<String> lineIds = users.stream()
-                .map(UserEntity::lineUserId)
-                .toList();
-
-        int sent = lineBotService.multicastMessage(lineIds, message);
-        auditLog.info("action=line_push_sent count={}", sent);
-        ra.addFlashAttribute("success", sent + " 名の LINE 登録ユーザーにメッセージを送信しました");
+        try {
+            lineBotService.broadcastMessage(message);
+            auditLog.info("action=line_broadcast_sent");
+            ra.addFlashAttribute("success", "Bot の全フォロワーにメッセージを送信しました");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "送信に失敗しました: " + e.getMessage());
+        }
         return "redirect:/app/admin/line/push";
     }
 }

@@ -131,8 +131,8 @@ public class CalendarService {
             ));
         }
 
-        // 確定済み予約 → 🩺 自動シール（来院・オンライン問わず）
-        if (!user.isAdmin()) {
+        // 確定済み予約 → 🩺 自動シール（ユーザーのみ。スタッフ系はサイドバーで確認）
+        if (!user.hasStaffAccess()) {
             List<LocalDate> confirmedDates =
                     appointmentMapper.findConfirmedDatesByOwnerUserId(user.id(), start, finish);
             for (LocalDate date : confirmedDates) {
@@ -156,7 +156,7 @@ public class CalendarService {
         }
 
         Map<LocalDate, List<AppointmentCalendarRow>> appointmentsByDate = new HashMap<>();
-        if (user.isAdmin()) {
+        if (user.hasStaffAccess()) {
             List<AppointmentCalendarRow> appointments = appointmentMapper.findByScheduledDateRange(start, finish);
             for (AppointmentCalendarRow row : appointments) {
                 LocalDate date = row.scheduledAt().toLocalDate();
@@ -165,7 +165,7 @@ public class CalendarService {
         }
 
         Map<LocalDate, List<AppointmentSlotEntity>> availableSlotsByDate = new HashMap<>();
-        if (!user.isAdmin()) {
+        if (!user.hasStaffAccess()) {
             List<AppointmentSlotEntity> slots = appointmentSlotMapper.findAvailableInDateRange(start, finish);
             for (AppointmentSlotEntity slot : slots) {
                 LocalDate date = slot.slotDatetime().toLocalDate();

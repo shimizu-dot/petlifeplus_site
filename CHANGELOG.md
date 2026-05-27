@@ -2,6 +2,19 @@
 
 ## [2026-05-27]
 
+### UI改善
+
+#### F-7 — 診療予約: 来院 / オンライン選択をカード型UIに変更
+- **ファイル:** `backend/src/main/resources/templates/appointments/index.html`
+- **変更:**
+  - 予約方法セレクターをプレーンなラジオボタン → カード型セレクターに刷新
+    - 来院: 🏥 アイコン付き、選択時はティール（#0EA5A4）ハイライト
+    - オンライン: 💻 アイコン付き、選択時はインディゴ（#6366F1）ハイライト
+    - スタンダードプラン以下のユーザーはオンラインカードを🔒アイコン付きでグレーアウト表示
+  - 予約一覧の「方法」列を画像アイコン単体 → 「🏥 来院」「💻 オンライン」バッジ表示に変更
+  - 解説ガイド内のアイコン表示もバッジに統一
+  - CSS: `.channel-opt`（カードUI）・`.ch-badge`（一覧バッジ）スタイルを追加
+
 ### 機能追加
 
 #### F-1 — LINE プッシュメッセージ送信機能
@@ -40,6 +53,51 @@
   - `APPETITE_LOSS_WORDS`（食べない・食欲がない・食欲不振など）と `TWO_OR_MORE_DAYS_WORDS`（2日・ふつか・3日間・48時間など）の定数セットを追加
   - フォールバック: 両セットが会話履歴内で揃った場合、緊急ワードと同等の即時受診メッセージを返す
   - OpenAI システムプロンプト: 食欲不振 2 日以上 → 「今すぐ受診」強く推奨のルールを追記
+
+#### D-2 — docs/test_report_document.xlsx: テスト計画・テストケース一覧を Ver 2.0 に更新
+- **ファイル:** `docs/test_report_document.xlsx`
+- **変更:**
+  - Sheet 1（テスト計画サマリー）: テスト対象範囲を F-001〜F-015 → F-001〜F-021 に更新
+  - Sheet 2（テストケース一覧）: 30 件 → 55 件に全面更新。`docs/09-test-report.html` Ver 2.0 と内容を同期
+  - Sheet 3（機能別テスト観点）: F-015 まで → F-001〜F-021 全 21 機能に拡張（LINE Broadcast・Slack・Zoom・予約枠・お知らせ・連携アイコン・統計を追加）
+  - Sheet 4（テスト環境）: 変更なし
+- **ツール:** Python + openpyxl で更新スクリプト（`docs/update_test_report.py`）を実行
+
+#### D-1 — docs/09-test-report.html: テスト計画・テストケース一覧を Ver 2.0 に更新
+- **ファイル:** `docs/09-test-report.html`
+- **変更:**
+  - ヘッダーを Ver 1.0 → Ver 2.0、更新日 2026-05-27 に変更
+  - テスト計画（対象範囲）を現行実装（F-001〜F-021）に合わせて全面改訂。対象外欄に「請求書・決済・メール送信・PDF（未実装）」を明記
+  - テストケースを 30 件 → 55 件に拡張。追加機能ごとの TC を網羅:
+    - F-003 連携ステータスアイコン（TC-011/012）
+    - F-006 予約承認ワークフロー・カレンダー反映・ロール別アクセス（TC-022〜027）
+    - F-010 チャットボットマルチターン・食欲不振ルール（TC-034/035）
+    - F-011 カレンダー複数種シール・VET/STAFF 予約表示（TC-037〜039）
+    - F-015 LINE Broadcast・友達追加ウェルカム（TC-045〜048）
+    - F-016 Slack Bot（TC-049）
+    - F-017 Zoom オンライン診療（TC-050/051）
+    - F-018 予約枠管理ロール制御（TC-052/053）
+    - F-019 お知らせ管理・F-021 統計（TC-054/055）
+
+#### B-8 — カレンダー: 承認済み予約が VET/STAFF のカレンダーに反映されない
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/CalendarService.java`
+- **変更:** `buildMonthView()` 内の3箇所の条件を `isAdmin()` → `hasStaffAccess()` に変更
+  - 予約サイドバー（`appointmentsByDate`）: ADMIN のみ → ADMIN/VET/STAFF 全員に拡張
+  - 確定済み予約シール: `!isAdmin()` → `!hasStaffAccess()`（VET/STAFF が owner_user_id で誤検索していた問題を解消）
+  - 予約枠表示（`availableSlotsByDate`）: `!isAdmin()` → `!hasStaffAccess()`（VET/STAFF に空き枠が誤表示されていた問題を解消）
+- **原因:** スタッフ系ロール（VET/STAFF）が `isAdmin()` の判定でどちらの分岐にも正しく入らず、カレンダーに予約情報がゼロ表示になっていた。また `!isAdmin()` 側では `owner_user_id = 自分の ID` で検索するためスタッフには該当件数がゼロになり、かつユーザー向けの「空き枠」バナーも誤表示されていた
+
+#### F-6 — LINE 一斉送信: Multicast → Broadcast に切り替え
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/line/LineBotService.java`
+  - `backend/src/main/java/com/example/petlife/controller/line/LinePushController.java`
+  - `backend/src/main/resources/templates/admin/line-push.html`
+- **変更:**
+  - `LineBotService` に `broadcastMessage()` を追加（`POST /v2/bot/message/broadcast`、`to` フィールドなし）
+  - `LinePushController` を `multicastMessage()` から `broadcastMessage()` に切り替え。`UserMapper` 依存を削除
+  - `line-push.html` の UI を Broadcast 向けに刷新。「LINE 登録ユーザー数」表示を廃止し「Bot の全フォロワーに届く」説明に変更。送信ボタンの無効条件を `!lineConfigured` のみに簡略化
+- **理由:** Multicast は DB に `line_user_id` が登録済みのユーザーにしか届かなかった。Broadcast は Bot を友達追加した全ユーザーが対象でユーザーIDの個別登録が不要なため切り替え
+- **補足:** `multicastMessage()` は将来の個別送信用途向けに `LineBotService` 内に保持
 
 #### F-5 — ユーザー管理: LINE / Slack / Zoom 連携ステータスアイコン表示
 - **ファイル:**

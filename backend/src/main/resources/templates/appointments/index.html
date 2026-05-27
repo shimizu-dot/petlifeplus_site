@@ -41,6 +41,38 @@
       cursor: not-allowed;
     }
     .slot-btn.is-booked label:hover { background: #F1F5F9; }
+
+    /* ── channel selector (来院 / オンライン) ─── */
+    .channel-options { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+    .channel-opt input[type="radio"] { display: none; }
+    .channel-opt label {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; width: 130px; padding: 14px 10px; border: 2px solid #CBD5E1;
+      border-radius: 14px; cursor: pointer; background: #F8FAFC;
+      transition: all 0.18s; user-select: none;
+    }
+    .channel-opt label .ch-icon { font-size: 28px; line-height: 1; }
+    .channel-opt label .ch-label { font-size: 15px; font-weight: 700; color: #334155; }
+    .channel-opt label .ch-desc  { font-size: 11px; color: #64748B; text-align: center; }
+    .channel-opt label:hover { border-color: #93C5FD; background: #EFF6FF; }
+    /* 来院 選択時 */
+    .channel-opt.is-visit input[type="radio"]:checked + label {
+      border-color: #0EA5A4; background: #ECFDF5; box-shadow: 0 0 0 3px rgba(14,165,164,.15);
+    }
+    .channel-opt.is-visit input[type="radio"]:checked + label .ch-label { color: #0D7979; }
+    /* オンライン 選択時 */
+    .channel-opt.is-online input[type="radio"]:checked + label {
+      border-color: #6366F1; background: #EEF2FF; box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+    }
+    .channel-opt.is-online input[type="radio"]:checked + label .ch-label { color: #4338CA; }
+
+    /* ── channel badge in list ─── */
+    .ch-badge {
+      display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;
+      border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+    .ch-badge-visit  { background: #ECFDF5; color: #0D7979; border: 1px solid #6EE7D1; }
+    .ch-badge-online { background: #EEF2FF; color: #4338CA; border: 1px solid #A5B4FC; }
     .slot-empty {
       font-size: 0.9rem; color: #94A3B8; padding: 12px 0;
     }
@@ -122,19 +154,41 @@
 
           <div class="form-group">
             <label class="form-label">予約方法<span class="required">*</span></label>
-            <div th:if="${canChooseOnline}" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-              <label style="display:flex;align-items:center;gap:6px;">
-                <input type="radio" th:field="*{channel}" value="VISIT">
-                来院
-              </label>
-              <label style="display:flex;align-items:center;gap:6px;">
-                <input type="radio" th:field="*{channel}" value="ONLINE">
-                オンライン
-              </label>
+            <div th:if="${canChooseOnline}" class="channel-options">
+              <div class="channel-opt is-visit">
+                <input type="radio" th:field="*{channel}" value="VISIT" id="ch-visit">
+                <label for="ch-visit">
+                  <span class="ch-icon">🏥</span>
+                  <span class="ch-label">来院</span>
+                  <span class="ch-desc">直接クリニックへ<br>お越しください</span>
+                </label>
+              </div>
+              <div class="channel-opt is-online">
+                <input type="radio" th:field="*{channel}" value="ONLINE" id="ch-online">
+                <label for="ch-online">
+                  <span class="ch-icon">💻</span>
+                  <span class="ch-label">オンライン</span>
+                  <span class="ch-desc">Zoom ビデオ通話<br>（Premium 限定）</span>
+                </label>
+              </div>
             </div>
-            <div th:if="${!canChooseOnline}" style="display:flex;align-items:center;gap:8px;">
-              <span class="badge badge-blue">来院のみ</span>
-              <span style="font-size:13px;color:#64748B;">スタンダードプランは来院予約のみ利用できます</span>
+            <div th:if="${!canChooseOnline}" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <div class="channel-opt is-visit" style="pointer-events:none;">
+                <input type="radio" id="ch-visit-only" name="_ch" checked disabled>
+                <label for="ch-visit-only" style="border-color:#0EA5A4;background:#ECFDF5;box-shadow:0 0 0 3px rgba(14,165,164,.15);">
+                  <span class="ch-icon">🏥</span>
+                  <span class="ch-label" style="color:#0D7979;">来院</span>
+                  <span class="ch-desc">スタンダードプランは<br>来院のみ利用可能</span>
+                </label>
+              </div>
+              <div class="channel-opt is-online" style="pointer-events:none;opacity:0.45;">
+                <input type="radio" id="ch-online-lock" name="_ch" disabled>
+                <label for="ch-online-lock">
+                  <span class="ch-icon">🔒</span>
+                  <span class="ch-label">オンライン</span>
+                  <span class="ch-desc">Premium プランで<br>ご利用いただけます</span>
+                </label>
+              </div>
               <input type="hidden" th:field="*{channel}" value="VISIT">
             </div>
             <div class="invalid-feedback" style="display:block;"
@@ -214,9 +268,9 @@
           <div style="font-weight:700;margin-bottom:4px;">マーク説明・ルール</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <span>・</span>
-            <img th:src="@{/img/icon-visit.svg}" alt="visit" style="width:20px;height:20px;vertical-align:middle;">
-            <span>は来院、</span>
-            <img th:src="@{/img/icon1.png}" alt="online" style="width:20px;height:20px;vertical-align:middle;">
+            <span class="ch-badge ch-badge-visit" style="font-size:11px;padding:2px 7px;">🏥 来院</span>
+            <span>は来院予約、</span>
+            <span class="ch-badge ch-badge-online" style="font-size:11px;padding:2px 7px;">💻 オンライン</span>
             <span>はオンライン予約です。</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -267,10 +321,8 @@
               <td th:text="${#temporals.format(row.scheduledAt, 'MM/dd HH:mm')}">05/20 10:00</td>
               <td th:text="${row.petName}">ポチ</td>
               <td>
-                <img th:if="${row.channel == 'VISIT'}" th:src="@{/img/icon-visit.svg}" alt="visit"
-                     style="width:28px;height:28px;vertical-align:middle;">
-                <img th:if="${row.channel == 'ONLINE'}" th:src="@{/img/icon1.png}" alt="online"
-                     style="width:28px;height:28px;vertical-align:middle;">
+                <span th:if="${row.channel == 'VISIT'}" class="ch-badge ch-badge-visit">🏥 来院</span>
+                <span th:if="${row.channel == 'ONLINE'}" class="ch-badge ch-badge-online">💻 オンライン</span>
                 <span th:if="${row.channel != 'VISIT' and row.channel != 'ONLINE'}" th:text="${row.channel}">—</span>
               </td>
               <td th:if="${isAdminView}" th:text="${row.ownerName}">山田 太郎</td>

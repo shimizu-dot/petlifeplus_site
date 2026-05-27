@@ -19,10 +19,11 @@ public class LineBotService {
 
     private static final Logger log = LoggerFactory.getLogger(LineBotService.class);
 
-    private static final String REPLY_URL     = "https://api.line.me/v2/bot/message/reply";
-    private static final String PUSH_URL      = "https://api.line.me/v2/bot/message/push";
-    private static final String MULTICAST_URL = "https://api.line.me/v2/bot/message/multicast";
-    private static final int    MULTICAST_MAX = 500;
+    private static final String REPLY_URL      = "https://api.line.me/v2/bot/message/reply";
+    private static final String PUSH_URL       = "https://api.line.me/v2/bot/message/push";
+    private static final String MULTICAST_URL  = "https://api.line.me/v2/bot/message/multicast";
+    private static final String BROADCAST_URL  = "https://api.line.me/v2/bot/message/broadcast";
+    private static final int    MULTICAST_MAX  = 500;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -70,13 +71,33 @@ public class LineBotService {
     }
 
     // ---------------------------------------------------------------
-    // Multicast（最大 500 人ずつ一斉送信）
+    // Broadcast（Bot の全フォロワーへ一斉送信）
     // ---------------------------------------------------------------
 
     /**
-     * 指定した LINE ユーザー ID リスト全員にメッセージを送信する。
-     * @return 送信対象人数（チャンネルトークン未設定の場合は 0）
+     * Bot を友達追加している全ユーザーにメッセージを送信する。
+     * ユーザーIDの登録不要。LINE Messaging API の Broadcast エンドポイントを使用。
      */
+    public void broadcastMessage(String text) {
+        if (!isConfigured()) return;
+
+        HttpHeaders headers = buildHeaders();
+        Map<String, Object> body = Map.of(
+                "messages", List.of(Map.of("type", "text", "text", text))
+        );
+        try {
+            restTemplate.postForEntity(BROADCAST_URL, new HttpEntity<>(body, headers), String.class);
+            log.info("LINE broadcast sent");
+        } catch (Exception e) {
+            log.warn("LINE broadcast failed: {}", e.getMessage());
+            throw new RuntimeException("LINE broadcast failed: " + e.getMessage(), e);
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // Multicast（指定ユーザーへの一斉送信・将来利用向けに保持）
+    // ---------------------------------------------------------------
+
     public int multicastMessage(List<String> lineUserIds, String text) {
         if (!isConfigured() || lineUserIds == null || lineUserIds.isEmpty()) return 0;
 

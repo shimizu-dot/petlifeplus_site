@@ -183,9 +183,9 @@
         <div class="doc-category">DOCUMENT 09</div>
         <h1 class="doc-title">テスト報告書</h1>
         <div class="doc-meta">
-          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-14</span>
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-14　／　更新日：2026-05-27</span>
           <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
-          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 2.0</span>
         </div>
       </header>
 
@@ -226,40 +226,84 @@
 
         <div class="fill-block">
           <div class="fill-label">テスト対象・範囲 <span class="required">必須</span></div>
-          <div class="fill-hint">テストの対象となる機能・画面と、テストの種類</div>
+          <div class="fill-hint">テストの対象となる機能・画面と、テストの種類（Ver 2.0 現行実装ベースに更新）</div>
           <div class="fill-content">
             <div class="scope-grid">
               <div class="scope-card">
-                <h4>対象機能（F-001〜F-015）</h4>
+                <h4>認証・共通（F-001〜F-002）</h4>
                 <ul>
-                  <li>認証: F-001 ログイン認証</li>
-                  <li>共通表示: F-002 ダッシュボード</li>
-                  <li>管理CRUD: F-003〜F-007</li>
-                  <li>共通制御: F-008 入力バリデーション</li>
-                  <li>支援機能: F-009〜F-010</li>
+                  <li>F-001 ログイン認証（BCrypt）</li>
+                  <li>F-002 ダッシュボード（ロール別KPI）</li>
                 </ul>
               </div>
               <div class="scope-card">
-                <h4>対象画面</h4>
+                <h4>ペット・健康管理（F-003〜F-005）</h4>
                 <ul>
-                  <li>ログイン、ダッシュボード</li>
-                  <li>ユーザー/ペット/健康記録/予約/履歴管理</li>
-                  <li>レポート出力、ファイルアップロード、メール通知</li>
+                  <li>F-003 ユーザー管理 CRUD</li>
+                  <li>F-004 ペット管理 CRUD</li>
+                  <li>F-005 健康記録管理 CRUD</li>
                 </ul>
               </div>
               <div class="scope-card">
-                <h4>テスト種別</h4>
+                <h4>診療・予約（F-006〜F-007）</h4>
                 <ul>
-                  <li>機能テスト</li>
-                  <li>画面テスト</li>
-                  <li>セキュリティテスト</li>
+                  <li>F-006 診療予約（申請/承認/却下/キャンセル）</li>
+                  <li>F-007 診療記録 CRUD（VET/STAFF/ADMIN）</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>AI・チャット（F-009〜F-010）</h4>
+                <ul>
+                  <li>F-009 AI症状チェック（OpenAI/フォールバック）</li>
+                  <li>F-010 相談チャットボット（マルチターン対話）</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>カレンダー・通知（F-011〜F-012）</h4>
+                <ul>
+                  <li>F-011 カレンダー（手動シール・自動シール・予約表示）</li>
+                  <li>F-012 通知・スケジュールリマインダー</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>サブスク・パスワード（F-013〜F-014）</h4>
+                <ul>
+                  <li>F-013 サブスクリプション確認</li>
+                  <li>F-014 パスワード変更</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>外部連携（F-015〜F-017）</h4>
+                <ul>
+                  <li>F-015 LINE Bot（Webhook受信・返答・Broadcast送信）</li>
+                  <li>F-016 Slack Bot（Webhook受信・返答）</li>
+                  <li>F-017 Zoom オンライン診療（Premium）</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>管理・運営（F-018〜F-021）</h4>
+                <ul>
+                  <li>F-018 予約枠管理（ADMIN/STAFF）</li>
+                  <li>F-019 お知らせ管理（ADMIN/STAFF）</li>
+                  <li>F-020 ユーザー連携ステータスアイコン</li>
+                  <li>F-021 サービス統計・DBバックアップ（ADMIN）</li>
+                </ul>
+              </div>
+              <div class="scope-card">
+                <h4>共通制御（F-008・SEC）</h4>
+                <ul>
+                  <li>F-008 入力バリデーション</li>
+                  <li>ロール別アクセス制御</li>
+                  <li>未認証アクセス制御</li>
                 </ul>
               </div>
               <div class="scope-card">
                 <h4>対象外（今回）</h4>
                 <ul>
-                  <li>本番運用監視設計</li>
-                  <li>災害復旧訓練</li>
+                  <li>請求書・決済（schema のみ・未実装）</li>
+                  <li>メール送信機能（schema のみ・未実装）</li>
+                  <li>PDF出力（未実装）</li>
+                  <li>本番運用監視・災害復旧訓練</li>
                 </ul>
               </div>
             </div>
@@ -274,6 +318,7 @@
 
           <div class="fill-block">
             <div class="fill-label">テストケース一覧 <span class="required">必須</span></div>
+            <div class="fill-hint">Ver 2.0 — 現行実装（2026-05-27）ベースに全面更新。総件数 55 件</div>
             <table class="doc-table test-case-table">
               <thead>
                 <tr>
@@ -285,35 +330,81 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>TC-001</td><td>F-001 ログイン認証</td><td>正常系</td><td>正しいメールアドレス・パスワードでログインする</td><td>認証成功しダッシュボードへ遷移する</td></tr>
-                <tr><td>TC-002</td><td>F-001 ログイン認証</td><td>異常系</td><td>パスワード未入力でログインする</td><td>必須エラーが表示されログイン不可</td></tr>
-                <tr><td>TC-003</td><td>F-001 ログイン認証</td><td>境界値</td><td>パスワード8文字ちょうどでログインする</td><td>バリデーションを通過し認証処理される</td></tr>
-                <tr><td>TC-004</td><td>F-002 ダッシュボード表示</td><td>正常系</td><td>期間未指定で画面表示する</td><td>KPI・予定・通知が表示される</td></tr>
-                <tr><td>TC-005</td><td>F-002 ダッシュボード表示</td><td>異常系</td><td>終了日 &lt; 開始日の条件で検索する</td><td>期間不正エラーが表示される</td></tr>
-                <tr><td>TC-006</td><td>F-002 ダッシュボード表示</td><td>境界値</td><td>データ0件の期間を指定する</td><td>0件表示で画面崩れなく表示される</td></tr>
-                <tr><td>TC-007</td><td>F-003 ユーザー管理</td><td>正常系</td><td>必須項目を入力してユーザー登録する</td><td>ユーザーが保存され一覧に反映される</td></tr>
-                <tr><td>TC-008</td><td>F-003 ユーザー管理</td><td>異常系</td><td>既存メールアドレスで登録する</td><td>重複エラーが表示され保存されない</td></tr>
-                <tr><td>TC-009</td><td>F-003 ユーザー管理</td><td>境界値</td><td>氏名を50文字で登録する</td><td>正常に登録できる</td></tr>
-                <tr><td>TC-010</td><td>F-004 ペット管理</td><td>正常系</td><td>飼い主を指定してペット登録する</td><td>ペット情報が保存され飼い主に紐付く</td></tr>
-                <tr><td>TC-011</td><td>F-004 ペット管理</td><td>異常系</td><td>ペット名未入力で登録する</td><td>必須エラーが表示される</td></tr>
-                <tr><td>TC-012</td><td>F-004 ペット管理</td><td>境界値</td><td>生年月日に当日を入力する</td><td>未来日ではないため保存できる</td></tr>
-                <tr><td>TC-013</td><td>F-005 健康記録管理</td><td>正常系</td><td>記録日・体重を入力して登録する</td><td>記録が保存され時系列一覧に表示される</td></tr>
-                <tr><td>TC-014</td><td>F-005 健康記録管理</td><td>異常系</td><td>体重に文字列を入力する</td><td>数値形式エラーが表示される</td></tr>
-                <tr><td>TC-015</td><td>F-005 健康記録管理</td><td>境界値</td><td>体重0.1kgで登録する</td><td>下限値として正常登録される</td></tr>
-                <tr><td>TC-016</td><td>F-006 予約管理</td><td>正常系</td><td>未来日時で予約登録する</td><td>予約が確定し一覧に反映される</td></tr>
-                <tr><td>TC-017</td><td>F-006 予約管理</td><td>異常系</td><td>過去日時で予約登録する</td><td>過去日時エラーが表示される</td></tr>
-                <tr><td>TC-018</td><td>F-006 予約管理</td><td>境界値</td><td>同一枠で重複予約を登録する</td><td>重複検知され登録できない</td></tr>
-                <tr><td>TC-019</td><td>F-007 診療・相談履歴管理</td><td>正常系</td><td>実施日と対応内容を入力して登録する</td><td>履歴が保存され一覧に表示される</td></tr>
-                <tr><td>TC-020</td><td>F-007 診療・相談履歴管理</td><td>異常系</td><td>対応内容1001文字で登録する</td><td>文字数超過エラーが表示される</td></tr>
-                <tr><td>TC-021</td><td>F-007 診療・相談履歴管理</td><td>境界値</td><td>対応内容1000文字で登録する</td><td>上限値として正常登録される</td></tr>
-                <tr><td>TC-022</td><td>F-008 入力バリデーション</td><td>正常系</td><td>各必須項目を満たして送信する</td><td>エラーなく保存処理へ進む</td></tr>
-                <tr><td>TC-023</td><td>F-008 入力バリデーション</td><td>異常系</td><td>メール形式不正で送信する</td><td>形式エラーが表示される</td></tr>
-                <tr><td>TC-024</td><td>F-009 AI症状チェック</td><td>正常系</td><td>症状種別・発症時期を入力して実行する</td><td>重症度と推奨対応が表示される</td></tr>
-                <tr><td>TC-025</td><td>F-009 AI症状チェック</td><td>異常系</td><td>症状種別未選択で実行する</td><td>必須エラーが表示される</td></tr>
-                <tr><td>TC-026</td><td>F-010 検索・ソート・ページネーション</td><td>境界値</td><td>ページ番号に0を指定する</td><td>1に補正されるかエラー表示される</td></tr>
-                <tr><td>TC-028</td><td>F-012 通知・リマインド配信</td><td>正常系</td><td>予約配信を設定して保存する</td><td>配信予定として履歴に保存される</td></tr>
-                <tr><td>TC-029</td><td>F-014 ファイルアップロード</td><td>異常系</td><td>許可外拡張子で添付する</td><td>拡張子エラーで保存不可</td></tr>
-                <tr><td>TC-030</td><td>F-015 メール通知</td><td>境界値</td><td>本文2000文字で送信登録する</td><td>上限値として正常に登録される</td></tr>
+                <!-- ── F-001 ログイン認証 ── -->
+                <tr><td>TC-001</td><td>F-001 ログイン認証</td><td>正常系</td><td>正しいメール・パスワードでログインする</td><td>認証成功しダッシュボードへ遷移する</td></tr>
+                <tr><td>TC-002</td><td>F-001 ログイン認証</td><td>異常系</td><td>パスワード誤りでログインする</td><td>認証エラーが表示されログイン不可</td></tr>
+                <tr><td>TC-003</td><td>F-001 ログイン認証</td><td>異常系</td><td>未登録メールでログインする</td><td>認証エラーが表示される</td></tr>
+                <tr><td>TC-004</td><td>F-001 ログイン認証</td><td>セキュリティ</td><td>認証なしで /app/dashboard に直接アクセスする</td><td>ログイン画面にリダイレクトされる</td></tr>
+                <!-- ── F-002 ダッシュボード ── -->
+                <tr><td>TC-005</td><td>F-002 ダッシュボード</td><td>正常系</td><td>ADMIN でログインしてダッシュボードを開く</td><td>管理系KPI（ユーザー数・予約数等）が表示される</td></tr>
+                <tr><td>TC-006</td><td>F-002 ダッシュボード</td><td>正常系</td><td>一般ユーザー（Light）でログインしてダッシュボードを開く</td><td>ユーザー系KPI（自ペット・予約・通知）が表示される</td></tr>
+                <tr><td>TC-007</td><td>F-002 ダッシュボード</td><td>境界値</td><td>ペット・予約ともに0件の状態でダッシュボードを開く</td><td>0件表示で画面崩れなく表示される</td></tr>
+                <!-- ── F-003 ユーザー管理 ── -->
+                <tr><td>TC-008</td><td>F-003 ユーザー管理</td><td>正常系</td><td>必須項目を入力してユーザー登録する</td><td>ユーザーが保存され一覧に反映される</td></tr>
+                <tr><td>TC-009</td><td>F-003 ユーザー管理</td><td>異常系</td><td>既存メールアドレスで登録する</td><td>USR-001 重複エラーが表示され保存されない</td></tr>
+                <tr><td>TC-010</td><td>F-003 ユーザー管理</td><td>正常系</td><td>一般ユーザーのプランを Standard に変更する</td><td>サブスクリプションが更新され一覧に反映される</td></tr>
+                <tr><td>TC-011</td><td>F-003 ユーザー管理</td><td>正常系</td><td>LINE ID・Slack ID を登録して編集フォームの連携ステータスを確認する</td><td>LINE/Slack チップが色付きで表示される</td></tr>
+                <tr><td>TC-012</td><td>F-003 ユーザー管理</td><td>正常系</td><td>LINE ID 未登録のユーザーの連携ステータスを確認する</td><td>LINE チップがグレー表示、ツールチップに「ID未登録」と表示される</td></tr>
+                <tr><td>TC-013</td><td>F-003 ユーザー管理</td><td>セキュリティ</td><td>VET ロールでユーザー編集フォームを開く</td><td>編集・削除ボタンが表示されない（閲覧のみ）</td></tr>
+                <!-- ── F-004 ペット管理 ── -->
+                <tr><td>TC-014</td><td>F-004 ペット管理</td><td>正常系</td><td>必須項目を入力してペットを登録する</td><td>ペット情報が保存され一覧に表示される</td></tr>
+                <tr><td>TC-015</td><td>F-004 ペット管理</td><td>正常系</td><td>既存ペットの編集フォームを開く</td><td>登録済み生年月日が日付フィールドに表示される</td></tr>
+                <tr><td>TC-016</td><td>F-004 ペット管理</td><td>異常系</td><td>ペット名未入力で登録する</td><td>必須エラーが表示される</td></tr>
+                <tr><td>TC-017</td><td>F-004 ペット管理</td><td>境界値</td><td>生年月日に当日を入力して登録する</td><td>未来日でないため保存できる</td></tr>
+                <!-- ── F-005 健康記録 ── -->
+                <tr><td>TC-018</td><td>F-005 健康記録管理</td><td>正常系</td><td>記録日・体重を入力して登録する</td><td>記録が保存され時系列一覧に表示される</td></tr>
+                <tr><td>TC-019</td><td>F-005 健康記録管理</td><td>異常系</td><td>体重に文字列を入力する</td><td>数値形式エラーが表示される</td></tr>
+                <tr><td>TC-020</td><td>F-005 健康記録管理</td><td>境界値</td><td>体重0.1 kg で登録する</td><td>下限値として正常登録される</td></tr>
+                <!-- ── F-006 診療予約 ── -->
+                <tr><td>TC-021</td><td>F-006 診療予約</td><td>正常系</td><td>Standard 以上のユーザーが未来日時で予約申請する</td><td>ステータス REQUESTED で保存される</td></tr>
+                <tr><td>TC-022</td><td>F-006 診療予約</td><td>正常系</td><td>STAFF が申請中の予約を承認する</td><td>ステータスが CONFIRMED になりオーナーに通知が届く</td></tr>
+                <tr><td>TC-023</td><td>F-006 診療予約</td><td>正常系</td><td>STAFF が承認後にカレンダーを開く</td><td>承認済み予約が該当日に表示される</td></tr>
+                <tr><td>TC-024</td><td>F-006 診療予約</td><td>正常系</td><td>STAFF が申請中の予約を却下する</td><td>ステータスが CANCELED になりオーナーに通知が届く</td></tr>
+                <tr><td>TC-025</td><td>F-006 診療予約</td><td>異常系</td><td>過去日時で予約申請する</td><td>「未来日時を指定してください」エラーが表示される</td></tr>
+                <tr><td>TC-026</td><td>F-006 診療予約</td><td>異常系</td><td>診療受付時間外（17:01）で申請する</td><td>「診療受付時間外」エラーが表示される</td></tr>
+                <tr><td>TC-027</td><td>F-006 診療予約</td><td>セキュリティ</td><td>ADMIN ロールで /app/appointments にアクセスする</td><td>アクセス拒否ページが表示される（設計通り）</td></tr>
+                <!-- ── F-007 診療記録 ── -->
+                <tr><td>TC-028</td><td>F-007 診療記録</td><td>正常系</td><td>VET が実施日・対応内容を入力して診療記録を登録する</td><td>記録が保存され一覧に表示される</td></tr>
+                <tr><td>TC-029</td><td>F-007 診療記録</td><td>セキュリティ</td><td>一般ユーザーが /app/consultations にアクセスする</td><td>アクセス拒否ページが表示される</td></tr>
+                <!-- ── F-008 入力バリデーション ── -->
+                <tr><td>TC-030</td><td>F-008 入力バリデーション</td><td>正常系</td><td>全必須項目を満たしてフォームを送信する</td><td>エラーなく保存処理へ進む</td></tr>
+                <tr><td>TC-031</td><td>F-008 入力バリデーション</td><td>異常系</td><td>メール形式不正で送信する</td><td>形式エラーが表示される</td></tr>
+                <!-- ── F-009 AI症状チェック ── -->
+                <tr><td>TC-032</td><td>F-009 AI症状チェック</td><td>正常系</td><td>Standard 以上のユーザーが症状種別・発症時期を入力して実行する</td><td>重症度と推奨対応が表示される</td></tr>
+                <tr><td>TC-033</td><td>F-009 AI症状チェック</td><td>異常系</td><td>Light プランのユーザーが症状チェックにアクセスする</td><td>アクセス制限エラーが表示される</td></tr>
+                <!-- ── F-010 相談チャット ── -->
+                <tr><td>TC-034</td><td>F-010 相談チャットボット</td><td>正常系</td><td>症状を複数ターンにわたって入力する</td><td>情報収集 → トリアージの順で返答が進行する（毎回同じ返答にならない）</td></tr>
+                <tr><td>TC-035</td><td>F-010 相談チャットボット</td><td>正常系</td><td>「2日間食べない」と入力する</td><td>「今すぐ受診してください」即時受診案内が返答される</td></tr>
+                <!-- ── F-011 カレンダー ── -->
+                <tr><td>TC-036</td><td>F-011 カレンダー</td><td>正常系</td><td>月次カレンダーを表示する</td><td>当月のすべての日付・手動シール・自動シールが表示される</td></tr>
+                <tr><td>TC-037</td><td>F-011 カレンダー</td><td>正常系</td><td>同一ペット・同日に「診察」と「注射」の2種シールを追加する</td><td>両方のシールが表示される</td></tr>
+                <tr><td>TC-038</td><td>F-011 カレンダー</td><td>異常系</td><td>同一ペット・同日・同種別のシールを重複追加する</td><td>「同じ日に同じ種類のシールがすでに貼られています」エラーが表示される</td></tr>
+                <tr><td>TC-039</td><td>F-011 カレンダー</td><td>正常系</td><td>VET ロールでカレンダーを開く</td><td>全ユーザーの確定済み予約がサイドバーに表示される</td></tr>
+                <!-- ── F-012 通知・リマインダー ── -->
+                <tr><td>TC-040</td><td>F-012 通知・リマインダー</td><td>正常系</td><td>予約が承認された後に通知一覧を開く</td><td>承認通知が未読として表示される</td></tr>
+                <tr><td>TC-041</td><td>F-012 通知・リマインダー</td><td>正常系</td><td>通知を既読にする</td><td>既読ステータスに変わり未読バッジが減る</td></tr>
+                <!-- ── F-013 サブスクリプション ── -->
+                <tr><td>TC-042</td><td>F-013 サブスクリプション</td><td>正常系</td><td>一般ユーザーでサブスクリプション画面を開く</td><td>現在の契約プランが表示される</td></tr>
+                <!-- ── F-014 パスワード変更 ── -->
+                <tr><td>TC-043</td><td>F-014 パスワード変更</td><td>正常系</td><td>現在パスワードを正しく入力して変更する</td><td>パスワードが更新されログイン可能</td></tr>
+                <tr><td>TC-044</td><td>F-014 パスワード変更</td><td>異常系</td><td>現在パスワードを誤って入力して変更する</td><td>認証エラーが表示され変更されない</td></tr>
+                <!-- ── F-015 LINE Bot ── -->
+                <tr><td>TC-045</td><td>F-015 LINE Bot</td><td>正常系</td><td>LINE で Bot を友達追加する</td><td>ウェルカムメッセージが自動返信される</td></tr>
+                <tr><td>TC-046</td><td>F-015 LINE Bot</td><td>正常系</td><td>LINE Bot に症状メッセージを送信する</td><td>キーワードに応じた返答が届く</td></tr>
+                <tr><td>TC-047</td><td>F-015 LINE Broadcast</td><td>正常系</td><td>ADMIN が LINE 一斉送信フォームからメッセージを送信する</td><td>Bot フォロワー全員にメッセージが届く</td></tr>
+                <tr><td>TC-048</td><td>F-015 LINE Broadcast</td><td>異常系</td><td>LINE_CHANNEL_TOKEN 未設定の状態で一斉送信画面を開く</td><td>「チャンネルトークンが設定されていません」警告が表示され送信ボタンが無効になる</td></tr>
+                <!-- ── F-016 Slack Bot ── -->
+                <tr><td>TC-049</td><td>F-016 Slack Bot</td><td>正常系</td><td>Slack の DM で Bot に症状メッセージを送信する</td><td>緊急度に応じた返答が届く</td></tr>
+                <!-- ── F-017 Zoom ── -->
+                <tr><td>TC-050</td><td>F-017 Zoom オンライン診療</td><td>正常系</td><td>Premium ユーザーがオンライン診療を予約する</td><td>予約が登録され承認後に Zoom リンクが通知される</td></tr>
+                <tr><td>TC-051</td><td>F-017 Zoom オンライン診療</td><td>異常系</td><td>Standard ユーザーが /app/premium/online-care にアクセスする</td><td>アクセス制限エラーが表示される</td></tr>
+                <!-- ── F-018 予約枠管理 ── -->
+                <tr><td>TC-052</td><td>F-018 予約枠管理</td><td>正常系</td><td>ADMIN が予約枠を登録する</td><td>予約枠が保存され一般ユーザーのカレンダーに「空き」が表示される</td></tr>
+                <tr><td>TC-053</td><td>F-018 予約枠管理</td><td>セキュリティ</td><td>VET ロールで /app/admin/appointment-slots にアクセスする</td><td>アクセス拒否ページが表示される</td></tr>
+                <!-- ── F-019 お知らせ管理 ── -->
+                <tr><td>TC-054</td><td>F-019 お知らせ管理</td><td>正常系</td><td>ADMIN がお知らせを作成・公開する</td><td>お知らせが保存され一般ユーザーのダッシュボードに表示される</td></tr>
+                <!-- ── F-021 管理機能 ── -->
+                <tr><td>TC-055</td><td>F-021 サービス統計</td><td>正常系</td><td>ADMIN でサービス統計ページを開く</td><td>ユーザー数・ペット数・予約数等の集計値が表示される</td></tr>
               </tbody>
             </table>
 
