@@ -214,7 +214,7 @@
             </div>
             <div class="form-group">
               <div class="overall-preview">
-                <img id="overallFacePreview" th:src="@{/assets/img/dog_icon_03.png}" alt="総合評価プレビュー">
+                <img id="overallFacePreview" th:src="@{/assets/img/dog-03.png}" alt="総合評価プレビュー">
                 <div id="overallFacePreviewText" class="overall-preview-text">平均: 3.0</div>
               </div>
             </div>
@@ -276,8 +276,8 @@
     var rounded = clamp(Math.round(avg), 1, 5);
     var img = document.getElementById("overallFacePreview");
     var text = document.getElementById("overallFacePreviewText");
-    if (img) img.src = "/assets/img/dog_icon_0" + rounded + ".png";
-    if (text) text.textContent = "平均: " + avg.toFixed(1) + "（dog_icon_0" + rounded + "）";
+    if (img) img.src = "/assets/img/dog-0" + rounded + ".png";
+    if (text) text.textContent = "平均: " + avg.toFixed(1) + "（dog-0" + rounded + "）";
   };
 
   document.querySelectorAll("[data-score-picker]").forEach(function (picker) {

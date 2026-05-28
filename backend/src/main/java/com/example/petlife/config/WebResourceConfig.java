@@ -1,8 +1,11 @@
 package com.example.petlife.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebResourceConfig implements WebMvcConfigurer {
@@ -13,7 +16,8 @@ public class WebResourceConfig implements WebMvcConfigurer {
                 .addResourceLocations(
                         "file:uploads/",
                         "file:backend/uploads/"
-                );
+                )
+                .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic());
         registry.addResourceHandler(
                         "/webapp.html",
                         "/maintenance.html",
@@ -32,6 +36,7 @@ public class WebResourceConfig implements WebMvcConfigurer {
                 .addResourceLocations(
                         "file:frontend/public/assets/",
                         "file:../frontend/public/assets/"
-                );
+                )
+                .setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS).cachePublic());
     }
 }
