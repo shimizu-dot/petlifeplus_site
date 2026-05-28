@@ -23,5 +23,28 @@ public class SchemaCompatibilityInitializer implements CommandLineRunner {
     public void run(String... args) {
         jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS slack_user_id VARCHAR(100)");
         jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS line_user_id VARCHAR(100)");
+
+        // Subscription is owner-based: keep only one ACTIVE row per user (latest id).
+        jdbcTemplate.execute("""
+            WITH ranked AS (
+                SELECT id,
+                       ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY id DESC) AS rn
+                FROM subscriptions
+                WHERE deleted_at IS NULL AND status = 'ACTIVE'
+            )
+            UPDATE subscriptions s
+            SET status = 'CANCELED',
+                end_date = COALESCE(s.end_date, CURRENT_DATE),
+                updated_at = CURRENT_TIMESTAMP
+            FROM ranked r
+            WHERE s.id = r.id
+              AND r.rn > 1
+            """);
+
+        jdbcTemplate.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_subscriptions_active_user
+            ON subscriptions(user_id)
+            WHERE deleted_at IS NULL AND status = 'ACTIVE'
+            """);
     }
 }

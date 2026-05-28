@@ -349,6 +349,9 @@ CREATE INDEX IF NOT EXISTS idx_plans_is_active ON plans(is_active);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_status ON subscriptions(user_id, status);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_pet_status  ON subscriptions(pet_id, status);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_plan_id     ON subscriptions(plan_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_subscriptions_active_user
+    ON subscriptions(user_id)
+    WHERE deleted_at IS NULL AND status = 'ACTIVE';
 
 CREATE INDEX IF NOT EXISTS idx_invoices_subscription_id         ON invoices(subscription_id);
 CREATE INDEX IF NOT EXISTS idx_invoices_payment_status_due_date ON invoices(payment_status, due_date);

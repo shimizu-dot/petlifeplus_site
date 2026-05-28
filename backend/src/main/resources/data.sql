@@ -128,16 +128,7 @@ FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pet_care_records WHERE id = 3);
 
 -- ─── Subscriptions ───────────────────────────────────────────────────────────
--- owner2 → STANDARD（診療予約・AI症状チェック使用可）
-
-INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
-SELECT u.id, p.id, 2, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
-FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = 'レオン' AND p.deleted_at IS NULL
-WHERE u.email = 'owner2@petlife.local'
-  AND NOT EXISTS (
-      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 2 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
-  );
+-- サブスクリプションはオーナー単位（1オーナーにつき ACTIVE は1件）
 
 -- owner1 (Light プランテスト) → LIGHT
 
@@ -147,7 +138,7 @@ FROM users u
 JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ピーコ' AND p.deleted_at IS NULL
 WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (
-      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 1 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
   );
 
 -- owner2 (Standard プランテスト) → STANDARD
@@ -158,7 +149,7 @@ FROM users u
 JOIN pets p ON p.owner_user_id = u.id AND p.name = 'カレン' AND p.deleted_at IS NULL
 WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (
-      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 2 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
   );
 
 -- owner3 (Premium プランテスト) → PREMIUM
@@ -169,7 +160,7 @@ FROM users u
 JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ボス' AND p.deleted_at IS NULL
 WHERE u.email = 'owner3@petlife.local'
   AND NOT EXISTS (
-      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.pet_id = p.id AND s.plan_id = 3 AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
+      SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
   );
 
 -- ─── Sequence fixes ──────────────────────────────────────────────────────────
