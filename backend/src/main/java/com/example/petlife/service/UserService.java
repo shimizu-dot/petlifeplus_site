@@ -89,9 +89,10 @@ public class UserService {
             }
             int updated = userMapper.updateActiveSubscriptionPlanByUserId(id, planId);
             if (updated == 0) {
-                throw new BadRequestException("Active subscription not found for user");
+                auditLog.warn("action=user_plan_update_skipped userId={} reason=no_active_subscription desiredPlan={}", id, desiredPlan);
+            } else {
+                auditLog.info("action=user_plan_update userId={} plan={}", id, desiredPlan);
             }
-            auditLog.info("action=user_plan_update userId={} plan={}", id, desiredPlan);
         }
         auditLog.info("action=user_update userId={} roleId={} status={}", id, nextRoleId, req.status());
         return get(id);
