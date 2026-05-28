@@ -1,5 +1,7 @@
 package com.example.petlife.service;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -67,8 +69,17 @@ final class ImageOrientationUtil {
     }
 
     private static void apply(BufferedImage src, BufferedImage dst, AffineTransform tx) {
-        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-        op.filter(src, dst);
+        try {
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+            op.filter(src, dst);
+        } catch (RuntimeException ex) {
+            // Some source image types (e.g. indexed/animated GIF frames) may fail in AffineTransformOp.
+            // Fallback to Graphics2D transform so upload does not fail.
+            Graphics2D g = dst.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g.drawImage(src, tx, null);
+            g.dispose();
+        }
     }
 
     private static int imageType(BufferedImage src) {
