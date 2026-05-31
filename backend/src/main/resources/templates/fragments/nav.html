@@ -131,6 +131,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     var dropdown = document.querySelector('.sidebar-dropdown');
     if (!dropdown) return;
+    dropdown.open = window.matchMedia('(min-width: 769px)').matches;
 
     dropdown.querySelectorAll('.sidebar-nav a').forEach(function (link) {
       link.addEventListener('click', function () {

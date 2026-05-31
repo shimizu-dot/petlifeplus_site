@@ -56,6 +56,21 @@
   - `@media (min-width: 769px)` で `.sidebar-dropdown:not([open]) .sidebar-dropdown-content` を `display: block` に固定
   - `details` の `open` なし状態でも、デスクトップではメニュー本体が表示されるよう修正
 
+#### B-24 — ダッシュボードメニュー: 初期アクセス時のメニュー非表示を修正
+- **ファイル:**
+  - `backend/src/main/resources/templates/fragments/nav.html`
+- **変更内容:**
+  - `details.sidebar-dropdown` に `open` 属性を追加
+  - 初期アクセス直後にデスクトップ環境でメニューが表示されないケースを解消
+
+#### B-25 — ダッシュボードメニュー: スマホ初期表示への影響を回避
+- **ファイル:**
+  - `backend/src/main/resources/templates/fragments/nav.html`
+- **変更内容:**
+  - `details.sidebar-dropdown` の `open` 属性を削除
+  - `DOMContentLoaded` 時に `matchMedia('(min-width: 769px)')` で desktop のみ `open = true` を設定
+  - desktop 初期表示を維持しつつ、スマホでは初期状態を閉じたままに修正
+
 #### B-9 — 請求通知: 文字化け対策と請求書リンク導線の修正
 - **ファイル:**
   - `backend/src/main/java/com/example/petlife/service/BillingNotificationService.java`
