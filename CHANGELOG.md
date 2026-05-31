@@ -49,6 +49,13 @@
   - `details.sidebar-dropdown` の `open` 属性を削除
   - スマホ表示時にメニューが初期状態で開いたままになる挙動を解消（PC表示はCSSで常時表示のまま維持）
 
+#### B-23 — ダッシュボードメニュー: デスクトップ表示でメニューが見えない不具合を修正
+- **ファイル:**
+  - `backend/src/main/resources/static/css/app.css`
+- **変更内容:**
+  - `@media (min-width: 769px)` で `.sidebar-dropdown:not([open]) .sidebar-dropdown-content` を `display: block` に固定
+  - `details` の `open` なし状態でも、デスクトップではメニュー本体が表示されるよう修正
+
 #### B-9 — 請求通知: 文字化け対策と請求書リンク導線の修正
 - **ファイル:**
   - `backend/src/main/java/com/example/petlife/service/BillingNotificationService.java`

@@ -159,6 +159,12 @@ body {
   display: block;
 }
 
+@media (min-width: 769px) {
+  .sidebar-dropdown:not([open]) .sidebar-dropdown-content {
+    display: block;
+  }
+}
+
 .sidebar-footer {
   margin-top: auto;
   padding: 16px 24px;
