@@ -42,6 +42,13 @@
   - 既存DB向け互換DDLとして `ALTER TABLE appointment_slots ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN NOT NULL DEFAULT FALSE` を追加
   - 旧スキーマ環境で `/app/admin/appointment-slots` アクセス時に `column "is_blocked" does not exist` が発生する問題を解消
 
+#### B-22 — ダッシュボードメニュー: 初期表示で開いたままになる不具合を修正
+- **ファイル:**
+  - `backend/src/main/resources/templates/fragments/nav.html`
+- **変更内容:**
+  - `details.sidebar-dropdown` の `open` 属性を削除
+  - スマホ表示時にメニューが初期状態で開いたままになる挙動を解消（PC表示はCSSで常時表示のまま維持）
+
 #### B-9 — 請求通知: 文字化け対策と請求書リンク導線の修正
 - **ファイル:**
   - `backend/src/main/java/com/example/petlife/service/BillingNotificationService.java`
