@@ -462,7 +462,7 @@ erDiagram
         bigint id PK "支払ID"
         bigint invoice_id FK "請求書"
         decimal paid_amount "支払金額"
-        varchar payment_method "CARD/BANK/OTHER"
+        varchar payment_method "BANK/PAYPAY/OTHER"
         varchar status "PENDING/SUCCEEDED/FAILED"
     }
     plans ||--o{ plan_features : "plan_id"
@@ -940,7 +940,7 @@ erDiagram
 
             <!-- invoices -->
             <h3 id="tbl-invoices">invoices</h3>
-            <p class="table-note">スキーマのみ実装済み（コントローラー・サービス未実装）</p>
+            <p class="table-note">実装済み（BillingController / BillingService — GET/POST /app/admin/billing/**）</p>
             <div class="table-wrap">
               <table class="doc-table db-table">
                 <thead><tr><th>カラム名</th><th>データ型</th><th>NULL許可</th><th>デフォルト値</th><th>制約</th><th>説明</th></tr></thead>
@@ -963,7 +963,7 @@ erDiagram
 
             <!-- payments -->
             <h3 id="tbl-payments">payments</h3>
-            <p class="table-note">スキーマのみ実装済み（コントローラー・サービス未実装）</p>
+            <p class="table-note">実装済み（BillingService.registerPayment() — POST /app/admin/billing/{id}/payments）</p>
             <div class="table-wrap">
               <table class="doc-table db-table">
                 <thead><tr><th>カラム名</th><th>データ型</th><th>NULL許可</th><th>デフォルト値</th><th>制約</th><th>説明</th></tr></thead>
@@ -972,10 +972,12 @@ erDiagram
                   <tr><td>invoice_id</td><td>BIGINT</td><td>NO</td><td></td><td>FK → invoices.id</td><td>請求書ID</td></tr>
                   <tr><td>paid_amount</td><td>DECIMAL(10,2)</td><td>NO</td><td></td><td></td><td>支払金額</td></tr>
                   <tr><td>paid_at</td><td>TIMESTAMP</td><td>YES</td><td>NULL</td><td></td><td>支払日時</td></tr>
-                  <tr><td>payment_method</td><td>VARCHAR(20)</td><td>NO</td><td></td><td>CHECK IN (CARD/BANK/OTHER)</td><td>支払方法</td></tr>
+                  <tr><td>payment_method</td><td>VARCHAR(20)</td><td>NO</td><td></td><td>CHECK IN (BANK/PAYPAY/OTHER)</td><td>支払方法</td></tr>
                   <tr><td>transaction_ref</td><td>VARCHAR(100)</td><td>YES</td><td>NULL</td><td></td><td>決済システムトランザクション参照ID</td></tr>
                   <tr><td>status</td><td>VARCHAR(20)</td><td>NO</td><td></td><td>CHECK IN (PENDING/SUCCEEDED/FAILED)</td><td>決済状態</td></tr>
-                  <tr><td>created_at</td><td>TIMESTAMP</td><td>NO</td><td>CURRENT_TIMESTAMP</td><td></td><td>作成日時（更新なし）</td></tr>
+                  <tr><td>deleted_at</td><td>TIMESTAMP</td><td>YES</td><td>NULL</td><td></td><td>論理削除日時</td></tr>
+                  <tr><td>created_at</td><td>TIMESTAMP</td><td>NO</td><td>CURRENT_TIMESTAMP</td><td></td><td>作成日時</td></tr>
+                  <tr><td>updated_at</td><td>TIMESTAMP</td><td>NO</td><td>CURRENT_TIMESTAMP</td><td></td><td>更新日時</td></tr>
                 </tbody>
               </table>
             </div>

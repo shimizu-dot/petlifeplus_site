@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper
@@ -94,4 +95,22 @@ public interface SubscriptionMapper {
         ORDER BY s.end_date
         """)
     List<SubscriptionRow> findUpcomingRenewalsByUserId(@Param("userId") Long userId);
+
+    @Select("""
+        SELECT p.monthly_fee
+        FROM subscriptions s
+        JOIN plans p ON p.id = s.plan_id
+        WHERE s.id = #{id} AND s.deleted_at IS NULL
+        """)
+    BigDecimal findMonthlyFeeBySubscriptionId(@Param("id") Long subscriptionId);
+
+    @Select("SELECT end_date FROM subscriptions WHERE id = #{id} AND deleted_at IS NULL")
+    java.time.LocalDate findEndDateById(@Param("id") Long subscriptionId);
+
+    @org.apache.ibatis.annotations.Update("""
+        UPDATE subscriptions
+        SET end_date = #{endDate}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id} AND deleted_at IS NULL
+        """)
+    int updateEndDate(@Param("id") Long subscriptionId, @Param("endDate") java.time.LocalDate endDate);
 }

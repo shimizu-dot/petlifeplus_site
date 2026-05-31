@@ -499,9 +499,10 @@
             <div class="fill-label">システム構成図 <span class="required">必須</span></div>
             <div class="fill-hint">フロントエンド ↔ バックエンド ↔ データベースの関係を図示</div>
             <div class="fill-content">
-              <p class="system-meta">フロントエンド: HTML / CSS / JavaScript（Thymeleaf）</p>
-              <p class="system-meta">バックエンド: Spring Boot（Controller → Service → Repository）</p>
-              <p class="system-meta">データベース: PostgreSQL / H2 / MySQL</p>
+              <p class="system-meta">フロントエンド: HTML / CSS / JavaScript（静的ファイル、frontend/public/ に配置）</p>
+              <p class="system-meta">テンプレートエンジン: Thymeleaf（バックエンド側サーバーサイドレンダリング）</p>
+              <p class="system-meta">バックエンド: Spring Boot（Controller → Service → Mapper）</p>
+              <p class="system-meta">データベース: PostgreSQL</p>
               <div class="system-chart">
                 <div class="system-chart-flow">
                   <div class="system-chart-node">
@@ -513,12 +514,12 @@
                   <div class="system-chart-node">
                     <div class="system-chart-node-title">バックエンド</div>
                     <p>Spring Boot</p>
-                    <p>Controller → Service → Repository</p>
+                    <p>Controller → Service → Mapper (MyBatis)</p>
                   </div>
                   <div class="system-chart-arrow">データ永続化</div>
                   <div class="system-chart-node">
                     <div class="system-chart-node-title">データベース</div>
-                    <p>H2 / MySQL</p>
+                    <p>PostgreSQL</p>
                     <p>ユーザー・ペット・健康記録を管理</p>
                   </div>
                 </div>
@@ -617,31 +618,45 @@
                 </tr>
                 <tr class="template-row">
                   <td>F-011</td>
+                  <td>請求・決済管理</td>
+                  <td>請求作成、入金確認、状態管理</td>
+                  <td>請求・決済管理画面</td>
+                  <td><span class="badge badge-should">Should</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-012</td>
                   <td>通知・リマインド配信</td>
                   <td>通知作成、配信設定、履歴管理</td>
                   <td>通知配信管理画面</td>
                   <td><span class="badge badge-should">Should</span></td>
                 </tr>
                 <tr class="template-row">
-                  <td>F-012</td>
+                  <td>F-013</td>
                   <td>PDF出力</td>
                   <td>レポート/一覧のPDF出力</td>
                   <td>レポート画面 / 各一覧画面</td>
                   <td><span class="badge badge-could">Could</span></td>
                 </tr>
                 <tr class="template-row">
-                  <td>F-013</td>
+                  <td>F-014</td>
                   <td>ファイルアップロード</td>
                   <td>添付ファイルの登録・管理</td>
                   <td>診療・相談履歴画面</td>
                   <td><span class="badge badge-could">Could</span></td>
                 </tr>
                 <tr class="template-row">
-                  <td>F-014</td>
+                  <td>F-015</td>
                   <td>メール通知</td>
                   <td>予約・重要情報のメール配信</td>
                   <td>通知配信管理画面</td>
                   <td><span class="badge badge-could">Could</span></td>
+                </tr>
+                <tr class="template-row">
+                  <td>F-022</td>
+                  <td>チャットボット相談</td>
+                  <td>マルチターン会話による症状収集と受診判断サポート（全プラン・Groq AI）</td>
+                  <td>チャットボット画面（/app/consult/chatbot）</td>
+                  <td><span class="badge badge-should">Should</span></td>
                 </tr>
               </tbody>
             </table>
@@ -675,7 +690,7 @@
                     <div class="screen-flow-card sub">診療・相談履歴画面</div>
                     <div class="screen-flow-card sub">通知配信管理画面</div>
                     <div class="screen-flow-card sub">レポート画面</div>
-                    <div class="screen-flow-card sub">症状チェック画面</div>
+                    <div class="screen-flow-card sub">チャットボット相談画面</div>
                   </div>
                 </div>
                 <div class="screen-flow-row">
@@ -858,13 +873,13 @@
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-003</div>
                 <div class="fill-content">
-                  <p>ユーザー情報の一覧表示、登録、詳細表示、編集、削除を行う。</p>
+                  <p>ユーザー情報の一覧表示、登録、詳細表示、編集、削除を行う（ADMIN のみ全ユーザー操作可）。一覧・編集画面では LINE / Slack / Zoom の連携ステータスアイコンを表示し、Slack User ID / LINE User ID の登録も行う。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">画面レイアウト</div>
                 <div class="fill-content">
-                  <p>一覧テーブル、検索欄、登録ボタン、詳細/編集/削除操作を配置。</p>
+                  <p>一覧テーブル（table / list / grid ビュー切替）、検索欄、登録ボタン、詳細/編集/削除操作を配置。各ユーザー行に LINE / Slack / Zoom 連携ステータスチップを表示。プランに機能が含まれ ID が登録済みなら色付き、未登録・プラン外はグレーアウト。</p>
                 </div>
               </div>
               <div class="fill-block">
@@ -930,6 +945,20 @@
                     <td>—</td>
                     <td>数字・ハイフン / 10〜13桁</td>
                     <td>任意</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>Slack User ID</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>任意</td>
+                    <td>U から始まる Slack UID。連携ステータス表示に使用。</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>LINE User ID</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>任意</td>
+                    <td>U から始まる 33 文字。連携ステータス・Broadcast 送信に使用。</td>
                   </tr>
                 </tbody>
               </table>
@@ -1116,34 +1145,50 @@
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-006</div>
                 <div class="fill-content">
-                  <p>診療・相談予約の登録、変更、キャンセルを管理し、空き枠チェックを行う。</p>
+                  <p>診療・相談予約の登録、変更、キャンセルを管理し、空き枠チェックを行う。予約方法は「来院 / オンライン」から選択。VET / STAFF / ADMIN は予約を承認（CONFIRMED）または却下（CANCELED）できる。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">予約ステータス遷移</div>
+                <div class="fill-content">
+                  <table class="doc-table">
+                    <thead><tr><th>ステータス</th><th>説明</th><th>操作者</th></tr></thead>
+                    <tbody>
+                      <tr class="template-row"><td>REQUESTED</td><td>ユーザーが登録した初期状態</td><td>ユーザー</td></tr>
+                      <tr class="template-row"><td>CONFIRMED</td><td>VET/STAFF/ADMIN が承認済み</td><td>VET / STAFF / ADMIN</td></tr>
+                      <tr class="template-row"><td>CANCELED</td><td>キャンセルまたは却下</td><td>ユーザー / VET / STAFF / ADMIN</td></tr>
+                      <tr class="template-row"><td>COMPLETED</td><td>診療完了</td><td>VET / STAFF / ADMIN</td></tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">画面レイアウト</div>
                 <div class="fill-content">
-                  <p>予約一覧、日付フィルタ、予約フォーム、変更/キャンセル操作を配置。</p>
+                  <p>予約一覧、日付フィルタ、予約フォーム（来院/オンライン カード型選択）、変更/キャンセル操作を配置。VET/STAFF/ADMIN ビューには承認・却下ボタンを表示。スタンダードプラン以下のユーザーはオンラインカードをグレーアウト。</p>
                 </div>
               </div>
               <div class="fill-block">
-                <div class="fill-label">処理フロー</div>
+                <div class="fill-label">処理フロー（ユーザー登録）</div>
                 <div class="fill-content">
-                  <p>1. 予約条件を入力する。</p>
+                  <p>1. 予約方法（来院 / オンライン）・日時・種別を入力する。</p>
                   <p>2. 空き枠と重複をチェックする。</p>
-                  <p>3. 成功時に一覧へ反映する。</p>
+                  <p>3. ステータス REQUESTED で登録し一覧へ反映する。</p>
                 </div>
               </div>
               <div class="fill-block">
-                <div class="fill-label">正常時の動作</div>
+                <div class="fill-label">処理フロー（承認・却下）</div>
                 <div class="fill-content">
-                  <p>予約確定し最新状態を表示する。</p>
+                  <p>1. VET/STAFF/ADMIN が予約一覧で対象予約を選択する。</p>
+                  <p>2. 「承認」（POST /app/appointments/{id}/approve）または「却下」（POST /app/appointments/{id}/reject）を実行する。</p>
+                  <p>3. ステータスを更新し最新状態を表示する。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">エラー時の動作</div>
                 <div class="fill-content">
-                  <p>バリデーション: 過去日時・必須漏れを表示。</p>
-                  <p>システム: 競合時に警告表示する。</p>
+                  <p>バリデーション: 過去日時・必須漏れ・プラン外オンライン選択を表示。</p>
+                  <p>システム: 競合時に警告表示。権限外の承認・却下操作は 400 エラー。</p>
                 </div>
               </div>
               <div class="fill-block">
@@ -1152,6 +1197,21 @@
                   <p>予約詳細画面</p>
                   <p>予約編集画面</p>
                   <p>通知配信管理画面</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">予約枠管理（<code>GET /app/admin/appointment-slots</code>）</div>
+                <div class="fill-content">
+                  <p>SUPER/ADMIN/VET/STAFF が自動生成スロット（9:30–17:00、30分刻み）を日別に調整する管理画面。</p>
+                  <table class="doc-table">
+                    <thead><tr><th>枠の種類</th><th>is_blocked</th><th>説明</th></tr></thead>
+                    <tbody>
+                      <tr class="template-row"><td>自動生成</td><td>—</td><td>起動時に 9:30–17:00 を自動生成。appointment_slots への登録不要</td></tr>
+                      <tr class="template-row"><td>追加枠</td><td>false</td><td>業務時間外や特別スロットを追加。自動生成に上乗せ</td></tr>
+                      <tr class="template-row"><td>ブロック枠</td><td>true</td><td>特定の自動生成スロットを非表示化。休診・院内研修等に使用</td></tr>
+                    </tbody>
+                  </table>
+                  <p style="margin-top:10px;"><strong>過去日付制限:</strong> 本日より前の日付を指定した場合はエラーメッセージを表示し、スロット一覧・登録フォームを非表示にする。日付ピッカーの <code>min</code> 属性で本日以降のみ選択可。</p>
                 </div>
               </div>
             </div>
@@ -1181,6 +1241,13 @@
                     <td>○</td>
                     <td>必須チェック</td>
                     <td>診療 / 相談</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>予約方法</td>
+                    <td>Enum</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>来院 / オンライン</td>
                   </tr>
                   <tr class="template-row">
                     <td>備考</td>
@@ -1272,7 +1339,7 @@
                     <td>添付ファイル</td>
                     <td>File</td>
                     <td>—</td>
-                    <td>拡張子チェック / 5MB以内</td>
+                    <td>拡張子チェック / 10MB以内</td>
                     <td>PDF・画像</td>
                   </tr>
                 </tbody>
@@ -1373,41 +1440,49 @@
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-009</div>
                 <div class="fill-content">
-                  <p>症状入力を解析し、重症度と推奨対応（経過観察/相談/受診）を提示する。</p>
+                  <p>ペットに紐付いた1ターン完結の症状解析機能。症状・発症時期・メモを送信すると重症度（HIGH/MEDIUM/LOW）と推奨対応（VISIT/CONSULT/OBSERVE）を即時返却し、symptom_checks テーブルに保存する。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">画面レイアウト</div>
                 <div class="fill-content">
-                  <p>症状入力フォーム、実行ボタン、結果カードを配置。</p>
+                  <p>ペット詳細ページ（/app/pets/{id}）内のフォームとして組み込み。結果は同ページへリダイレクトして表示。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">処理フロー</div>
                 <div class="fill-content">
-                  <p>1. 症状を入力する。</p>
-                  <p>2. AI解析を実行する。</p>
-                  <p>3. 判定結果を表示する。</p>
+                  <p>1. ペット詳細ページのフォームから症状種別・発症時期・メモを入力。</p>
+                  <p>2. POST /app/pets/{id}/symptom-check で送信。</p>
+                  <p>3. SymptomCheckService が OpenAI API（またはヒューリスティック）で判定。</p>
+                  <p>4. 結果を symptom_checks に保存し、ペット詳細ページへリダイレクト。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">正常時の動作</div>
                 <div class="fill-content">
-                  <p>重症度と推奨アクションを表示する。</p>
+                  <p>重症度（HIGH/MEDIUM/LOW）と推奨対応（VISIT/CONSULT/OBSERVE）をフラッシュメッセージで表示。直近の診断履歴としてページに反映。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">エラー時の動作</div>
                 <div class="fill-content">
-                  <p>バリデーション: 入力不足を表示。</p>
-                  <p>システム: 解析失敗時に再試行案内を表示。</p>
+                  <p>バリデーション: 症状種別が空の場合はエラー表示。</p>
+                  <p>システム: APIエラー時はキーワードベースのヒューリスティック判定に自動フォールバック。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">画面遷移先</div>
                 <div class="fill-content">
-                  <p>症状チェック結果画面</p>
-                  <p>予約管理画面</p>
+                  <p>ペット詳細画面（リダイレクト）</p>
+                  <p>予約管理画面（結果から導線）</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">印刷出力への連携</div>
+                <div class="fill-content">
+                  <p>AI症状チェック履歴は診療情報印刷画面（<code>GET /app/pets/{petId}/health-records/print</code>）に自動的に含まれる。</p>
+                  <p>出力項目: 実施日時・症状の種類・発症時期・重症度（HIGH/MEDIUM/LOW を色分け）・推奨対応（受診/相談/様子見）・AIガイダンス本文。</p>
                 </div>
               </div>
             </div>
@@ -1425,21 +1500,21 @@
                 </thead>
                 <tbody>
                   <tr class="template-row">
-                    <td>症状種別</td>
-                    <td>Enum</td>
-                    <td>○</td>
-                    <td>必須チェック</td>
-                    <td>複数選択可</td>
-                  </tr>
-                  <tr class="template-row">
-                    <td>発症時期</td>
+                    <td>症状の種類 (symptomType)</td>
                     <td>String</td>
                     <td>○</td>
-                    <td>必須チェック / 100文字以内</td>
-                    <td></td>
+                    <td>@NotBlank / 100文字以内</td>
+                    <td>自由入力テキスト</td>
                   </tr>
                   <tr class="template-row">
-                    <td>補足メモ</td>
+                    <td>発症時期 (onsetText)</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>100文字以内</td>
+                    <td>任意</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>補足メモ (memo)</td>
                     <td>String</td>
                     <td>—</td>
                     <td>500文字以内</td>
@@ -1534,9 +1609,144 @@
             </div>
           </div>
           <div class="subsection">
-            <h3 class="subsection-title">F-011 通知・リマインド配信</h3>
+            <h3 class="subsection-title">F-011 請求・決済管理</h3>
 
             <div id="f011-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-011　実装済み（<code>BillingController</code> / <code>BillingService</code> / <code>BillingNotificationService</code>）</div>
+                <div class="fill-content">
+                  <p>サブスクリプションの契約更新申請時に請求を自動発行し、顧客へアプリ内通知・メール・LINE で支払い案内を送信する。支払い方法は銀行振り込みまたは PayPay。管理者が入金を登録すると支払状況（UNPAID / PARTIAL / PAID）が更新される。</p>
+                  <p>管理画面: <code>GET /app/admin/billing</code>（一覧）/ <code>GET/POST /app/admin/billing/{id}</code>（詳細・入金登録）— ADMIN / SUPER のみアクセス可。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">通知チャンネルと実行方式</div>
+                <div class="fill-content">
+                  <table class="doc-table">
+                    <thead><tr><th>チャンネル</th><th>実行方式</th><th>条件</th><th>説明</th></tr></thead>
+                    <tbody>
+                      <tr class="template-row"><td><strong>① アプリ内通知</strong></td><td><strong>同期</strong></td><td>常に実行</td><td>呼び出し元スレッドで実行。通知センター（<code>/app/notifications</code>）に即座に届く。失敗は即検知できる</td></tr>
+                      <tr class="template-row"><td>② メール（SendGrid）</td><td>非同期（@Async）</td><td><code>SENDGRID_API_KEY</code> 設定時</td><td>別スレッドで実行。遅延・失敗してもアプリ内通知には影響しない</td></tr>
+                      <tr class="template-row"><td>③ LINE Push</td><td>非同期（@Async）</td><td><code>line_user_id</code> 登録済み かつ <code>LINE_CHANNEL_TOKEN</code> 設定時</td><td>テキスト形式で請求概要を送信</td></tr>
+                    </tbody>
+                  </table>
+                  <p style="margin-top:10px;font-size:13px;">
+                    <strong>通知再送:</strong> 管理者が請求詳細画面の「📨 お支払い案内を再送する」ボタン
+                    （<code>POST /app/admin/billing/{id}/resend-notification</code>）で任意のタイミングで再送可能。
+                  </p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">通知トリガーと送信内容</div>
+                <div class="fill-content">
+                  <table class="doc-table">
+                    <thead><tr><th>イベント</th><th>タイミング</th><th>通知チャンネル</th><th>通知内容</th></tr></thead>
+                    <tbody>
+                      <tr class="template-row"><td>契約更新申請</td><td>ユーザーが更新申請ボタンを押下</td><td>アプリ内 + メール + LINE</td><td>プラン名・請求金額・支払期日・支払方法案内</td></tr>
+                      <tr class="template-row"><td>入金確認完了</td><td>管理者が入金登録し PAID になった時</td><td>アプリ内 + メール</td><td>受領確認メッセージ</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">支払い方法</div>
+                <div class="fill-content">
+                  <table class="doc-table">
+                    <thead><tr><th>方法</th><th>DB 値</th><th>備考</th></tr></thead>
+                    <tbody>
+                      <tr class="template-row"><td>銀行振り込み</td><td>BANK</td><td>振込先口座は案内メール・LINE に記載</td></tr>
+                      <tr class="template-row"><td>PayPay</td><td>PAYPAY</td><td>PayPay リンクまたは QR コードを案内に添付</td></tr>
+                      <tr class="template-row"><td>その他</td><td>OTHER</td><td>将来の拡張用</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>請求一覧（subscription_id・金額・支払状況・期日）、入金登録フォーム、領収書出力を配置。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. ユーザーが <code>POST /app/subscriptions/{id}/renew-request</code> で更新申請する。</p>
+                  <p>2. <code>BillingService.createInvoice()</code> が invoices レコードを作成する（支払期限 = 請求日 + 14日）。</p>
+                  <p>3. アプリ内通知を<strong>同期</strong>送信 → 通知センターに即座に表示。</p>
+                  <p>4. メール・LINE を<strong>非同期</strong>（@Async）送信 → 別スレッドで実行。</p>
+                  <p>5. 顧客が銀行振り込みまたは PayPay で支払いを行う。</p>
+                  <p>6. 管理者が <code>POST /app/admin/billing/{id}/payments</code> で入金登録する。</p>
+                  <p>7. 累計入金額が請求額以上になれば payment_status を PAID に更新。入金確認通知をアプリ内（同期）+ メール（非同期）で送信する。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: 金額不正・必須漏れ・支払方法不正を表示。すでに PAID の請求書への入金登録は 400 エラー。</p>
+                  <p>システム: <code>createInvoice()</code> が失敗した場合はエラーメッセージをユーザーに表示（サイレント握りつぶしなし）。各通知チャンネルは独立して catch し、他チャンネルに影響しない。</p>
+                  <p>通知再送: 管理画面の「📨 お支払い案内を再送する」ボタン（<code>POST /app/admin/billing/{id}/resend-notification</code>）で任意のタイミングで再送可能。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面遷移先</div>
+                <div class="fill-content">
+                  <p>請求詳細画面</p>
+                  <p>入金詳細画面</p>
+                  <p>レポート画面</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧（入金登録）<span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>支払金額</td>
+                    <td>Decimal</td>
+                    <td>○</td>
+                    <td>0 以上</td>
+                    <td>分割払い対応</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>支払日時</td>
+                    <td>DateTime</td>
+                    <td>○</td>
+                    <td>日時形式</td>
+                    <td></td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>支払い方法</td>
+                    <td>Enum</td>
+                    <td>○</td>
+                    <td>必須チェック</td>
+                    <td>BANK / PAYPAY / OTHER</td>
+                  </tr>
+                  <tr class="template-row">
+                    <td>振込参照番号 / 取引ID</td>
+                    <td>String</td>
+                    <td>—</td>
+                    <td>100文字以内</td>
+                    <td>銀行振り込みは振込番号、PayPay は取引ID</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">F-012 通知・リマインド配信</h3>
+
+            <div id="f012-core-notify">
               <div class="fill-block">
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-011</div>
@@ -1619,47 +1829,41 @@
           </div>
 
           <div class="subsection">
-            <h3 class="subsection-title">F-012 PDF出力</h3>
+            <h3 class="subsection-title">F-013 印刷・PDF出力</h3>
 
-            <div id="f012-core">
+            <div id="f013-core">
               <div class="fill-block">
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
-                <div class="fill-hint">機能ID：F-012</div>
+                <div class="fill-hint">機能ID：F-013　実装状況：部分実装（診療情報印刷のみ）</div>
                 <div class="fill-content">
-                  <p>指定条件でレポートや一覧データをPDFとして生成・出力する。</p>
+                  <p><strong>実装済み — 診療情報印刷:</strong> <code>GET /app/pets/{petId}/health-records/print</code> でブラウザの印刷ダイアログを使用した A4 縦レイアウト出力。汎用 PDF ライブラリ（iText 等）は未使用。</p>
+                  <p><strong>未実装 — 汎用 PDF ダウンロード:</strong> レポート画面・一覧画面への PDF 出力ボタンは今後の課題。</p>
                 </div>
               </div>
               <div class="fill-block">
-                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-label">実装済み: 診療情報印刷の出力項目</div>
                 <div class="fill-content">
-                  <p>条件フォーム、出力ボタン、出力履歴を配置。</p>
+                  <ol>
+                    <li>ペット基本情報（名前・種別・品種・性別・生年月日・基準体重）</li>
+                    <li>ワクチン・予防記録（種別・実施日・次回予定日・メモ）</li>
+                    <li>診療履歴（受診日・担当者・処置内容・診断・処方）</li>
+                    <li><strong>AI症状チェック履歴</strong>（実施日時・症状・発症時期・重症度・推奨対応・AIガイダンス）</li>
+                    <li>健康記録（記録日・体重・運動・食事メモ・メモ）</li>
+                  </ol>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">処理フロー</div>
                 <div class="fill-content">
-                  <p>1. 条件を指定する。</p>
-                  <p>2. 帳票生成を実行する。</p>
-                  <p>3. 完了後にダウンロードを表示する。</p>
-                </div>
-              </div>
-              <div class="fill-block">
-                <div class="fill-label">正常時の動作</div>
-                <div class="fill-content">
-                  <p>PDFを生成しダウンロード可能にする。</p>
-                </div>
-              </div>
-              <div class="fill-block">
-                <div class="fill-label">エラー時の動作</div>
-                <div class="fill-content">
-                  <p>バリデーション: 期間不整合を表示。</p>
-                  <p>システム: 生成失敗時に再試行案内。</p>
+                  <p>1. ペット詳細画面の「印刷」リンクから <code>GET /app/pets/{petId}/health-records/print</code> にアクセス。</p>
+                  <p>2. 「印刷する」ボタン（<code>window.print()</code>）でブラウザ印刷ダイアログを表示。</p>
+                  <p>3. A4 縦・12mm マージンで印刷出力。</p>
                 </div>
               </div>
               <div class="fill-block">
                 <div class="fill-label">画面遷移先</div>
                 <div class="fill-content">
-                  <p>レポート画面（同一画面）</p>
+                  <p>印刷画面（同一画面）</p>
                 </div>
               </div>
             </div>
@@ -1703,9 +1907,9 @@
           </div>
 
           <div class="subsection">
-            <h3 class="subsection-title">F-013 ファイルアップロード</h3>
+            <h3 class="subsection-title">F-014 ファイルアップロード</h3>
 
-            <div id="f013-core">
+            <div id="f014-core">
               <div class="fill-block">
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-013</div>
@@ -1780,9 +1984,9 @@
           </div>
 
           <div class="subsection">
-            <h3 class="subsection-title">F-014 メール通知</h3>
+            <h3 class="subsection-title">F-015 メール通知</h3>
 
-            <div id="f014-core">
+            <div id="f015-core">
               <div class="fill-block">
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-014</div>
@@ -1864,6 +2068,81 @@
             </div>
           </div>
 
+          <div class="subsection">
+            <h3 class="subsection-title">F-022 チャットボット相談</h3>
+
+            <div id="f022-core">
+              <div class="fill-block">
+                <div class="fill-label">機能概要 <span class="required">必須</span></div>
+                <div class="fill-hint">機能ID：F-022</div>
+                <div class="fill-content">
+                  <p>ユーザーとのマルチターン会話で症状情報を段階的に収集し、受診判断をサポートする機能。F-009（AI症状チェック）とは独立した別機能。ペット紐付けなし。全プランで利用可能。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">F-009 との違い</div>
+                <div class="fill-content">
+                  <table class="doc-table">
+                    <thead>
+                      <tr><th></th><th>F-009 AI症状チェック</th><th>F-022 チャットボット相談</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr class="template-row"><td>会話ターン数</td><td>1ターン完結</td><td>マルチターン（履歴50件）</td></tr>
+                      <tr class="template-row"><td>ペット紐付け</td><td>あり（pet_id）</td><td>なし（user_id のみ）</td></tr>
+                      <tr class="template-row"><td>利用プラン</td><td>STANDARD 以上</td><td>全プラン（無料含む）</td></tr>
+                      <tr class="template-row"><td>AI エンジン</td><td>OpenAI（openai.*）</td><td>Groq / fallback（chatbot.*）</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">画面レイアウト</div>
+                <div class="fill-content">
+                  <p>独立したチャット画面（/app/consult/chatbot）。会話履歴・情報収集フロー進捗（4段階）・クイック入力ボタンを表示。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">処理フロー</div>
+                <div class="fill-content">
+                  <p>1. ユーザーがメッセージを入力して送信（POST /app/consult/chatbot）。</p>
+                  <p>2. ConsultChatService がユーザーメッセージを DB に保存。</p>
+                  <p>3. 会話履歴を含めて Groq API（またはキーワードベースフォールバック）に送信し返答を生成。</p>
+                  <p>4. ボット返答を DB に保存してチャット画面へリダイレクト。</p>
+                </div>
+              </div>
+              <div class="fill-block">
+                <div class="fill-label">エラー時の動作</div>
+                <div class="fill-content">
+                  <p>バリデーション: メッセージが空の場合はエラー表示。</p>
+                  <p>システム: APIエラー / キー未設定時は fallbackReply()（5段階キーワードフロー）で応答。</p>
+                </div>
+              </div>
+            </div>
+            <div class="fill-block">
+              <div class="fill-label">入力項目一覧 <span class="required">必須</span></div>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>項目名</th>
+                    <th>データ型</th>
+                    <th>必須</th>
+                    <th>バリデーション</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="template-row">
+                    <td>メッセージ (message)</td>
+                    <td>String</td>
+                    <td>○</td>
+                    <td>@NotBlank / 1000文字以内</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </section>
 
         <section class="section" id="sec5">
@@ -1878,7 +2157,7 @@
                 <li><strong>パスワードの暗号化方式:</strong> BCryptPasswordEncoderでハッシュ化して保存し、平文保存は行わない。</li>
                 <li><strong>CSRF対策:</strong> Spring SecurityのCSRF保護を有効化し、フォーム送信時にCSRFトークンを検証する。</li>
                 <li><strong>XSS対策:</strong> 入力値バリデーションと出力時エスケープ（Thymeleaf自動エスケープ）を実施する。</li>
-                <li><strong>SQLインジェクション対策:</strong> JPA/Repositoryおよびバインド変数を使用し、SQL文字列連結を禁止する。</li>
+                <li><strong>SQLインジェクション対策:</strong> MyBatis Mapperでバインド変数（<code>#{}</code>）を使用し、SQL文字列連結（<code>${}</code>の安易な利用）を禁止する。</li>
                 <li><strong>セッション管理:</strong> ログイン時のセッションID再生成、セッションタイムアウト設定、ログアウト時のセッション破棄を実施する。</li>
               </ul>
             </div>

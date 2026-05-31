@@ -156,6 +156,14 @@ public interface AppointmentMapper {
     List<java.time.LocalDateTime> findBookedTimesOnDate(@Param("date") java.time.LocalDate date);
 
     @Select("""
+        SELECT scheduled_at FROM appointments
+        WHERE deleted_at IS NULL
+          AND CAST(scheduled_at AS DATE) = #{date}
+          AND status = 'REQUESTED'
+        """)
+    List<java.time.LocalDateTime> findRequestedTimesOnDate(@Param("date") java.time.LocalDate date);
+
+    @Select("""
         <script>
         SELECT id, pet_id, owner_user_id, staff_user_id, appointment_type, channel,
                scheduled_at, status, zoom_join_url, note, slot_id,

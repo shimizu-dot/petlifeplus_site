@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>請求詳細 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body th:class="${bodyClass}">
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <a th:href="@{/app/admin/billing}" class="topbar-back">← 請求一覧</a>
+      <span class="topbar-title">請求詳細</span>
+    </div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+      <!-- 請求情報 -->
+      <div class="card">
+        <div class="card-title">請求情報</div>
+        <div class="detail-grid">
+          <div class="detail-row">
+            <span class="detail-label">請求番号</span>
+            <span class="detail-value" style="font-family:monospace;" th:text="${invoice.invoiceNumber}"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">顧客名</span>
+            <span class="detail-value" th:text="${invoice.ownerName}"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">メールアドレス</span>
+            <span class="detail-value" th:text="${invoice.ownerEmail}"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">プラン</span>
+            <span class="detail-value" th:text="${invoice.planName}"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">請求金額</span>
+            <span class="detail-value" style="font-size:18px;font-weight:700;color:var(--brand-primary);">
+              ¥<span th:text="${#numbers.formatInteger(invoice.amount, 1, 'COMMA')}"></span>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">請求日</span>
+            <span class="detail-value" th:text="${#temporals.format(invoice.invoiceDate, 'yyyy/MM/dd')}"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">支払期限</span>
+            <span class="detail-value" th:text="${#temporals.format(invoice.dueDate, 'yyyy/MM/dd')}"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">ステータス</span>
+            <span th:switch="${invoice.paymentStatus}">
+              <span th:case="'PAID'"    class="badge badge-success">入金済み</span>
+              <span th:case="'PARTIAL'" class="badge badge-warn">一部入金</span>
+              <span th:case="*"         class="badge badge-danger">未払い</span>
+            </span>
+          </div>
+          <div class="detail-row" th:if="${invoice.paidAt != null}">
+            <span class="detail-label">入金確認日時</span>
+            <span class="detail-value" th:text="${#temporals.format(invoice.paidAt, 'yyyy/MM/dd HH:mm')}"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 入金履歴 -->
+      <div class="card">
+        <div class="card-title">入金履歴</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>支払日</th>
+                <th>金額</th>
+                <th>支払い方法</th>
+                <th>取引参照番号</th>
+                <th>ステータス</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${payments.empty}">
+                <td colspan="5" style="text-align:center;color:var(--muted);">入金記録がありません</td>
+              </tr>
+              <tr th:each="p : ${payments}">
+                <td th:text="${#temporals.format(p.paidAt, 'yyyy/MM/dd')}"></td>
+                <td style="text-align:right;">
+                  ¥<span th:text="${#numbers.formatInteger(p.paidAmount, 1, 'COMMA')}"></span>
+                </td>
+                <td>
+                  <span th:switch="${p.paymentMethod}">
+                    <span th:case="'BANK'">🏦 銀行振り込み</span>
+                    <span th:case="'PAYPAY'">📱 PayPay</span>
+                    <span th:case="*">その他</span>
+                  </span>
+                </td>
+                <td th:text="${p.transactionRef ?: '—'}"></td>
+                <td>
+                  <span th:switch="${p.status}">
+                    <span th:case="'SUCCEEDED'" class="badge badge-success">完了</span>
+                    <span th:case="'PENDING'"   class="badge badge-warn">処理中</span>
+                    <span th:case="*"           class="badge badge-danger">失敗</span>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 通知を再送 -->
+      <div class="card" style="max-width:480px;">
+        <div class="card-title">お支払いのご案内を再送</div>
+        <p style="font-size:13px;color:#64748b;margin-bottom:12px;">
+          顧客の通知センター・メール・LINE に「お支払いのご案内」を再送します。<br>
+          初回通知が届いていない場合や、顧客からの確認依頼を受けた際にご利用ください。
+        </p>
+        <form th:action="@{/app/admin/billing/{id}/resend-notification(id=${invoice.invoiceId})}"
+              method="post">
+          <button type="submit" class="btn btn-secondary"
+                  onclick="return confirm('お支払いのご案内を再送してよいですか？')">
+            📨 お支払い案内を再送する
+          </button>
+        </form>
+      </div>
+
+      <!-- 入金登録フォーム -->
+      <div class="card" th:if="${invoice.paymentStatus != 'PAID'}">
+        <div class="card-title">入金を登録する</div>
+        <form th:action="@{/app/admin/billing/{id}/payments(id=${invoice.invoiceId})}"
+              th:object="${form}" method="post" style="max-width:480px;">
+
+          <div class="form-group">
+            <label class="field">
+              <span class="field-label">支払金額 <span class="required">*</span></span>
+              <input type="number" th:field="*{paidAmount}" class="control"
+                     th:classappend="${#fields.hasErrors('paidAmount')} ? 'is-error'"
+                     step="1" min="1"
+                     th:placeholder="${invoice.amount}">
+              <span class="error-text" th:if="${#fields.hasErrors('paidAmount')}"
+                    th:errors="*{paidAmount}"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="field">
+              <span class="field-label">支払日 <span class="required">*</span></span>
+              <input type="date" th:field="*{paidAt}" class="control"
+                     th:classappend="${#fields.hasErrors('paidAt')} ? 'is-error'">
+              <span class="error-text" th:if="${#fields.hasErrors('paidAt')}"
+                    th:errors="*{paidAt}"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="field">
+              <span class="field-label">支払い方法 <span class="required">*</span></span>
+              <select th:field="*{paymentMethod}" class="control"
+                      th:classappend="${#fields.hasErrors('paymentMethod')} ? 'is-error'">
+                <option value="">選択してください</option>
+                <option value="BANK">🏦 銀行振り込み</option>
+                <option value="PAYPAY">📱 PayPay</option>
+                <option value="OTHER">その他</option>
+              </select>
+              <span class="error-text" th:if="${#fields.hasErrors('paymentMethod')}"
+                    th:errors="*{paymentMethod}"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="field">
+              <span class="field-label">振込参照番号 / PayPay 取引ID</span>
+              <input type="text" th:field="*{transactionRef}" class="control"
+                     placeholder="例: 2026053001234">
+            </label>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <button type="submit" class="btn btn-primary"
+                    onclick="return confirm('入金を登録します。よろしいですか？')">
+              💾 入金を登録する
+            </button>
+            <a th:href="@{/app/admin/billing}" class="btn btn-secondary">キャンセル</a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

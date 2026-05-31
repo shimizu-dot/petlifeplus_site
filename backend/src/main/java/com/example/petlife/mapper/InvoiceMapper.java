@@ -1,5 +1,6 @@
 package com.example.petlife.mapper;
 
+import com.example.petlife.dto.billing.InvoiceRow;
 import com.example.petlife.entity.InvoiceEntity;
 import org.apache.ibatis.annotations.*;
 
@@ -60,4 +61,88 @@ public interface InvoiceMapper {
         WHERE id = #{id} AND deleted_at IS NULL
         """)
     int softDelete(@Param("id") Long id, @Param("deletedAt") LocalDateTime deletedAt);
+
+    @Select("""
+        SELECT i.id             AS "invoiceId",
+               i.invoice_number,
+               i.invoice_date,
+               i.due_date,
+               i.amount,
+               i.payment_status,
+               i.issued_at,
+               i.paid_at,
+               i.subscription_id,
+               p.name           AS "planName",
+               p.monthly_fee    AS "monthlyFee",
+               u.id             AS "ownerUserId",
+               u.name           AS "ownerName",
+               u.email          AS "ownerEmail",
+               u.line_user_id   AS "lineUserId",
+               s.end_date       AS "subscriptionEndDate"
+        FROM invoices i
+        JOIN subscriptions s ON s.id = i.subscription_id AND s.deleted_at IS NULL
+        JOIN plans p ON p.id = s.plan_id
+        JOIN users u ON u.id = s.user_id AND u.deleted_at IS NULL
+        WHERE i.deleted_at IS NULL
+        ORDER BY i.invoice_date DESC, i.id DESC
+        LIMIT #{limit} OFFSET #{offset}
+        """)
+    List<InvoiceRow> findAllWithDetails(@Param("limit") int limit, @Param("offset") int offset);
+
+    @Select("""
+        SELECT i.id             AS "invoiceId",
+               i.invoice_number,
+               i.invoice_date,
+               i.due_date,
+               i.amount,
+               i.payment_status,
+               i.issued_at,
+               i.paid_at,
+               i.subscription_id,
+               p.name           AS "planName",
+               p.monthly_fee    AS "monthlyFee",
+               u.id             AS "ownerUserId",
+               u.name           AS "ownerName",
+               u.email          AS "ownerEmail",
+               u.line_user_id   AS "lineUserId",
+               s.end_date       AS "subscriptionEndDate"
+        FROM invoices i
+        JOIN subscriptions s ON s.id = i.subscription_id AND s.deleted_at IS NULL
+        JOIN plans p ON p.id = s.plan_id
+        JOIN users u ON u.id = s.user_id AND u.deleted_at IS NULL
+        WHERE i.id = #{id} AND i.deleted_at IS NULL
+        """)
+    InvoiceRow findByIdWithDetails(@Param("id") Long id);
+
+    /**
+     * 支払期限が過ぎており未払い/一部払いのまま、かつオーナーがまだ ACTIVE な請求書一覧。
+     * OverdueInvoiceScheduler が毎日実行し、通知送信 + アカウント停止を行う。
+     */
+    @Select("""
+        SELECT i.id             AS "invoiceId",
+               i.invoice_number,
+               i.invoice_date,
+               i.due_date,
+               i.amount,
+               i.payment_status,
+               i.issued_at,
+               i.paid_at,
+               i.subscription_id,
+               p.name           AS "planName",
+               p.monthly_fee    AS "monthlyFee",
+               u.id             AS "ownerUserId",
+               u.name           AS "ownerName",
+               u.email          AS "ownerEmail",
+               u.line_user_id   AS "lineUserId",
+               s.end_date       AS "subscriptionEndDate"
+        FROM invoices i
+        JOIN subscriptions s ON s.id = i.subscription_id AND s.deleted_at IS NULL
+        JOIN plans p ON p.id = s.plan_id
+        JOIN users u ON u.id = s.user_id AND u.deleted_at IS NULL AND u.status = 'ACTIVE'
+        WHERE i.deleted_at IS NULL
+          AND i.due_date < CURRENT_DATE
+          AND i.payment_status IN ('UNPAID', 'PARTIAL')
+        ORDER BY i.due_date
+        """)
+    List<InvoiceRow> findOverdueInvoicesWithActiveUsers();
 }

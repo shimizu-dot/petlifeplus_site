@@ -1,0 +1,88 @@
+# PetLifePlus — ローカル開発用 Docker Compose
+# 使い方:
+#   初回 / 再構築: docker compose up --build
+#   通常起動:      docker compose up -d
+#   停止:          docker compose down
+#   DB 含め完全削除: docker compose down -v
+#
+# .env ファイルに環境変数を書くと自動で読み込まれる（.env.example を参照）
+
+services:
+
+  # ─── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: petlife_db
+    environment:
+      POSTGRES_DB:       petlifeplus
+      POSTGRES_USER:     ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-hs0512}
+    ports:
+      - "5432:5432"          # ホストの psql / DBeaver からも接続可能
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d petlifeplus"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ─── Spring Boot アプリ ───────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: petlife_app
+    depends_on:
+      db:
+        condition: service_healthy   # DB の起動完了を待ってから起動
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      # サーバー設定
+      PORT: 8080
+
+      # DB 接続（コンテナ間通信はサービス名 "db" でアクセス）
+      DB_URL:      jdbc:postgresql://db:5432/petlifeplus
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-hs0512}
+
+      # スキーマ・データの自動適用（always / never）
+      SQL_INIT_MODE: ${SQL_INIT_MODE:-always}
+
+      # AI / 外部サービス（未設定でもフォールバックで起動可能）
+      OPENAI_API_KEY:    ${OPENAI_API_KEY:-}
+      OPENAI_MODEL:      ${OPENAI_MODEL:-gpt-4.1-mini}
+      CHATBOT_API_KEY:   ${CHATBOT_API_KEY:-}
+      CHATBOT_MODEL:     ${CHATBOT_MODEL:-llama-3.1-8b-instant}
+
+      # メール（未設定時はスキップ）
+      SENDGRID_API_KEY:   ${SENDGRID_API_KEY:-}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL:-noreply@petlife.local}
+
+      # Slack Bot（未設定時は無効）
+      SLACK_BOT_TOKEN:      ${SLACK_BOT_TOKEN:-}
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET:-}
+      ADMIN_SLACK_USER_IDS: ${ADMIN_SLACK_USER_IDS:-}
+
+      # LINE Messaging API（未設定時は無効）
+      LINE_CHANNEL_TOKEN:  ${LINE_CHANNEL_TOKEN:-}
+      LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:-}
+      ADMIN_LINE_USER_IDS: ${ADMIN_LINE_USER_IDS:-}
+
+      # Zoom オンライン診療（未設定時は無効）
+      ZOOM_ACCOUNT_ID:  ${ZOOM_ACCOUNT_ID:-}
+      ZOOM_CLIENT_ID:   ${ZOOM_CLIENT_ID:-}
+      ZOOM_CLIENT_SECRET: ${ZOOM_CLIENT_SECRET:-}
+
+      # パスワードリセットメール用ベース URL
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+
+    # 本番 Dockerfile の ENTRYPOINT (-Dserver.port=10000) を上書きして
+    # application.properties の ${PORT:8080} を使うようにする
+    entrypoint: ["java", "-jar", "/app/app.jar"]
+    restart: unless-stopped
+
+volumes:
+  pgdata:    # DB データを永続化（down -v で削除）

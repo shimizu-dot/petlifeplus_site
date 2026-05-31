@@ -180,6 +180,51 @@
     </section>
 
     <section class="section">
+      <h2>AI症状チェック履歴</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>実施日時</th>
+            <th>症状の種類</th>
+            <th>発症時期</th>
+            <th>重症度</th>
+            <th>推奨対応</th>
+            <th>AIガイダンス</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${#lists.isEmpty(symptomChecks)}">
+            <td colspan="6" class="empty">記録はありません</td>
+          </tr>
+          <tr th:each="sc : ${symptomChecks}">
+            <td th:text="${#temporals.format(sc.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-10 10:30</td>
+            <td th:text="${sc.symptomType ?: '—'}">食欲不振</td>
+            <td th:text="${sc.onsetText ?: '—'}">昨日から</td>
+            <td>
+              <span th:switch="${sc.severity}">
+                <span th:case="'HIGH'"   style="color:#b91c1c;font-weight:700;">高（HIGH）</span>
+                <span th:case="'MEDIUM'" style="color:#d97706;font-weight:700;">中（MEDIUM）</span>
+                <span th:case="'LOW'"    style="color:#15803d;font-weight:700;">低（LOW）</span>
+                <span th:case="*"        th:text="${sc.severity}">—</span>
+              </span>
+            </td>
+            <td>
+              <span th:switch="${sc.recommendation}">
+                <span th:case="'VISIT'"   style="color:#b91c1c;font-weight:700;">受診</span>
+                <span th:case="'CONSULT'" style="color:#d97706;font-weight:700;">相談</span>
+                <span th:case="'OBSERVE'" style="color:#15803d;font-weight:700;">様子見</span>
+                <span th:case="*"         th:text="${sc.recommendation}">—</span>
+              </span>
+            </td>
+            <td style="font-size:12px;max-width:300px;" th:text="${sc.guidance ?: '—'}">ガイダンス本文</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
       <h2>健康記録</h2>
       <div class="table-wrap">
         <table class="table">

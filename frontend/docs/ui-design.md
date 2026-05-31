@@ -21,14 +21,18 @@
 
 ## 2. カラーパレット
 
-| 色の種類 | HEX | 使用場面 | 選定理由（色彩心理） |
-|---|---|---|---|
-| メインカラー | `#1D4ED8` | ヘッダー、見出し、主要UI | 青は信頼・誠実・安心を想起させ、医療/健康領域の不安を下げる。 |
-| サブカラー | `#0EA5A4` | 補助ボタン、ステップ、ガイド要素 | 青緑は安心・調和・回復の印象があり、伴走感を表現しやすい。 |
-| アクセントカラー | `#F59E0B` | CTA、注意喚起、強調 | 橙は注意喚起・行動促進に有効で、導線を見逃しにくくする。 |
-| 背景色 | `#F8FAFC` | ページ背景、余白 | 高明度の淡色で圧迫感を減らし、長時間閲覧でも疲れにくい。 |
-| テキスト色（メイン） | `#0F172A` | 本文、重要情報 | 高い可読性を確保。 |
-| テキスト色（サブ） | `#64748B` | 補助説明、注釈 | 情報の優先度を視覚的に分離。 |
+> **注意:** このカラーパレットはフロントエンド（マーケティングサイト）用です。バックエンドアプリ（`app.css`）は別の青系スキームを使用します。
+
+| 色の種類 | HEX | CSS変数 | 使用場面 | 選定理由（色彩心理） |
+|---|---|---|---|---|
+| メインカラー | `#FF8FB1` | `--brand` | 主要CTA、強調ラベル、ブランド訴求 | 親しみと行動喚起を両立し、相談導線を見つけやすくする。 |
+| ブランドダーク | `#FF6E9A` | `--brand-dark` | ホバー時のボタン背景・枠 | メインカラーの濃いバリエーション。 |
+| アクセントカラー | `#8C6EE6` | `--accent` | 補助強調、バナー、アクセント導線 | 情報の区切りや補助強調に使い、視線誘導を安定させる。 |
+| 背景色 | `#FFF9FB` | `--bg` | ページ背景、余白領域 | 高明度でやわらかい背景にし、長時間閲覧でも疲れにくい。 |
+| カード背景 | `#FFFFFF` | `--card` | カード・パネル背景 | |
+| ボーダー | `#F2DBE7` | `--line` | 区切り線、カード枠 | |
+| テキスト色（メイン） | `#4A2D3C` | `--text` | 本文、重要情報 | コントラストを確保しつつ、全体トーンを統一する。 |
+| テキスト色（サブ） | `#7A6170` | `--muted` | 補助説明、注釈、ヒント文 | 情報の優先度を視覚的に分離。 |
 
 ---
 
@@ -54,7 +58,7 @@
 ## 4. UIコンポーネント
 
 ### 4.1 ボタン
-- 角丸: `14px`
+- 角丸: `999px`（ピル型）
 - 種別: プライマリ / セカンダリ / デンジャー
 - ホバー: 背景色・枠色を段階的に変化
 
@@ -65,19 +69,19 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1.2;
-  border-radius: 14px;
+  border-radius: 999px;
   padding: 10px 16px;
   border: 1px solid transparent;
   cursor: pointer;
   transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .1s ease;
 }
 .btn:active { transform: translateY(1px); }
-.btn-primary { background:#1D4ED8; color:#fff; border-color:#1D4ED8; }
-.btn-primary:hover { background:#1E40AF; border-color:#1E40AF; }
-.btn-secondary { background:#fff; color:#1D4ED8; border-color:#1D4ED8; }
-.btn-secondary:hover { background:#EFF6FF; }
-.btn-danger { background:#fff; color:#DC2626; border-color:#DC2626; }
-.btn-danger:hover { background:#FEE2E2; color:#B91C1C; border-color:#B91C1C; }
+.btn-primary { background: #FF8FB1; color: #fff; border-color: #FF8FB1; }
+.btn-primary:hover { background: #FF6E9A; border-color: #FF6E9A; }
+.btn-secondary { background: #fff; color: #FF8FB1; border-color: #FF8FB1; }
+.btn-secondary:hover { background: #FFF3F9; }
+.btn-danger { background: #fff; color: #DC2626; border-color: #DC2626; }
+.btn-danger:hover { background: #FEE2E2; color: #B91C1C; border-color: #B91C1C; }
 ```
 
 ### 4.2 フォーム要素
@@ -90,21 +94,27 @@
 - トグルスイッチ
 
 状態:
-- フォーカス時: `border-color` をメインカラーに変更 + `box-shadow`
+- フォーカス時: `border-color` をメインカラー（`#FF8FB1`）に変更 + `box-shadow`
 - エラー時: 赤系背景 + 赤枠 + エラーメッセージ表示
 
 ```css
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FF8FB1;
+}
 .control {
   border: 1px solid #CBD5E1;
   border-radius: 10px;
   padding: 10px 12px;
+  color: #4A2D3C;
   transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
 }
 .control:focus {
   outline: none;
-  border-color: #1D4ED8;
-  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.18);
-  background: #F8FAFF;
+  border-color: #FF8FB1;
+  box-shadow: 0 0 0 3px rgba(255, 143, 177, 0.25);
+  background: #FFF8FC;
 }
 .control.is-error {
   border-color: #DC2626;
@@ -114,7 +124,7 @@
 
 ### 4.3 カード・テーブル・アラート
 
-- カード: 画像 + タイトル + 説明 + ボタン
+- カード: 画像 + タイトル + 説明 + ボタン、角丸 `26px`、シャドウ `0 10px 20px rgba(221, 136, 170, 0.12)`
 - テーブル: ヘッダー付き、ストライプ表示（偶数行背景）
 - アラート: 情報 / 成功 / 警告 / エラー
 
@@ -124,32 +134,34 @@
 
 | 項目 | ルール |
 |---|---|
-| コンテンツ最大幅 | `1200px`（推奨 `92vw`） |
-| グリッド | PC: 12カラム / タブレット: 8カラム / スマホ: 4カラム |
-| ガター幅 | PC/Tab: `24px` / SP: `16px` |
-| セクション間余白 | PC: `64px` / Tab: `48px` / SP: `32px` |
-| 要素間余白 | 8pxスケール（`8 / 12 / 16 / 24 / 32`） |
-| 角丸 | 入力: `10px` / ボタン: `14px` / カード: `14px` / モーダル: `16px` |
-| シャドウ | カード: `0 8px 20px rgba(15, 23, 42, 0.05)` |
-|  | 強調カード: `0 12px 24px rgba(37, 99, 235, 0.10)` |
-|  | モーダル: `0 20px 40px rgba(15, 23, 42, 0.18)` |
-| ブレークポイント | PC: `>=1024px` / Tab: `768–1023px` / SP: `<=767px` |
+| コンテンツ最大幅 | `960px`（推奨 `82vw`） |
+| グリッド | PC(768px+): hero は `1.2fr / 0.8fr`、カード・統計は3列 / SP: 1列 |
+| セクション間余白 | `--space-section: 36px` |
+| 要素間余白 | `--space-block: 22px`（ブロック間）、`--space-tight: 14px`（密接要素） |
+| 角丸 | 入力: `10px` / ボタン: `999px`（ピル型） / カード系: `26px` / 画像: `18–20px` |
+| シャドウ | カード: `0 10px 20px rgba(221, 136, 170, 0.12)` |
+| ブレークポイント | PC: `≥768px` / SP: `<768px`（主要）、補助: `≥900px` |
 
 ### CSS変数例
 
 ```css
 :root {
-  --content-max: 1200px;
-  --gutter-pc: 24px;
-  --gutter-sp: 16px;
-  --section-gap-pc: 64px;
-  --section-gap-tab: 48px;
-  --section-gap-sp: 32px;
-  --radius-input: 10px;
-  --radius-button: 14px;
-  --radius-card: 14px;
-  --shadow-card: 0 8px 20px rgba(15, 23, 42, 0.05);
+  --brand: #ff8fb1;
+  --brand-dark: #ff6e9a;
+  --accent: #8c6ee6;
+  --bg: #fff9fb;
+  --card: #ffffff;
+  --line: #f2dbe7;
+  --text: #4a2d3c;
+  --muted: #7a6170;
+  --space-section: 36px;
+  --space-block: 22px;
+  --space-tight: 14px;
 }
-@media (max-width: 1023px) { /* tablet */ }
-@media (max-width: 767px) { /* smartphone */ }
+.container { width: 82vw; max-width: 960px; }
+.card { border-radius: 26px; box-shadow: 0 10px 20px rgba(221, 136, 170, 0.12); }
+@media (min-width: 768px) {
+  .hero-grid { grid-template-columns: 1.2fr .8fr; gap: 24px; }
+  .card-grid, .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
 ```

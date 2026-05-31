@@ -142,7 +142,7 @@ public class NotificationController {
                     "INFO",
                     s.endDate().atStartOfDay(),
                     "サブスクリプション更新のお知らせ",
-                    s.petName() + " の " + s.planName() + " プランが " + s.endDate() + " に更新されます" + autoRenewNote,
+                    "お客様の " + s.planName() + " プランが " + s.endDate() + " に更新されます" + autoRenewNote,
                     null,
                     dismissed.contains(key)
             ));

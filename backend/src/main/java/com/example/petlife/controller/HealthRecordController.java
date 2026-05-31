@@ -2,6 +2,7 @@ package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
 import com.example.petlife.mapper.MedicalHistoryMapper;
+import com.example.petlife.mapper.SymptomCheckMapper;
 import com.example.petlife.dto.health.HealthRecordForm;
 import com.example.petlife.entity.HealthRecordEntity;
 import com.example.petlife.entity.PetCareRecordEntity;
@@ -29,13 +30,16 @@ public class HealthRecordController {
     private final PetService petService;
     private final PetCareRecordService petCareRecordService;
     private final MedicalHistoryMapper medicalHistoryMapper;
+    private final SymptomCheckMapper symptomCheckMapper;
 
     public HealthRecordController(HealthRecordService healthRecordService, PetService petService,
-                                  PetCareRecordService petCareRecordService, MedicalHistoryMapper medicalHistoryMapper) {
+                                  PetCareRecordService petCareRecordService, MedicalHistoryMapper medicalHistoryMapper,
+                                  SymptomCheckMapper symptomCheckMapper) {
         this.healthRecordService = healthRecordService;
         this.petService = petService;
         this.petCareRecordService = petCareRecordService;
         this.medicalHistoryMapper = medicalHistoryMapper;
+        this.symptomCheckMapper = symptomCheckMapper;
     }
 
     @GetMapping
@@ -171,6 +175,7 @@ public class HealthRecordController {
         model.addAttribute("vaccineRecords", vaccineRecords);
         model.addAttribute("medicalHistories", medicalHistoryMapper.findRowsByPetId(petId, 200, 0));
         model.addAttribute("healthRecords", healthRecordService.listForPet(petId, 1, 100, null, currentUser).items());
+        model.addAttribute("symptomChecks", symptomCheckMapper.findRecentByPetId(petId, 100));
         return "health/print";
     }
 

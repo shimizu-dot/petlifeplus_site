@@ -6,6 +6,7 @@ public record AppointmentSlotEntity(
         Long id,
         LocalDateTime slotDatetime,
         String note,
+        Boolean isBlocked,
         Long createdByUserId,
         LocalDateTime deletedAt,
         LocalDateTime createdAt

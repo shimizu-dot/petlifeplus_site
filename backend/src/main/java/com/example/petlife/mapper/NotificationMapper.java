@@ -125,21 +125,43 @@ public interface NotificationMapper {
     // --- サブスクリプション更新申請 ---
 
     @Select("""
-        SELECT CAST(REGEXP_REPLACE(title, '^サブスクリプション更新申請 #', '') AS BIGINT)
-        FROM notifications
-        WHERE created_by_user_id = #{userId}
-          AND title LIKE 'サブスクリプション更新申請 #%'
-          AND deleted_at IS NULL
+        SELECT CAST(REGEXP_REPLACE(n.title, '^サブスクリプション更新申請 #', '') AS BIGINT)
+        FROM notifications n
+        LEFT JOIN LATERAL (
+            SELECT i.payment_status
+            FROM invoices i
+            WHERE i.subscription_id = CAST(REGEXP_REPLACE(n.title, '^サブスクリプション更新申請 #', '') AS BIGINT)
+              AND i.deleted_at IS NULL
+              AND i.issued_at IS NOT NULL
+              AND i.issued_at >= n.created_at
+            ORDER BY i.issued_at ASC, i.id ASC
+            LIMIT 1
+        ) inv ON TRUE
+        WHERE n.created_by_user_id = #{userId}
+          AND n.title LIKE 'サブスクリプション更新申請 #%'
+          AND n.deleted_at IS NULL
+          AND COALESCE(inv.payment_status, 'UNPAID') <> 'PAID'
         """)
     List<Long> findRenewalRequestedSubscriptionIdsByUserId(@Param("userId") Long userId);
 
     @Select("""
         SELECT CAST(REGEXP_REPLACE(n.title, '^サブスクリプション更新申請 #', '') AS BIGINT) AS "subscriptionId",
                UPPER(p.name) AS "planName",
-               n.created_at AS "requestedAt"
+               n.created_at AS "requestedAt",
+               CASE WHEN inv.payment_status = 'PAID' THEN 'APPROVED' ELSE 'REQUESTED' END AS "status"
         FROM notifications n
         JOIN subscriptions s ON s.id = CAST(REGEXP_REPLACE(n.title, '^サブスクリプション更新申請 #', '') AS BIGINT)
         JOIN plans p ON p.id = s.plan_id
+        LEFT JOIN LATERAL (
+            SELECT i.payment_status
+            FROM invoices i
+            WHERE i.subscription_id = s.id
+              AND i.deleted_at IS NULL
+              AND i.issued_at IS NOT NULL
+              AND i.issued_at >= n.created_at
+            ORDER BY i.issued_at ASC, i.id ASC
+            LIMIT 1
+        ) inv ON TRUE
         WHERE n.created_by_user_id = #{userId}
           AND n.title LIKE 'サブスクリプション更新申請 #%'
           AND n.deleted_at IS NULL

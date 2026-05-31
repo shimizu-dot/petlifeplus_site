@@ -5,63 +5,195 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>予約枠管理 | Pet Life Plus</title>
   <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    /* ── ステータスバッジ ── */
+    .slot-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .slot-auto-available  { background: #d1fae5; color: #065f46; }
+    .slot-auto-requested  { background: #e0f2fe; color: #075985; }
+    .slot-auto-booked     { background: #fee2e2; color: #991b1b; }
+    .slot-auto-blocked    { background: #fef3c7; color: #92400e; }
+    .slot-extra-available { background: #dbeafe; color: #1e3a8a; }
+    .slot-extra-requested { background: #ede9fe; color: #5b21b6; }
+    .slot-extra-booked    { background: #fce7f3; color: #9d174d; }
+    .slot-past            { background: #f1f5f9; color: #94a3b8; }
+
+    /* ── テーブル行の色分け ── */
+    tr.row-past       { opacity: 0.55; }
+    tr.row-blocked    { background: #fffbeb; }
+    tr.row-requested  { background: #f0f9ff; }
+    tr.row-booked     { background: #fef2f2; }
+    tr.row-extra      { background: #eff6ff; }
+
+    /* ── 日付ナビゲーション ── */
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .date-nav input[type=date] {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+
+    /* ── アクションフォームのボタンを行内で小さく ── */
+    .slot-action-form { display: inline; margin: 0; }
+    .btn-xs { padding: 2px 10px; font-size: 12px; }
+  </style>
 </head>
 <body th:class="${bodyClass}">
 <div class="layout">
   <div th:replace="~{fragments/nav :: sidebar}"></div>
+
   <div class="main">
     <div class="topbar"><span class="topbar-title">予約枠管理</span></div>
     <div class="content">
-      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-      <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
-      <div class="card" style="max-width:560px;">
-        <div class="card-title">予約枠を追加</div>
-        <form th:action="@{/app/admin/appointment-slots}" method="post">
-          <div class="form-group">
-            <label class="form-label" for="slotDatetime">日時<span class="required">*</span></label>
-            <input id="slotDatetime" type="datetime-local" name="slotDatetime" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="note">メモ</label>
-            <input id="note" type="text" name="note" class="form-control" maxlength="200" placeholder="担当者・場所など">
-          </div>
-          <button type="submit" class="btn btn-primary">追加</button>
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+      <!-- ── 仕組み説明 ───────────────────────────────────────────────── -->
+      <div style="background:#f8fbff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#1e40af;line-height:1.8;">
+        基本枠は <strong>9:30〜17:00（30分刻み）を自動生成</strong>します。<br>
+        <span style="background:#d1fae5;border-radius:999px;padding:1px 8px;font-weight:700;color:#065f46;">自動生成</span> 枠をブロックするか、
+        <span style="background:#dbeafe;border-radius:999px;padding:1px 8px;font-weight:700;color:#1e3a8a;">追加枠</span> を登録して時間帯を調整できます。
+      </div>
+
+      <!-- ── 日付ナビゲーション ────────────────────────────────────────── -->
+      <div class="card" style="padding:14px 18px;">
+        <form method="get" th:action="@{/app/admin/appointment-slots}" class="date-nav">
+          <a th:href="@{/app/admin/appointment-slots(date=${targetDate.minusDays(1)})}"
+             class="btn btn-secondary btn-xs">← 前日</a>
+
+          <input type="date" name="date"
+                 th:value="${#temporals.format(targetDate, 'yyyy-MM-dd')}"
+                 th:min="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+                 onchange="this.form.submit()">
+
+          <a th:href="@{/app/admin/appointment-slots(date=${targetDate.plusDays(1)})}"
+             class="btn btn-secondary btn-xs">翌日 →</a>
+
+          <a th:href="@{/app/admin/appointment-slots(date=${#temporals.format(#temporals.createToday().plusDays(1), 'yyyy-MM-dd')})}"
+             class="btn btn-secondary btn-xs">明日</a>
+
+          <span style="font-size:15px;font-weight:700;color:#1e293b;"
+                th:text="${#temporals.format(targetDate, 'yyyy年M月d日（E）')}"></span>
         </form>
       </div>
 
-      <div class="card">
-        <div class="card-title">登録済み予約枠</div>
+      <!-- ── スロット一覧（過去日の場合は非表示） ──────────────────────── -->
+      <div class="card" th:if="${daySlots != null}">
+        <div class="card-title">
+          <span th:text="${#temporals.format(targetDate, 'M月d日')}"></span>
+          の予約枠
+        </div>
+
         <div class="table-wrap">
           <table class="table">
             <thead>
-            <tr>
-              <th>日時</th>
-              <th>メモ</th>
-              <th>状態</th>
-              <th>操作</th>
-            </tr>
+              <tr>
+                <th style="width:90px;">時刻</th>
+                <th style="width:130px;">状態</th>
+                <th>メモ</th>
+                <th style="width:130px;">操作</th>
+              </tr>
             </thead>
             <tbody>
-            <tr th:if="${slots.isEmpty()}">
-              <td colspan="4" style="text-align:center;color:#64748B;">予約枠がありません</td>
-            </tr>
-            <tr th:each="slot : ${slots}">
-              <td th:text="${#temporals.format(slot.slotDatetime(), 'yyyy-MM-dd HH:mm')}">2026-06-01 10:00</td>
-              <td th:text="${slot.note() ?: '—'}">—</td>
-              <td>
-                <span th:if="${slot.slotDatetime().isBefore(#temporals.createNow())}" class="badge badge-gray">期限切れ</span>
-                <span th:if="${slot.slotDatetime().isAfter(#temporals.createNow())}" class="badge badge-green">受付中</span>
-              </td>
-              <td>
-                <form th:action="@{/app/admin/appointment-slots/{id}/delete(id=${slot.id()})}" method="post" style="margin:0;">
-                  <button type="submit" class="btn btn-danger" style="padding:2px 10px;font-size:0.8rem;">削除</button>
-                </form>
-              </td>
-            </tr>
+              <tr th:if="${daySlots.empty}">
+                <td colspan="4" style="text-align:center;color:#64748b;">この日のスロットがありません</td>
+              </tr>
+
+              <tr th:each="slot : ${daySlots}"
+                  th:classappend="${slot.status() == 'PAST'            ? 'row-past' :
+                                    slot.status() == 'AUTO_BLOCKED'    ? 'row-blocked' :
+                                    slot.status() == 'AUTO_REQUESTED' or slot.status() == 'EXTRA_REQUESTED' ? 'row-requested' :
+                                    slot.status() == 'AUTO_BOOKED' or slot.status() == 'EXTRA_BOOKED' ? 'row-booked' :
+                                    slot.status() == 'EXTRA_AVAILABLE' or slot.status() == 'EXTRA_BOOKED' ? 'row-extra' : ''}">
+
+                <!-- 時刻 -->
+                <td style="font-weight:700;font-family:monospace;"
+                    th:text="${#temporals.format(slot.slotTime(), 'HH:mm')}"></td>
+
+                <!-- ステータスバッジ -->
+                <td>
+                  <span th:switch="${slot.status()}">
+                    <span th:case="'PAST'"            class="slot-badge slot-past">予約不可</span>
+                    <span th:case="'AUTO_AVAILABLE'"  class="slot-badge slot-auto-available">予約可能</span>
+                    <span th:case="'AUTO_REQUESTED'"  class="slot-badge slot-auto-requested">申請中</span>
+                    <span th:case="'AUTO_BOOKED'"     class="slot-badge slot-auto-booked">予約済み</span>
+                    <span th:case="'AUTO_BLOCKED'"    class="slot-badge slot-auto-blocked">ブロック中</span>
+                    <span th:case="'EXTRA_AVAILABLE'" class="slot-badge slot-extra-available">追加枠（予約可）</span>
+                    <span th:case="'EXTRA_REQUESTED'" class="slot-badge slot-extra-requested">追加枠（申請中）</span>
+                    <span th:case="'EXTRA_BOOKED'"    class="slot-badge slot-extra-booked">追加枠（予約済）</span>
+                  </span>
+                </td>
+
+                <!-- メモ -->
+                <td style="font-size:13px;color:#64748b;" th:text="${slot.note() ?: '—'}"></td>
+
+                <!-- 操作ボタン -->
+                <td>
+                  <!-- AUTO_AVAILABLE → ブロックボタン -->
+                  <form th:if="${slot.status() == 'AUTO_AVAILABLE'}"
+                        th:action="@{/app/admin/appointment-slots}" method="post"
+                        class="slot-action-form">
+                    <input type="hidden" name="slotDatetime"
+                           th:value="${#temporals.format(slot.slotTime(), 'yyyy-MM-dd') + 'T' + #temporals.format(slot.slotTime(), 'HH:mm')}">
+                    <input type="hidden" name="isBlocked" value="true">
+                    <input type="hidden" name="date" th:value="${#temporals.format(targetDate, 'yyyy-MM-dd')}">
+                    <button type="submit" class="btn btn-warn btn-xs"
+                            onclick="return confirm('この時間帯をブロックしますか？')">🚫 ブロック</button>
+                  </form>
+
+                  <!-- AUTO_BLOCKED / EXTRA_AVAILABLE → 削除（解除）ボタン -->
+                  <form th:if="${slot.status() == 'AUTO_BLOCKED' or slot.status() == 'EXTRA_AVAILABLE'}"
+                        th:action="@{/app/admin/appointment-slots/{id}/delete(id=${slot.registeredSlotId()})}"
+                        method="post" class="slot-action-form">
+                    <input type="hidden" name="date" th:value="${#temporals.format(targetDate, 'yyyy-MM-dd')}">
+                    <button type="submit" class="btn btn-danger btn-xs">🗑 削除</button>
+                  </form>
+
+                  <!-- PAST / BOOKED → 操作不可 -->
+                  <span th:if="${slot.status() == 'PAST' or slot.status() == 'AUTO_REQUESTED' or slot.status() == 'EXTRA_REQUESTED' or slot.status() == 'AUTO_BOOKED' or slot.status() == 'EXTRA_BOOKED'}"
+                        style="font-size:12px;color:#94a3b8;">—</span>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
+      </div>
+
+      <!-- ── 追加枠を登録（過去日の場合は非表示） ──────────────────────── -->
+      <div class="card" th:if="${daySlots != null}" style="max-width:480px;">
+        <div class="card-title">追加枠を登録</div>
+        <p style="font-size:13px;color:#64748b;margin-bottom:12px;">
+          業務時間外や特別対応の時間帯を追加できます。
+        </p>
+        <form th:action="@{/app/admin/appointment-slots}" method="post">
+          <input type="hidden" name="isBlocked" value="false">
+
+          <div class="form-group">
+            <label class="form-label" for="extraDatetime">日時<span class="required">*</span></label>
+            <input id="extraDatetime" type="datetime-local" name="slotDatetime" class="form-control"
+                   th:value="${#temporals.format(targetDate, 'yyyy-MM-dd') + 'T09:30'}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="extraNote">メモ</label>
+            <input id="extraNote" type="text" name="note" class="form-control" maxlength="200"
+                   placeholder="例：特別診療枠・往診対応">
+          </div>
+          <button type="submit" class="btn btn-primary">追加枠を登録</button>
+        </form>
       </div>
 
     </div>

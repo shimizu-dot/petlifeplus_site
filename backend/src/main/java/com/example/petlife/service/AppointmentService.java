@@ -11,6 +11,7 @@ import com.example.petlife.entity.NotificationEntity;
 import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.AppointmentMapper;
+import com.example.petlife.mapper.AppointmentSlotMapper;
 import com.example.petlife.mapper.NotificationMapper;
 import com.example.petlife.mapper.PetMapper;
 import com.example.petlife.mapper.UserMapper;
@@ -29,6 +30,7 @@ import java.util.Set;
 @Service
 public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
+    private final AppointmentSlotMapper appointmentSlotMapper;
     private final PlanAccessService planAccessService;
     private final ZoomLinkService zoomLinkService;
     private final PetMapper petMapper;
@@ -36,12 +38,14 @@ public class AppointmentService {
     private final UserMapper userMapper;
 
     public AppointmentService(AppointmentMapper appointmentMapper,
+                              AppointmentSlotMapper appointmentSlotMapper,
                               PlanAccessService planAccessService,
                               ZoomLinkService zoomLinkService,
                               PetMapper petMapper,
                               NotificationMapper notificationMapper,
                               UserMapper userMapper) {
         this.appointmentMapper = appointmentMapper;
+        this.appointmentSlotMapper = appointmentSlotMapper;
         this.planAccessService = planAccessService;
         this.zoomLinkService = zoomLinkService;
         this.petMapper = petMapper;
@@ -140,19 +144,47 @@ public class AppointmentService {
     private static final LocalTime BUSINESS_END   = LocalTime.of(17, 0);
     private static final int SLOT_MINUTES = 30;
 
+    /**
+     * 指定日の予約可能スロット一覧を返す。
+     *
+     * 算出ロジック:
+     *   1. 9:30〜17:00 を 30 分刻みで自動生成（ベース）
+     *   2. appointment_slots(is_blocked=true) に一致する時刻をベースから除外
+     *   3. appointment_slots(is_blocked=false) の追加枠をマージ（重複は1つに集約）
+     *   4. すでに予約済みの時刻は available=false としてマーク（表示はするが選択不可）
+     *   5. 過去の時刻は結果から除外
+     */
     public List<SlotInfo> generateAvailableSlots(LocalDate date) {
-        Set<LocalDateTime> booked = new HashSet<>(appointmentMapper.findBookedTimesOnDate(date));
-        List<SlotInfo> slots = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
+        Set<LocalDateTime> booked  = new HashSet<>(appointmentMapper.findBookedTimesOnDate(date));
+        Set<LocalDateTime> blocked = appointmentSlotMapper.findBlockedOnDate(date).stream()
+                .map(s -> s.slotDatetime()).collect(java.util.stream.Collectors.toSet());
+        Set<LocalDateTime> extra   = appointmentSlotMapper.findExtraOnDate(date).stream()
+                .map(s -> s.slotDatetime()).collect(java.util.stream.Collectors.toSet());
+
+        // ベース自動生成 - ブロック枠
+        Set<LocalDateTime> baseTimes = new java.util.LinkedHashSet<>();
         LocalTime t = BUSINESS_START;
         while (!t.isAfter(BUSINESS_END.minusMinutes(1))) {
             LocalDateTime dt = LocalDateTime.of(date, t);
-            if (dt.isAfter(now)) {
-                slots.add(new SlotInfo(dt, !booked.contains(dt)));
+            if (!blocked.contains(dt)) {
+                baseTimes.add(dt);
             }
             t = t.plusMinutes(SLOT_MINUTES);
         }
-        return slots;
+
+        // + 追加枠（ブロック対象でないもの）
+        for (LocalDateTime dt : extra) {
+            if (!blocked.contains(dt)) {
+                baseTimes.add(dt);
+            }
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        return baseTimes.stream()
+                .filter(dt -> dt.isAfter(now))
+                .sorted()
+                .map(dt -> new SlotInfo(dt, !booked.contains(dt)))
+                .toList();
     }
 
     public record SlotInfo(LocalDateTime slotTime, boolean available) {}

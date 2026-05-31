@@ -86,7 +86,7 @@
                     th:text="${n.notificationType() == 'ALERT' ? '警告' : n.notificationType() == 'REMINDER' ? 'リマインダー' : 'お知らせ'}">お知らせ</span>
               <strong style="margin-left:8px;" th:text="${n.title()}">タイトル</strong>
               <span th:if="${n.isUnread()}" style="color:#0ea5e9;font-size:.8em;margin-left:6px;">●未読</span>
-              <div style="margin-top:6px;color:#475569;" th:text="${n.body()}">本文</div>
+              <div class="notification-body" style="margin-top:6px;color:#475569;white-space:pre-line;" th:text="${n.body()}">本文</div>
               <div style="font-size:.8em;color:#94a3b8;margin-top:4px;"
                    th:text="${#temporals.format(n.createdAt(), 'yyyy-MM-dd HH:mm')}">2026-05-01 10:00</div>
             </div>
@@ -150,6 +150,42 @@
 
     update();
     setInterval(update, 30000);
+  });
+}());
+
+(function () {
+  function normalizeUrl(url) {
+    try {
+      var u = new URL(url, window.location.origin);
+      if ((u.hostname === 'localhost' || u.hostname === '127.0.0.1') && u.pathname.startsWith('/app/')) {
+        return window.location.origin + u.pathname + u.search + u.hash;
+      }
+      return u.toString();
+    } catch (e) {
+      return url;
+    }
+  }
+
+  var urlPattern = /(https?:\/\/[^\s]+|\/app\/invoices\/\d+)/g;
+  document.querySelectorAll('.notification-body').forEach(function (el) {
+    var text = el.textContent || '';
+    if (!urlPattern.test(text)) return;
+    urlPattern.lastIndex = 0;
+    var html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(urlPattern, function (rawUrl, _m, offset, source) {
+        var href = normalizeUrl(rawUrl);
+        var start = source.lastIndexOf('\n', offset) + 1;
+        var end = source.indexOf('\n', offset);
+        if (end < 0) end = source.length;
+        var line = source.slice(start, end);
+        var label = line.indexOf('領収書') >= 0 ? '領収書を開く' : '請求書を開く';
+        return '<a href="' + href + '" target="_blank" rel="noopener">' + label + '</a>';
+      })
+      .replace(/\n/g, '<br>');
+    el.innerHTML = html;
   });
 }());
 </script>

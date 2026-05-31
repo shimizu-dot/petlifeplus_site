@@ -51,7 +51,10 @@
               <td th:text="${row.startDate()}">2026-01-01</td>
               <td th:text="${row.endDate() != null ? row.endDate() : '—'}">—</td>
               <td>
-                <span th:class="${row.status() == 'ACTIVE' ? 'badge badge-green' :
+                <span th:if="${!isAdminView and pendingRenewalIds != null and pendingRenewalIds.contains(row.id())}"
+                      class="badge badge-yellow">申請中</span>
+                <span th:if="${isAdminView or pendingRenewalIds == null or !pendingRenewalIds.contains(row.id())}"
+                      th:class="${row.status() == 'ACTIVE' ? 'badge badge-green' :
                                   row.status() == 'PAUSED' ? 'badge badge-yellow' : 'badge badge-gray'}"
                       th:text="${row.status() == 'ACTIVE' ? '有効' :
                                  row.status() == 'PAUSED' ? '一時停止' : 'キャンセル済'}">有効</span>
@@ -106,7 +109,10 @@
             <tr th:each="h : ${renewalHistory}">
               <td th:text="${h.planName()}">STANDARD</td>
               <td th:text="${#temporals.format(h.requestedAt(), 'yyyy/MM/dd HH:mm')}">2026-05-23 14:00</td>
-              <td><span class="badge badge-yellow">申請済み</span></td>
+              <td>
+                <span th:if="${h.status() == 'APPROVED'}" class="badge badge-green">承認済み</span>
+                <span th:if="${h.status() != 'APPROVED'}" class="badge badge-yellow">申請済み</span>
+              </td>
             </tr>
             </tbody>
           </table>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${isPaid ? '領収書' : '請求書'} + ' | Pet Life Plus'">請求書 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    body { margin: 0; background: #f8fafc; }
+    .print-page { max-width: 680px; margin: 0 auto; padding: 24px; }
+    .print-tools { display: flex; gap: 8px; margin-bottom: 16px; }
+    .doc {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 36px 40px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .doc-header { border-bottom: 2px solid #1d4ed8; padding-bottom: 16px; margin-bottom: 24px; }
+    .doc-title { font-size: 24px; font-weight: 700; color: #1d4ed8; margin: 0 0 4px 0; }
+    .doc-subtitle { color: #64748b; font-size: 13px; }
+    .doc-meta { display: flex; justify-content: space-between; margin-bottom: 24px; }
+    .doc-to { font-size: 16px; font-weight: 700; }
+    .doc-info { text-align: right; color: #64748b; font-size: 13px; line-height: 1.8; }
+    table.items { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    table.items th {
+      background: #1d4ed8; color: #fff; padding: 10px 14px;
+      text-align: left; font-size: 13px;
+    }
+    table.items td { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; }
+    table.items tr:last-child td { border-bottom: none; }
+    .total-row td { font-weight: 700; font-size: 16px; background: #f0f7ff; }
+    .status-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 999px;
+      font-size: 13px; font-weight: 700;
+    }
+    .status-paid    { background: #dcfce7; color: #15803d; }
+    .status-unpaid  { background: #fee2e2; color: #b91c1c; }
+    .status-partial { background: #fef3c7; color: #b45309; }
+    .validity-box {
+      background: #f0fdf4; border: 1px solid #86efac;
+      border-radius: 8px; padding: 14px 18px; margin: 20px 0;
+      font-size: 14px; color: #15803d;
+    }
+    .footer-note { font-size: 12px; color: #94a3b8; margin-top: 24px; text-align: center; }
+    @media print {
+      body { background: #fff; }
+      .print-tools { display: none; }
+      .print-page { max-width: none; padding: 0; }
+      .doc { border: 0; border-radius: 0; }
+      @page { size: A4 portrait; margin: 15mm; }
+    }
+  </style>
+</head>
+<body>
+<div class="print-page">
+
+  <!-- 印刷ツールバー（印刷時は非表示） -->
+  <div class="print-tools">
+    <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ 印刷する</button>
+    <a th:href="@{/app/subscriptions}" class="btn btn-secondary">← サブスクリプション一覧</a>
+  </div>
+
+  <div class="doc">
+
+    <!-- ヘッダー -->
+    <div class="doc-header">
+      <h1 class="doc-title" th:text="${isPaid ? '領収書' : '請求書'}">請求書</h1>
+      <div class="doc-subtitle">ペットライフプラス</div>
+    </div>
+
+    <!-- 宛先・発行情報 -->
+    <div class="doc-meta">
+      <div>
+        <div class="doc-to" th:text="${invoice.ownerName} + ' 様'">田中 太郎 様</div>
+      </div>
+      <div class="doc-info">
+        <div th:text="'請求書番号: ' + ${invoice.invoiceNumber}">請求書番号: INV-...</div>
+        <div th:text="'発行日: ' + ${#temporals.format(invoice.invoiceDate, 'yyyy年MM月dd日')}">発行日: 2026年05月30日</div>
+        <div>
+          <span th:switch="${invoice.paymentStatus}">
+            <span th:case="'PAID'"    class="status-badge status-paid">入金済み</span>
+            <span th:case="'PARTIAL'" class="status-badge status-partial">一部入金</span>
+            <span th:case="*"         class="status-badge status-unpaid">未払い</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 請求明細 -->
+    <table class="items">
+      <thead>
+        <tr>
+          <th>内容</th>
+          <th style="text-align:right;">金額</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td th:text="${invoice.planName} + 'プラン 月額利用料'">STANDARD プラン 月額利用料</td>
+          <td style="text-align:right;"
+              th:text="'¥' + ${#numbers.formatInteger(invoice.amount, 1, 'COMMA')}">¥980</td>
+        </tr>
+        <tr class="total-row">
+          <td>合計（税込）</td>
+          <td style="text-align:right;"
+              th:text="'¥' + ${#numbers.formatInteger(invoice.amount, 1, 'COMMA')}">¥980</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 支払期限（未払い時） -->
+    <div th:if="${!isPaid}" style="margin:16px 0; color:#b91c1c; font-weight:700;">
+      お支払期限: <span th:text="${#temporals.format(invoice.dueDate, 'yyyy年MM月dd日')}">2026年06月13日</span>
+    </div>
+
+    <!-- 有効期限（領収書・入金済み時） -->
+    <div th:if="${isPaid and invoice.subscriptionEndDate != null}" class="validity-box">
+      ✅ お支払いを確認いたしました。<br>
+      <strong th:text="${#temporals.format(invoice.subscriptionEndDate, 'yyyy年MM月dd日')}">2026年06月30日</strong>
+      まで有効です。
+    </div>
+
+    <!-- 入金確認日時（領収書） -->
+    <div th:if="${isPaid and invoice.paidAt != null}" style="color:#64748b;font-size:13px;margin-top:8px;">
+      入金確認日時: <span th:text="${#temporals.format(invoice.paidAt, 'yyyy年MM月dd日 HH:mm')}"></span>
+    </div>
+
+    <div class="footer-note">
+      ペットライフプラス | このページを印刷して領収書としてご利用いただけます。
+    </div>
+  </div>
+</div>
+</body>
+</html>

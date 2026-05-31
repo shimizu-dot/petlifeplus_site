@@ -9,10 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * 初期ユーザーを BCrypt ハッシュで作成する。
- * デフォルト認証情報:
- *   管理者: admin@petlife.local / admin123
- *   一般:   owner1@petlife.local / user123
+ * 起動時のセーフティネット: data.sql で挿入されなかったユーザーのみ BCrypt ハッシュで作成する。
+ * 通常は data.sql (spring.sql.init.mode=always) がユーザーを先に作成するためこのクラスは何もしない。
+ * data.sql が無効な環境（手動 never 設定等）でも最低限のユーザーを保証する。
  */
 @Component
 @Order(100)
@@ -30,27 +29,23 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        upsertUser(2L, "開発者アカウント", "super@petlife.local",   "super123", "090-1455-3927", null);
-        upsertUser(1L, "管理アカウント",   "admin@petlife.local",   "admin123", "090-1111-1111", null);
-        upsertUser(4L, "Dr.アカウント",    "vet1@petlife.local",    "vet123",   "090-4444-4444", null);
-        upsertUser(5L, "Staff.アカウント", "staff1@petlife.local",  "staff123", "090-5555-5555", null);
-        upsertUser(3L, "ライト会員",       "owner1@petlife.local",  "user123",  "090-6666-0001", null);
-        upsertUser(3L, "スタンダード会員", "owner2@petlife.local",  "user123",  "090-6666-0002", null);
-        upsertUser(3L, "プレミアム会員",   "owner3@petlife.local",  "user123",  "090-6666-0003", null);
+        insertIfAbsent(2L, "開発者アカウント", "super@petlife.local",  "super123",  "090-1455-3927", null);
+        insertIfAbsent(1L, "管理アカウント",   "admin@petlife.local",  "admin123",  "090-1111-1111", null);
+        insertIfAbsent(4L, "Dr.アカウント",    "vet1@petlife.local",   "vet123",    "090-4444-4444", null);
+        insertIfAbsent(5L, "Staff.アカウント", "staff1@petlife.local", "staff123",  "090-5555-5555", null);
+        insertIfAbsent(3L, "ライト会員",       "owner1@petlife.local", "user123",   "090-6666-0001", null);
+        insertIfAbsent(3L, "スタンダード会員", "owner2@petlife.local", "user123",   "090-6666-0002", null);
+        insertIfAbsent(3L, "プレミアム会員",   "owner3@petlife.local", "user123",   "090-6666-0003", null);
     }
 
-    private void upsertUser(Long roleId, String name, String email, String rawPassword, String phone, String lineUserId) {
-        String passwordHash = encoder.encode(rawPassword);
-        if (authMapper.findByEmail(email) == null) {
-            UserEntity u = new UserEntity(
-                    null, roleId, name, email,
-                    passwordHash,
-                    phone, null, lineUserId, "ACTIVE", null, null, null, null
-            );
-            userMapper.insertUser(u);
-            return;
-        }
-        userMapper.updateSeedUserByEmail(roleId, name, email, passwordHash, phone, lineUserId);
+    private void insertIfAbsent(Long roleId, String name, String email, String rawPassword, String phone, String lineUserId) {
+        if (authMapper.findByEmail(email) != null) return;
+        UserEntity u = new UserEntity(
+                null, roleId, name, email,
+                encoder.encode(rawPassword),
+                phone, null, lineUserId, "ACTIVE", null, null, null, null
+        );
+        userMapper.insertUser(u);
     }
 }
 

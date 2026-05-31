@@ -1,6 +1,7 @@
 package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
+import com.example.petlife.dto.billing.InvoiceRow;
 import com.example.petlife.dto.common.PageResponse;
 import com.example.petlife.dto.subscription.RenewalHistoryRow;
 import com.example.petlife.dto.subscription.SubscriptionRow;
@@ -8,6 +9,9 @@ import com.example.petlife.entity.NotificationEntity;
 import com.example.petlife.mapper.NotificationMapper;
 import com.example.petlife.mapper.SubscriptionMapper;
 import com.example.petlife.mapper.UserMapper;
+import com.example.petlife.service.BillingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,16 +31,21 @@ import java.util.Set;
 @RequestMapping("/app/subscriptions")
 public class SubscriptionController {
 
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionController.class);
+
     private final SubscriptionMapper subscriptionMapper;
     private final NotificationMapper notificationMapper;
     private final UserMapper userMapper;
+    private final BillingService billingService;
 
     public SubscriptionController(SubscriptionMapper subscriptionMapper,
                                   NotificationMapper notificationMapper,
-                                  UserMapper userMapper) {
+                                  UserMapper userMapper,
+                                  BillingService billingService) {
         this.subscriptionMapper = subscriptionMapper;
         this.notificationMapper = notificationMapper;
         this.userMapper = userMapper;
+        this.billingService = billingService;
     }
 
     @GetMapping
@@ -99,7 +108,17 @@ public class SubscriptionController {
             notificationMapper.updateRecipientStatus(notificationId, adminId, "SENT");
         }
 
-        ra.addFlashAttribute("success", "更新申請を送信しました");
+        // 請求書を発行し、アプリ内通知（同期）+ メール・LINE（非同期）で顧客へ案内
+        try {
+            InvoiceRow invoice = billingService.createInvoice(id);
+            log.info("Invoice created for subscription {}: {}", id, invoice.invoiceNumber());
+        } catch (Exception e) {
+            log.error("Failed to create invoice for subscription {}: {}", id, e.getMessage(), e);
+            ra.addFlashAttribute("error", "請求書の発行に失敗しました: " + e.getMessage());
+            return "redirect:/app/subscriptions";
+        }
+
+        ra.addFlashAttribute("success", "更新申請を送信しました。お支払いのご案内を通知センターでご確認ください。");
         return "redirect:/app/subscriptions";
     }
 }

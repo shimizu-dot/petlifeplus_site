@@ -39,25 +39,22 @@ public class ConsultChatService {
             "3日間", "4日", "5日", "1週間", "48時間", "二日間");
 
     private final ConsultChatMapper consultChatMapper;
-    private final PlanAccessService planAccessService;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${openai.api-key:}")
-    private String openaiApiKey;
+    @Value("${chatbot.api-key:}")
+    private String chatbotApiKey;
 
-    @Value("${openai.model:gpt-4.1-mini}")
-    private String openaiModel;
+    @Value("${chatbot.model:llama-3.1-8b-instant}")
+    private String chatbotModel;
 
-    @Value("${openai.base-url:https://api.openai.com/v1}")
-    private String openaiBaseUrl;
+    @Value("${chatbot.base-url:https://api.groq.com/openai/v1}")
+    private String chatbotBaseUrl;
 
-    public ConsultChatService(ConsultChatMapper consultChatMapper, PlanAccessService planAccessService) {
+    public ConsultChatService(ConsultChatMapper consultChatMapper) {
         this.consultChatMapper = consultChatMapper;
-        this.planAccessService = planAccessService;
     }
 
     public List<ConsultChatMessageEntity> getRecentMessages(LoginUser user) {
-        assertEligible(user);
         List<ConsultChatMessageEntity> rows = consultChatMapper.findRecentByUserId(user.id(), 50);
         List<ConsultChatMessageEntity> ordered = new ArrayList<>(rows);
         Collections.reverse(ordered);
@@ -65,7 +62,6 @@ public class ConsultChatService {
     }
 
     public List<FlowStepProgress> getFlowProgress(LoginUser user) {
-        assertEligible(user);
         List<ConsultChatMessageEntity> recent = consultChatMapper.findRecentByUserId(user.id(), 20);
         boolean hasSymptom = false, hasTiming = false, hasFrequency = false, hasCondition = false;
 
@@ -87,7 +83,6 @@ public class ConsultChatService {
     }
 
     public void postUserMessage(LoginUser user, String message) {
-        assertEligible(user);
         String trimmed = message == null ? "" : message.trim();
         if (trimmed.isEmpty()) {
             throw new BadRequestException("message is required");
@@ -96,12 +91,6 @@ public class ConsultChatService {
         // Fetch history after saving so current message is included
         List<ConsultChatMessageEntity> historyDesc = consultChatMapper.findRecentByUserId(user.id(), 20);
         save(user.id(), "BOT", generateReply(historyDesc, trimmed));
-    }
-
-    private void assertEligible(LoginUser user) {
-        if (!planAccessService.canUseAiSymptom(user)) {
-            throw new BadRequestException("この機能はスタンダード以上で利用できます");
-        }
     }
 
     private void save(Long userId, String senderType, String message) {
@@ -115,7 +104,7 @@ public class ConsultChatService {
     // ---------------------------------------------------------------
 
     private String generateReply(List<ConsultChatMessageEntity> historyDesc, String userMessage) {
-        if (openaiApiKey != null && !openaiApiKey.isBlank()) {
+        if (chatbotApiKey != null && !chatbotApiKey.isBlank()) {
             return callOpenAi(historyDesc, userMessage);
         }
         return fallbackReply(historyDesc, userMessage);
@@ -153,17 +142,17 @@ public class ConsultChatService {
             }
 
             Map<String, Object> body = new HashMap<>();
-            body.put("model", openaiModel);
+            body.put("model", chatbotModel);
             body.put("messages", messages);
             body.put("temperature", 0.7);
             body.put("max_tokens", 400);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(openaiApiKey);
+            headers.setBearerAuth(chatbotApiKey);
 
             String res = restTemplate.postForObject(
-                    openaiBaseUrl + "/chat/completions",
+                    chatbotBaseUrl + "/chat/completions",
                     new HttpEntity<>(body, headers),
                     String.class
             );

@@ -62,12 +62,12 @@
     {
       "name": "openai.api-key",
       "type": "java.lang.String",
-      "description": "OpenAI API key. When empty, SymptomCheckService falls back to keyword-based heuristics."
+      "description": "OpenAI API key for AI symptom check (F-009 / SymptomCheckService). When empty, falls back to keyword-based heuristics."
     },
     {
       "name": "openai.model",
       "type": "java.lang.String",
-      "description": "OpenAI model ID to use for AI symptom checks.",
+      "description": "OpenAI model ID for AI symptom checks.",
       "defaultValue": "gpt-4.1-mini"
     },
     {
@@ -75,6 +75,23 @@
       "type": "java.lang.String",
       "description": "OpenAI API base URL. Override for Azure OpenAI or compatible proxies.",
       "defaultValue": "https://api.openai.com/v1"
+    },
+    {
+      "name": "chatbot.api-key",
+      "type": "java.lang.String",
+      "description": "API key for chatbot consultation (F-022 / ConsultChatService). Defaults to Groq free tier. When empty, falls back to keyword-based fallbackReply()."
+    },
+    {
+      "name": "chatbot.model",
+      "type": "java.lang.String",
+      "description": "Model ID for chatbot. Defaults to Groq llama-3.1-8b-instant (free tier).",
+      "defaultValue": "llama-3.1-8b-instant"
+    },
+    {
+      "name": "chatbot.base-url",
+      "type": "java.lang.String",
+      "description": "Chatbot API base URL (OpenAI-compatible). Defaults to Groq. Override for OpenAI or other providers.",
+      "defaultValue": "https://api.groq.com/openai/v1"
     },
     {
       "name": "sendgrid.api-key",
@@ -108,6 +125,40 @@
       "name": "admin.line-user-ids",
       "type": "java.lang.String",
       "description": "Comma-separated LINE user IDs that receive admin-level bot notifications."
+    },
+    {
+      "name": "billing.bank-name",
+      "type": "java.lang.String",
+      "description": "振込先銀行名（例: 〇〇銀行）。請求通知メッセージに埋め込まれる。",
+      "defaultValue": "〇〇銀行"
+    },
+    {
+      "name": "billing.bank-branch",
+      "type": "java.lang.String",
+      "description": "振込先支店名（例: △△支店）。",
+      "defaultValue": "△△支店"
+    },
+    {
+      "name": "billing.bank-account-number",
+      "type": "java.lang.String",
+      "description": "振込先口座番号（例: 12345678）。",
+      "defaultValue": "12345678"
+    },
+    {
+      "name": "billing.bank-account-holder",
+      "type": "java.lang.String",
+      "description": "振込先口座名義（例: PetLife 事務局）。",
+      "defaultValue": "PetLife 事務局"
+    },
+    {
+      "name": "billing.paypay-qr-url",
+      "type": "java.lang.String",
+      "description": "PayPay QR コード画像の URL。設定するとメール HTML に <img> として埋め込まれる。未設定時はテキスト案内のみ。"
+    },
+    {
+      "name": "billing.paypay-id",
+      "type": "java.lang.String",
+      "description": "PayPay 送金先 ID。QR URL 未設定時にテキスト案内として通知に含まれる。"
     },
     {
       "name": "db.backup.pg-dump-path",

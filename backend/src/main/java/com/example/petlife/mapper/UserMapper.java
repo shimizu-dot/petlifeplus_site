@@ -171,4 +171,12 @@ public interface UserMapper {
         WHERE id = #{userId} AND deleted_at IS NULL
         """)
     int saveLineUserId(@Param("userId") Long userId, @Param("lineUserId") String lineUserId);
+
+    /** 支払期限超過によるアカウント停止（status を SUSPENDED に変更） */
+    @Update("""
+        UPDATE users
+        SET status = 'SUSPENDED', updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{userId} AND deleted_at IS NULL AND status = 'ACTIVE'
+        """)
+    int suspendUser(@Param("userId") Long userId);
 }

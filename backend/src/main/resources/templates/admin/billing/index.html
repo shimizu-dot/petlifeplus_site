@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>請求管理 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body th:class="${bodyClass}">
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">請求管理</span></div>
+    <div class="content">
+
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+      <div class="card">
+        <div class="card-title">請求一覧</div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>請求番号</th>
+                <th>顧客名</th>
+                <th>プラン</th>
+                <th>金額</th>
+                <th>請求日</th>
+                <th>支払期限</th>
+                <th>ステータス</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${page.items.empty}">
+                <td colspan="8" style="text-align:center;color:var(--muted);">請求データがありません</td>
+              </tr>
+              <tr th:each="inv : ${page.items}">
+                <td th:text="${inv.invoiceNumber}" style="font-family:monospace;font-size:12px;"></td>
+                <td th:text="${inv.ownerName}"></td>
+                <td th:text="${inv.planName}"></td>
+                <td style="text-align:right;">
+                  ¥<span th:text="${#numbers.formatInteger(inv.amount, 1, 'COMMA')}"></span>
+                </td>
+                <td th:text="${#temporals.format(inv.invoiceDate, 'yyyy/MM/dd')}"></td>
+                <td>
+                  <span th:text="${#temporals.format(inv.dueDate, 'yyyy/MM/dd')}"
+                        th:classappend="${inv.paymentStatus != 'PAID' and inv.dueDate.isBefore(#temporals.createToday()) ? 'text-danger' : ''}"></span>
+                </td>
+                <td>
+                  <span th:switch="${inv.paymentStatus}">
+                    <span th:case="'PAID'"    class="badge badge-success">入金済み</span>
+                    <span th:case="'PARTIAL'" class="badge badge-warn">一部入金</span>
+                    <span th:case="*"         class="badge badge-danger">未払い</span>
+                  </span>
+                </td>
+                <td>
+                  <a th:href="@{/app/admin/billing/{id}(id=${inv.invoiceId})}"
+                     class="btn btn-secondary" style="font-size:12px;padding:4px 10px;">詳細</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ページネーション -->
+        <div class="pagination" th:if="${page.totalPages > 1}">
+          <a th:if="${page.hasPrev}" th:href="@{/app/admin/billing(page=${page.page - 1})}"
+             class="btn btn-secondary">← 前</a>
+          <span th:text="${page.page} + ' / ' + ${page.totalPages}"></span>
+          <a th:if="${page.hasNext}" th:href="@{/app/admin/billing(page=${page.page + 1})}"
+             class="btn btn-secondary">次 →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

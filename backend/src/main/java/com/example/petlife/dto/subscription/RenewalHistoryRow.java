@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record RenewalHistoryRow(
         Long subscriptionId,
         String planName,
-        LocalDateTime requestedAt
+        LocalDateTime requestedAt,
+        String status
 ) {
 }

@@ -4,109 +4,118 @@
 <aside th:fragment="sidebar" class="sidebar">
   <a href="/app/dashboard" class="sidebar-logo">🐾 Pet Life Plus</a>
 
-  <!-- ── 全ロール共通 ─────────────────────────────────── -->
-  <div class="sidebar-section">メニュー</div>
-  <nav class="sidebar-nav">
-    <a th:href="@{/app/dashboard}"
-       th:classappend="${requestURI.contains('/dashboard') ? 'active' : ''}">
-      📊 ダッシュボード
-    </a>
-    <a th:href="@{/app/notifications}"
-       th:classappend="${requestURI.contains('/notifications') ? 'active' : ''}">
-      🔔 通知
-    </a>
-    <a th:href="@{/app/password-resets}"
-       th:classappend="${requestURI.contains('/password-resets') ? 'active' : ''}">
-      🔑 パスワード変更
-    </a>
-  </nav>
+  <details class="sidebar-dropdown" open>
+    <summary class="sidebar-dropdown-summary">☰ メニューを開く</summary>
+    <div class="sidebar-dropdown-content">
+      <!-- ── 全ロール共通 ─────────────────────────────────── -->
+      <div class="sidebar-section">メニュー</div>
+      <nav class="sidebar-nav">
+        <a th:href="@{/app/dashboard}"
+           th:classappend="${requestURI.contains('/dashboard') ? 'active' : ''}">
+          📊 ダッシュボード
+        </a>
+        <a th:href="@{/app/notifications}"
+           th:classappend="${requestURI.contains('/notifications') ? 'active' : ''}">
+          🔔 通知
+        </a>
+        <a th:href="@{/app/password-resets}"
+           th:classappend="${requestURI.contains('/password-resets') ? 'active' : ''}">
+          🔑 パスワード変更
+        </a>
+      </nav>
 
-  <!-- ── 一般ユーザー（USER ロール）向け ──────────────── -->
-  <div th:if="${currentUser != null and !currentUser.hasStaffAccess()}" class="sidebar-section">ペット・健康</div>
-  <nav th:if="${currentUser != null and !currentUser.hasStaffAccess()}" class="sidebar-nav">
-    <a th:href="@{/app/pets}"
-       th:classappend="${requestURI.contains('/pets') ? 'active' : ''}">
-      🐶 ペット管理
-    </a>
-    <a th:href="@{/app/calendar}"
-       th:classappend="${requestURI.contains('/calendar') ? 'active' : ''}">
-      📅 カレンダー
-    </a>
-    <a th:if="${canUseAiSymptom}" th:href="@{/app/appointments}"
-       th:classappend="${requestURI.contains('/appointments') ? 'active' : ''}">
-      📋 診療予約
-    </a>
-    <a th:if="${canUseAiSymptom}" th:href="@{/app/consult/chatbot}"
-       th:classappend="${requestURI.contains('/consult/chatbot') ? 'active' : ''}">
-      💬 相談チャット
-    </a>
-    <a th:href="@{/app/clinic-guide}"
-       th:classappend="${requestURI.contains('/clinic-guide') ? 'active' : ''}">
-      🏥 診療案内
-    </a>
-    <a th:href="@{/app/subscriptions}"
-       th:classappend="${requestURI.contains('/subscriptions') ? 'active' : ''}">
-      💳 サブスクリプション
-    </a>
-  </nav>
+      <!-- ── 一般ユーザー（USER ロール）向け ──────────────── -->
+      <div th:if="${currentUser != null and !currentUser.hasStaffAccess()}" class="sidebar-section">ペット・健康</div>
+      <nav th:if="${currentUser != null and !currentUser.hasStaffAccess()}" class="sidebar-nav">
+        <a th:href="@{/app/pets}"
+           th:classappend="${requestURI.contains('/pets') ? 'active' : ''}">
+          🐶 ペット管理
+        </a>
+        <a th:href="@{/app/calendar}"
+           th:classappend="${requestURI.contains('/calendar') ? 'active' : ''}">
+          📅 カレンダー
+        </a>
+        <a th:if="${canUseAiSymptom}" th:href="@{/app/appointments}"
+           th:classappend="${requestURI.contains('/appointments') ? 'active' : ''}">
+          📋 診療予約
+        </a>
+        <a th:if="${canUseAiSymptom}" th:href="@{/app/consult/chatbot}"
+           th:classappend="${requestURI.contains('/consult/chatbot') ? 'active' : ''}">
+          💬 相談チャット
+        </a>
+        <a th:href="@{/app/clinic-guide}"
+           th:classappend="${requestURI.contains('/clinic-guide') ? 'active' : ''}">
+          🏥 診療案内
+        </a>
+        <a th:href="@{/app/subscriptions}"
+           th:classappend="${requestURI.contains('/subscriptions') ? 'active' : ''}">
+          💳 サブスクリプション
+        </a>
+      </nav>
 
-  <!-- ── 獣医師・スタッフ：診療・予約 ─────────────────── -->
-  <div th:if="${currentUser != null and currentUser.canManageClinical()}" class="sidebar-section">診療・予約</div>
-  <nav th:if="${currentUser != null and currentUser.canManageClinical()}" class="sidebar-nav">
-    <a th:href="@{/app/calendar}"
-       th:classappend="${requestURI.contains('/calendar') ? 'active' : ''}">
-      📅 カレンダー
-    </a>
-    <a th:href="@{/app/consultations}"
-       th:classappend="${requestURI.contains('/consultations') ? 'active' : ''}">
-      🩺 診療記録
-    </a>
-    <a th:href="@{/app/appointments}"
-       th:classappend="${requestURI.contains('/appointments') and !requestURI.contains('/slots') ? 'active' : ''}">
-      📋 診療予約
-    </a>
-  </nav>
+      <!-- ── 獣医師・スタッフ：診療・予約 ─────────────────── -->
+      <div th:if="${currentUser != null and currentUser.canManageClinical()}" class="sidebar-section">診療・予約</div>
+      <nav th:if="${currentUser != null and currentUser.canManageClinical()}" class="sidebar-nav">
+        <a th:href="@{/app/calendar}"
+           th:classappend="${requestURI.contains('/calendar') ? 'active' : ''}">
+          📅 カレンダー
+        </a>
+        <a th:href="@{/app/consultations}"
+           th:classappend="${requestURI.contains('/consultations') ? 'active' : ''}">
+          🩺 診療記録
+        </a>
+        <a th:href="@{/app/appointments}"
+           th:classappend="${requestURI.contains('/appointments') and !requestURI.contains('/slots') ? 'active' : ''}">
+          📋 診療予約
+        </a>
+      </nav>
 
-  <!-- ── 全スタッフ系（VET・STAFF・ADMIN）：利用者管理 ── -->
-  <div th:if="${currentUser != null and currentUser.hasStaffAccess()}" class="sidebar-section">利用者管理</div>
-  <nav th:if="${currentUser != null and currentUser.hasStaffAccess()}" class="sidebar-nav">
-    <a th:href="@{/app/admin/users}"
-       th:classappend="${requestURI.contains('/admin/users') ? 'active' : ''}">
-      👥 ユーザ管理
-      <span th:if="${currentUser.isVet()}"
-            style="font-size:10px;opacity:.7;margin-left:4px;">(閲覧)</span>
-    </a>
-  </nav>
+      <!-- ── 全スタッフ系（VET・STAFF・ADMIN）：利用者管理 ── -->
+      <div th:if="${currentUser != null and currentUser.hasStaffAccess()}" class="sidebar-section">利用者管理</div>
+      <nav th:if="${currentUser != null and currentUser.hasStaffAccess()}" class="sidebar-nav">
+        <a th:href="@{/app/admin/users}"
+           th:classappend="${requestURI.contains('/admin/users') ? 'active' : ''}">
+          👥 ユーザ管理
+          <span th:if="${currentUser.isVet()}"
+                style="font-size:10px;opacity:.7;margin-left:4px;">(閲覧)</span>
+        </a>
+      </nav>
 
-  <!-- ── ADMIN・STAFF：運営管理 ────────────────────────── -->
-  <div th:if="${currentUser != null and currentUser.canManageOperations()}" class="sidebar-section">運営管理</div>
-  <nav th:if="${currentUser != null and currentUser.canManageOperations()}" class="sidebar-nav">
-    <a th:href="@{/app/admin/announcements}"
-       th:classappend="${requestURI.contains('/admin/announcements') ? 'active' : ''}">
-      📢 お知らせ管理
-    </a>
-    <a th:href="@{/app/admin/line/push}"
-       th:classappend="${requestURI.contains('/admin/line/push') ? 'active' : ''}">
-      💬 LINE 一斉送信
-    </a>
-    <a th:href="@{/app/admin/appointment-slots}"
-       th:classappend="${requestURI.contains('/appointment-slots') ? 'active' : ''}">
-      🗓️ 予約枠管理
-    </a>
-  </nav>
+      <!-- ── ADMIN・STAFF：運営管理 ────────────────────────── -->
+      <div th:if="${currentUser != null and currentUser.canManageOperations()}" class="sidebar-section">運営管理</div>
+      <nav th:if="${currentUser != null and currentUser.canManageOperations()}" class="sidebar-nav">
+        <a th:href="@{/app/admin/announcements}"
+           th:classappend="${requestURI.contains('/admin/announcements') ? 'active' : ''}">
+          📢 お知らせ管理
+        </a>
+        <a th:href="@{/app/admin/line/push}"
+           th:classappend="${requestURI.contains('/admin/line/push') ? 'active' : ''}">
+          💬 LINE 一斉送信
+        </a>
+        <a th:href="@{/app/admin/billing}"
+           th:classappend="${requestURI.contains('/admin/billing') ? 'active' : ''}">
+          💳 請求管理
+        </a>
+        <a th:href="@{/app/admin/appointment-slots}"
+           th:classappend="${requestURI.contains('/appointment-slots') ? 'active' : ''}">
+          🗓️ 予約枠管理
+        </a>
+      </nav>
 
-  <!-- ── ADMIN のみ：システム管理 ──────────────────────── -->
-  <div th:if="${currentUser != null and currentUser.isAdmin()}" class="sidebar-section">システム</div>
-  <nav th:if="${currentUser != null and currentUser.isAdmin()}" class="sidebar-nav">
-    <a th:href="@{/app/reports}"
-       th:classappend="${requestURI.contains('/reports') ? 'active' : ''}">
-      📊 サービス統計
-    </a>
-    <a th:href="@{/app/admin/database}"
-       th:classappend="${requestURI.contains('/admin/database') ? 'active' : ''}">
-      🗄️ DBバックアップ
-    </a>
-  </nav>
+      <!-- ── ADMIN のみ：システム管理 ──────────────────────── -->
+      <div th:if="${currentUser != null and currentUser.isAdmin()}" class="sidebar-section">システム</div>
+      <nav th:if="${currentUser != null and currentUser.isAdmin()}" class="sidebar-nav">
+        <a th:href="@{/app/reports}"
+           th:classappend="${requestURI.contains('/reports') ? 'active' : ''}">
+          📊 サービス統計
+        </a>
+        <a th:href="@{/app/admin/database}"
+           th:classappend="${requestURI.contains('/admin/database') ? 'active' : ''}">
+          🗄️ DBバックアップ
+        </a>
+      </nav>
+    </div>
+  </details>
 
   <div class="sidebar-footer">
     <div class="sidebar-user" th:if="${planLabel != null and currentUser != null and !currentUser.hasStaffAccess()}">
