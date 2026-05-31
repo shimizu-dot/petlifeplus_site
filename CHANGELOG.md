@@ -78,6 +78,23 @@
   - `@media (min-width: 769px)` の表示上書きセレクタを `.sidebar-dropdown:not([open]) > .sidebar-dropdown-content` に変更
   - `display: block !important` を指定し、`details` の既定非表示より優先してデスクトップでメニュー本体を表示するよう修正
 
+#### B-29 — ダッシュボードメニュー: スマホでトグルボタンを押してもメニューが開かない不具合を修正
+- **ファイル:**
+  - `backend/src/main/resources/templates/fragments/nav.html`
+- **変更内容:**
+  - `<script>` タグを `</aside>` の外から `<aside>` 内部（フラグメント末尾）へ移動
+  - `th:replace="~{fragments/nav :: sidebar}"` はフラグメント（`<aside>` 要素）のみ展開するため、外側の `<script>` が全テンプレートで除外されており JS が未実行になっていた問題を解消
+
+#### B-28 — ダッシュボードメニュー: `details/summary` を廃止し CSS クラスベースのトグルに刷新
+- **ファイル:**
+  - `backend/src/main/resources/templates/fragments/nav.html`
+  - `backend/src/main/resources/static/css/app.css`
+- **変更内容:**
+  - `<details>/<summary>` 構造を廃止し `<button class="sidebar-toggle">` + `<div class="sidebar-menu">` に置き換え
+  - デスクトップ（≥769px）: CSS のみで `.sidebar-menu` を常時表示し JS への依存を排除
+  - スマホ（≤768px）: ボタンクリックで `.is-open` クラスをトグルしてメニューを開閉
+  - メニューリンク選択後はスマホのみ自動で閉じる動作を維持
+
 #### B-27 — ダッシュボードメニュー: 操作後にメニューが消える不具合を修正
 - **ファイル:**
   - `backend/src/main/resources/templates/fragments/nav.html`
