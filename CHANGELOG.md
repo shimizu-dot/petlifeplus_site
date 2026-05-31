@@ -28,6 +28,20 @@
 - **変更内容:**
   - `details.sidebar-dropdown` に `open` 属性を追加し、初期表示時にメニューが非表示になる不具合を解消
 
+#### B-20 — ダッシュボードメニュー: 項目選択後にメニューを自動で閉じるよう修正
+- **ファイル:**
+  - `backend/src/main/resources/templates/fragments/nav.html`
+- **変更内容:**
+  - サイドバー内メニューリンク（`.sidebar-nav a`）クリック時に、`details.sidebar-dropdown` の `open` を `false` にするスクリプトを追加
+  - スマホ表示でメニュー選択後にドロップダウンが開いたまま残る挙動を解消
+
+#### B-21 — 予約枠管理: `is_blocked` 列欠落で 500 になる不具合を修正
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/SchemaCompatibilityInitializer.java`
+- **変更内容:**
+  - 既存DB向け互換DDLとして `ALTER TABLE appointment_slots ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN NOT NULL DEFAULT FALSE` を追加
+  - 旧スキーマ環境で `/app/admin/appointment-slots` アクセス時に `column "is_blocked" does not exist` が発生する問題を解消
+
 #### B-9 — 請求通知: 文字化け対策と請求書リンク導線の修正
 - **ファイル:**
   - `backend/src/main/java/com/example/petlife/service/BillingNotificationService.java`
