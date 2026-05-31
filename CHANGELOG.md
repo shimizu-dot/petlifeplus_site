@@ -71,6 +71,20 @@
   - `DOMContentLoaded` 時に `matchMedia('(min-width: 769px)')` で desktop のみ `open = true` を設定
   - desktop 初期表示を維持しつつ、スマホでは初期状態を閉じたままに修正
 
+#### B-26 — ダッシュボードメニュー: デスクトップでメニューが表示されない不具合を再修正
+- **ファイル:**
+  - `backend/src/main/resources/static/css/app.css`
+- **変更内容:**
+  - `@media (min-width: 769px)` の表示上書きセレクタを `.sidebar-dropdown:not([open]) > .sidebar-dropdown-content` に変更
+  - `display: block !important` を指定し、`details` の既定非表示より優先してデスクトップでメニュー本体を表示するよう修正
+
+#### B-27 — ダッシュボードメニュー: 操作後にメニューが消える不具合を修正
+- **ファイル:**
+  - `backend/src/main/resources/templates/fragments/nav.html`
+- **変更内容:**
+  - サイドバーリンククリック時の `dropdown.open = false` をモバイル限定（`max-width: 768px`）に変更
+  - デスクトップ操作時にメニューが閉じて表示不能になる挙動を解消
+
 #### B-9 — 請求通知: 文字化け対策と請求書リンク導線の修正
 - **ファイル:**
   - `backend/src/main/java/com/example/petlife/service/BillingNotificationService.java`

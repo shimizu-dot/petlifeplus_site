@@ -160,8 +160,8 @@ body {
 }
 
 @media (min-width: 769px) {
-  .sidebar-dropdown:not([open]) .sidebar-dropdown-content {
-    display: block;
+  .sidebar-dropdown:not([open]) > .sidebar-dropdown-content {
+    display: block !important;
   }
 }
 
