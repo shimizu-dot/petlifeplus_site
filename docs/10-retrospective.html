@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>振り返り・技術記事 -  プロジェクトアーカイブ</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <title>振り返り・技術記事 - プロジェクトアーカイブ</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
   <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
   <button class="hamburger" aria-label="メニュー">
     <span></span><span></span><span></span>
   </button>
 
   <div class="page-wrapper">
-  <aside class="sidebar" data-nav-level="docs"></aside>
+    <aside class="sidebar" data-nav-level="docs"></aside>
 
     <main class="main-content">
       <header class="doc-header">
         <div class="doc-category">DOCUMENT 10</div>
         <h1 class="doc-title">振り返り・技術記事</h1>
         <div class="doc-meta">
-          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-XX-XX</span>
-          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：（氏名を入力）</span>
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-06-01</span>
+          <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
           <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
         </div>
       </header>
@@ -37,8 +40,9 @@
             このページは概要のみを記載しています。詳細な振り返りは以下のリンクからご確認ください。
           </div>
           <div class="external-link-input">
-            <input type="text" placeholder="https://docs.google.com/spreadsheets/d/xxxxx" id="external-link-10">
-            <a href="#" class="link-btn" onclick="window.open(document.getElementById('external-link-10').value || 'https://docs.google.com', '_blank'); return false;">
+            <input type="text" value="retrospective_document.xlsx" placeholder="retrospective_document.xlsx" id="external-link-10">
+            <a href="#" class="link-btn"
+              onclick="window.open(document.getElementById('external-link-10').value || 'retrospective_document.xlsx', '_blank'); return false;">
               <span class="material-symbols-outlined">open_in_new</span>
               開く
             </a>
@@ -58,46 +62,65 @@
         <section class="section" id="sec1">
           <h2 class="section-title"><span class="section-icon">1</span> プロジェクト振り返り</h2>
 
-        <div class="fill-block">
-          <div class="fill-label">企画・設計段階の振り返り <span class="required">必須</span></div>
-          <div class="fill-hint">マーケットリサーチ、ペルソナ設計、情報設計について</div>
-          <div class="fill-content">
-            <p>　当初は「ペットの健康管理アプリ」という広いテーマで考え始めましたが、調査を進める中で、飼い主の困りごとは「記録が続かない」「異変時に受診判断が難しい」「予約・連絡が分断される」の3点に集中していることが分かりました。そこで機能を増やすより、日常記録→症状チェック→予約→通知の導線を一つの流れとして設計する方針に切り替えました。</p>
-            <p>　ペルソナは「平日は忙しく、短時間で判断したい30代の犬オーナー」を中心に設定し、情報設計では1画面で次の行動が分かることを重視しました。特に、記録詳細から予約へ遷移できる導線や、通知一覧で必要情報を確認できる構成は、初期段階で定義したユーザー課題に直結しており、後半の実装判断の基準になりました。</p>
+          <div class="fill-block">
+            <div class="fill-label">企画・設計段階の振り返り <span class="required">必須</span></div>
+            <div class="fill-hint">マーケットリサーチ、ペルソナ設計、情報設計について</div>
+            <div class="fill-content">
+              <p>
+                　当初は「ペットの健康管理アプリ」という広いテーマで考え始めましたが、調査を進める中で、飼い主の困りごとは「記録が続かない」「異変時に受診判断が難しい」「予約・連絡が分断される」の3点に集中していることが分かりました。そこで機能を増やすより、日常記録→症状チェック→予約→通知の導線を一つの流れとして設計する方針に切り替えました。
+              </p>
+              <p>
+                　ペルソナは「平日は忙しく、短時間で判断したい30代の犬オーナー」を中心に設定し、情報設計では1画面で次の行動が分かることを重視しました。特に、記録詳細から予約へ遷移できる導線や、通知一覧で必要情報を確認できる構成は、初期段階で定義したユーザー課題に直結しており、後半の実装判断の基準になりました。
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="fill-block">
-          <div class="fill-label">デザイン段階の振り返り <span class="required">必須</span></div>
-          <div class="fill-hint">デザインガイドライン、ワイヤーフレーム、Figma作業について</div>
-          <div class="fill-content">
-            <p>　デザインでは、医療系サービスとしての信頼感と、毎日触れるアプリとしての親しみやすさの両立を目標にしました。色は寒色を基調にしつつ、重要操作には暖色系アクセントを使うルールを先に決めたことで、画面追加時にも判断がぶれにくくなりました。</p>
-            <p>　ワイヤーフレーム段階では、要素を詰め込みすぎて情報密度が高くなり、テスト時に「どこを押せばよいか迷う」という指摘が出ました。そのため、Figma上で優先度の低い情報を段階表示に整理し、主要ボタンの位置を統一しました。結果として、初見ユーザーでも主要導線（記録・予約・通知）を短時間で把握できるUIに改善できました。</p>
+          <div class="fill-block">
+            <div class="fill-label">デザイン段階の振り返り <span class="required">必須</span></div>
+            <div class="fill-hint">デザインガイドライン、ワイヤーフレーム、Figma作業について</div>
+            <div class="fill-content">
+              <p>
+                　デザインでは、医療系サービスとしての信頼感と、毎日触れるアプリとしての親しみやすさの両立を目標にしました。色は寒色を基調にしつつ、重要操作には暖色系アクセントを使うルールを先に決めたことで、画面追加時にも判断がぶれにくくなりました。
+              </p>
+              <p>
+                　ワイヤーフレーム段階では、要素を詰め込みすぎて情報密度が高くなり、テスト時に「どこを押せばよいか迷う」という指摘が出ました。そのため、Figma上で優先度の低い情報を段階表示に整理し、主要ボタンの位置を統一しました。結果として、初見ユーザーでも主要導線（記録・予約・通知）を短時間で把握できるUIに改善できました。
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="fill-block">
-          <div class="fill-label">フロントエンド実装の振り返り <span class="required">必須</span></div>
-          <div class="fill-hint">HTML/CSS/JavaScript の実装について</div>
-          <div class="fill-content">
-            <p>　フロントエンド実装では、テンプレート分割と共通スタイルの管理が想定以上に重要でした。初期は画面ごとに個別調整を繰り返したため、スマホ表示でレイアウト崩れが発生しやすく、修正の影響範囲も大きくなりました。途中から共通コンポーネントとブレークポイントを整理し、ナビゲーションやフォーム部品を揃えたことで、後半の改修速度と安定性が上がりました。</p>
-            <p>　また、JavaScriptでは「小さな体験改善」の積み重ねが効果的でした。通知リンクの自動整形、メニュー開閉、フォームの補助表示など、派手ではない改善が継続利用時のストレスを下げることを実感しました。</p>
+          <div class="fill-block">
+            <div class="fill-label">フロントエンド実装の振り返り <span class="required">必須</span></div>
+            <div class="fill-hint">HTML/CSS/JavaScript の実装について</div>
+            <div class="fill-content">
+              <p>
+                　フロントエンド実装では、テンプレート分割と共通スタイルの管理が想定以上に重要でした。初期は画面ごとに個別調整を繰り返したため、スマホ表示でレイアウト崩れが発生しやすく、修正の影響範囲も大きくなりました。途中から共通コンポーネントとブレークポイントを整理し、ナビゲーションやフォーム部品を揃えたことで、後半の改修速度と安定性が上がりました。
+              </p>
+              <p>　また、JavaScriptでは「小さな体験改善」の積み重ねが効果的でした。通知リンクの自動整形、メニュー開閉、フォームの補助表示など、派手ではない改善が継続利用時のストレスを下げることを実感しました。
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="fill-block">
-          <div class="fill-label">バックエンド実装の振り返り <span class="required">必須</span></div>
-          <div class="fill-hint">Java/Spring Boot の実装について</div>
-          <div class="fill-content">
-            <p>　バックエンドでは、機能追加よりも「権限」「状態遷移」「例外時のふるまい」を先に固めることの重要性を学びました。特に予約機能では、申請・承認・却下・キャンセルのルールを曖昧なまま進めると、後で仕様整合が難しくなるため、ロールごとの操作可能範囲を明文化してから実装する方が結果的に効率的でした。</p>
-            <p>　Spring Boot + MyBatis 構成では、SQLが明示的な分、意図したデータ取得・更新を追いやすい反面、ドキュメントとの同期を怠るとズレが発生しやすい課題もありました。今回、仕様書・サイトマップ・DB設計書を実装準拠で継続的に更新したことで、保守性と引き継ぎやすさが大きく向上しました。</p>
+          <div class="fill-block">
+            <div class="fill-label">バックエンド実装の振り返り <span class="required">必須</span></div>
+            <div class="fill-hint">Java/Spring Boot の実装について</div>
+            <div class="fill-content">
+              <p>
+                　バックエンドでは、機能追加よりも「権限」「状態遷移」「例外時のふるまい」を先に固めることの重要性を学びました。特に予約機能では、申請・承認・却下・キャンセルのルールを曖昧なまま進めると、後で仕様整合が難しくなるため、ロールごとの操作可能範囲を明文化してから実装する方が結果的に効率的でした。
+              </p>
+              <p>　Spring Boot + MyBatis
+                構成では、SQLが明示的な分、意図したデータ取得・更新を追いやすい反面、ドキュメントとの同期を怠るとズレが発生しやすい課題もありました。今回、仕様書・サイトマップ・DB設計書を実装準拠で継続的に更新したことで、保守性と引き継ぎやすさが大きく向上しました。
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="fill-block">
-          <div class="fill-label">全体を通しての学び <span class="required">必須</span></div>
-          <div class="fill-hint">32日間のプロジェクト全体を通して学んだこと</div>
-          <div class="fill-content">
-            <p>　32日間を通して最も大きな学びは、開発は「作ること」だけでなく「揃えること」が品質を決めるという点でした。要件、実装、ドキュメント、テスト観点が一致している状態を維持することで、機能の信頼性だけでなく、修正の速さやチーム内共有のしやすさも向上しました。</p>
-            <p>　また、AI活用は実装補助として有効でしたが、最終的な責任は仕様判断と検証にあることを強く実感しました。今後は、初期設計でのルール定義、変更時の影響分析、ドキュメント同期をさらに習慣化し、機能追加と品質維持を両立できる開発力を高めていきます。</p>
+          <div class="fill-block">
+            <div class="fill-label">全体を通しての学び <span class="required">必須</span></div>
+            <div class="fill-hint">32日間のプロジェクト全体を通して学んだこと</div>
+            <div class="fill-content">
+              <p>
+                　32日間を通して最も大きな学びは、開発は「作ること」だけでなく「揃えること」が品質を決めるという点でした。要件、実装、ドキュメント、テスト観点が一致している状態を維持することで、機能の信頼性だけでなく、修正の速さやチーム内共有のしやすさも向上しました。
+              </p>
+              <p>
+                　また、AI活用は実装補助として有効でしたが、最終的な責任は仕様判断と検証にあることを強く実感しました。今後は、初期設計でのルール定義、変更時の影響分析、ドキュメント同期をさらに習慣化し、機能追加と品質維持を両立できる開発力を高めていきます。
+              </p>
+            </div>
           </div>
-        </div>
 
         </section>
 
@@ -107,16 +130,21 @@
 
           <div class="fill-block">
             <div class="fill-label">技術記事タイトル <span class="required">必須</span></div>
-            <div class="fill-content"><p>LINE Developers WebhookからユーザーIDを取得する</p></div>
+            <div class="fill-content">
+              <p>LINE Developers WebhookからユーザーIDを取得する</p>
+            </div>
           </div>
 
-        <div class="fill-block">
-          <div class="fill-label">記事本文 <span class="required">必須</span></div>
-          <div class="fill-hint">上記の構成に沿って記事本文を記載。コードブロックを含めてください。</div>
-          <div class="fill-content">
-            <p>　LINE Messaging API で個別ユーザーに通知を送るには、ユーザーID（例: <code>Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>）が必要です。LINE公式ドキュメント「ユーザーIDを取得する」の「WebhookからユーザーIDを取得する」では、友だち追加やメッセージ送信時にボットサーバーへ送信されるWebhookにユーザーIDが含まれることが示されています。</p>
-            <p>　実装上は、Webhookイベントの <code>events[].source.userId</code> を読み取り、アプリ側のユーザーテーブルへ保存します。これにより、後続のPush通知や対象ユーザー特定に利用できます。</p>
-            <pre><code>{
+          <div class="fill-block">
+            <div class="fill-label">記事本文 <span class="required">必須</span></div>
+            <div class="fill-hint">上記の構成に沿って記事本文を記載。コードブロックを含めてください。</div>
+            <div class="fill-content">
+              <p>　LINE Messaging API で個別ユーザーに通知を送るには、ユーザーID（例:
+                <code>Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>）が必要です。LINE公式ドキュメント「ユーザーIDを取得する」の「WebhookからユーザーIDを取得する」では、友だち追加やメッセージ送信時にボットサーバーへ送信されるWebhookにユーザーIDが含まれることが示されています。
+              </p>
+              <p>　実装上は、Webhookイベントの <code>events[].source.userId</code>
+                を読み取り、アプリ側のユーザーテーブルへ保存します。これにより、後続のPush通知や対象ユーザー特定に利用できます。</p>
+              <pre><code>{
   "events": [
     {
       "type": "follow",
@@ -127,10 +155,12 @@
     }
   ]
 }</code></pre>
-            <p>　注意点として、ドキュメントでは「プロフィール情報の取得に同意していない場合はWebhookにユーザーIDが含まれない場合がある」とされています。受信処理では <code>userId</code> の存在チェックを入れ、未取得時はログ出力と再連携導線を用意するのが安全です。</p>
-            <p>出典: <a href="https://developers.line.biz/ja/docs/messaging-api/getting-user-ids/#get-own-user-id" target="_blank" rel="noopener">LINE Developers - ユーザーIDを取得する</a></p>
+              <p>　注意点として、ドキュメントでは「プロフィール情報の取得に同意していない場合はWebhookにユーザーIDが含まれない場合がある」とされています。受信処理では <code>userId</code>
+                の存在チェックを入れ、未取得時はログ出力と再連携導線を用意するのが安全です。</p>
+              <p>出典: <a href="https://developers.line.biz/ja/docs/messaging-api/getting-user-ids/#get-own-user-id"
+                  target="_blank" rel="noopener">LINE Developers - ユーザーIDを取得する</a></p>
+            </div>
           </div>
-        </div>
 
         </section>
 
@@ -140,21 +170,67 @@
           <div class="fill-block">
             <div class="fill-label">スキル自己評価 <span class="required">必須</span></div>
             <div class="fill-hint">各スキルを5段階（★）で自己評価し、コメントを記載してください</div>
-        <table class="doc-table">
-          <thead><tr><th>スキル領域</th><th>自己評価</th><th>コメント</th></tr></thead>
-          <tbody>
-          <tr class="template-row"><td>HTML/CSS</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>JavaScript</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>Java</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>Spring Boot</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>データベース</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>UI/UXデザイン</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>Figma</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>Git/GitHub</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>AI活用（プロンプト）</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          <tr class="template-row"><td>マーケティング</td><td>（★★★☆☆ 等）</td><td>（できること・課題を簡潔に）</td></tr>
-          </tbody>
-        </table>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>スキル領域</th>
+                  <th>自己評価</th>
+                  <th>コメント</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="template-row">
+                  <td>HTML/CSS</td>
+                  <td>（★★★★★ 等）</td>
+                  <td>AIを利用して作成・理解した上で修正ができる</td>
+                </tr>
+                <tr class="template-row">
+                  <td>JavaScript</td>
+                  <td>（★★★★☆ 等）</td>
+                  <td>簡単なコードの記述、ソースの読解ができる</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Java</td>
+                  <td>（★★★★☆ 等）</td>
+                  <td>JAVA言語の文法・作法を理解し、ソースの読解ができる</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Spring Boot</td>
+                  <td>（★★★☆☆ 等）</td>
+                  <td>便利な事は理解した、使い方については手探りである</td>
+                </tr>
+                <tr class="template-row">
+                  <td>データベース</td>
+                  <td>（★★★★★ 等）</td>
+                  <td>より効率的な設計方法をマスターした</td>
+                </tr>
+                <tr class="template-row">
+                  <td>UI/UXデザイン</td>
+                  <td>（★★★★☆ 等）</td>
+                  <td>判りやすく。使用しやすいUIをAIに指示することができる</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Figma</td>
+                  <td>（★★★★☆ 等）</td>
+                  <td>ワイヤーフレームの作成、拡張機能の利用ができる</td>
+                </tr>
+                <tr class="template-row">
+                  <td>Git/GitHub</td>
+                  <td>（★★★★★ 等）</td>
+                  <td>ローカル・リモートでのコード管理ができる</td>
+                </tr>
+                <tr class="template-row">
+                  <td>AI活用（プロンプト）</td>
+                  <td>（★★★★☆☆ 等）</td>
+                  <td>コード、画像、エラ〜、いろんなことで、活用できる</td>
+                </tr>
+                <tr class="template-row">
+                  <td>マーケティング</td>
+                  <td>（★★★★★ 等）</td>
+                  <td>実績ベースで解析し、理想的な解決策を導ける</td>
+                </tr>
+              </tbody>
+            </table>
 
           </div>
         </section>
@@ -162,16 +238,20 @@
         <section class="section" id="sec4">
           <h2 class="section-title"><span class="section-icon">4</span> 今後の学習計画</h2>
 
-        <div class="fill-block">
-          <div class="fill-label">今後学びたい技術・分野 <span class="required">必須</span></div>
-          <div class="fill-hint">今後のキャリアに向けて学習したい技術やスキル</div>
-          <div class="fill-content">
-            <p>　学習テーマは「バックエンド設計」と「AI活用開発」の2つに絞り、3か月で理解を深めて実務で使える状態を目指します。</p>
-            <p>　目標は、バックエンド設計では認可・トランザクション・例外設計を根拠を持って実装できること、AI活用開発ではAPI連携・プロンプト設計・評価改善を一連で実行できることです。</p>
-            <p>　学習計画は、1か月目に基礎理解、2か月目に既存機能への実装適用、3か月目にテストと評価指標を使った品質定着の順で進めます。週次では「インプット（週3回×30分）」「実装（週2回×60分）」「振り返り（週1回×30分）」を固定し、継続を重視します。</p>
-            <p>　成果物として、毎月1本の技術メモまたは記事を作成し、3か月で「バックエンド改善1件」と「AI連携機能1件」を実装します。達成基準は、設計判断を説明できること、実装とドキュメントに差分がないこと、AI機能の改善結果を事例または数値で示せることです。</p>
+          <div class="fill-block">
+            <div class="fill-label">今後学びたい技術・分野 <span class="required">必須</span></div>
+            <div class="fill-hint">今後のキャリアに向けて学習したい技術やスキル</div>
+            <div class="fill-content">
+              <p>　学習テーマは「バックエンド設計」と「AI活用開発」の2つに絞り、3か月で理解を深めて実務で使える状態を目指します。</p>
+              <p>　目標は、バックエンド設計では認可・トランザクション・例外設計を根拠を持って実装できること、AI活用開発ではAPI連携・プロンプト設計・評価改善を一連で実行できることです。</p>
+              <p>
+                　学習計画は、1か月目に基礎理解、2か月目に既存機能への実装適用、3か月目にテストと評価指標を使った品質定着の順で進めます。週次では「インプット（週3回×30分）」「実装（週2回×60分）」「振り返り（週1回×30分）」を固定し、継続を重視します。
+              </p>
+              <p>
+                　成果物として、毎月1本の技術メモまたは記事を作成し、3か月で「バックエンド改善1件」と「AI連携機能1件」を実装します。達成基準は、設計判断を説明できること、実装とドキュメントに差分がないこと、AI機能の改善結果を事例または数値で示せることです。
+              </p>
+            </div>
           </div>
-        </div>
 
         </section>
 
@@ -181,4 +261,5 @@
 
   <script src="../js/main.js"></script>
 </body>
+
 </html>
