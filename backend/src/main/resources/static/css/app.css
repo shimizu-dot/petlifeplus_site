@@ -58,7 +58,7 @@ body.role-user {
 }
 
 body.role-user .sidebar {
-  background: linear-gradient(160deg, #1A3A48 0%, #0D2535 100%);
+  background: linear-gradient(160deg, #1EB8D4 0%, #0D8AAE 55%, #0A5878 100%);
 }
 
 body.role-user .kpi-card {

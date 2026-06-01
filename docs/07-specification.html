@@ -873,7 +873,7 @@
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-003</div>
                 <div class="fill-content">
-                  <p>ユーザー情報の一覧表示、登録、詳細表示、編集、削除を行う（ADMIN のみ全ユーザー操作可）。一覧・編集画面では LINE / Slack / Zoom の連携ステータスアイコンを表示し、Slack User ID / LINE User ID の登録も行う。</p>
+                  <p>ユーザー情報の一覧表示、登録、詳細表示、編集、削除を行う（SUPER/ADMIN/STAFF が操作可能。削除は ADMIN/SUPER のみ）。一覧・編集画面では LINE / Slack / Zoom の連携ステータスアイコンを表示し、Slack User ID / LINE User ID の登録も行う。</p>
                 </div>
               </div>
               <div class="fill-block">
@@ -1145,7 +1145,7 @@
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-006</div>
                 <div class="fill-content">
-                  <p>診療・相談予約の登録、変更、キャンセルを管理し、空き枠チェックを行う。予約方法は「来院 / オンライン」から選択。VET / STAFF / ADMIN は予約を承認（CONFIRMED）または却下（CANCELED）できる。</p>
+                  <p>診療・相談予約の登録、変更、キャンセルを管理し、空き枠チェックを行う。予約方法は「来院 / オンライン」から選択。SUPER / VET / STAFF は予約を承認（CONFIRMED）または却下（CANCELED）できる。</p>
                 </div>
               </div>
               <div class="fill-block">
@@ -1155,9 +1155,9 @@
                     <thead><tr><th>ステータス</th><th>説明</th><th>操作者</th></tr></thead>
                     <tbody>
                       <tr class="template-row"><td>REQUESTED</td><td>ユーザーが登録した初期状態</td><td>ユーザー</td></tr>
-                      <tr class="template-row"><td>CONFIRMED</td><td>VET/STAFF/ADMIN が承認済み</td><td>VET / STAFF / ADMIN</td></tr>
-                      <tr class="template-row"><td>CANCELED</td><td>キャンセルまたは却下</td><td>ユーザー / VET / STAFF / ADMIN</td></tr>
-                      <tr class="template-row"><td>COMPLETED</td><td>診療完了</td><td>VET / STAFF / ADMIN</td></tr>
+                      <tr class="template-row"><td>CONFIRMED</td><td>SUPER/VET/STAFF が承認済み</td><td>SUPER / VET / STAFF</td></tr>
+                      <tr class="template-row"><td>CANCELED</td><td>オーナーによるキャンセル、または SUPER/VET/STAFF による却下</td><td>オーナー / SUPER / VET / STAFF</td></tr>
+                      <tr class="template-row"><td>COMPLETED</td><td>診療完了</td><td>SUPER / VET / STAFF</td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -1165,7 +1165,7 @@
               <div class="fill-block">
                 <div class="fill-label">画面レイアウト</div>
                 <div class="fill-content">
-                  <p>予約一覧、日付フィルタ、予約フォーム（来院/オンライン カード型選択）、変更/キャンセル操作を配置。VET/STAFF/ADMIN ビューには承認・却下ボタンを表示。スタンダードプラン以下のユーザーはオンラインカードをグレーアウト。</p>
+                  <p>予約一覧、日付フィルタ、予約フォーム（来院/オンライン カード型選択）、変更/キャンセル操作を配置。SUPER/VET/STAFF ビューには承認・却下ボタンを表示。STANDARD は来院のみ、PREMIUM のみオンライン選択可（LIGHT は予約機能対象外）。</p>
                 </div>
               </div>
               <div class="fill-block">
@@ -1179,7 +1179,7 @@
               <div class="fill-block">
                 <div class="fill-label">処理フロー（承認・却下）</div>
                 <div class="fill-content">
-                  <p>1. VET/STAFF/ADMIN が予約一覧で対象予約を選択する。</p>
+                  <p>1. SUPER/VET/STAFF が予約一覧で対象予約を選択する。</p>
                   <p>2. 「承認」（POST /app/appointments/{id}/approve）または「却下」（POST /app/appointments/{id}/reject）を実行する。</p>
                   <p>3. ステータスを更新し最新状態を表示する。</p>
                 </div>
@@ -1202,7 +1202,7 @@
               <div class="fill-block">
                 <div class="fill-label">予約枠管理（<code>GET /app/admin/appointment-slots</code>）</div>
                 <div class="fill-content">
-                  <p>SUPER/ADMIN/VET/STAFF が自動生成スロット（9:30–17:00、30分刻み）を日別に調整する管理画面。</p>
+                  <p>SUPER/ADMIN/STAFF が自動生成スロット（9:30–17:00、30分刻み）を日別に調整する管理画面。</p>
                   <table class="doc-table">
                     <thead><tr><th>枠の種類</th><th>is_blocked</th><th>説明</th></tr></thead>
                     <tbody>
@@ -1269,7 +1269,7 @@
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-007</div>
                 <div class="fill-content">
-                  <p>診療・相談履歴の登録、検索、編集、削除と添付管理を行う。</p>
+                  <p>診療・相談履歴の登録、検索、編集、削除を行う。添付管理は別機能（F-014）として仕様化し、現時点では実装対象外。</p>
                 </div>
               </div>
               <div class="fill-block">
@@ -1912,7 +1912,7 @@
             <div id="f014-core">
               <div class="fill-block">
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
-                <div class="fill-hint">機能ID：F-013</div>
+                <div class="fill-hint">機能ID：F-014（追加仕様。実装予定）</div>
                 <div class="fill-content">
                   <p>関連ファイルを検証後に保存し、対象データへ紐付けて管理する。</p>
                 </div>
@@ -1934,7 +1934,7 @@
               <div class="fill-block">
                 <div class="fill-label">正常時の動作</div>
                 <div class="fill-content">
-                  <p>添付一覧に反映し参照可能とする。</p>
+                  <p>診療記録に添付ファイルを紐づけ、添付一覧へ反映して参照可能とする（実装時）。</p>
                 </div>
               </div>
               <div class="fill-block">

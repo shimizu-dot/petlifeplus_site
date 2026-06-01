@@ -183,9 +183,9 @@
         <div class="doc-category">DOCUMENT 09</div>
         <h1 class="doc-title">テスト報告書</h1>
         <div class="doc-meta">
-          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-14　／　更新日：2026-05-27</span>
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-14　／　更新日：2026-06-01</span>
           <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：清水宏美</span>
-          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 2.0</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 3.0</span>
         </div>
       </header>
 
@@ -233,6 +233,7 @@
                 <h4>認証・共通（F-001〜F-002）</h4>
                 <ul>
                   <li>F-001 ログイン認証（BCrypt）</li>
+                  <li>F-001b パスワード再設定（メールトークン、ForgotPasswordController）</li>
                   <li>F-002 ダッシュボード（ロール別KPI）</li>
                 </ul>
               </div>
@@ -247,15 +248,15 @@
               <div class="scope-card">
                 <h4>診療・予約（F-006〜F-007）</h4>
                 <ul>
-                  <li>F-006 診療予約（申請/承認/却下/キャンセル）</li>
-                  <li>F-007 診療記録 CRUD（VET/STAFF/ADMIN）</li>
+                  <li>F-006 診療予約（申請：USER / 承認・却下：VET/STAFF/SUPER / キャンセル：オーナーのみ・スタッフ不可）</li>
+                  <li>F-007 診療記録 CRUD（SUPER / VET / STAFF のみ。ADMIN はアクセス不可）</li>
                 </ul>
               </div>
               <div class="scope-card">
-                <h4>AI・チャット（F-009〜F-010）</h4>
+                <h4>AI・チャット（F-009・F-022）</h4>
                 <ul>
-                  <li>F-009 AI症状チェック（OpenAI/フォールバック）</li>
-                  <li>F-010 相談チャットボット（マルチターン対話）</li>
+                  <li>F-009 AI症状チェック（Standard以上：OpenAI API / Light：キーワードフォールバック。アクセス制限なし・結果品質で差別化）</li>
+                  <li>F-022 チャットボット相談（Groq AI/フォールバック、<strong>全プラン利用可</strong>）</li>
                 </ul>
               </div>
               <div class="scope-card">
@@ -287,6 +288,9 @@
                   <li>F-019 お知らせ管理（ADMIN/STAFF）</li>
                   <li>F-020 ユーザー連携ステータスアイコン</li>
                   <li>F-021 サービス統計・DBバックアップ（ADMIN）</li>
+                  <li>F-011b 請求・決済管理（BillingController・BillingService）</li>
+                  <li>F-011c 請求書・領収書ビュー（UserInvoiceController）</li>
+                  <li>F-013b 診療情報印刷（health-records/print）</li>
                 </ul>
               </div>
               <div class="scope-card">
@@ -300,9 +304,9 @@
               <div class="scope-card">
                 <h4>対象外（今回）</h4>
                 <ul>
-                  <li>請求書・決済（schema のみ・未実装）</li>
-                  <li>メール送信機能（schema のみ・未実装）</li>
-                  <li>PDF出力（未実装）</li>
+                  <li>メールテンプレート管理UI（schema のみ・UI未実装）</li>
+                  <li>汎用 PDF ダウンロード（iText 等未導入・未実装）</li>
+                  <li>外部決済事業者の内部システム動作</li>
                   <li>本番運用監視・災害復旧訓練</li>
                 </ul>
               </div>
@@ -318,7 +322,7 @@
 
           <div class="fill-block">
             <div class="fill-label">テストケース一覧 <span class="required">必須</span></div>
-            <div class="fill-hint">Ver 2.0 — 現行実装（2026-05-27）ベースに全面更新。総件数 55 件</div>
+            <div class="fill-hint">Ver 3.0 — 現行実装（2026-06-01）ベースに更新。総件数 67 件</div>
             <table class="doc-table test-case-table">
               <thead>
                 <tr>
@@ -355,7 +359,7 @@
                 <tr><td>TC-018</td><td>F-005 健康記録管理</td><td>正常系</td><td>記録日・体重を入力して登録する</td><td>記録が保存され時系列一覧に表示される</td></tr>
                 <tr><td>TC-019</td><td>F-005 健康記録管理</td><td>異常系</td><td>体重に文字列を入力する</td><td>数値形式エラーが表示される</td></tr>
                 <tr><td>TC-020</td><td>F-005 健康記録管理</td><td>境界値</td><td>体重0.1 kg で登録する</td><td>下限値として正常登録される</td></tr>
-                <!-- ── F-006 診療予約 ── -->
+                <!-- ── F-006 診療予約（申請:USER / 承認・却下:VET/STAFF/SUPER / キャンセル:オーナーのみ） ── -->
                 <tr><td>TC-021</td><td>F-006 診療予約</td><td>正常系</td><td>Standard 以上のユーザーが未来日時で予約申請する</td><td>ステータス REQUESTED で保存される</td></tr>
                 <tr><td>TC-022</td><td>F-006 診療予約</td><td>正常系</td><td>STAFF が申請中の予約を承認する</td><td>ステータスが CONFIRMED になりオーナーに通知が届く</td></tr>
                 <tr><td>TC-023</td><td>F-006 診療予約</td><td>正常系</td><td>STAFF が承認後にカレンダーを開く</td><td>承認済み予約が該当日に表示される</td></tr>
@@ -363,18 +367,20 @@
                 <tr><td>TC-025</td><td>F-006 診療予約</td><td>異常系</td><td>過去日時で予約申請する</td><td>「未来日時を指定してください」エラーが表示される</td></tr>
                 <tr><td>TC-026</td><td>F-006 診療予約</td><td>異常系</td><td>診療受付時間外（17:01）で申請する</td><td>「診療受付時間外」エラーが表示される</td></tr>
                 <tr><td>TC-027</td><td>F-006 診療予約</td><td>セキュリティ</td><td>ADMIN ロールで /app/appointments にアクセスする</td><td>アクセス拒否ページが表示される（設計通り）</td></tr>
-                <!-- ── F-007 診療記録 ── -->
+                <tr><td>TC-027b</td><td>F-006 診療予約</td><td>セキュリティ</td><td>STAFF ロールのユーザーがオーナーの予約をキャンセルしようとする</td><td>「自分の予約のみキャンセルできます」エラーが返る（スタッフのキャンセルは禁止）</td></tr>
+                <!-- ── F-007 診療記録（SUPER/VET/STAFF のみ。ADMIN はアクセス不可） ── -->
                 <tr><td>TC-028</td><td>F-007 診療記録</td><td>正常系</td><td>VET が実施日・対応内容を入力して診療記録を登録する</td><td>記録が保存され一覧に表示される</td></tr>
                 <tr><td>TC-029</td><td>F-007 診療記録</td><td>セキュリティ</td><td>一般ユーザーが /app/consultations にアクセスする</td><td>アクセス拒否ページが表示される</td></tr>
+                <tr><td>TC-029b</td><td>F-007 診療記録</td><td>セキュリティ</td><td>ADMIN ロールで /app/consultations にアクセスする</td><td>アクセス拒否ページが表示される（ADMIN は意図的に除外）</td></tr>
                 <!-- ── F-008 入力バリデーション ── -->
                 <tr><td>TC-030</td><td>F-008 入力バリデーション</td><td>正常系</td><td>全必須項目を満たしてフォームを送信する</td><td>エラーなく保存処理へ進む</td></tr>
                 <tr><td>TC-031</td><td>F-008 入力バリデーション</td><td>異常系</td><td>メール形式不正で送信する</td><td>形式エラーが表示される</td></tr>
                 <!-- ── F-009 AI症状チェック ── -->
                 <tr><td>TC-032</td><td>F-009 AI症状チェック</td><td>正常系</td><td>Standard 以上のユーザーが症状種別・発症時期を入力して実行する</td><td>重症度と推奨対応が表示される</td></tr>
-                <tr><td>TC-033</td><td>F-009 AI症状チェック</td><td>異常系</td><td>Light プランのユーザーが症状チェックにアクセスする</td><td>アクセス制限エラーが表示される</td></tr>
-                <!-- ── F-010 相談チャット ── -->
-                <tr><td>TC-034</td><td>F-010 相談チャットボット</td><td>正常系</td><td>症状を複数ターンにわたって入力する</td><td>情報収集 → トリアージの順で返答が進行する（毎回同じ返答にならない）</td></tr>
-                <tr><td>TC-035</td><td>F-010 相談チャットボット</td><td>正常系</td><td>「2日間食べない」と入力する</td><td>「今すぐ受診してください」即時受診案内が返答される</td></tr>
+                <tr><td>TC-033</td><td>F-009 AI症状チェック</td><td>プラン差異</td><td>Light プランのユーザーが症状種別・発症時期を入力して実行する</td><td>アクセス拒否にはならず処理継続。OpenAI API は呼ばれず、キーワードベースのフォールバック（free-local）で重症度と推奨対応が返る</td></tr>
+                <!-- ── F-022 チャットボット相談（全プラン利用可） ── -->
+                <tr><td>TC-034</td><td>F-022 チャットボット相談</td><td>正常系</td><td>症状を複数ターンにわたって入力する</td><td>情報収集 → トリアージの順で返答が進行する（毎回同じ返答にならない）</td></tr>
+                <tr><td>TC-035</td><td>F-022 チャットボット相談</td><td>正常系</td><td>「2日間食べない」と入力する</td><td>「今すぐ受診してください」即時受診案内が返答される</td></tr>
                 <!-- ── F-011 カレンダー ── -->
                 <tr><td>TC-036</td><td>F-011 カレンダー</td><td>正常系</td><td>月次カレンダーを表示する</td><td>当月のすべての日付・手動シール・自動シールが表示される</td></tr>
                 <tr><td>TC-037</td><td>F-011 カレンダー</td><td>正常系</td><td>同一ペット・同日に「診察」と「注射」の2種シールを追加する</td><td>両方のシールが表示される</td></tr>
@@ -405,6 +411,23 @@
                 <tr><td>TC-054</td><td>F-019 お知らせ管理</td><td>正常系</td><td>ADMIN がお知らせを作成・公開する</td><td>お知らせが保存され一般ユーザーのダッシュボードに表示される</td></tr>
                 <!-- ── F-021 管理機能 ── -->
                 <tr><td>TC-055</td><td>F-021 サービス統計</td><td>正常系</td><td>ADMIN でサービス統計ページを開く</td><td>ユーザー数・ペット数・予約数等の集計値が表示される</td></tr>
+                <!-- ── F-001b パスワード再設定（メールトークン） ── -->
+                <tr><td>TC-056</td><td>F-001b パスワード再設定</td><td>正常系</td><td>登録済みメールアドレスを入力してリセットメールを送信する</td><td>「メールを送信しました」画面に遷移し、SendGrid 経由でトークン付きリセットメールが届く</td></tr>
+                <tr><td>TC-057</td><td>F-001b パスワード再設定</td><td>正常系</td><td>メール内のリンクを開き、新しいパスワードを設定する</td><td>パスワードが BCrypt で更新され、新パスワードでログインできる</td></tr>
+                <tr><td>TC-058</td><td>F-001b パスワード再設定</td><td>異常系</td><td>有効期限切れのトークンでリセットURLにアクセスする</td><td>「トークンが無効または期限切れです」エラーが表示される</td></tr>
+                <!-- ── F-011b 請求・決済管理 ── -->
+                <tr><td>TC-059</td><td>F-011b 請求・決済管理</td><td>正常系</td><td>ADMIN で請求一覧（/app/admin/billing）を開く</td><td>UNPAID/PARTIAL/PAID 各ステータスの請求が一覧表示される</td></tr>
+                <tr><td>TC-060</td><td>F-011b 請求・決済管理</td><td>正常系</td><td>UNPAID 請求に入金を登録し金額が請求額未満の場合</td><td>支払状況が PARTIAL に更新される</td></tr>
+                <tr><td>TC-061</td><td>F-011b 請求・決済管理</td><td>正常系</td><td>入金を登録し合計が請求額に達した場合</td><td>支払状況が PAID に更新され入金日時が記録される</td></tr>
+                <tr><td>TC-062</td><td>F-011b 請求通知再送</td><td>正常系</td><td>ADMIN が請求詳細画面から「お支払い案内を再送」ボタンを押す</td><td>アプリ内通知が即時作成され、メール・LINE 通知が非同期で送信される</td></tr>
+                <!-- ── F-011c 請求書・領収書ビュー ── -->
+                <tr><td>TC-063</td><td>F-011c 請求書・領収書ビュー</td><td>正常系</td><td>ADMIN が /app/invoices/{id} を開く</td><td>請求書・領収書が表示されブラウザ印刷ダイアログを開けること</td></tr>
+                <!-- ── F-013b 診療情報印刷 ── -->
+                <tr><td>TC-064</td><td>F-013b 診療情報印刷</td><td>正常系</td><td>ペット詳細から「印刷」リンクを開く（/app/pets/{id}/health-records/print）</td><td>ペット情報・ワクチン記録・診療履歴・AI症状チェック履歴・健康記録が印刷用レイアウトで表示される</td></tr>
+                <!-- ── F-022 チャットボット全プラン確認 ── -->
+                <tr><td>TC-065</td><td>F-022 チャットボット相談</td><td>正常系</td><td>Light プランのユーザー（owner1）で /app/consult/chatbot にアクセスする</td><td>プランゲートなしでチャットボット画面が表示され、メッセージを送受信できる</td></tr>
+                <tr><td>TC-066</td><td>F-022 チャットボット相談</td><td>異常系</td><td>空メッセージで送信ボタンを押す</td><td>必須エラーが表示され送信されない</td></tr>
+                <tr><td>TC-067</td><td>F-022 チャットボット相談</td><td>正常系</td><td>CHATBOT_API_KEY 未設定の状態でメッセージを送信する</td><td>fallbackReply() が動作し5段階フローで返答が届く</td></tr>
               </tbody>
             </table>
 

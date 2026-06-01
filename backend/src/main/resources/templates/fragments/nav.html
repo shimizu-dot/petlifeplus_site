@@ -92,6 +92,10 @@
          th:classappend="${requestURI.contains('/admin/line/push') ? 'active' : ''}">
         💬 LINE 一斉送信
       </a>
+      <a th:href="@{/app/notifications/manage}"
+         th:classappend="${requestURI.contains('/notifications/manage') ? 'active' : ''}">
+        📨 通知配信管理
+      </a>
       <a th:href="@{/app/admin/billing}"
          th:classappend="${requestURI.contains('/admin/billing') ? 'active' : ''}">
         💳 請求管理

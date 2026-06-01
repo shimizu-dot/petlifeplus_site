@@ -121,6 +121,7 @@ Controller → Service → Mapper (MyBatis) → PostgreSQL
 - `/app/calendar` — ペットカレンダー（CalendarController）
 - `/app/notifications` — 通知一覧・既読処理（全認証ユーザー）
 - `/app/subscriptions` — サブスクリプション確認（ADMIN は全ユーザー分）
+- `GET /app/invoices/{id}` — 請求書・領収書ビュー（`UserInvoiceController`、ブラウザ印刷対応）
 - `/app/password-resets` — パスワード変更（全認証ユーザー・現在のパスワード必須）
 - `/app/consultations/**` — 診療記録 CRUD（SUPER / VET / STAFF のみ）
 - `/app/consult/chatbot` — チャットボット相談（ConsultChatController）
@@ -168,7 +169,7 @@ Login is handled by Spring Security form login via `UserDetailsServiceImpl` + `B
 
 ## Frontend
 
-Static files in `frontend/public/` — open directly in a browser or serve with any static file server. No build process. Pages: `index.html`, `f_service.html`, `f_flow.html`, `f_contact.html`, `f_info.html`, `webapp.html`.
+Static files in `frontend/public/` — open directly in a browser or serve with any static file server. No build process. Pages: `index.html`, `f_service.html`, `f_flow.html`, `f_contact.html`, `f_info.html`, `webapp.html`, `line-qr.html`.
 
 UI conventions (from `frontend/docs/ui-design.md`):
 - Colors: `#FF8FB1` (brand pink), `#8C6EE6` (accent purple), `#4A2D3C` (text)

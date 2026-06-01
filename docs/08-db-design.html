@@ -880,6 +880,7 @@ erDiagram
                   <tr><td>recommendation</td><td>VARCHAR(10)</td><td>NO</td><td></td><td>CHECK IN (OBSERVE/CONSULT/VISIT)</td><td>推奨対応</td></tr>
                   <tr><td>guidance</td><td>TEXT</td><td>YES</td><td>NULL</td><td></td><td>AIガイダンス本文</td></tr>
                   <tr><td>ai_model</td><td>VARCHAR(100)</td><td>YES</td><td>NULL</td><td></td><td>使用AIモデル名</td></tr>
+                  <tr><td>deleted_at</td><td>TIMESTAMP</td><td>YES</td><td>NULL</td><td></td><td>論理削除日時</td></tr>
                   <tr><td>created_at</td><td>TIMESTAMP</td><td>NO</td><td>CURRENT_TIMESTAMP</td><td></td><td>作成日時（更新なし）</td></tr>
                 </tbody>
               </table>
@@ -991,6 +992,7 @@ erDiagram
                   <tr><td>id</td><td>BIGINT</td><td>NO</td><td>IDENTITY</td><td>PK</td><td>予約枠ID</td></tr>
                   <tr><td>slot_datetime</td><td>TIMESTAMP</td><td>NO</td><td></td><td></td><td>予約枠日時</td></tr>
                   <tr><td>note</td><td>VARCHAR(200)</td><td>YES</td><td>NULL</td><td></td><td>備考</td></tr>
+                  <tr><td>is_blocked</td><td>BOOLEAN</td><td>NO</td><td>FALSE</td><td></td><td>true=ブロック枠（自動生成スロットを無効化） / false=追加枠（業務時間外スロットを追加）</td></tr>
                   <tr><td>created_by_user_id</td><td>BIGINT</td><td>NO</td><td></td><td>FK → users.id</td><td>作成者ユーザーID</td></tr>
                   <tr><td>deleted_at</td><td>TIMESTAMP</td><td>YES</td><td>NULL</td><td></td><td>論理削除日時</td></tr>
                   <tr><td>created_at</td><td>TIMESTAMP</td><td>NO</td><td>CURRENT_TIMESTAMP</td><td></td><td>作成日時（更新なし）</td></tr>
@@ -1045,7 +1047,7 @@ erDiagram
 
             <!-- medical_attachments -->
             <h3 id="tbl-medical-attachments">medical_attachments</h3>
-            <p class="table-note">スキーマのみ実装済み（コントローラー・サービス未実装）</p>
+            <p class="table-note">スキーマ＋Mapper 実装済み（MedicalAttachmentMapper: SELECT/INSERT/UPDATE あり）。Controller・Service は未実装。</p>
             <div class="table-wrap">
               <table class="doc-table db-table">
                 <thead><tr><th>カラム名</th><th>データ型</th><th>NULL許可</th><th>デフォルト値</th><th>制約</th><th>説明</th></tr></thead>
@@ -1118,7 +1120,7 @@ erDiagram
 
             <!-- email_templates -->
             <h3 id="tbl-email-templates">email_templates</h3>
-            <p class="table-note">スキーマのみ実装済み（コントローラー・サービス未実装）</p>
+            <p class="table-note">スキーマ＋Mapper 実装済み（EmailTemplateMapper: SELECT/UPDATE あり）。Controller・Service は未実装。</p>
             <div class="table-wrap">
               <table class="doc-table db-table">
                 <thead><tr><th>カラム名</th><th>データ型</th><th>NULL許可</th><th>デフォルト値</th><th>制約</th><th>説明</th></tr></thead>
@@ -1136,7 +1138,7 @@ erDiagram
 
             <!-- email_messages -->
             <h3 id="tbl-email-messages">email_messages</h3>
-            <p class="table-note">スキーマのみ実装済み。subject/body は送信時点のスナップショット（非正規化⑤）。</p>
+            <p class="table-note">スキーマ＋Mapper 実装済み（EmailMessageMapper: SELECT/UPDATE あり）。Controller・Service は未実装。subject/body は送信時点のスナップショット（非正規化⑤）。</p>
             <div class="table-wrap">
               <table class="doc-table db-table">
                 <thead><tr><th>カラム名</th><th>データ型</th><th>NULL許可</th><th>デフォルト値</th><th>制約</th><th>説明</th></tr></thead>
@@ -1268,6 +1270,7 @@ erDiagram
                   <tr><td>subscriptions</td><td>idx_subscriptions_user_status</td><td>user_id, status</td><td>INDEX</td><td>ユーザー契約一覧・プラン判定</td></tr>
                   <tr><td>subscriptions</td><td>idx_subscriptions_pet_status</td><td>pet_id, status</td><td>INDEX</td><td>ペット契約一覧</td></tr>
                   <tr><td>subscriptions</td><td>idx_subscriptions_plan_id</td><td>plan_id</td><td>INDEX</td><td>プラン別集計・FK結合</td></tr>
+                  <tr><td>subscriptions</td><td>uq_subscriptions_active_user</td><td>user_id <br><small>WHERE deleted_at IS NULL AND status='ACTIVE'</small></td><td>UNIQUE (部分)</td><td>アクティブサブスクのユーザー重複防止（SchemaCompatibilityInitializer でも起動時に作成）</td></tr>
                   <tr><td>invoices</td><td>uk_invoices_invoice_number</td><td>invoice_number</td><td>UNIQUE</td><td>請求書番号一意制約</td></tr>
                   <tr><td>invoices</td><td>idx_invoices_subscription_id</td><td>subscription_id</td><td>INDEX</td><td>FK結合</td></tr>
                   <tr><td>invoices</td><td>idx_invoices_payment_status_due_date</td><td>payment_status, due_date</td><td>INDEX</td><td>未払い・期限順管理</td></tr>
@@ -1276,6 +1279,7 @@ erDiagram
 
                   <tr class="group-header"><td colspan="5">予約・診療記録</td></tr>
                   <tr><td>appointment_slots</td><td>idx_appointment_slots_datetime</td><td>slot_datetime</td><td>INDEX</td><td>日時順検索・空き枠確認</td></tr>
+                  <tr><td>appointments</td><td>idx_appointments_slot_id</td><td>slot_id</td><td>INDEX</td><td>予約枠に紐づく予約の高速取得・FK結合</td></tr>
                   <tr><td>appointments</td><td>idx_appointments_pet_scheduled_at</td><td>pet_id, scheduled_at</td><td>INDEX</td><td>ペット別予約一覧・ソート</td></tr>
                   <tr><td>appointments</td><td>idx_appointments_owner_scheduled_at</td><td>owner_user_id, scheduled_at</td><td>INDEX</td><td>飼い主別予約検索</td></tr>
                   <tr><td>appointments</td><td>idx_appointments_staff_scheduled_at</td><td>staff_user_id, scheduled_at</td><td>INDEX</td><td>担当者別予定検索</td></tr>
@@ -1312,7 +1316,7 @@ erDiagram
 
           <div class="fill-block">
             <div class="fill-label">シードデータ（data.sql）</div>
-            <div class="fill-hint">DataInitializer (BCrypt) でユーザーを作成し、data.sql でマスタ・テストデータを投入</div>
+            <div class="fill-hint">通常は data.sql でマスタ・テストデータを投入し、DataInitializer（BCrypt）は data.sql 無効時のユーザー作成フォールバックとして動作</div>
             <div class="fill-content">
               <pre>
 【roles】5件
@@ -1325,7 +1329,7 @@ erDiagram
   STANDARD: AI_SYMPTOM, SLACK_BOT, LINE_BOT
   PREMIUM:  AI_SYMPTOM, SLACK_BOT, LINE_BOT, ZOOM_CONSULT
 
-【users】DataInitializer で自動生成（BCryptハッシュ）
+【users】通常は data.sql で投入（DataInitializer は data.sql 無効時のみフォールバック作成）
   super@petlife.local (SUPER)
   admin@petlife.local (ADMIN)
   vet1@petlife.local (VET)
@@ -1341,8 +1345,7 @@ erDiagram
 
 【pet_care_records】3件（ポチのワクチン・フィラリア・混合ワクチン）
 
-【subscriptions】5件
-  owner1→ポチ(STANDARD) / owner2→レオン(STANDARD)
+【subscriptions】3件（ユーザー単位ACTIVE1件制約。NOT EXISTSガード付き）
   owner1→ピーコ(LIGHT) / owner2→カレン(STANDARD) / owner3→ボス(PREMIUM)
 
 実行コマンド:

@@ -1,6 +1,7 @@
 package com.example.petlife.mapper;
 
 import com.example.petlife.dto.notification.NotificationRow;
+import com.example.petlife.dto.notification.NotificationManageRow;
 import com.example.petlife.dto.subscription.RenewalHistoryRow;
 import com.example.petlife.entity.NotificationEntity;
 import org.apache.ibatis.annotations.*;
@@ -121,6 +122,44 @@ public interface NotificationMapper {
     int updateRecipientStatus(@Param("notificationId") Long notificationId,
                               @Param("userId") Long userId,
                               @Param("deliveryStatus") String deliveryStatus);
+
+    @Select("""
+        SELECT n.id, n.notification_type AS "notificationType", n.title, n.body,
+               n.scheduled_at AS "scheduledAt", n.sent_at AS "sentAt",
+               n.delivery_status AS "deliveryStatus", n.created_at AS "createdAt"
+        FROM notifications n
+        WHERE n.deleted_at IS NULL
+          AND n.created_by_user_id = #{userId}
+        ORDER BY n.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+        """)
+    List<NotificationManageRow> findCreatedByUserId(@Param("userId") Long userId,
+                                                    @Param("limit") int limit,
+                                                    @Param("offset") int offset);
+
+    @Select("""
+        SELECT COUNT(*)
+        FROM notifications
+        WHERE deleted_at IS NULL
+          AND created_by_user_id = #{userId}
+        """)
+    long countCreatedByUserId(@Param("userId") Long userId);
+
+    @Select("""
+        SELECT id
+        FROM users
+        WHERE deleted_at IS NULL
+          AND status = 'ACTIVE'
+          AND (
+              #{scope} = 'ALL'
+              OR (#{scope} = 'USER'  AND role_id = 3)
+              OR (#{scope} = 'STAFF' AND role_id IN (1,2,4,5))
+              OR (#{scope} = 'VET'   AND role_id IN (2,4))
+              OR (#{scope} = 'ADMIN' AND role_id IN (1,2))
+          )
+        ORDER BY id
+        """)
+    List<Long> findActiveRecipientUserIdsByScope(@Param("scope") String scope);
 
     // --- サブスクリプション更新申請 ---
 

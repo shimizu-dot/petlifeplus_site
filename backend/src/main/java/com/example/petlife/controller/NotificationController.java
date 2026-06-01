@@ -1,7 +1,10 @@
 package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
+import com.example.petlife.dto.notification.NotificationManageForm;
 import com.example.petlife.entity.PetCareRecordEntity;
+import com.example.petlife.entity.NotificationEntity;
+import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.mapper.AppointmentMapper;
 import com.example.petlife.mapper.DismissedReminderMapper;
 import com.example.petlife.mapper.NotificationMapper;
@@ -11,11 +14,14 @@ import com.example.petlife.service.PetService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.validation.Valid;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
@@ -35,6 +41,8 @@ public class NotificationController {
     private final AppointmentMapper appointmentMapper;
     private final SubscriptionMapper subscriptionMapper;
     private final DismissedReminderMapper dismissedReminderMapper;
+    private static final Set<String> ALLOWED_TYPES = Set.of("REMINDER", "INFO", "ALERT");
+    private static final Set<String> ALLOWED_SCOPES = Set.of("ALL", "USER", "STAFF", "VET", "ADMIN");
 
     public NotificationController(NotificationMapper notificationMapper,
                                   PetService petService,
@@ -90,6 +98,106 @@ public class NotificationController {
         dismissedReminderMapper.insert(currentUser.id(), reminderKey);
         ra.addFlashAttribute("success", "リマインダーを確認しました");
         return "redirect:/app/notifications";
+    }
+
+    @GetMapping("/manage")
+    public String manage(@RequestParam(defaultValue = "1") int page,
+                         @RequestParam(defaultValue = "20") int size,
+                         Model model,
+                         @AuthenticationPrincipal LoginUser currentUser) {
+        ensureCanManageNotifications(currentUser);
+        if (!model.containsAttribute("form")) {
+            NotificationManageForm form = new NotificationManageForm();
+            form.setNotificationType("INFO");
+            form.setTargetScope("ALL");
+            model.addAttribute("form", form);
+        }
+        int offset = Math.max(page - 1, 0) * size;
+        model.addAttribute("rows", notificationMapper.findCreatedByUserId(currentUser.id(), size, offset));
+        model.addAttribute("total", notificationMapper.countCreatedByUserId(currentUser.id()));
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        return "notifications/manage";
+    }
+
+    @PostMapping("/manage")
+    public String create(@Valid @ModelAttribute("form") NotificationManageForm form,
+                         BindingResult result,
+                         @AuthenticationPrincipal LoginUser currentUser,
+                         RedirectAttributes ra,
+                         Model model) {
+        ensureCanManageNotifications(currentUser);
+        if (!ALLOWED_TYPES.contains(form.getNotificationType())) {
+            result.rejectValue("notificationType", "invalid", "通知種別が不正です");
+        }
+        if (!ALLOWED_SCOPES.contains(form.getTargetScope())) {
+            result.rejectValue("targetScope", "invalid", "配信対象が不正です");
+        }
+        if (form.getScheduledAt() != null && form.getScheduledAt().isBefore(LocalDateTime.now())) {
+            result.rejectValue("scheduledAt", "invalid", "予約日時は現在以降を指定してください");
+        }
+        if (result.hasErrors()) {
+            int offset = 0;
+            model.addAttribute("rows", notificationMapper.findCreatedByUserId(currentUser.id(), 20, offset));
+            model.addAttribute("total", notificationMapper.countCreatedByUserId(currentUser.id()));
+            model.addAttribute("page", 1);
+            model.addAttribute("size", 20);
+            return "notifications/manage";
+        }
+
+        boolean scheduled = form.getScheduledAt() != null;
+        NotificationEntity row = new NotificationEntity(
+                null,
+                form.getNotificationType(),
+                form.getTitle(),
+                form.getBody(),
+                form.getScheduledAt(),
+                scheduled ? null : LocalDateTime.now(),
+                scheduled ? "SCHEDULED" : "SENT",
+                currentUser.id(),
+                null,
+                null,
+                null
+        );
+        Long notificationId = notificationMapper.insertReturningId(row);
+        List<Long> recipientIds = notificationMapper.findActiveRecipientUserIdsByScope(form.getTargetScope());
+        for (Long uid : recipientIds) {
+            notificationMapper.insertRecipient(notificationId, uid);
+            notificationMapper.updateRecipientStatus(notificationId, uid, scheduled ? "PENDING" : "SENT");
+        }
+        if (!scheduled) {
+            notificationMapper.updateStatus(notificationId, "SENT", LocalDateTime.now());
+        }
+
+        ra.addFlashAttribute("success", scheduled
+                ? "通知を予約登録しました（" + recipientIds.size() + "件）"
+                : "通知を配信しました（" + recipientIds.size() + "件）");
+        return "redirect:/app/notifications/manage";
+    }
+
+    @PostMapping("/manage/{id}/send-now")
+    public String sendNow(@PathVariable Long id,
+                          @AuthenticationPrincipal LoginUser currentUser,
+                          RedirectAttributes ra) {
+        ensureCanManageNotifications(currentUser);
+        NotificationEntity entity = notificationMapper.findById(id);
+        if (entity == null) throw new BadRequestException("通知が見つかりません");
+        if (!"SCHEDULED".equals(entity.deliveryStatus())) {
+            throw new BadRequestException("予約済み通知のみ即時配信できます");
+        }
+        List<Long> recipients = notificationMapper.findRecipientUserIds(id);
+        for (Long uid : recipients) {
+            notificationMapper.updateRecipientStatus(id, uid, "SENT");
+        }
+        notificationMapper.updateStatus(id, "SENT", LocalDateTime.now());
+        ra.addFlashAttribute("success", "予約通知を即時配信しました");
+        return "redirect:/app/notifications/manage";
+    }
+
+    private void ensureCanManageNotifications(LoginUser currentUser) {
+        if (currentUser == null || !currentUser.canManageOperations()) {
+            throw new BadRequestException("通知配信管理は管理者・スタッフのみ利用できます");
+        }
     }
 
     private List<ScheduleReminderRow> buildScheduleReminders(LoginUser currentUser, Set<String> dismissed) {

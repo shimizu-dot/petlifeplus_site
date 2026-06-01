@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>通知配信管理 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body th:class="${bodyClass}">
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">通知配信管理</span></div>
+    <div class="content">
+      <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+      <div class="card">
+        <div style="padding:14px 16px;border-bottom:1px solid #e2e8f0;background:#f8fafc;"><strong>通知作成</strong></div>
+        <form th:action="@{/app/notifications/manage}" th:object="${form}" method="post" style="padding:16px;display:grid;gap:12px;">
+          <label>通知種別
+            <select th:field="*{notificationType}">
+              <option value="INFO">INFO</option>
+              <option value="REMINDER">REMINDER</option>
+              <option value="ALERT">ALERT</option>
+            </select>
+          </label>
+          <label>配信対象
+            <select th:field="*{targetScope}">
+              <option value="ALL">全ユーザー</option>
+              <option value="USER">一般ユーザー</option>
+              <option value="STAFF">スタッフ系（SUPER/ADMIN/VET/STAFF）</option>
+              <option value="VET">獣医師系（SUPER/VET）</option>
+              <option value="ADMIN">管理者系（SUPER/ADMIN）</option>
+            </select>
+          </label>
+          <label>タイトル
+            <input type="text" th:field="*{title}" maxlength="100" required>
+          </label>
+          <label>本文
+            <textarea th:field="*{body}" rows="5" maxlength="2000" required></textarea>
+          </label>
+          <label>予約日時（空欄なら即時配信）
+            <input type="datetime-local" th:field="*{scheduledAt}">
+          </label>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a th:href="@{/app/notifications}" class="btn btn-secondary">通知一覧へ</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div style="padding:14px 16px;border-bottom:1px solid #e2e8f0;background:#f8fafc;"><strong>配信履歴（作成分）</strong></div>
+        <div th:if="${#lists.isEmpty(rows)}" style="padding:16px;color:#64748b;">履歴はありません</div>
+        <div th:each="r : ${rows}" style="padding:14px 16px;border-bottom:1px solid #e2e8f0;">
+          <div style="display:flex;justify-content:space-between;gap:10px;">
+            <div>
+              <span class="badge badge-blue" th:text="${r.notificationType()}">INFO</span>
+              <span class="badge badge-gray" th:text="${r.deliveryStatus()}">SENT</span>
+              <strong style="margin-left:8px;" th:text="${r.title()}">タイトル</strong>
+              <div style="white-space:pre-line;color:#475569;margin-top:6px;" th:text="${r.body()}">本文</div>
+              <div style="font-size:.8em;color:#94a3b8;margin-top:4px;"
+                   th:text="'作成: ' + ${#temporals.format(r.createdAt(), 'yyyy-MM-dd HH:mm')} + (${r.scheduledAt()} != null ? ' / 予約: ' + ${#temporals.format(r.scheduledAt(), 'yyyy-MM-dd HH:mm')} : '')">日時</div>
+            </div>
+            <form th:if="${r.deliveryStatus() == 'SCHEDULED'}"
+                  th:action="@{/app/notifications/manage/{id}/send-now(id=${r.id()})}" method="post">
+              <button type="submit" class="btn btn-secondary">今すぐ配信</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

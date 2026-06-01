@@ -1,6 +1,6 @@
 # petlifeplus-site フォルダ構成
 
-最終更新: 2026-05-24
+最終更新: 2026-06-01
 
 ## 目的
 - フロントエンド（静的サイト）とバックエンド（Spring Boot）の責務を分離する
@@ -41,6 +41,7 @@ frontend/
 │   ├── f_contact.html         # お問い合わせ
 │   ├── f_info.html            # 運営情報
 │   ├── webapp.html            # Webアプリ紹介・ログイン導線
+│   ├── line-qr.html           # LINE 友だち追加 QR コードページ
 │   └── assets/
 │       ├── css/
 │       │   └── style.css      # サイト全体のスタイル
@@ -95,6 +96,7 @@ backend/
     │   │   ├── controller/                    # Thymeleaf コントローラー（/app/**）
     │   │   │   ├── RootController.java        # GET /  → フロントエンドへリダイレクト
     │   │   │   ├── AuthController.java        # GET|POST /app/login, /app/logout
+    │   │   │   ├── ForgotPasswordController.java # GET|POST /app/forgot-password, /app/reset-password
     │   │   │   ├── PasswordResetController.java  # GET|POST /app/password-resets
     │   │   │   ├── DashboardController.java   # GET /app/dashboard
     │   │   │   ├── PetController.java         # CRUD /app/pets/**
@@ -103,18 +105,23 @@ backend/
     │   │   │   ├── AppointmentController.java # REST /api/appointments (JSON)
     │   │   │   ├── AppointmentSlotController.java # CRUD /app/admin/appointment-slots
     │   │   │   ├── CalendarController.java    # GET /app/calendar, POST /app/calendar/marks/**
-    │   │   │   ├── ConsultationController.java # CRUD /app/consultations/** (VET/STAFF/ADMIN)
-    │   │   │   ├── ConsultChatController.java # GET|POST /app/consult/chatbot
+    │   │   │   ├── ConsultationController.java # CRUD /app/consultations/** (VET/STAFF/SUPER のみ)
+    │   │   │   ├── ConsultChatController.java # GET|POST /app/consult/chatbot（全プラン利用可）
     │   │   │   ├── ClinicGuideController.java # GET /app/clinic-guide
     │   │   │   ├── NotificationController.java # GET /app/notifications, POST 既読・dismiss
     │   │   │   ├── SubscriptionController.java # GET /app/subscriptions
     │   │   │   ├── PremiumSupportController.java # GET|POST /app/premium/online-care
-    │   │   │   ├── ReportController.java      # GET /app/reports (ADMIN)
+    │   │   │   ├── ReportController.java      # GET /app/reports (ADMIN/SUPER)
     │   │   │   ├── UserController.java        # CRUD /app/admin/users (ADMIN)
+    │   │   │   ├── BillingController.java     # CRUD /app/admin/billing (ADMIN/SUPER)
+    │   │   │   ├── UserInvoiceController.java # GET /app/invoices/{id} 請求書・領収書ビュー
     │   │   │   ├── AnnouncementController.java # CRUD /app/admin/announcements (ADMIN)
+    │   │   │   ├── DatabaseBackupController.java # GET /app/admin/database (SUPER のみ)
+    │   │   │   ├── AccessDeniedPageController.java # GET /app/access-denied アクセス拒否ページ
     │   │   │   ├── GlobalControllerAdvice.java # 全ビューへの共通モデル属性（未読数など）
     │   │   │   ├── line/
-    │   │   │   │   └── LineEventController.java  # POST /api/line/events (LINE Messaging API)
+    │   │   │   │   ├── LineEventController.java  # POST /api/line/events (LINE Messaging API)
+    │   │   │   │   └── LinePushController.java   # GET|POST /app/admin/line/push (LINE 一斉配信)
     │   │   │   └── slack/
     │   │   │       └── SlackEventController.java # POST /api/slack/events (Slack Events API)
     │   │   │
@@ -163,16 +170,18 @@ backend/
     │   │   │   ├── CalendarMarkMapper.java
     │   │   │   ├── ConsultChatMapper.java
     │   │   │   ├── DismissedReminderMapper.java
-    │   │   │   ├── EmailMessageMapper.java    # スキーマのみ・未使用
-    │   │   │   ├── EmailTemplateMapper.java   # スキーマのみ・未使用
+    │   │   │   ├── EmailMessageMapper.java    # スキーマのみ・UI未実装
+    │   │   │   ├── EmailTemplateMapper.java   # スキーマのみ・UI未実装
     │   │   │   ├── HealthRecordMapper.java
-    │   │   │   ├── InvoiceMapper.java         # スキーマのみ・未使用
-    │   │   │   ├── MedicalAttachmentMapper.java # スキーマのみ・未使用
+    │   │   │   ├── InvoiceMapper.java         # BillingService / UserInvoiceController で使用
+    │   │   │   ├── MedicalAttachmentMapper.java # スキーマのみ・UI未実装
     │   │   │   ├── MedicalHistoryMapper.java
     │   │   │   ├── NotificationMapper.java
-    │   │   │   ├── PaymentMapper.java         # スキーマのみ・未使用
+    │   │   │   ├── PasswordResetTokenMapper.java
+    │   │   │   ├── PaymentMapper.java         # BillingService で使用
     │   │   │   ├── PetCareRecordMapper.java
     │   │   │   ├── PetMapper.java
+    │   │   │   ├── PlanFeatureMapper.java
     │   │   │   ├── RoleMapper.java
     │   │   │   ├── SubscriptionMapper.java
     │   │   │   ├── SymptomCheckMapper.java
@@ -181,16 +190,23 @@ backend/
     │   │   ├── service/                       # ビジネスロジック
     │   │   │   ├── AnnouncementService.java
     │   │   │   ├── AppointmentService.java
+    │   │   │   ├── AppointmentSlotService.java
     │   │   │   ├── AuthService.java           # 補助的なログイン処理（コントローラーからは未呼び出し）
+    │   │   │   ├── BillingNotificationService.java # 請求通知（アプリ内通知＋メール＋LINE）
+    │   │   │   ├── BillingService.java        # 請求・入金管理ロジック
     │   │   │   ├── CalendarService.java
-    │   │   │   ├── ConsultChatService.java    # チャットボット応答ロジック
+    │   │   │   ├── ConsultChatService.java    # チャットボット応答ロジック（全プラン利用可）
+    │   │   │   ├── DatabaseBackupService.java # DB バックアップ処理
     │   │   │   ├── HealthRecordImageStorageService.java  # 健康記録画像のアップロード・削除
     │   │   │   ├── HealthRecordService.java
     │   │   │   ├── ImageOrientationUtil.java  # EXIF Orientation 補正ユーティリティ
+    │   │   │   ├── OverdueInvoiceScheduler.java # 期限超過請求の定期チェック
+    │   │   │   ├── PasswordResetService.java  # パスワード再設定トークン発行・SendGrid メール送信
     │   │   │   ├── PetCareRecordService.java
     │   │   │   ├── PetImageStorageService.java # ペット画像のアップロード・削除
     │   │   │   ├── PetService.java
     │   │   │   ├── PlanAccessService.java     # プラン別機能ゲート（AI症状チェック可否など）
+    │   │   │   ├── ReportService.java         # サービス統計集計
     │   │   │   ├── SymptomCheckService.java   # OpenAI API 呼び出し（未設定時はキーワードフォールバック）
     │   │   │   ├── UserService.java
     │   │   │   ├── ZoomLinkService.java       # Zoom Server-to-Server OAuth でミーティングURL生成
@@ -209,7 +225,7 @@ backend/
     │   └── resources/
     │       ├── application.properties         # 本番・共通設定
     │       ├── application-local.properties   # ローカル用APIキー（gitignore対象・手動作成）
-    │       ├── schema.sql                     # DDL（22テーブル）
+    │       ├── schema.sql                     # DDL（24テーブル）
     │       ├── data.sql                       # 初期データ（roles / users / plans など）
     │       ├── logback-spring.xml             # ログローテーション設定
     │       ├── META-INF/
@@ -256,8 +272,15 @@ backend/
     │           │   └── online-care.html      # プレミアムオンライン診療（Zoom）
     │           ├── reports/
     │           │   └── index.html            # 管理レポート（ADMIN）
+    │           ├── invoices/
+    │           │   └── view.html             # 請求書・領収書ビュー（ブラウザ印刷対応）
     │           └── admin/
     │               ├── announcements.html    # お知らせ管理（ADMIN）
+    │               ├── database.html         # DB バックアップ管理（SUPER）
+    │               ├── line-push.html        # LINE 一斉配信管理（ADMIN/SUPER）
+    │               ├── billing/
+    │               │   ├── index.html        # 請求一覧（ADMIN/SUPER）
+    │               │   └── detail.html       # 請求詳細・入金登録フォーム（ADMIN/SUPER）
     │               └── users/
     │                   ├── list.html         # ユーザー一覧（ADMIN）
     │                   └── form.html         # ユーザー登録・編集フォーム（ADMIN）

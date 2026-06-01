@@ -144,9 +144,9 @@
         <div class="doc-category">DOCUMENT 04</div>
         <h1 class="doc-title">サイトマップ</h1>
         <div class="doc-meta">
-          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-5-13</span>
+          <span><span class="material-symbols-outlined icon-sm">calendar_today</span> 作成日：2026-05-13　／　更新日：2026-06-01</span>
           <span><span class="material-symbols-outlined icon-sm">person</span> 作成者：Hiromi SHIMIZU</span>
-          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 1.0</span>
+          <span><span class="material-symbols-outlined icon-sm">push_pin</span> Ver 2.0</span>
         </div>
       </header>
 
@@ -220,41 +220,66 @@
             <div class="fill-label">Webアプリケーション構造図 <span class="required">必須</span></div>
             <div class="fill-hint">Spring Bootアプリケーションの画面構造をツリー形式で記載</div>
             <div class="fill-content">
-              <pre>ログイン前
+              <pre>ログイン前（公開）
 ├── ログイン（/app/login）
 │   ├── メールアドレス/パスワード入力
-│   └── ログイン処理（POST /app/login）
+│   └── ログイン処理（POST /app/login → Spring Security）
+├── パスワード再設定
+│   ├── メール送信（/app/forgot-password）
+│   ├── 送信完了（/app/forgot-password/sent）
+│   └── 新パスワード設定（/app/reset-password?token=...）
 └── ログアウト（POST /app/logout）
 
-全ユーザー（ログイン後）
+全ユーザー（ログイン後・全ロール共通）
 ├── ダッシュボード（/app/dashboard）
 ├── 通知（/app/notifications）
-└── パスワード変更（/app/password-resets）
+│   └── リマインダー非表示（POST /app/notifications/reminders/dismiss）
+├── パスワード変更（/app/password-resets）  ※現パスワード必須
+└── アクセス拒否ページ（/app/access-denied）
 
 一般ユーザー（USERロール）
 ├── ペット管理（/app/pets）
-│   └── 健康記録（/app/pets/{id}/health-records）
+│   ├── ペット詳細（/app/pets/{id}）
+│   ├── 健康記録（/app/pets/{id}/health-records）
+│   │   └── 診療情報印刷（/app/pets/{id}/health-records/print）
+│   ├── AI症状チェック（POST /app/pets/{id}/symptom-check）
+│   │   ※Standard以上：OpenAI API / Light：キーワードフォールバック（アクセス制限なし）
+│   └── ケア記録登録（POST /app/pets/{id}/care-records）
 ├── カレンダー（/app/calendar）
-├── 診療予約（/app/appointments）          ※Standard/Premium
-├── チャット相談（/app/consult/chatbot）   ※Standard/Premium
+├── 診療予約（/app/appointments）          ※USERはStandard以上
+├── チャットボット相談（/app/consult/chatbot）  ※全プラン利用可
 ├── 診療案内（/app/clinic-guide）
 ├── サブスクリプション（/app/subscriptions）
+│   └── 更新申請（POST /app/subscriptions/{id}/renew-request）
+├── 請求書・領収書（/app/invoices/{id}）
 └── Zoom診療（/app/premium/online-care）   ※Premiumのみ
 
-獣医師・スタッフ（VET/STAFFロール）
+獣医師・スタッフ（SUPER/VET/STAFFロール）
 ├── カレンダー（/app/calendar）
-├── 診療記録（/app/consultations）
+├── 診療記録（/app/consultations）         ※ADMIN はアクセス不可
 └── 診療予約管理（/app/appointments）
+    ├── 承認（POST /app/appointments/{id}/approve）
+    └── 却下（POST /app/appointments/{id}/reject）
 
-全スタッフ系（VET/STAFF/ADMINロール）
+全スタッフ系（VET/STAFF/ADMIN/SUPERロール）
 └── ユーザー管理（/app/admin/users）
 
-ADMIN・スタッフ（ADMIN/STAFFロール）
+ADMIN・スタッフ（ADMIN/STAFF/SUPERロール）
 ├── お知らせ管理（/app/admin/announcements）
 └── 予約枠管理（/app/admin/appointment-slots）
 
-ADMINのみ
-└── サービス統計（/app/reports）</pre>
+ADMIN・SUPER 専用
+├── 請求・決済管理（/app/admin/billing）
+│   └── 請求書・領収書ビュー（/app/invoices/{id}）
+├── LINE一斉配信（/app/admin/line/push）
+└── サービス統計（/app/reports）
+
+ADMIN/SUPER 共通（/app/admin/** ルール適用）
+└── DBバックアップ管理（/app/admin/database）  ※Controller 内追加制限なし → ADMIN も可
+
+外部 API（認証不要）
+├── Slack Webhook（POST /api/slack/events）
+└── LINE Webhook（POST /api/line/events）</pre>
             </div>
           </div>
 
@@ -311,6 +336,12 @@ ADMINのみ
                   <td>Webアプリの機能と主要画面を案内する</td>
                   <td>機能概要、主要画面導線、ログイン導線</td>
                 </tr>
+                <tr>
+                  <td>7</td>
+                  <td>LINE友だち追加（line-qr）</td>
+                  <td>LINE Bot への友だち追加QRコードを提供する</td>
+                  <td>LINEチャンネルQRコード表示、友だち追加ボタン</td>
+                </tr>
               </tbody>
             </table>
 
@@ -336,99 +367,129 @@ ADMINのみ
                 </tr>
                 <tr>
                   <td>2</td>
+                  <td>パスワード再設定画面</td>
+                  <td>メールトークン経由でパスワードを再設定する</td>
+                  <td>メール入力→SendGrid送信→トークン検証→新PW設定（公開、ForgotPasswordController）</td>
+                </tr>
+                <tr>
+                  <td>3</td>
                   <td>ダッシュボード画面</td>
                   <td>全体状況をひと目で把握し次の操作へ誘導する</td>
                   <td>KPI表示、予約予定、通知一覧、未対応タスク表示（全ユーザー）</td>
                 </tr>
                 <tr>
-                  <td>3</td>
+                  <td>4</td>
                   <td>通知画面</td>
                   <td>システム通知とスケジュールリマインダーを確認する</td>
-                  <td>通知一覧、既読処理、ワクチン/予約/更新リマインダー表示（全ユーザー）</td>
+                  <td>通知一覧、既読処理、ワクチン/予約/更新リマインダー表示・非表示（全ユーザー）</td>
                 </tr>
                 <tr>
-                  <td>4</td>
+                  <td>5</td>
                   <td>パスワード変更画面</td>
                   <td>現在のパスワードを確認の上、新しいパスワードへ変更する</td>
                   <td>現パスワード入力、新パスワード確認入力、BCrypt再ハッシュ保存（全ユーザー）</td>
                 </tr>
                 <tr>
-                  <td>5</td>
+                  <td>6</td>
                   <td>ペット管理画面</td>
                   <td>ペット情報を一元管理する</td>
-                  <td>一覧表示、絞り込み検索、詳細表示、登録・編集・削除（USER）</td>
-                </tr>
-                <tr>
-                  <td>6</td>
-                  <td>健康記録管理画面</td>
-                  <td>日々の健康データを管理・確認する</td>
-                  <td>体重/食事/運動記録の登録、履歴表示、期間検索、編集・削除（USER）</td>
+                  <td>一覧表示、詳細表示、登録・編集・削除・永眠マーク、AI症状チェック、ケア記録（USER）</td>
                 </tr>
                 <tr>
                   <td>7</td>
-                  <td>カレンダー画面</td>
-                  <td>ペットの予定や出来事をカレンダー形式で管理する</td>
-                  <td>月別カレンダー表示、マーク登録・削除（USER/VET/STAFF）</td>
+                  <td>健康記録管理画面</td>
+                  <td>日々の健康データを管理・確認する</td>
+                  <td>体重/食事/運動記録の登録、履歴表示、編集・削除、印刷ビュー（USER）</td>
                 </tr>
                 <tr>
                   <td>8</td>
-                  <td>チャット相談画面</td>
-                  <td>AIチャットボットを通じて症状の事前確認を行う</td>
-                  <td>症状入力、AI判定結果表示、受診推奨度確認（USER・Standard/Premiumプラン）</td>
+                  <td>カレンダー画面</td>
+                  <td>ペットの予定や出来事をカレンダー形式で管理する</td>
+                  <td>月別カレンダー表示、マーク登録・削除（USER/VET/STAFF/SUPER）</td>
                 </tr>
                 <tr>
                   <td>9</td>
-                  <td>診療案内画面</td>
-                  <td>提携クリニックの案内情報を表示する</td>
-                  <td>クリニック情報、アクセス・診療時間案内（USER）</td>
+                  <td>チャットボット相談画面</td>
+                  <td>AIチャットボットを通じてマルチターンで症状相談を行う</td>
+                  <td>メッセージ送受信、履歴表示、Groq AI/フォールバック（<strong>全プラン利用可</strong>）</td>
                 </tr>
                 <tr>
                   <td>10</td>
-                  <td>診療予約画面</td>
-                  <td>診療・相談予約を管理する</td>
-                  <td>予約一覧、新規予約申請、承認・却下・キャンセル（USER/VET/STAFF）</td>
+                  <td>診療案内画面</td>
+                  <td>提携クリニックの案内情報を表示する</td>
+                  <td>クリニック情報、アクセス・診療時間案内（全ユーザー）</td>
                 </tr>
                 <tr>
                   <td>11</td>
-                  <td>サブスクリプション管理画面</td>
-                  <td>契約中のプラン情報を確認する</td>
-                  <td>現在のプラン表示、契約期間・状態確認（USER）</td>
+                  <td>診療予約画面</td>
+                  <td>診療・相談予約を管理する</td>
+                  <td>予約一覧、申請（USER・Standard以上）、承認・却下（VET/STAFF/SUPER）、キャンセル（オーナーのみ）</td>
                 </tr>
                 <tr>
                   <td>12</td>
+                  <td>サブスクリプション管理画面</td>
+                  <td>契約中のプラン情報を確認する</td>
+                  <td>現在のプラン表示、契約期間・状態確認、更新申請（USER）、ADMIN は全ユーザー分表示</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>請求書・領収書ビュー</td>
+                  <td>請求書・領収書をブラウザで表示・印刷する</td>
+                  <td>請求金額・支払状況表示、ブラウザ印刷（UserInvoiceController）</td>
+                </tr>
+                <tr>
+                  <td>14</td>
                   <td>Zoom診療画面</td>
                   <td>Zoomによるオンライン診療リンクを取得する</td>
                   <td>Zoomリンク生成・表示（USER・Premiumプランのみ）</td>
                 </tr>
                 <tr>
-                  <td>13</td>
+                  <td>15</td>
                   <td>診療記録管理画面</td>
                   <td>診療/相談内容を記録し継続対応に活用する</td>
-                  <td>記録一覧、詳細表示、新規記録・編集・削除（VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>14</td>
-                  <td>ユーザー管理画面</td>
-                  <td>利用者アカウントを管理する</td>
-                  <td>一覧・詳細閲覧（VET）、登録・編集（STAFF/ADMIN）、削除（ADMIN）</td>
-                </tr>
-                <tr>
-                  <td>15</td>
-                  <td>お知らせ管理画面</td>
-                  <td>全ユーザー向けお知らせを作成・管理する</td>
-                  <td>一覧表示、新規作成、編集、削除（ADMIN/STAFF）</td>
+                  <td>記録一覧、詳細表示、新規記録・編集・削除（SUPER/VET/STAFF のみ。ADMIN はアクセス不可）</td>
                 </tr>
                 <tr>
                   <td>16</td>
-                  <td>予約枠管理画面</td>
-                  <td>診療予約受付用の枠を設定・管理する</td>
-                  <td>予約枠一覧、枠の追加・削除（ADMIN/STAFF）</td>
+                  <td>ユーザー管理画面</td>
+                  <td>利用者アカウントを管理する</td>
+                  <td>一覧・詳細閲覧（VET）、登録・編集（STAFF/ADMIN/SUPER）、削除（ADMIN/SUPER）</td>
                 </tr>
                 <tr>
                   <td>17</td>
+                  <td>お知らせ管理画面</td>
+                  <td>全ユーザー向けお知らせを作成・管理する</td>
+                  <td>一覧表示、新規作成、公開切替、削除（ADMIN/STAFF/SUPER）</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>予約枠管理画面</td>
+                  <td>診療予約受付用の枠を設定・管理する</td>
+                  <td>予約枠一覧、枠の追加（追加枠）・削除（ブロック枠）（ADMIN/STAFF/SUPER）</td>
+                </tr>
+                <tr>
+                  <td>19</td>
+                  <td>請求・決済管理画面</td>
+                  <td>請求書の発行・入金管理・通知再送を行う</td>
+                  <td>請求一覧、詳細、入金登録（PARTIAL/PAID）、通知再送（ADMIN/SUPER のみ、BillingController）</td>
+                </tr>
+                <tr>
+                  <td>20</td>
+                  <td>LINE一斉配信画面</td>
+                  <td>LINE Bot フォロワー全員にメッセージを一斉配信する</td>
+                  <td>メッセージ入力、Broadcast送信（ADMIN/SUPER のみ、LinePushController）</td>
+                </tr>
+                <tr>
+                  <td>21</td>
                   <td>サービス統計画面</td>
                   <td>サービス全体のKPIを集計・表示する</td>
-                  <td>ユーザー数・ペット数・予約数・サブスク数の集計表示（ADMIN）</td>
+                  <td>ユーザー数・ペット数・予約数・サブスク数の集計表示（ADMIN/SUPER のみ）</td>
+                </tr>
+                <tr>
+                  <td>22</td>
+                  <td>DBバックアップ管理画面</td>
+                  <td>DBのバックアップ・リストアを管理する</td>
+                  <td>バックアップ実行、リストア（SUPER のみ、DatabaseBackupController）</td>
                 </tr>
               </tbody>
             </table>
@@ -615,228 +676,87 @@ ADMINのみ
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>/app/login</td>
-                  <td>GET</td>
-                  <td>ログイン画面</td>
-                  <td>ログインフォーム表示（公開）</td>
-                </tr>
-                <tr>
-                  <td>/app/login</td>
-                  <td>POST</td>
-                  <td>ログイン処理</td>
-                  <td>Spring Securityが認証・セッション作成（公開）</td>
-                </tr>
-                <tr>
-                  <td>/app/logout</td>
-                  <td>POST</td>
-                  <td>ログアウト</td>
-                  <td>Spring Securityがセッション破棄（全ユーザー）</td>
-                </tr>
-                <tr>
-                  <td>/app/dashboard</td>
-                  <td>GET</td>
-                  <td>ダッシュボード</td>
-                  <td>KPI・通知・予定表示（全ユーザー）</td>
-                </tr>
-                <tr>
-                  <td>/app/notifications</td>
-                  <td>GET</td>
-                  <td>通知一覧</td>
-                  <td>通知・リマインダー表示（全ユーザー）</td>
-                </tr>
-                <tr>
-                  <td>/app/notifications/{id}/read</td>
-                  <td>POST</td>
-                  <td>通知既読処理</td>
-                  <td>指定通知を既読にする（全ユーザー）</td>
-                </tr>
-                <tr>
-                  <td>/app/notifications/reminders/dismiss</td>
-                  <td>POST</td>
-                  <td>リマインダー非表示</td>
-                  <td>スケジュールリマインダーを確認済みにする（全ユーザー）</td>
-                </tr>
-                <tr>
-                  <td>/app/password-resets</td>
-                  <td>GET / POST</td>
-                  <td>パスワード変更</td>
-                  <td>現パスワード確認付き変更フォーム・実行（全ユーザー）</td>
-                </tr>
-                <tr>
-                  <td>/app/pets</td>
-                  <td>GET / POST</td>
-                  <td>ペット一覧 / 登録</td>
-                  <td>ペット一覧表示・新規登録（USER）</td>
-                </tr>
-                <tr>
-                  <td>/app/pets/{petId}</td>
-                  <td>PATCH / DELETE</td>
-                  <td>ペット更新 / 削除</td>
-                  <td>ペット情報更新・論理削除（USER）</td>
-                </tr>
-                <tr>
-                  <td>/app/pets/{petId}/health-records</td>
-                  <td>GET / POST</td>
-                  <td>健康記録一覧 / 登録</td>
-                  <td>体重/食事/運動記録の表示・登録（USER）</td>
-                </tr>
-                <tr>
-                  <td>/app/pets/{petId}/health-records/{id}</td>
-                  <td>PATCH / DELETE</td>
-                  <td>健康記録更新 / 削除</td>
-                  <td>記録修正・削除（USER）</td>
-                </tr>
-                <tr>
-                  <td>/app/calendar</td>
-                  <td>GET</td>
-                  <td>カレンダー</td>
-                  <td>月別カレンダー・ペット予定表示（USER/VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/calendar/marks</td>
-                  <td>POST / DELETE</td>
-                  <td>カレンダーマーク</td>
-                  <td>カレンダーへのマーク追加・削除（USER/VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/appointments</td>
-                  <td>GET / POST</td>
-                  <td>診療予約一覧 / 申請</td>
-                  <td>予約一覧・申請（USER/VET/STAFF、USERはStandard+プラン）</td>
-                </tr>
-                <tr>
-                  <td>/app/appointments/{id}/approve</td>
-                  <td>PATCH</td>
-                  <td>予約承認</td>
-                  <td>予約申請を承認する（VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/appointments/{id}/reject</td>
-                  <td>PATCH</td>
-                  <td>予約却下</td>
-                  <td>予約申請を却下する（VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/appointments/{id}/cancel</td>
-                  <td>POST</td>
-                  <td>予約キャンセル</td>
-                  <td>予約をキャンセルする（VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/consult/chatbot</td>
-                  <td>GET / POST</td>
-                  <td>チャット相談</td>
-                  <td>AI症状チェック・チャット相談（USER・Standard/Premiumプラン）</td>
-                </tr>
-                <tr>
-                  <td>/app/clinic-guide</td>
-                  <td>GET</td>
-                  <td>診療案内</td>
-                  <td>提携クリニック情報表示（USER）</td>
-                </tr>
-                <tr>
-                  <td>/app/subscriptions</td>
-                  <td>GET</td>
-                  <td>サブスクリプション確認</td>
-                  <td>現在のプラン・契約情報表示（USER）</td>
-                </tr>
-                <tr>
-                  <td>/app/premium/online-care</td>
-                  <td>GET</td>
-                  <td>Zoom診療</td>
-                  <td>Zoomオンライン診療リンク取得（USER・Premiumプランのみ）</td>
-                </tr>
-                <tr>
-                  <td>/app/consultations</td>
-                  <td>GET / POST</td>
-                  <td>診療記録一覧 / 作成</td>
-                  <td>診療記録管理（VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/consultations/{id}</td>
-                  <td>PATCH / DELETE</td>
-                  <td>診療記録更新 / 削除</td>
-                  <td>診療記録の修正・論理削除（VET/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/users</td>
-                  <td>GET</td>
-                  <td>ユーザー一覧</td>
-                  <td>ユーザー一覧閲覧（VET/STAFF/ADMIN）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/users</td>
-                  <td>POST</td>
-                  <td>ユーザー登録</td>
-                  <td>新規ユーザー登録（STAFF/ADMIN）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/users/{id}/edit</td>
-                  <td>GET</td>
-                  <td>ユーザー編集フォーム</td>
-                  <td>ユーザー編集フォーム表示（STAFF/ADMIN）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/users/{id}</td>
-                  <td>PATCH</td>
-                  <td>ユーザー更新</td>
-                  <td>ユーザー情報更新（STAFF/ADMIN）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/users/{id}</td>
-                  <td>DELETE</td>
-                  <td>ユーザー削除</td>
-                  <td>ユーザー論理削除（ADMINのみ）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/announcements</td>
-                  <td>GET / POST</td>
-                  <td>お知らせ一覧 / 作成</td>
-                  <td>お知らせ管理（ADMIN/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/announcements/{id}</td>
-                  <td>PATCH / DELETE</td>
-                  <td>お知らせ更新 / 削除</td>
-                  <td>お知らせの修正・削除（ADMIN/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/appointment-slots</td>
-                  <td>GET / POST</td>
-                  <td>予約枠一覧 / 追加</td>
-                  <td>診療予約枠の管理（ADMIN/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/admin/appointment-slots/{id}/delete</td>
-                  <td>POST</td>
-                  <td>予約枠削除</td>
-                  <td>未予約の予約枠を削除（ADMIN/STAFF）</td>
-                </tr>
-                <tr>
-                  <td>/app/reports</td>
-                  <td>GET</td>
-                  <td>サービス統計</td>
-                  <td>ユーザー・ペット・予約・サブスク集計（ADMINのみ）</td>
-                </tr>
-                <tr>
-                  <td>/api/slack/events</td>
-                  <td>POST</td>
-                  <td>Slack Webhook受信</td>
-                  <td>Slack Events API受信・メッセージ処理（外部）</td>
-                </tr>
-                <tr>
-                  <td>/api/line/events</td>
-                  <td>POST</td>
-                  <td>LINE Webhook受信</td>
-                  <td>LINE Messaging API受信・メッセージ処理（外部）</td>
-                </tr>
-                <tr>
-                  <td>/api/appointments</td>
-                  <td>GET</td>
-                  <td>予約一覧（REST）</td>
-                  <td>予約データをJSON形式で返す（認証済み）</td>
-                </tr>
+                <!-- 公開（認証不要） -->
+                <tr><td>/app/login</td><td>GET</td><td>ログイン画面</td><td>ログインフォーム表示（公開）</td></tr>
+                <tr><td>/app/login</td><td>POST</td><td>ログイン処理</td><td>Spring Security が認証・セッション作成（公開）</td></tr>
+                <tr><td>/app/logout</td><td>POST</td><td>ログアウト</td><td>Spring Security がセッション破棄（全ユーザー）</td></tr>
+                <tr><td>/app/forgot-password</td><td>GET / POST</td><td>パスワード再設定メール送信</td><td>メールアドレス入力 → SendGrid でトークン付きメール送信（公開）</td></tr>
+                <tr><td>/app/forgot-password/sent</td><td>GET</td><td>送信完了案内</td><td>「メールを送信しました」確認ページ（公開）</td></tr>
+                <tr><td>/app/reset-password</td><td>GET / POST</td><td>新パスワード設定</td><td>トークン検証・新パスワード BCrypt 保存（公開）</td></tr>
+                <tr><td>/app/access-denied</td><td>GET</td><td>アクセス拒否ページ</td><td>権限不足時の 403 ページ（全ユーザー）</td></tr>
+                <!-- 全ユーザー共通 -->
+                <tr><td>/app/dashboard</td><td>GET</td><td>ダッシュボード</td><td>KPI・通知・予定表示（全ユーザー）</td></tr>
+                <tr><td>/app/notifications</td><td>GET</td><td>通知一覧</td><td>通知・リマインダー表示（全ユーザー）</td></tr>
+                <tr><td>/app/notifications/{id}/read</td><td>POST</td><td>通知既読処理</td><td>指定通知を既読にする（全ユーザー）</td></tr>
+                <tr><td>/app/notifications/read-all</td><td>POST</td><td>全既読処理</td><td>全通知を既読にする（全ユーザー）</td></tr>
+                <tr><td>/app/notifications/reminders/dismiss</td><td>POST</td><td>リマインダー非表示</td><td>スケジュールリマインダーを確認済みにする（全ユーザー）</td></tr>
+                <tr><td>/app/password-resets</td><td>GET / POST</td><td>パスワード変更</td><td>現パスワード確認付き変更フォーム・実行（全ユーザー）</td></tr>
+                <!-- ペット・健康記録（SecurityConfigに個別制限なし → 認証済み全ロールが到達可。PetServiceがロール別に返却範囲を切替） -->
+                <tr><td>/app/pets</td><td>GET / POST</td><td>ペット一覧 / 登録</td><td>ペット一覧表示・登録（USER：自ペットのみ / VET・STAFF・ADMIN・SUPER：全ペット）</td></tr>
+                <tr><td>/app/pets/{id}</td><td>GET</td><td>ペット詳細</td><td>ペット詳細・健康記録・症状チェック履歴表示（USER：自ペットのみ / スタッフ系：全ペット）</td></tr>
+                <tr><td>/app/pets/{id}</td><td>PATCH / DELETE</td><td>ペット更新 / 削除</td><td>ペット情報更新・論理削除（主にUSER。スタッフ系は別ルートで管理）</td></tr>
+                <tr><td>/app/pets/{id}/symptom-check</td><td>POST</td><td>AI症状チェック</td><td>症状入力 → AI/フォールバック判定・保存（Standard+：OpenAI / Light：keyword。全ロール到達可）</td></tr>
+                <tr><td>/app/pets/{id}/care-records</td><td>POST</td><td>ケア記録登録</td><td>ワクチン・フィラリア等ケア記録を登録（全ロール到達可）</td></tr>
+                <tr><td>/app/pets/{id}/decease</td><td>POST</td><td>永眠マーク</td><td>ペットの deceased_at を設定し以後の操作を制限（全ロール到達可）</td></tr>
+                <tr><td>/app/pets/{petId}/health-records</td><td>GET / POST</td><td>健康記録一覧 / 登録</td><td>体重/食事/運動記録の表示・登録（全ロール到達可。返却範囲はサービス層で制御）</td></tr>
+                <tr><td>/app/pets/{petId}/health-records/{id}</td><td>PATCH / DELETE</td><td>健康記録更新 / 削除</td><td>記録修正・削除（全ロール到達可）</td></tr>
+                <tr><td>/app/pets/{petId}/health-records/print</td><td>GET</td><td>診療情報印刷</td><td>ペット情報・ワクチン・診療履歴・症状チェック・健康記録をブラウザ印刷（全ロール到達可）</td></tr>
+                <!-- カレンダー -->
+                <tr><td>/app/calendar</td><td>GET</td><td>カレンダー</td><td>月別カレンダー・ペット予定表示（USER/VET/STAFF/SUPER）</td></tr>
+                <tr><td>/app/calendar/marks/add</td><td>POST</td><td>カレンダーマーク追加</td><td>カレンダーへのシール追加（USER/VET/STAFF/SUPER）</td></tr>
+                <tr><td>/app/calendar/marks/{id}/delete</td><td>POST</td><td>カレンダーマーク削除</td><td>シールの削除（USER/VET/STAFF/SUPER）</td></tr>
+                <!-- 診療予約 -->
+                <tr><td>/app/appointments</td><td>GET / POST</td><td>診療予約一覧 / 申請</td><td>予約一覧・申請（USER/VET/STAFF、USER は Standard 以上のみ申請可）</td></tr>
+                <tr><td>/app/appointments/{id}/approve</td><td>POST</td><td>予約承認</td><td>予約申請を承認する（VET/STAFF/SUPER のみ）</td></tr>
+                <tr><td>/app/appointments/{id}/reject</td><td>POST</td><td>予約却下</td><td>予約申請を却下する（VET/STAFF/SUPER のみ）</td></tr>
+                <tr><td>/app/appointments/{id}/cancel</td><td>POST</td><td>予約キャンセル</td><td>申請中予約をキャンセルする（<strong>オーナー本人のみ</strong>。スタッフ不可）</td></tr>
+                <tr><td>/app/appointments/delete-selected</td><td>POST</td><td>予約一括削除</td><td>選択した予約を一括削除（USER/VET/STAFF/SUPER）</td></tr>
+                <!-- チャット・診療案内 -->
+                <tr><td>/app/consult/chatbot</td><td>GET / POST</td><td>チャットボット相談</td><td>Groq AI / フォールバックによるマルチターン対話（<strong>全プラン利用可</strong>）</td></tr>
+                <tr><td>/app/clinic-guide</td><td>GET</td><td>診療案内</td><td>提携クリニック情報表示（全ユーザー）</td></tr>
+                <!-- サブスクリプション・請求書 -->
+                <tr><td>/app/subscriptions</td><td>GET</td><td>サブスクリプション確認</td><td>現在のプラン・契約情報表示（USER / ADMIN は全ユーザー分）</td></tr>
+                <tr><td>/app/subscriptions/{id}/renew-request</td><td>POST</td><td>更新申請</td><td>サブスクリプション更新を申請し請求書を作成する（USER）</td></tr>
+                <tr><td>/app/invoices/{id}</td><td>GET</td><td>請求書・領収書ビュー</td><td>請求書・領収書をブラウザで表示・印刷（UserInvoiceController）</td></tr>
+                <!-- Zoom -->
+                <tr><td>/app/premium/online-care</td><td>GET / POST</td><td>Zoom診療</td><td>Zoom Server-to-Server OAuth でミーティング作成・参加リンク取得（Premiumのみ）</td></tr>
+                <!-- 診療記録 -->
+                <tr><td>/app/consultations</td><td>GET</td><td>診療記録一覧</td><td>診療記録一覧表示（SUPER/VET/STAFF のみ。ADMIN はアクセス不可）</td></tr>
+                <tr><td>/app/consultations/new</td><td>GET</td><td>診療記録新規フォーム</td><td>診療記録登録フォーム表示（SUPER/VET/STAFF）</td></tr>
+                <tr><td>/app/consultations</td><td>POST</td><td>診療記録登録</td><td>診療記録を保存する（SUPER/VET/STAFF）</td></tr>
+                <tr><td>/app/consultations/{id}/edit</td><td>GET</td><td>診療記録編集フォーム</td><td>診療記録編集フォーム表示（SUPER/VET/STAFF）</td></tr>
+                <tr><td>/app/consultations/{id}</td><td>PATCH / DELETE</td><td>診療記録更新 / 削除</td><td>診療記録の修正・論理削除（SUPER/VET/STAFF）</td></tr>
+                <!-- ユーザー管理 -->
+                <tr><td>/app/admin/users</td><td>GET</td><td>ユーザー一覧</td><td>ユーザー一覧閲覧（VET/STAFF/ADMIN/SUPER）</td></tr>
+                <tr><td>/app/admin/users/new</td><td>GET</td><td>ユーザー登録フォーム</td><td>ユーザー登録フォーム表示（STAFF/ADMIN/SUPER）</td></tr>
+                <tr><td>/app/admin/users</td><td>POST</td><td>ユーザー登録</td><td>新規ユーザー登録（STAFF/ADMIN/SUPER）</td></tr>
+                <tr><td>/app/admin/users/{id}/edit</td><td>GET</td><td>ユーザー編集フォーム</td><td>ユーザー編集フォーム表示（STAFF/ADMIN/SUPER）</td></tr>
+                <tr><td>/app/admin/users/{id}</td><td>PATCH</td><td>ユーザー更新</td><td>ユーザー情報更新（STAFF/ADMIN/SUPER）</td></tr>
+                <tr><td>/app/admin/users/{id}</td><td>DELETE</td><td>ユーザー削除</td><td>ユーザー論理削除（ADMIN/SUPER のみ）</td></tr>
+                <!-- お知らせ管理 -->
+                <tr><td>/app/admin/announcements</td><td>GET / POST</td><td>お知らせ一覧 / 作成</td><td>お知らせ管理（ADMIN/STAFF/SUPER）</td></tr>
+                <tr><td>/app/admin/announcements/{id}/toggle</td><td>POST</td><td>公開切替</td><td>お知らせの公開・非公開を切り替える（ADMIN/STAFF/SUPER）</td></tr>
+                <tr><td>/app/admin/announcements/{id}/delete</td><td>POST</td><td>お知らせ削除</td><td>お知らせを削除する（ADMIN/STAFF/SUPER）</td></tr>
+                <!-- 予約枠管理 -->
+                <tr><td>/app/admin/appointment-slots</td><td>GET / POST</td><td>予約枠一覧 / 追加</td><td>診療予約枠の管理（ADMIN/STAFF/SUPER）</td></tr>
+                <tr><td>/app/admin/appointment-slots/{id}/delete</td><td>POST</td><td>予約枠削除</td><td>未予約の予約枠を削除（ADMIN/STAFF/SUPER）</td></tr>
+                <!-- 請求・決済管理 -->
+                <tr><td>/app/admin/billing</td><td>GET</td><td>請求一覧</td><td>UNPAID/PARTIAL/PAID 各ステータスの請求一覧（ADMIN/SUPER のみ）</td></tr>
+                <tr><td>/app/admin/billing/{id}</td><td>GET</td><td>請求詳細</td><td>請求詳細・入金登録フォーム表示（ADMIN/SUPER のみ）</td></tr>
+                <tr><td>/app/admin/billing/{id}/payments</td><td>POST</td><td>入金登録</td><td>入金額を登録し PARTIAL/PAID ステータスに更新（ADMIN/SUPER のみ）</td></tr>
+                <tr><td>/app/admin/billing/{id}/resend-notification</td><td>POST</td><td>通知再送</td><td>お支払い案内をアプリ内通知＋メール＋LINE で再送（ADMIN/SUPER のみ）</td></tr>
+                <!-- LINE一斉配信 -->
+                <tr><td>/app/admin/line/push</td><td>GET / POST</td><td>LINE一斉配信</td><td>LINE Bot 全フォロワーへメッセージを Broadcast（ADMIN/SUPER のみ）</td></tr>
+                <!-- 統計・DB管理 -->
+                <tr><td>/app/reports</td><td>GET</td><td>サービス統計</td><td>ユーザー・ペット・予約・サブスク集計（ADMIN/SUPER のみ）</td></tr>
+                <tr><td>/app/admin/database</td><td>GET</td><td>DBバックアップ管理</td><td>バックアップ画面表示（ADMIN/SUPER。SecurityConfig の /app/admin/** ルールに従う。Controller内追加制限なし）</td></tr>
+                <tr><td>/app/admin/database/backup</td><td>POST</td><td>バックアップ実行</td><td>DB バックアップを実行・ダウンロード（ADMIN/SUPER）</td></tr>
+                <tr><td>/app/admin/database/restore</td><td>POST</td><td>リストア実行</td><td>アップロードした SQL で DB をリストア（ADMIN/SUPER）</td></tr>
+                <!-- 外部 API -->
+                <tr><td>/api/slack/events</td><td>POST</td><td>Slack Webhook受信</td><td>Slack Events API 受信・キーワード返答（署名検証あり・外部）</td></tr>
+                <tr><td>/api/line/events</td><td>POST</td><td>LINE Webhook受信</td><td>LINE Messaging API 受信・キーワード返答（署名検証あり・外部）</td></tr>
+                <tr><td>/api/appointments</td><td>GET / POST</td><td>予約 REST API 一覧 / 登録</td><td>予約データを JSON で取得・登録（<strong>認証不要</strong>：SecurityConfigに個別ルールなく anyRequest().permitAll() に落ちる）</td></tr>
+                <tr><td>/api/appointments/{id}</td><td>GET / PUT / DELETE</td><td>予約単件取得 / 更新 / 削除</td><td>予約を ID で取得・更新・削除（<strong>認証不要</strong>：同上）</td></tr>
               </tbody>
             </table>
 

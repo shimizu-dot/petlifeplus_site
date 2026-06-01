@@ -917,3 +917,48 @@
   - `delete` に存在確認（`findById`）を追加（旧実装で欠落）
   - コントローラーは `AppointmentSlotService` 1本のみ注入し、`BadRequestException` をキャッチして `FlashAttribute` に変換するだけ
 - **理由:** マッパーを直接注入し、バリデーション・認可チェックがコントローラーに混在していた
+
+## 2026-06-01
+- docs/test_report_document.xlsx を実装準拠で更新
+  - F-009（AI症状チェック）: Lightプラン時の期待結果を「アクセス制限エラー」から「free-localのフォールバック応答」に修正（テストケース一覧）
+  - F-007（診療記録）: ロール記載を `VET/STAFF/ADMIN` から `SUPER/VET/STAFF` に修正（機能別テスト項目）
+  - F-006（診療予約）: 観点を「キャンセル（スタッフ）」前提から「キャンセル（オーナー）」に修正（機能別テスト項目）
+
+## 2026-06-01
+- docs/sitemap_document.xlsx を docs/04-sitemap.html 準拠に更新
+  - URL設計の主要エンドポイントを現行実装表記に更新（例: `/app/sessions`→`/app/login`, `/app/sessions/current`→`/app/logout`, `/app/users`→`/app/admin/users`, `/app/symptom-checks`→`/app/pets/{id}/symptom-check`, `/app/billings`→`/app/admin/billing`, `/app/reports/monthly`→`/app/reports`）
+  - 説明文を現行仕様表記に更新（Spring Security ログイン/ログアウト、AI症状チェックの Standard+/Light 挙動、請求一覧の権限表記など）
+  - ページ一覧の不足分を補正（LINE友だち追加（line-qr）行を追加）
+  - 参照資料パスを `docs/sitemap-to-url-design.html` に修正
+
+## 2026-06-01
+- docs/sitemap-to-url-design.html を docs/04-sitemap.html の URL設計内容に準拠して更新
+  - Spring Bootアプリ部分（管理/会員アプリ）の URL 一覧を現行仕様に置換
+  - 旧エンドポイントを更新（例: `/app/calendar/marks`→`/app/calendar/marks/add`, `/app/calendar/marks/{id}`→`/app/calendar/marks/{id}/delete`）
+  - HTTPメソッド差異を修正（例: `appointments/{id}/approve|reject` を `PATCH` から `POST` へ）
+  - 認可・説明文の差異を修正（全プラン利用可、SUPER ロール対応、`/api/appointments` の認証不要注記など）
+
+## 2026-06-01
+- docs/08-db-design.html の文言を実装実態に合わせて調整
+  - 初期データ節の DataInitializer 説明を「通常は data.sql 投入、data.sql 無効時のみフォールバック作成」に修正
+  - users 初期データ説明を同趣旨に修正（常時DataInitializer生成と誤解される表現を解消）
+
+## 2026-06-01
+- docs/db-design_document.xlsx を実装準拠で更新
+  - `テーブル定義` シート: `symptom_checks` を現行カラム構成へ補正（`requested_by_user_id` / `symptom_type` / `onset_text` / `memo` / `recommendation` / `guidance` / `ai_model` / `deleted_at`）
+  - `テーブル定義` シート: `appointment_slots` に `is_blocked` を追加し、現行の `slot_datetime` ベース定義へ補正
+  - `インデックス一覧` シート: `uq_subscriptions_active_user`（部分UNIQUE）と `idx_appointments_slot_id` を追加、`symptom_checks` インデックス名・対象カラムを現行実装に修正
+  - `初期データ` シート: users説明を `data.sql` 主体 + `DataInitializer` フォールバックへ修正、`subscriptions` 件数/内容を3件へ修正
+
+## 2026-06-01
+- 通知配信管理（F-012 相当）の実装を追加
+  - `GET /app/notifications/manage`: SUPER/ADMIN/STAFF 向け通知配信管理画面を追加（作成フォーム + 履歴一覧）
+  - `POST /app/notifications/manage`: 通知作成（即時配信 / 予約配信）を追加
+  - `POST /app/notifications/manage/{id}/send-now`: 予約通知の即時配信を追加
+  - `NotificationMapper` に配信履歴取得・配信対象ユーザー抽出（ALL/USER/STAFF/VET/ADMIN）を追加
+  - ナビゲーションに「通知配信管理」導線を追加
+- docs/07-specification.html を実装方針に合わせて修正
+  - F-006: 承認/却下ロールを SUPER/VET/STAFF に修正、キャンセル操作とプラン条件（LIGHT対象外、STANDARD来院のみ、PREMIUMオンライン可）を実装準拠へ更新
+  - 予約枠管理ロールを SUPER/ADMIN/STAFF に修正
+  - F-003: ユーザー管理権限を SUPER/ADMIN/STAFF（削除は ADMIN/SUPER）へ修正
+  - F-007/F-014: 添付管理は F-014 の追加仕様（未実装）として明記
