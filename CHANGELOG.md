@@ -966,3 +966,7 @@
 ## 2026-06-01
 - ログイン画面上部の画像を差し替え
   - `backend/src/main/resources/templates/auth/login.html` の見出し右画像を `title.jpg` から `dog_anime.gif` に変更
+
+## 2026-06-01
+- ログイン画面の GIF 非表示を修正
+  - `/assets/**` は `frontend/public/assets/` 配信のため、`dog_anime.gif` を `frontend/public/assets/img/` に配置
