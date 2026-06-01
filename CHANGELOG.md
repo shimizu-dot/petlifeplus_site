@@ -962,3 +962,7 @@
   - 予約枠管理ロールを SUPER/ADMIN/STAFF に修正
   - F-003: ユーザー管理権限を SUPER/ADMIN/STAFF（削除は ADMIN/SUPER）へ修正
   - F-007/F-014: 添付管理は F-014 の追加仕様（未実装）として明記
+
+## 2026-06-01
+- ログイン画面上部の画像を差し替え
+  - `backend/src/main/resources/templates/auth/login.html` の見出し右画像を `title.jpg` から `dog_anime.gif` に変更
