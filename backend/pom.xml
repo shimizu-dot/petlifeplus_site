@@ -118,33 +118,10 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-frontend-assets</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
-							<overwrite>true</overwrite>
-							<resources>
-								<resource>
-									<directory>../frontend/public</directory>
-									<includes>
-										<include>assets/css/style.css</include>
-										<include>assets/js/main.js</include>
-										<include>assets/img/**</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+				</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -182,6 +159,49 @@
 				</executions>
 			</plugin>
 		</plugins>
-	</build>
+		</build>
 
-</project>
+		<profiles>
+			<profile>
+				<id>copy-frontend-assets</id>
+				<activation>
+					<property>
+						<name>copyFrontendAssets</name>
+						<value>true</value>
+					</property>
+				</activation>
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-resources-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>copy-frontend-assets</id>
+									<phase>prepare-package</phase>
+									<goals>
+										<goal>copy-resources</goal>
+									</goals>
+									<configuration>
+										<outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+										<overwrite>true</overwrite>
+										<resources>
+											<resource>
+												<directory>../frontend/public</directory>
+												<includes>
+													<include>assets/css/style.css</include>
+													<include>assets/js/main.js</include>
+													<include>assets/img/**</include>
+												</includes>
+											</resource>
+										</resources>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</build>
+			</profile>
+		</profiles>
+	
+	</project>

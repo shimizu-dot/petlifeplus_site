@@ -970,3 +970,32 @@
 ## 2026-06-01
 - ログイン画面の GIF 非表示を修正
   - `/assets/**` は `frontend/public/assets/` 配信のため、`dog_anime.gif` を `frontend/public/assets/img/` に配置
+
+## 2026-06-01
+- 通知配信管理画面のUIを改善
+  - `notifications/manage.html` を2カラムレイアウト化（通知作成 / 配信履歴）
+  - カード装飾、フォーム入力の視認性、履歴ステータスバッジ（SENT/SCHEDULED）を追加
+  - モバイルでは1カラムに切り替わるレスポンシブ表示を追加
+
+## 2026-06-01
+- docs/10-retrospective.html のセクション1を創作して記入
+  - 「企画・設計段階」「デザイン段階」「フロントエンド実装」「バックエンド実装」「全体を通しての学び」の5ブロックを具体文で埋め込み
+
+## 2026-06-01
+- docs/10-retrospective.html のセクション1本文を体裁調整
+  - 各段落の先頭を1文字インデント（全角スペース）に統一
+
+## 2026-06-01
+- docs/10-retrospective.html の技術記事セクションを更新
+  - 技術記事タイトルを「LINE Developers WebhookからユーザーIDを取得する」に変更
+  - 記事本文にWebhookの `events[].source.userId` 取得要点、JSON例、注意点、出典リンクを追加
+
+## 2026-06-01
+- docs/10-retrospective.html の「4 今後の学習計画」を更新
+  - 学習テーマを「バックエンド設計」「AI活用開発」に絞った3か月計画へ差し替え
+  - 目標・期間・週次運用・成果物・達成基準を読みやすく整理
+
+## 2026-06-01
+- backend/pom.xml の Maven 警告対策を実施
+  - `copy-frontend-assets` 実行をデフォルト無効の Profile に移動
+  - `-DcopyFrontendAssets=true` 指定時のみ `../frontend/public` からコピー実行する構成へ変更
