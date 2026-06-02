@@ -2,6 +2,181 @@
 
 ## [2026-06-02]
 
+### コード整理・運用改善（Low 対応）
+
+#### L-01 — AuthService・認証 DTO を削除（未使用デッドコード）
+- **削除ファイル:**
+  - `service/AuthService.java`
+  - `dto/auth/LoginRequest.java`
+  - `dto/auth/LoginResponse.java`
+- **理由:** ログイン処理は Spring Security の form login（`SecurityConfig` / `UserDetailsServiceImpl`）が正規ルートであり、`AuthService.login()` はどのコントローラーからも呼ばれていなかった
+
+#### L-02 — LoginUser の SUPER ロール多重包含を解消
+- **ファイル:** `config/LoginUser.java`
+- **変更内容:**
+  - `isVet()` を `roleId == 4L` のみに変更（`|| isSuper()` を削除）
+  - `isStaff()` を `roleId == 5L` のみに変更（`|| isSuper()` を削除）
+  - `canManageClinical()` を `isVet() || isStaff() || isSuper()` に変更（SUPER を明示的に追加）
+- **理由:** SUPER は VET でも STAFF でもないが、VET/STAFF の全権限を持つべき。ロールの意味論と権限の集約を分離した
+
+#### L-03 — アップロードディレクトリをプロパティで設定可能に
+- **変更ファイル:**
+  - `config/WebMvcConfig.java`
+  - `service/HealthRecordImageStorageService.java`
+  - `service/PetImageStorageService.java`
+  - `backend/src/main/resources/application.properties`
+  - `backend/src/main/resources/META-INF/additional-spring-configuration-metadata.json`
+- **変更内容:**
+  - `app.upload.dir=${UPLOAD_DIR:uploads}` を `application.properties` に追加
+  - 各サービスと `WebMvcConfig` で `@Value("${app.upload.dir:uploads}")` を注入し、ハードコードされた `"uploads"` を置き換え
+  - 本番環境では `UPLOAD_DIR=/data/uploads` 等の絶対パスを設定可能に
+
+#### L-04 — logback-spring.xml にプロファイル分岐を追加
+- **変更ファイル:**
+  - `backend/src/main/resources/logback-spring.xml`
+  - `docker-compose.yml`
+- **変更内容:**
+  - `<springProfile name="prod">` — ファイルアペンダーのみ（コンソール出力なし）
+  - `<springProfile name="!prod">` — コンソール＋ファイル（従来の開発時の動作を維持）
+  - `docker-compose.yml` に `SPRING_PROFILES_ACTIVE: prod` を追加し、Docker 起動時は自動的に本番ログ設定を適用
+
+### バグ修正・堅牢性改善（High 対応）
+
+#### H-01 — 予約ステータスの不正遷移を防止
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+- **問題:** `update()` メソッドが `status` フィールドを無制限に書き換え可能だった。`CANCELED → REQUESTED` のような不正な巻き戻しや、`REQUESTED → CONFIRMED` の approve() 迂回が可能だった
+- **変更内容:**
+  - `validateStatusTransition(String current, String next)` プライベートメソッドを追加
+  - `update()` の先頭で呼び出し、`CONFIRMED → COMPLETED` 以外のステータス変更は `BadRequestException` をスロー
+  - ステータス変更なし（同値）は許可。承認・却下・キャンセルは引き続き専用エンドポイント（`approve()` / `reject()` / `cancelRequestedByOwner()`）でのみ可能
+
+#### H-02 — OverdueInvoiceScheduler の処理順序とユーザー重複通知を修正
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/BillingService.java`
+- **問題1（処理順序）:** 通知送信（`sendOverdueInApp()`）の後でアカウント停止（`suspendUser()`）していたため、通知送信が例外をスローした場合にアカウント停止が実行されなかった
+- **問題2（重複通知）:** 同一ユーザーに複数の未払い請求書がある場合、請求書ごとに停止処理と通知が実行されていた
+- **変更内容:**
+  - `Set<Long> processedUserIds` を導入し、同一ユーザーを2回以上処理しないよう制御
+  - 処理順序を変更: **`suspendUser()` を先に実行**（停止失敗時はスキップ）→ **通知を後に実行**（通知失敗は警告ログのみ、停止は維持）
+  - 停止とメール通知の try-catch を分離し、通知失敗がアカウント停止の結果に影響しない設計に変更
+
+### セキュリティ修正・品質改善（Medium 対応）
+
+#### M-01 — insertReturningId() の戻り値 null チェックを追加
+- **ファイル:**
+  - `service/PetService.java`
+  - `service/HealthRecordService.java`
+  - `service/BillingService.java`（createInvoice）
+  - `service/AppointmentService.java`（通知2箇所）
+  - `controller/SubscriptionController.java`（通知）
+  - `controller/NotificationController.java`（通知）
+  - `service/BillingNotificationService.java`（通知）
+- **変更内容:** `insertReturningId()` の戻り値が `null` だった場合の挙動を明示的に処理
+  - クリティカル操作（ペット作成・健康記録作成・請求書作成）→ `BadRequestException` をスロー
+  - 通知操作（非クリティカル）→ ログに警告を記録して処理を中断（主要操作は継続）
+
+#### M-02 / M-03 — 数値フィールドのバリデーションを追加
+- **ファイル:**
+  - `dto/health/HealthRecordForm.java`
+  - `dto/pet/PetForm.java`
+- **変更内容:**
+  - `HealthRecordForm.weightKg`: `@DecimalMin("0.0") @DecimalMax("100.0")` を追加
+  - `HealthRecordForm.exerciseMinutes`: `@Min(0) @Max(480)` を追加（最大8時間）
+  - `PetForm.weightBaselineKg`: `@DecimalMin("0.0") @DecimalMax("100.0")` を追加
+- **理由:** 負数や非現実的な超大値（999kg など）がそのまま DB に登録可能だった
+
+#### M-04 — 予約時間帯バリデーションをサービス層に追加
+- **ファイル:** `service/AppointmentService.java`
+- **変更内容:**
+  - `SLOT_OPEN = 09:30`、`SLOT_CLOSE = 17:00` の定数を追加
+  - `validateBusinessHours(LocalDateTime)` プライベートメソッドを追加
+  - `create()` の先頭で `validateBusinessHours()` を呼び出し、範囲外の時刻は `BadRequestException` をスロー
+- **理由:** UI はスロット選択式だが、直接 API リクエストを送られた場合に営業時間外の予約が登録できていた
+
+#### M-07 — DatabaseBackupController にコントローラー層の権限チェックを追加
+- **ファイル:** `controller/DatabaseBackupController.java`
+- **変更内容:** `page()`・`backup()`・`restore()` の各メソッドに `@AuthenticationPrincipal LoginUser currentUser` を追加し、`currentUser.isAdmin()` が `false` の場合は `ForbiddenException` をスロー（SecurityConfig の保護に加えた多層防御）
+
+### セキュリティ修正（2回目）
+
+#### S-03 — SUSPENDED ユーザーの既存セッションをリクエスト毎に無効化
+- **新規ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/UserStatusCheckFilter.java`
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/mapper/AuthMapper.java`
+  - `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+  - `backend/src/main/resources/templates/auth/login.html`
+- **問題:** `OverdueInvoiceScheduler` が `users.status='SUSPENDED'` に更新しても、既存の Spring Security セッションはそのまま継続し、セッション有効期限まで停止ユーザーが操作を続けられた
+- **変更内容:**
+  1. **`AuthMapper`** — `findStatusById(Long id)` を追加（`SELECT status FROM users WHERE id=? AND deleted_at IS NULL`）
+  2. **`UserStatusCheckFilter`**（新規）— `OncePerRequestFilter` を実装。認証済みリクエストごとに DB から `status` を取得し、`ACTIVE` 以外の場合は SecurityContext をクリアし、セッションを invalidate して `/app/login?suspended=true` へリダイレクト。静的リソース・ログイン・パスワードリセット・API パスはスキップ
+  3. **`SecurityConfig`** — `UserStatusCheckFilter` を `SecurityContextHolderFilter` の直後に登録（`.addFilterAfter()`）
+  4. **`login.html`** — `?suspended=true` パラメータ時に「アカウントが停止されました。管理者にお問い合わせください。」を赤バナーで表示
+
+### セキュリティ修正
+
+#### S-01 — `.env.example` の認証情報をダミー値に置き換え
+- **ファイル:** `.env.example`
+- **変更内容:**
+  - `DB_PASSWORD` を実パスワードからプレースホルダー（`your-db-password`）に変更
+  - `ADMIN_SLACK_USER_IDS` を実 Slack ユーザーID（`U0B5CC9S48N`）からプレースホルダーに変更
+  - `ZOOM_ACCOUNT_ID` / `ZOOM_CLIENT_ID` / `ZOOM_CLIENT_SECRET` を実 Zoom OAuth2 認証情報からプレースホルダーに変更
+- **理由:** `.env.example` は Git 管理対象ファイルのため、実際の認証情報が含まれるとリポジトリ共有時に漏洩する
+
+#### S-02 — `application.properties` のデフォルト値から実 ID を除去
+- **ファイル:** `backend/src/main/resources/application.properties`
+- **変更内容:**
+  - `spring.datasource.password` のデフォルト値を `hs0512` → `postgres` に変更
+  - `admin.slack-user-ids` のデフォルト値 `U0B5CC9S48N`（実 Slack ユーザーID）を空文字に変更
+  - `admin.line-user-ids` のデフォルト値 `@434idigg`（実 LINE ユーザーID）を空文字に変更
+- **理由:** 環境変数が未設定のまま起動した場合、実 ID がデフォルトとして使用される状態を解消
+
+### 機能改善
+
+#### I-01 — 予約ページのプランゲートを専用フィーチャーコードに分離
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/dto/user/UserIntegrationStatus.java`
+  - `backend/src/main/java/com/example/petlife/service/PlanAccessService.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentPageController.java`
+  - `backend/src/main/resources/data.sql`
+- **変更内容:**
+  - `UserIntegrationStatus` に `FEATURE_APPOINTMENT = "APPOINTMENT"` 定数を追加
+  - `PlanAccessService.ALL_FEATURES` に `APPOINTMENT` を追加
+  - `PlanAccessService.canUseAppointments()` メソッドを新規追加
+  - `AppointmentPageController.ensureAccessible()` のアクセス判定を `canUseAiSymptom()` → `canUseAppointments()` に変更
+  - `data.sql` の `plan_features` に Standard（plan_id=2）・Premium（plan_id=3）向け `APPOINTMENT` レコードを追加
+- **理由:** `ensureAccessible()` が予約アクセス判定に AI 症状チェック権限（`AI_SYMPTOM`）を流用していたため、将来 `AI_SYMPTOM` の対象プランが変わると予約制御が壊れるリスクがあった。専用のフィーチャーコード `APPOINTMENT` を追加して責務を分離
+- **既存 DB への適用:**
+  ```sql
+  INSERT INTO plan_features (plan_id, feature_code)
+  VALUES (2, 'APPOINTMENT'), (3, 'APPOINTMENT')
+  ON CONFLICT DO NOTHING;
+  ```
+
+### コード品質改善
+
+#### Q-01 — Mapper の INSERT...RETURNING に @Select を使用する理由をコメントで明示
+- **ファイル:** 以下15マッパー（各1行追加）
+  - `mapper/PetMapper.java`
+  - `mapper/HealthRecordMapper.java`
+  - `mapper/ConsultChatMapper.java`
+  - `mapper/MedicalHistoryMapper.java`
+  - `mapper/NotificationMapper.java`
+  - `mapper/PaymentMapper.java`
+  - `mapper/InvoiceMapper.java`
+  - `mapper/AnnouncementMapper.java`
+  - `mapper/SymptomCheckMapper.java`
+  - `mapper/EmailMessageMapper.java`
+  - `mapper/EmailTemplateMapper.java`
+  - `mapper/MedicalAttachmentMapper.java`
+  - `mapper/CalendarMarkMapper.java`
+  - `mapper/PetCareRecordMapper.java`
+  - `mapper/RoleMapper.java`
+- **変更内容:** `insertReturningId()` の `@Select` アノテーション直前に以下のコメントを追加
+  ```java
+  // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
+  ```
+- **理由:** `@Select` で INSERT 文を実行している箇所が意図と異なるアノテーションに見え、混乱を招いていた。エンティティが Java Record（immutable）のため `@Insert` + `@Options(useGeneratedKeys=true, keyProperty="id")` は使用不可（Record はリフレクションによるフィールド書き込みを許可しない）。PostgreSQL の `INSERT...RETURNING` は結果セットを返す SQL であり、MyBatis では `@Select` が唯一正しい選択肢であることをコメントで明示した
+
 ### ドキュメント更新
 
 #### D-01 — ワイヤーフレーム: Webアプリ画面を実HTML構成から生成

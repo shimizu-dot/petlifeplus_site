@@ -12,6 +12,7 @@ import java.util.List;
 @Mapper
 public interface CalendarMarkMapper {
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO pet_calendar_marks(
             pet_id, created_by_user_id, mark_date, mark_type, memo, created_at, updated_at

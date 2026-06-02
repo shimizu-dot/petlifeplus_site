@@ -55,19 +55,33 @@
     </rollingPolicy>
   </appender>
 
-  <logger name="AUDIT" level="INFO" additivity="false">
-    <appender-ref ref="AUDIT_FILE"/>
-    <appender-ref ref="CONSOLE"/>
-  </logger>
+  <!-- 本番環境（spring.profiles.active=prod）: ファイルのみ、コンソール出力なし -->
+  <springProfile name="prod">
+    <logger name="AUDIT" level="INFO" additivity="false">
+      <appender-ref ref="AUDIT_FILE"/>
+    </logger>
+    <logger name="OPS" level="INFO" additivity="false">
+      <appender-ref ref="OPS_FILE"/>
+    </logger>
+    <root level="INFO">
+      <appender-ref ref="APP_FILE"/>
+    </root>
+  </springProfile>
 
-  <logger name="OPS" level="INFO" additivity="false">
-    <appender-ref ref="OPS_FILE"/>
-    <appender-ref ref="CONSOLE"/>
-  </logger>
-
-  <root level="INFO">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="APP_FILE"/>
-  </root>
+  <!-- 開発環境（デフォルト / dev）: コンソール + ファイル -->
+  <springProfile name="!prod">
+    <logger name="AUDIT" level="INFO" additivity="false">
+      <appender-ref ref="AUDIT_FILE"/>
+      <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="OPS" level="INFO" additivity="false">
+      <appender-ref ref="OPS_FILE"/>
+      <appender-ref ref="CONSOLE"/>
+    </logger>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="APP_FILE"/>
+    </root>
+  </springProfile>
 
 </configuration>

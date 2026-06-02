@@ -1,9 +1,12 @@
 package com.example.petlife.controller;
 
+import com.example.petlife.config.LoginUser;
+import com.example.petlife.exception.ForbiddenException;
 import com.example.petlife.service.DatabaseBackupService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,12 +30,15 @@ public class DatabaseBackupController {
     }
 
     @GetMapping
-    public String page() {
+    public String page(@AuthenticationPrincipal LoginUser currentUser) {
+        if (!currentUser.isAdmin()) throw new ForbiddenException("管理者のみ利用できます");
         return "admin/database";
     }
 
     @PostMapping("/backup")
-    public String backup(HttpServletResponse response, RedirectAttributes ra) {
+    public String backup(@AuthenticationPrincipal LoginUser currentUser,
+                         HttpServletResponse response, RedirectAttributes ra) {
+        if (!currentUser.isAdmin()) throw new ForbiddenException("管理者のみ利用できます");
         try {
             byte[] data = backupService.backup();
             String filename = "petlife_backup_" + LocalDate.now() + ".sql";
@@ -50,7 +56,9 @@ public class DatabaseBackupController {
     }
 
     @PostMapping("/restore")
-    public String restore(@RequestParam MultipartFile file, RedirectAttributes ra) {
+    public String restore(@AuthenticationPrincipal LoginUser currentUser,
+                          @RequestParam MultipartFile file, RedirectAttributes ra) {
+        if (!currentUser.isAdmin()) throw new ForbiddenException("管理者のみ利用できます");
         if (file.isEmpty()) {
             ra.addFlashAttribute("error", "ファイルを選択してください");
             return "redirect:/app/admin/database";

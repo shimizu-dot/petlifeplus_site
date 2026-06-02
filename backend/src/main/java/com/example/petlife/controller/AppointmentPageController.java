@@ -130,7 +130,7 @@ public class AppointmentPageController {
     }
 
     private void ensureAccessible(LoginUser currentUser) {
-        if (!currentUser.canManageClinical() && !planAccessService.canUseAiSymptom(currentUser)) {
+        if (!currentUser.canManageClinical() && !planAccessService.canUseAppointments(currentUser)) {
             throw new BadRequestException("この機能はスタンダード以上で利用できます");
         }
     }

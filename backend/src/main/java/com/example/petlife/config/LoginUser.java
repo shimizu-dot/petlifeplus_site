@@ -33,12 +33,14 @@ public record LoginUser(
     @Override public boolean isEnabled() { return enabled; }
 
     public boolean isSuper() { return roleId == 2L; }
+    /** ADMIN ロール（roleId=1）または SUPER は管理者権限を持つ。 */
     public boolean isAdmin()  { return roleId == 1L || isSuper(); }
-    public boolean isVet()   { return roleId == 4L || isSuper(); }
-    public boolean isStaff() { return roleId == 5L || isSuper(); }
+    /** 純粋なロール判定（SUPER は VET/STAFF ではない）。権限チェックには canManageClinical() を使うこと。 */
+    public boolean isVet()   { return roleId == 4L; }
+    public boolean isStaff() { return roleId == 5L; }
 
-    /** 診療記録・診療予約・カレンダーを操作できるロール（VET + STAFF）。 */
-    public boolean canManageClinical() { return isVet() || isStaff(); }
+    /** 診療記録・診療予約・カレンダーを操作できるロール（VET・STAFF・SUPER）。 */
+    public boolean canManageClinical() { return isVet() || isStaff() || isSuper(); }
 
     /** ユーザ管理画面を閲覧できるロール（全スタッフ系）。 */
     public boolean hasStaffAccess() { return isAdmin() || isVet() || isStaff(); }

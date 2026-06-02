@@ -61,6 +61,7 @@ public interface PetMapper {
     PetEntity findByIdAndOwnerUserId(@Param("id") Long id, @Param("ownerUserId") Long ownerUserId);
 
     // ---- 更新系 ----
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO pets(owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path,
                          deceased_at, created_at, updated_at)

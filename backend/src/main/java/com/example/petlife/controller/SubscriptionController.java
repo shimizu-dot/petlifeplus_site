@@ -102,10 +102,14 @@ public class SubscriptionController {
                 currentUser.id(), null, null, null
         );
         Long notificationId = notificationMapper.insertReturningId(notification);
-        List<Long> adminIds = userMapper.findAdminUserIds();
-        for (Long adminId : adminIds) {
-            notificationMapper.insertRecipient(notificationId, adminId);
-            notificationMapper.updateRecipientStatus(notificationId, adminId, "SENT");
+        if (notificationId == null) {
+            log.warn("Failed to insert renewal notification for subscription {}", id);
+        } else {
+            List<Long> adminIds = userMapper.findAdminUserIds();
+            for (Long adminId : adminIds) {
+                notificationMapper.insertRecipient(notificationId, adminId);
+                notificationMapper.updateRecipientStatus(notificationId, adminId, "SENT");
+            }
         }
 
         // 請求書を発行し、アプリ内通知（同期）+ メール・LINE（非同期）で顧客へ案内

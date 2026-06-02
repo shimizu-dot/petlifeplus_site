@@ -39,6 +39,7 @@ public interface InvoiceMapper {
         """)
     InvoiceEntity findById(@Param("id") Long id);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO invoices(subscription_id, invoice_number, invoice_date, due_date,
             amount, payment_status, issued_at, created_at, updated_at)

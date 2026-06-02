@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper
 public interface ConsultChatMapper {
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO consult_chat_messages(user_id, sender_type, message, created_at)
         VALUES(#{userId}, #{senderType}, #{message}, CURRENT_TIMESTAMP)

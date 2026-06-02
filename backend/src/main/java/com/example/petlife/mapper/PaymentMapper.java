@@ -27,6 +27,7 @@ public interface PaymentMapper {
         """)
     PaymentEntity findById(@Param("id") Long id);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO payments(invoice_id, paid_amount, paid_at, payment_method,
             transaction_ref, status, created_at, updated_at)

@@ -12,6 +12,7 @@ import java.util.List;
 @Mapper
 public interface PetCareRecordMapper {
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO pet_care_records(
             pet_id, recorded_by_user_id, care_type, administered_on, next_due_on, memo,

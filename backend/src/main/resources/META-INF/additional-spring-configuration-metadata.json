@@ -161,6 +161,12 @@
       "description": "PayPay 送金先 ID。QR URL 未設定時にテキスト案内として通知に含まれる。"
     },
     {
+      "name": "app.upload.dir",
+      "type": "java.lang.String",
+      "description": "Base directory for uploaded images (pet/health-record). Use an absolute path in production (e.g. /data/uploads). Override with UPLOAD_DIR env var.",
+      "defaultValue": "uploads"
+    },
+    {
       "name": "db.backup.pg-dump-path",
       "type": "java.lang.String",
       "description": "Path to the pg_dump executable. Override with env var PG_DUMP_PATH if not on PATH.",

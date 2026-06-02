@@ -31,6 +31,7 @@ public interface EmailMessageMapper {
         """)
     List<EmailMessageEntity> findPending(@Param("limit") int limit);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO email_messages(template_id, recipient_user_id, pet_id, appointment_id, invoice_id,
             subject, body, send_timing_at, status, created_at)

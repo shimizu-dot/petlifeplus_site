@@ -85,6 +85,7 @@ public class PetService {
                 null, null, null
         );
         Long newId = petMapper.insertReturningId(row);
+        if (newId == null) throw new BadRequestException("ペットの作成に失敗しました。再度お試しください。");
         return toResponse(petMapper.findById(newId));
     }
 

@@ -19,7 +19,8 @@ public class PlanAccessService {
             UserIntegrationStatus.FEATURE_AI_SYMPTOM,
             UserIntegrationStatus.FEATURE_SLACK_BOT,
             UserIntegrationStatus.FEATURE_LINE_BOT,
-            UserIntegrationStatus.FEATURE_ZOOM_CONSULT
+            UserIntegrationStatus.FEATURE_ZOOM_CONSULT,
+            UserIntegrationStatus.FEATURE_APPOINTMENT
     );
 
     private final SubscriptionMapper subscriptionMapper;
@@ -90,6 +91,10 @@ public class PlanAccessService {
 
     public boolean canUseAiSymptom(LoginUser user) {
         return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_AI_SYMPTOM);
+    }
+
+    public boolean canUseAppointments(LoginUser user) {
+        return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_APPOINTMENT);
     }
 
     public boolean canUsePrioritySupport(LoginUser user) {

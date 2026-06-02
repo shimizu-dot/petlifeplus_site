@@ -58,6 +58,7 @@ public interface MedicalHistoryMapper {
         """)
     MedicalHistoryEntity findById(@Param("id") Long id);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO medical_histories(pet_id, appointment_id, handled_by_user_id, performed_on,
             treatment_detail, diagnosis, prescription, created_at, updated_at)

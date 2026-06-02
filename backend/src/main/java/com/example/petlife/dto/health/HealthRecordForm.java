@@ -1,8 +1,10 @@
 package com.example.petlife.dto.health;
 
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -11,9 +13,10 @@ import java.time.LocalDate;
 @Data
 public class HealthRecordForm {
     private LocalDate       recordDate;
+    @DecimalMin("0.0") @DecimalMax("100.0")
                             private BigDecimal weightKg;
     @Size(max = 300)        private String mealMemo;
-                            private Integer exerciseMinutes;
+    @Min(0) @Max(480)       private Integer exerciseMinutes;
     @Min(1) @Max(5)         private Integer mealScore;
     @Min(1) @Max(5)         private Integer exerciseScore;
     @Min(1) @Max(5)         private Integer sleepScore;

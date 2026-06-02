@@ -6,10 +6,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final UserStatusCheckFilter userStatusCheckFilter;
+
+    public SecurityConfig(UserStatusCheckFilter userStatusCheckFilter) {
+        this.userStatusCheckFilter = userStatusCheckFilter;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -64,7 +71,8 @@ public class SecurityConfig {
             )
             .exceptionHandling(e -> e
                 .accessDeniedPage("/app/access-denied")
-            );
+            )
+            .addFilterAfter(userStatusCheckFilter, SecurityContextHolderFilter.class);
         return http.build();
     }
 

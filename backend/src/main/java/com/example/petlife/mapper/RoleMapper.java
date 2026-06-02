@@ -17,6 +17,7 @@ public interface RoleMapper {
     @Select("SELECT id, role_code, role_name, created_at, updated_at FROM roles WHERE role_code = #{roleCode}")
     RoleEntity findByCode(@Param("roleCode") String roleCode);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO roles(role_code, role_name, created_at, updated_at)
         VALUES(#{roleCode}, #{roleName}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)

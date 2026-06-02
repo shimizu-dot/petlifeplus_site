@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper
 public interface SymptomCheckMapper {
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO symptom_checks(
             pet_id, requested_by_user_id, symptom_type, onset_text, memo,

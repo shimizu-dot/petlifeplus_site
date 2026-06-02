@@ -28,6 +28,7 @@ public interface EmailTemplateMapper {
         """)
     EmailTemplateEntity findByCode(@Param("templateCode") String templateCode);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO email_templates(template_code, subject_template, body_template, is_active, created_at, updated_at)
         VALUES(#{templateCode}, #{subjectTemplate}, #{bodyTemplate}, #{isActive}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)

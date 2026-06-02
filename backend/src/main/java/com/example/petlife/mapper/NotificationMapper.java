@@ -74,6 +74,7 @@ public interface NotificationMapper {
         """)
     NotificationEntity findById(@Param("id") Long id);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO notifications(notification_type, title, body, scheduled_at,
             delivery_status, created_by_user_id, created_at, updated_at)

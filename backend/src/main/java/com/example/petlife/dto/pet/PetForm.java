@@ -1,5 +1,7 @@
 package com.example.petlife.dto.pet;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
@@ -18,6 +20,7 @@ public class PetForm {
     @PastOrPresent
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                private LocalDate birthDate;
+    @DecimalMin("0.0") @DecimalMax("100.0")
                                private BigDecimal weightBaselineKg;
 
     public PetCreateRequest toCreateRequest(Long ownerUserId) {

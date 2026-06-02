@@ -17,7 +17,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BillingService {
@@ -64,6 +66,7 @@ public class BillingService {
                 null, null, null
         );
         Long invoiceId = invoiceMapper.insertReturningId(entity);
+        if (invoiceId == null) throw new BadRequestException("請求書の作成に失敗しました。再度お試しください。");
 
         InvoiceRow row = invoiceMapper.findByIdWithDetails(invoiceId);
         notificationService.sendInvoiceIssuedInApp(row);   // 同期（確実に届く）
@@ -169,15 +172,30 @@ public class BillingService {
         List<InvoiceRow> overdueInvoices = invoiceMapper.findOverdueInvoicesWithActiveUsers();
         if (overdueInvoices.isEmpty()) return;
 
+        // ユーザーごとに1回のみ処理する（複数の未払い請求書がある場合の重複を防ぐ）
+        Set<Long> processedUserIds = new HashSet<>();
+
         for (InvoiceRow invoice : overdueInvoices) {
+            if (processedUserIds.contains(invoice.ownerUserId())) continue;
+
+            // アカウント停止を先に実行（通知失敗でも停止を保証）
+            try {
+                int suspended = userMapper.suspendUser(invoice.ownerUserId());
+                if (suspended == 0) continue; // 既に停止済み（findOverdueInvoicesWithActiveUsers が ACTIVE のみ返すため通常ここには来ない）
+                processedUserIds.add(invoice.ownerUserId());
+                log.info("Suspended overdue user: invoiceId={} userId={}", invoice.invoiceId(), invoice.ownerUserId());
+            } catch (Exception e) {
+                log.error("Failed to suspend user for overdue invoice invoiceId={} userId={}: {}",
+                        invoice.invoiceId(), invoice.ownerUserId(), e.getMessage(), e);
+                continue;
+            }
+
+            // 停止後に通知（失敗してもアカウント停止は維持）
             try {
                 notificationService.sendOverdueInApp(invoice);
                 notificationService.notifyOverdueAsync(invoice);
-                int updated = userMapper.suspendUser(invoice.ownerUserId());
-                log.info("Processed overdue invoice invoiceId={} userId={} suspended={}",
-                        invoice.invoiceId(), invoice.ownerUserId(), updated > 0);
             } catch (Exception e) {
-                log.error("Failed to process overdue invoice invoiceId={} userId={}: {}",
+                log.warn("Failed to send overdue notification for invoiceId={} userId={}: {}",
                         invoice.invoiceId(), invoice.ownerUserId(), e.getMessage(), e);
             }
         }

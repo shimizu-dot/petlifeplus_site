@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
@@ -41,6 +43,7 @@ public class NotificationController {
     private final AppointmentMapper appointmentMapper;
     private final SubscriptionMapper subscriptionMapper;
     private final DismissedReminderMapper dismissedReminderMapper;
+    private static final Logger log = LoggerFactory.getLogger(NotificationController.class);
     private static final Set<String> ALLOWED_TYPES = Set.of("REMINDER", "INFO", "ALERT");
     private static final Set<String> ALLOWED_SCOPES = Set.of("ALL", "USER", "STAFF", "VET", "ADMIN");
 
@@ -160,6 +163,11 @@ public class NotificationController {
                 null
         );
         Long notificationId = notificationMapper.insertReturningId(row);
+        if (notificationId == null) {
+            log.error("Failed to insert notification record");
+            ra.addFlashAttribute("error", "通知の作成に失敗しました。再度お試しください。");
+            return "redirect:/app/notifications/manage";
+        }
         List<Long> recipientIds = notificationMapper.findActiveRecipientUserIdsByScope(form.getTargetScope());
         for (Long uid : recipientIds) {
             notificationMapper.insertRecipient(notificationId, uid);

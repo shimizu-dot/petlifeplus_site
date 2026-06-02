@@ -85,14 +85,16 @@ ON CONFLICT (id) DO UPDATE
         updated_at    = CURRENT_TIMESTAMP;
 
 -- ─── Plan features ────────────────────────────────────────────────────────────
--- LIGHT (1): 基本機能のみ（AI_SYMPTOM / Slack / LINE / Zoom は含まない）
--- STANDARD (2): AI症状チェック・Slack・LINE
+-- LIGHT (1): 基本機能のみ（予約・AI_SYMPTOM / Slack / LINE / Zoom は含まない）
+-- STANDARD (2): 予約・AI症状チェック・Slack・LINE
 -- PREMIUM (3): STANDARD 全機能 + Zoom オンライン診療
 
 INSERT INTO plan_features (plan_id, feature_code) VALUES
+(2, 'APPOINTMENT'),
 (2, 'AI_SYMPTOM'),
 (2, 'SLACK_BOT'),
 (2, 'LINE_BOT'),
+(3, 'APPOINTMENT'),
 (3, 'AI_SYMPTOM'),
 (3, 'SLACK_BOT'),
 (3, 'LINE_BOT'),

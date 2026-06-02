@@ -1,5 +1,6 @@
 package com.example.petlife.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,9 @@ public class HealthRecordImageStorageService {
 
     private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp", "image/gif");
 
+    @Value("${app.upload.dir:uploads}")
+    private String uploadDir;
+
     public String store(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return null;
@@ -27,7 +31,7 @@ public class HealthRecordImageStorageService {
         }
 
         String filename = UUID.randomUUID() + ".png";
-        Path dir = Paths.get("uploads", "health-records");
+        Path dir = Paths.get(uploadDir, "health-records");
         Path dst = dir.resolve(filename);
         try {
             Files.createDirectories(dir);

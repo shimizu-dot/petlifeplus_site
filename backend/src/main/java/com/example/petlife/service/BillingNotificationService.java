@@ -152,6 +152,10 @@ public class BillingNotificationService {
                     userId, null, null, null
             );
             Long notificationId = notificationMapper.insertReturningId(notification);
+            if (notificationId == null) {
+                log.warn("Failed to insert billing notification for user {}", userId);
+                return;
+            }
             notificationMapper.insertRecipient(notificationId, userId);
             notificationMapper.updateRecipientStatus(notificationId, userId, "SENT");
         } catch (Exception e) {

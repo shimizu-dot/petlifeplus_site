@@ -13,10 +13,11 @@ public record UserIntegrationStatus(
         boolean lineConnected,
         boolean zoomEnabled
 ) {
-    public static final String FEATURE_SLACK_BOT   = "SLACK_BOT";
-    public static final String FEATURE_LINE_BOT    = "LINE_BOT";
+    public static final String FEATURE_SLACK_BOT    = "SLACK_BOT";
+    public static final String FEATURE_LINE_BOT     = "LINE_BOT";
     public static final String FEATURE_ZOOM_CONSULT = "ZOOM_CONSULT";
-    public static final String FEATURE_AI_SYMPTOM  = "AI_SYMPTOM";
+    public static final String FEATURE_AI_SYMPTOM   = "AI_SYMPTOM";
+    public static final String FEATURE_APPOINTMENT  = "APPOINTMENT";
 
     public boolean slackReady()  { return slackEnabled && slackConnected; }
     public boolean lineReady()   { return lineEnabled  && lineConnected; }

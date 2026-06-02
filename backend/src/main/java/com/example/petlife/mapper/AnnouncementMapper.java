@@ -25,6 +25,7 @@ public interface AnnouncementMapper {
         """)
     List<AnnouncementEntity> findAll();
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO announcements(title, body, is_active, created_by_user_id, created_at, updated_at)
         VALUES(#{title}, #{body}, TRUE, #{createdByUserId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)

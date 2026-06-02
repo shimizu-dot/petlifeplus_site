@@ -87,6 +87,7 @@ public interface HealthRecordMapper {
     HealthRecordEntity findById(@Param("id") Long id);
 
     // ---- 更新系 ----
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO health_records(pet_id, recorded_by_user_id, record_date, weight_kg,
                                    meal_memo, exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score,

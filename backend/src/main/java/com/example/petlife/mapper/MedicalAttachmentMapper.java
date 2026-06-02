@@ -25,6 +25,7 @@ public interface MedicalAttachmentMapper {
         """)
     MedicalAttachmentEntity findById(@Param("id") Long id);
 
+    // INSERT...RETURNING は結果セットを返すため @Select を使用（@Insert では Long 戻り値に写像されない）
     @Select("""
         INSERT INTO medical_attachments(medical_history_id, file_name, file_path,
             file_mime_type, file_size_bytes, description, uploaded_at, created_at, updated_at)

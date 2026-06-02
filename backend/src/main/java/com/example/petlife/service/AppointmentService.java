@@ -15,6 +15,8 @@ import com.example.petlife.mapper.AppointmentSlotMapper;
 import com.example.petlife.mapper.NotificationMapper;
 import com.example.petlife.mapper.PetMapper;
 import com.example.petlife.mapper.UserMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,6 +31,10 @@ import java.util.Set;
 
 @Service
 public class AppointmentService {
+    private static final Logger log = LoggerFactory.getLogger(AppointmentService.class);
+    private static final LocalTime SLOT_OPEN  = LocalTime.of(9, 30);
+    private static final LocalTime SLOT_CLOSE = LocalTime.of(17, 0);
+
     private final AppointmentMapper appointmentMapper;
     private final AppointmentSlotMapper appointmentSlotMapper;
     private final PlanAccessService planAccessService;
@@ -74,6 +80,7 @@ public class AppointmentService {
     }
 
     public AppointmentResponse create(AppointmentCreateRequest req) {
+        validateBusinessHours(req.scheduledAt());
         ensureNoDuplicate(req.staffUserId(), req.scheduledAt(), null);
         AppointmentEntity row = new AppointmentEntity(null, req.petId(), req.ownerUserId(), req.staffUserId(),
                 req.appointmentType(), req.channel(), req.scheduledAt(), req.status(), null, req.note(),
@@ -102,6 +109,7 @@ public class AppointmentService {
     public AppointmentResponse update(Long id, AppointmentUpdateRequest req) {
         AppointmentEntity existing = appointmentMapper.findById(id);
         if (existing == null) throw new NotFoundException("Appointment not found: " + id);
+        validateStatusTransition(existing.status(), req.status());
         ensureNoDuplicate(req.staffUserId(), req.scheduledAt(), id);
         AppointmentEntity row = new AppointmentEntity(id, existing.petId(), existing.ownerUserId(), req.staffUserId(),
                 req.appointmentType(), req.channel(), req.scheduledAt(), req.status(), existing.zoomJoinUrl(),
@@ -305,6 +313,21 @@ public class AppointmentService {
         return appointmentMapper.softDeleteByIds(ids, now);
     }
 
+    private void validateStatusTransition(String current, String next) {
+        if (current.equals(next)) return;
+        if ("CONFIRMED".equals(current) && "COMPLETED".equals(next)) return;
+        throw new BadRequestException(
+                "この操作では CONFIRMED → COMPLETED の遷移のみ許可されています。" +
+                "承認・却下・キャンセルは専用エンドポイントを使用してください");
+    }
+
+    private void validateBusinessHours(LocalDateTime scheduledAt) {
+        LocalTime time = scheduledAt.toLocalTime();
+        if (time.isBefore(SLOT_OPEN) || time.isAfter(SLOT_CLOSE)) {
+            throw new BadRequestException("予約時間は 09:30〜17:00 の範囲で指定してください");
+        }
+    }
+
     private void ensureNoDuplicate(Long staffUserId, LocalDateTime scheduledAt, Long excludeId) {
         if (staffUserId == null) return;
         if (appointmentMapper.countDuplicatedSlot(staffUserId, scheduledAt, excludeId) > 0) {
@@ -342,6 +365,7 @@ public class AppointmentService {
                 actorUserId, null, null, null
         );
         Long notificationId = notificationMapper.insertReturningId(notification);
+        if (notificationId == null) { log.warn("Failed to insert status-change notification for appointment {}", appointment.id()); return; }
         notificationMapper.insertRecipient(notificationId, appointment.ownerUserId());
         notificationMapper.updateRecipientStatus(notificationId, appointment.ownerUserId(), "SENT");
     }
@@ -365,6 +389,7 @@ public class AppointmentService {
                 actorUserId, null, null, null
         );
         Long notificationId = notificationMapper.insertReturningId(notification);
+        if (notificationId == null) { log.warn("Failed to insert cancel notification for appointment {}", appointment.id()); return; }
         for (Long adminId : adminIds) {
             notificationMapper.insertRecipient(notificationId, adminId);
             notificationMapper.updateRecipientStatus(notificationId, adminId, "SENT");

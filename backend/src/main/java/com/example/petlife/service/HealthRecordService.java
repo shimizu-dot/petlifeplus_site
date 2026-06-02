@@ -79,6 +79,7 @@ public class HealthRecordService {
                 null, null, null
         );
         Long newId = healthRecordMapper.insertReturningId(row);
+        if (newId == null) throw new BadRequestException("健康記録の作成に失敗しました。再度お試しください。");
         return toResponse(healthRecordMapper.findById(newId));
     }
 

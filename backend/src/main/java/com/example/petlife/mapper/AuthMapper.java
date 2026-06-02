@@ -15,6 +15,9 @@ public interface AuthMapper {
         """)
     UserEntity findByEmail(@Param("email") String email);
 
+    @Select("SELECT status FROM users WHERE id = #{id} AND deleted_at IS NULL")
+    String findStatusById(@Param("id") Long id);
+
     @Select("""
         SELECT COUNT(*)
         FROM subscriptions
