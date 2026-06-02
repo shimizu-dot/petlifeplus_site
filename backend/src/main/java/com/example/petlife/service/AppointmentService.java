@@ -198,7 +198,7 @@ public class AppointmentService {
     public record SlotInfo(LocalDateTime slotTime, boolean available) {}
 
     public AppointmentResponse createGeneralCare(Long petId, LocalDateTime scheduledAt, String note, String requestedChannel, LoginUser currentUser) {
-        if (!currentUser.isAdmin() && !planAccessService.canUseAiSymptom(currentUser)) {
+        if (!currentUser.isAdmin() && !planAccessService.canUseAppointments(currentUser)) {
             throw new BadRequestException("この機能はスタンダード以上で利用できます");
         }
         if (scheduledAt == null || !scheduledAt.isAfter(LocalDateTime.now())) {

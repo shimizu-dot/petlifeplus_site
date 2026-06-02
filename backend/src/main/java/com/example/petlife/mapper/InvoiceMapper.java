@@ -24,6 +24,14 @@ public interface InvoiceMapper {
     long countAll();
 
     @Select("""
+        SELECT COUNT(*) FROM invoices
+        WHERE deleted_at IS NULL
+          AND subscription_id = #{subscriptionId}
+          AND payment_status IN ('UNPAID', 'PARTIAL')
+        """)
+    long countUnpaidBySubscriptionId(@Param("subscriptionId") Long subscriptionId);
+
+    @Select("""
         SELECT id, subscription_id, invoice_number, invoice_date, due_date, amount,
                payment_status, issued_at, paid_at, deleted_at, created_at, updated_at
         FROM invoices

@@ -22,7 +22,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/slack/events", "/api/line/events")
+                .ignoringRequestMatchers("/api/slack/events", "/api/line/events",
+                        "/api/appointments", "/api/appointments/**")
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
@@ -31,6 +32,9 @@ public class SecurityConfig {
                     "/css/**", "/js/**", "/assets/**", "/images/**", "/uploads/**"
                 ).permitAll()
                 .requestMatchers("/api/slack/events", "/api/line/events").permitAll()
+                // 予約 REST API: ページ版と同じロール制限（ADMIN はアクセス不可）
+                .requestMatchers("/api/appointments", "/api/appointments/**")
+                    .hasAnyRole("SUPER", "VET", "STAFF", "USER")
                 .requestMatchers("/app/login").permitAll()
                 .requestMatchers("/app/forgot-password", "/app/forgot-password/**").permitAll()
                 .requestMatchers("/app/reset-password", "/app/reset-password/**").permitAll()

@@ -82,10 +82,16 @@ services:
       # パスワードリセットメール用ベース URL
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
 
+      # アップロードディレクトリ（named volume にマウントして永続化）
+      UPLOAD_DIR: /app/uploads
+
     # 本番 Dockerfile の ENTRYPOINT (-Dserver.port=10000) を上書きして
     # application.properties の ${PORT:8080} を使うようにする
     entrypoint: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - uploads:/app/uploads   # ペット写真・健康記録画像を永続化（down -v で削除）
     restart: unless-stopped
 
 volumes:
   pgdata:    # DB データを永続化（down -v で削除）
+  uploads:   # アップロードファイルを永続化（down -v で削除）

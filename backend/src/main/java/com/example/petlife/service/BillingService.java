@@ -55,6 +55,10 @@ public class BillingService {
             throw new BadRequestException("対象サブスクリプションが見つかりません: " + subscriptionId);
         }
 
+        if (invoiceMapper.countUnpaidBySubscriptionId(subscriptionId) > 0) {
+            throw new BadRequestException("未払いまたは一部払いの請求書が既に存在します。お支払い完了後に更新申請してください。");
+        }
+
         LocalDate today = LocalDate.now();
         String invoiceNumber = "INV-" + LocalDateTime.now().format(NUM_FMT) + "-" + subscriptionId;
 

@@ -52,12 +52,16 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponse> create(
             @Valid @RequestBody AppointmentCreateRequest request,
             @AuthenticationPrincipal LoginUser currentUser) {
+        // status は常に REQUESTED で開始（スタッフも含め外部から任意のステータスを注入させない）
         AppointmentCreateRequest safeRequest = currentUser.hasStaffAccess()
-                ? request
+                ? new AppointmentCreateRequest(
+                        request.petId(), request.ownerUserId(), request.staffUserId(),
+                        request.appointmentType(), request.channel(),
+                        request.scheduledAt(), "REQUESTED", request.note())
                 : new AppointmentCreateRequest(
                         request.petId(), currentUser.id(), null,
                         request.appointmentType(), request.channel(),
-                        request.scheduledAt(), request.status(), request.note());
+                        request.scheduledAt(), "REQUESTED", request.note());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(appointmentService.create(safeRequest));
     }

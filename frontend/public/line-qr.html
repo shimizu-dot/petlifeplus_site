@@ -17,13 +17,20 @@
     <div class="container" style="text-align: center;">
       <h1>LINE お友達登録 QR</h1>
       <p>スマートフォンで読み取って友達登録してください。</p>
-      <p>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https%3A%2F%2Fline.me%2FR%2Fti%2Fp%2F%40434idigg"
-          alt="LINE お友達登録 QRコード" width="240" height="240">
-      </p>
+      <div id="qr-canvas" style="display:inline-block; margin: 16px 0;"></div>
       <p><a class="btn btn-secondary" href="index.html">戻る</a></p>
     </div>
   </main>
+
+  <!-- qrcodejs: ブラウザ内で QR コードを生成（LINE ID を外部サーバーに送信しない） -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    new QRCode(document.getElementById('qr-canvas'), {
+      text: 'https://line.me/R/ti/p/%40434idigg',
+      width: 240,
+      height: 240
+    });
+  </script>
 </body>
 
 </html>

@@ -136,7 +136,7 @@ public class UserController {
             model.addAttribute("editMode", true);
             return "admin/users/form";
         }
-        userService.update(id, form.toUpdateRequest());
+        userService.update(id, form.toUpdateRequest(), currentUser);
         ra.addFlashAttribute("success", "ユーザー情報を更新しました");
         return "redirect:/app/admin/users";
     }

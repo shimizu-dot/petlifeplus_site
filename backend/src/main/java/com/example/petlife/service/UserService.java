@@ -62,7 +62,7 @@ public class UserService {
         return get(newId);
     }
 
-    public UserResponse update(Long id, UserUpdateRequest req) {
+    public UserResponse update(Long id, UserUpdateRequest req, com.example.petlife.config.LoginUser caller) {
         UserEntity existing = userMapper.findById(id);
         if (existing == null) throw new NotFoundException("User not found: " + id);
         if (userMapper.existsByEmailExcludingId(req.email(), id) > 0) {
@@ -71,7 +71,10 @@ public class UserService {
         String nextPasswordHash = (req.password() == null || req.password().isBlank())
                 ? existing.passwordHash()
                 : passwordEncoder.encode(req.password());
-        Long nextRoleId = req.roleId() != null ? req.roleId() : existing.roleId();
+        // ロール変更は ADMIN のみ許可。STAFF が変更しようとしても既存ロールを維持する
+        Long nextRoleId = caller.isAdmin()
+                ? (req.roleId() != null ? req.roleId() : existing.roleId())
+                : existing.roleId();
         UserEntity row = new UserEntity(
                 id, nextRoleId, req.name(), req.email(),
                 nextPasswordHash, req.phone(),

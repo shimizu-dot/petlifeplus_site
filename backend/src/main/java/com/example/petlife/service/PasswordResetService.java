@@ -21,7 +21,8 @@ import java.util.UUID;
 public class PasswordResetService {
 
     private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
-    private static final int EXPIRE_MINUTES = 30;
+    private static final int EXPIRE_MINUTES     = 30;
+    private static final int RATE_LIMIT_MINUTES = 15;
 
     private final UserMapper userMapper;
     private final PasswordResetTokenMapper tokenMapper;
@@ -58,6 +59,13 @@ public class PasswordResetService {
         UserEntity user = userMapper.findByEmail(email.trim().toLowerCase());
         if (user == null) {
             log.info("Password reset requested for unknown email: {}", email);
+            return;
+        }
+
+        long recentCount = tokenMapper.countRecentByUserId(
+                user.id(), LocalDateTime.now().minusMinutes(RATE_LIMIT_MINUTES));
+        if (recentCount > 0) {
+            log.info("Password reset rate limited for user id={} (within {} min)", user.id(), RATE_LIMIT_MINUTES);
             return;
         }
 

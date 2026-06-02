@@ -1,6 +1,7 @@
 package com.example.petlife.controller;
 
 import com.example.petlife.config.LoginUser;
+import com.example.petlife.exception.ForbiddenException;
 import com.example.petlife.service.AnnouncementService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,7 @@ public class AnnouncementController {
                          @RequestParam String body,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
+        if (!currentUser.canManageOperations()) throw new ForbiddenException("お知らせ管理は管理者・スタッフのみ利用できます");
         if (title.isBlank() || body.isBlank()) {
             ra.addFlashAttribute("error", "タイトルと本文を入力してください");
             return "redirect:/app/admin/announcements";
@@ -39,7 +41,10 @@ public class AnnouncementController {
     }
 
     @PostMapping("/{id}/toggle")
-    public String toggle(@PathVariable Long id, RedirectAttributes ra) {
+    public String toggle(@PathVariable Long id,
+                         @AuthenticationPrincipal LoginUser currentUser,
+                         RedirectAttributes ra) {
+        if (!currentUser.canManageOperations()) throw new ForbiddenException("お知らせ管理は管理者・スタッフのみ利用できます");
         announcementService.findAll().stream()
                 .filter(a -> a.id().equals(id))
                 .findFirst()
@@ -49,7 +54,10 @@ public class AnnouncementController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, RedirectAttributes ra) {
+    public String delete(@PathVariable Long id,
+                         @AuthenticationPrincipal LoginUser currentUser,
+                         RedirectAttributes ra) {
+        if (!currentUser.canManageOperations()) throw new ForbiddenException("お知らせ管理は管理者・スタッフのみ利用できます");
         announcementService.delete(id);
         ra.addFlashAttribute("success", "お知らせを削除しました");
         return "redirect:/app/admin/announcements";

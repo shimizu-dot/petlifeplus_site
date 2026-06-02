@@ -54,15 +54,18 @@ public class ConsultChatService {
         this.consultChatMapper = consultChatMapper;
     }
 
+    /** 表示・AI応答・フロー判定すべてに適用する会話履歴の上限件数 */
+    private static final int HISTORY_LIMIT = 30;
+
     public List<ConsultChatMessageEntity> getRecentMessages(LoginUser user) {
-        List<ConsultChatMessageEntity> rows = consultChatMapper.findRecentByUserId(user.id(), 50);
+        List<ConsultChatMessageEntity> rows = consultChatMapper.findRecentByUserId(user.id(), HISTORY_LIMIT);
         List<ConsultChatMessageEntity> ordered = new ArrayList<>(rows);
         Collections.reverse(ordered);
         return ordered;
     }
 
     public List<FlowStepProgress> getFlowProgress(LoginUser user) {
-        List<ConsultChatMessageEntity> recent = consultChatMapper.findRecentByUserId(user.id(), 20);
+        List<ConsultChatMessageEntity> recent = consultChatMapper.findRecentByUserId(user.id(), HISTORY_LIMIT);
         boolean hasSymptom = false, hasTiming = false, hasFrequency = false, hasCondition = false;
 
         for (ConsultChatMessageEntity row : recent) {
@@ -89,7 +92,7 @@ public class ConsultChatService {
         }
         save(user.id(), "USER", trimmed);
         // Fetch history after saving so current message is included
-        List<ConsultChatMessageEntity> historyDesc = consultChatMapper.findRecentByUserId(user.id(), 20);
+        List<ConsultChatMessageEntity> historyDesc = consultChatMapper.findRecentByUserId(user.id(), HISTORY_LIMIT);
         save(user.id(), "BOT", generateReply(historyDesc, trimmed));
     }
 

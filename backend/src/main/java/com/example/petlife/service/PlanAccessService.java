@@ -85,10 +85,6 @@ public class PlanAccessService {
         return planFeatureMapper.findActiveFeatureCodesByUserId(user.id());
     }
 
-    private Set<String> activeFeaturesByUserId(Long userId) {
-        return planFeatureMapper.findActiveFeatureCodesByUserId(userId);
-    }
-
     public boolean canUseAiSymptom(LoginUser user) {
         return activeFeatures(user).contains(UserIntegrationStatus.FEATURE_AI_SYMPTOM);
     }
@@ -134,27 +130,13 @@ public class PlanAccessService {
     }
 
     /**
-     * userId 指定版（管理者が他ユーザーを確認する場合など）。
-     */
-    public UserIntegrationStatus resolveIntegrationStatusByUserId(Long userId, String slackUserId, String lineUserId) {
-        Set<String> features = activeFeaturesByUserId(userId);
-        return new UserIntegrationStatus(
-                features.contains(UserIntegrationStatus.FEATURE_SLACK_BOT),
-                slackUserId != null && !slackUserId.isBlank(),
-                features.contains(UserIntegrationStatus.FEATURE_LINE_BOT),
-                lineUserId != null && !lineUserId.isBlank(),
-                features.contains(UserIntegrationStatus.FEATURE_ZOOM_CONSULT)
-        );
-    }
-
-    /**
      * ロール込みの統合ステータス解決。
      * roleId が 3（一般ユーザー）以外のスタッフ系ロールは全機能利用可能として扱う。
      */
     public UserIntegrationStatus resolveIntegrationStatusForUser(
             Long userId, Long roleId, String slackUserId, String lineUserId) {
         boolean isStaffRole = roleId != null && roleId != 3L;
-        Set<String> features = isStaffRole ? ALL_FEATURES : activeFeaturesByUserId(userId);
+        Set<String> features = isStaffRole ? ALL_FEATURES : planFeatureMapper.findActiveFeatureCodesByUserId(userId);
         return new UserIntegrationStatus(
                 features.contains(UserIntegrationStatus.FEATURE_SLACK_BOT),
                 slackUserId != null && !slackUserId.isBlank(),

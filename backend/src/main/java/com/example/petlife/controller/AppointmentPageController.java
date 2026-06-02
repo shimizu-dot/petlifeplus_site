@@ -51,7 +51,9 @@ public class AppointmentPageController {
         }
         LocalDate slotDate = (date != null) ? date : LocalDate.now();
         model.addAttribute("isAdminView", currentUser.canManageClinical());
-        model.addAttribute("canChooseOnline", planAccessService.canUsePrioritySupport(currentUser));
+        model.addAttribute("canChooseOnline",
+                currentUser.hasStaffAccess() ||
+                planAccessService.resolvePlanTier(currentUser) == PlanAccessService.PlanTier.PREMIUM);
         model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                 .filter(p -> p.deceasedAt() == null)
                 .toList());
@@ -72,7 +74,9 @@ public class AppointmentPageController {
         if (result.hasErrors()) {
             LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
             model.addAttribute("isAdminView", false);
-            model.addAttribute("canChooseOnline", planAccessService.canUsePrioritySupport(currentUser));
+            model.addAttribute("canChooseOnline",
+                    currentUser.hasStaffAccess() ||
+                    planAccessService.resolvePlanTier(currentUser) == PlanAccessService.PlanTier.PREMIUM);
             model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                     .filter(p -> p.deceasedAt() == null)
                     .toList());

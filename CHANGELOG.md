@@ -2,6 +2,126 @@
 
 ## [2026-06-02]
 
+### セキュリティ修正（Low 対応）
+
+#### S-L1 — line-qr.html の QR コード生成を外部 API からクライアントサイドへ変更
+- **ファイル:** `frontend/public/line-qr.html`
+- **問題:** `<img src="https://api.qrserver.com/v1/create-qr-code/?...&data=https://line.me/R/ti/p/%40434idigg">` で外部サーバーにリクエストを送信しており、LINE の友達追加 URL が `api.qrserver.com` に渡されていた。`index.html` では既に `qrcodejs` でクライアントサイド生成しているにもかかわらず、このページだけ外部依存していた
+- **変更内容:**
+  - 外部 API の `<img>` タグを削除
+  - `<div id="qr-canvas">` プレースホルダーを配置
+  - `index.html` と同じ `qrcodejs@1.0.0`（CDN）を使用し、ブラウザ内で QR コードを生成
+  - LINE URL はブラウザの外に送信されない
+
+### セキュリティ修正・UX修正（Medium 対応・第2弾）
+
+#### S-M1 — GlobalExceptionHandler の内部エラーメッセージを隠蔽
+- **ファイル:** `backend/src/main/java/com/example/petlife/exception/GlobalExceptionHandler.java`
+- **問題:** `@ExceptionHandler(Exception.class)` で `ex.getMessage()` をそのままクライアントへ返していたため、DB エラー・NullPointerException などの内部詳細（テーブル名・カラム名・スタックトレース等）が JSON レスポンスに露出する可能性があった
+- **変更内容:**
+  - `Logger` を追加し、予期しない例外は `log.error()` でサーバーログに記録
+  - クライアントへは汎用メッセージ「予期しないエラーが発生しました。管理者にお問い合わせください。」を返すよう変更
+
+#### S-M2 — webapp.html を /app/login へ自動リダイレクトに変更
+- **ファイル:** `frontend/public/webapp.html`
+- **問題:** ナビの「ログイン」リンク（`href="webapp.html"`）が「ただいまメンテナンス中！」と表示するページを指しており、ユーザーがログイン画面に辿り着けなかった
+- **変更内容:** `<meta http-equiv="refresh">` と `window.location.replace()` を追加し、アクセス直後に `/app/login` へリダイレクト
+
+#### S-M3 — パスワードリセットにレート制限（15分）を追加
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/mapper/PasswordResetTokenMapper.java`
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+- **問題:** 同一メールアドレスへのリセット要求を無制限に送信でき、攻撃者が他人のアドレスに大量のリセットメールを送れた
+- **変更内容:**
+  - `PasswordResetTokenMapper.countRecentByUserId()` を追加（直近 N 分以内のトークン件数を取得）
+  - `RATE_LIMIT_MINUTES = 15` 定数を追加
+  - `initiateReset()` で 15 分以内に送信済みトークンがある場合はメール送信をスキップし、ログに記録
+
+#### S-M4 — AnnouncementController にコントローラー層の権限チェックを追加
+- **ファイル:** `backend/src/main/java/com/example/petlife/controller/AnnouncementController.java`
+- **変更内容:** `create()`・`toggle()`・`delete()` の各メソッドに `@AuthenticationPrincipal LoginUser currentUser` を追加し、`canManageOperations()`（isAdmin() || isStaff()）が false の場合は `ForbiddenException` をスロー（SecurityConfig の保護に加えた多層防御）
+
+### インフラ修正
+
+#### I-02 — Docker コンテナ再起動時のアップロードファイル消失を修正
+- **ファイル:**
+  - `docker-compose.yml`
+  - `.env.example`
+- **問題:** `app` サービスに volumes 設定がなく、`docker compose down` でコンテナを削除するとペット写真・健康記録画像がすべて消失していた。DB データは `pgdata` named volume で保護されているが、アップロードファイルは無保護だった
+- **変更内容:**
+  1. `docker-compose.yml` の `app` サービスに `volumes: - uploads:/app/uploads` を追加
+  2. `UPLOAD_DIR: /app/uploads` を environment に追加（`app.upload.dir` を絶対パスで指定）
+  3. グローバル `volumes` セクションに `uploads:` named volume を追加
+- **注意:** 既存環境に適用する場合、`docker compose down -v` は既存ファイルも削除するため使用しないこと。通常の `docker compose down && docker compose up` であればデータは保持される
+- **`docker compose down -v` との関係:** `-v` フラグは named volume も削除するため、本番では使用禁止。`pgdata`（DB）と `uploads`（画像）の両方が削除される
+
+### コード整理（Low 対応・第2弾）
+
+#### L-01b — PlanAccessService のデッドコードを削除
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/PlanAccessService.java`
+- **変更内容:**
+  - `private Set<String> activeFeaturesByUserId(Long userId)` を削除（外部公開メソッドからのみ呼ばれていた中間メソッド）
+  - `public UserIntegrationStatus resolveIntegrationStatusByUserId(Long, String, String)` を削除（どのコントローラー・サービスからも呼ばれていない未使用メソッド）
+  - `resolveIntegrationStatusForUser()` 内で `planFeatureMapper.findActiveFeatureCodesByUserId(userId)` を直接呼び出すようインライン化
+
+#### L-02b — ReportController にコントローラー層の権限チェックを追加
+- **ファイル:** `backend/src/main/java/com/example/petlife/controller/ReportController.java`
+- **変更内容:** `index()` に `@AuthenticationPrincipal LoginUser currentUser` を追加し、`currentUser.isAdmin()` が `false` の場合は `ForbiddenException` をスロー（SecurityConfig の保護に加えた多層防御）
+
+### バグ修正・ロジック修正（Medium 対応）
+
+#### B-M1 — ConsultChatService の履歴上限を30件に統一
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/ConsultChatService.java`
+- **問題:** `getRecentMessages()`（表示用）は50件、`getFlowProgress()`・`postUserMessage()`（AI応答・フロー判定用）は20件と不統一だった。表示と AI 応答で参照する会話の範囲が異なるため、UI に表示されているのに AI が把握していない発言が生じていた
+- **変更内容:**
+  - `HISTORY_LIMIT = 30` 定数を追加
+  - `getRecentMessages()`・`getFlowProgress()`・`postUserMessage()` の3箇所を `HISTORY_LIMIT` で統一
+
+#### B-M2 — AppointmentController.create() の初期ステータスを REQUESTED に固定
+- **ファイル:** `backend/src/main/java/com/example/petlife/controller/AppointmentController.java`
+- **問題:** REST API の予約作成エンドポイントで、リクエストボディの `status` フィールドがそのまま使われていた。スタッフ（`hasStaffAccess()`）が `"CONFIRMED"` や `"COMPLETED"` を指定することで、承認ワークフローを迂回して任意のステータスで予約を作成できた
+- **変更内容:** スタッフ・一般ユーザーの両パスとも `status` を `"REQUESTED"` に固定。承認・却下は `approve()` / `reject()` 専用エンドポイント経由のみに限定
+
+### バグ修正・ロジック修正（High 対応）
+
+#### B-H1 — BillingService.createInvoice() に重複請求書チェックを追加
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/mapper/InvoiceMapper.java`
+  - `backend/src/main/java/com/example/petlife/service/BillingService.java`
+- **問題:** 同一サブスクリプションに対して UNPAID または PARTIAL の請求書が既存でも、新たな請求書を無制限に発行できた。更新申請を複数回実行したり、スケジューラーが重複実行された場合に重複請求書が生成されていた
+- **変更内容:**
+  - `InvoiceMapper.countUnpaidBySubscriptionId(Long subscriptionId)` を追加（`payment_status IN ('UNPAID', 'PARTIAL')` の件数を返す）
+  - `BillingService.createInvoice()` の先頭で同メソッドを呼び出し、既存の未払い請求書がある場合は `BadRequestException` をスロー
+
+#### B-H2 — 予約画面のプラン判定誤用を2箇所修正
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentPageController.java`
+- **問題1（AppointmentService:201）:** `createGeneralCare()` のプランゲートが `canUseAiSymptom()` を流用していた。今回の修正で `canUseAppointments()` に統一
+- **問題2（AppointmentPageController:54,75）:** `canChooseOnline` フラグが `canUsePrioritySupport()`（Zoom フィーチャーチェック）を誤用。Zoom チェックと PREMIUM プラン判定がたまたま一致していたが、将来的に乖離するリスクがあった
+- **変更内容:**
+  - `AppointmentService.createGeneralCare()`: `canUseAiSymptom()` → `canUseAppointments()`
+  - `AppointmentPageController.page()` および `create()`（バリデーションエラー時再表示）: `canUsePrioritySupport()` → `currentUser.hasStaffAccess() || resolvePlanTier(currentUser) == PlanTier.PREMIUM` で意図を明示
+
+### セキュリティ修正（Critical 対応）
+
+#### S-04 — /api/appointments/** への認証要件を追加
+- **ファイル:** `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+- **問題:** `/api/appointments/**` が SecurityConfig の `.anyRequest().permitAll()` に該当しており、未認証でアクセス可能だった。`AppointmentController` は `@AuthenticationPrincipal LoginUser currentUser` を受け取るが、未認証リクエストでは null となり NPE またはデータ漏洩が発生しうる
+- **変更内容:**
+  1. CSRF 除外リストに `/api/appointments`, `/api/appointments/**` を追加（REST API は JavaScript から呼ばれるため CSRF トークンをヘッダーで渡せないため）
+  2. `hasAnyRole("SUPER", "VET", "STAFF", "USER")` を追加（`/app/appointments/**` の画面版と同じロール制限）
+
+#### S-05 — STAFF によるユーザーロール昇格を防止
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/UserService.java`
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+- **問題:** `UserController.update()` は STAFF にも開放されているが、`UserService.update()` がロール変更を制限なく適用していた。STAFF が `roleId=1`（ADMIN）を含むリクエストを送ることで任意のユーザーを ADMIN に昇格させられた
+- **変更内容:**
+  - `UserService.update()` に `LoginUser caller` 引数を追加
+  - `caller.isAdmin()` が `true` の場合のみリクエストの `roleId` を適用。STAFF が呼び出した場合は既存の `roleId` を維持（変更をサイレントに無視）
+  - `UserController.update()` から `currentUser` を渡すよう変更
+
 ### コード整理・運用改善（Low 対応）
 
 #### L-01 — AuthService・認証 DTO を削除（未使用デッドコード）
