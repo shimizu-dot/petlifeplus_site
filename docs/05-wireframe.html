@@ -102,6 +102,211 @@
       color: #1e3a8a;
       font-weight: 700;
     }
+    .app-wire-note {
+      margin: 10px 0 16px;
+      color: #475569;
+      line-height: 1.7;
+    }
+    .app-wire-source {
+      margin: 0 0 16px;
+      padding: 12px 14px;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      background: #f8fbff;
+      color: #334155;
+      line-height: 1.8;
+      font-size: 13px;
+    }
+    .app-wire-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .app-wire-screen {
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      background: #ffffff;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+    }
+    .app-wire-caption {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      background: linear-gradient(135deg, #eff6ff 0%, #ecfdf5 100%);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .app-wire-frame {
+      min-height: 260px;
+      padding: 10px;
+      background: #f8fafc;
+    }
+    .app-wire-public-header,
+    .app-wire-footer,
+    .app-wire-topbar,
+    .app-wire-sidebar,
+    .app-wire-card,
+    .app-wire-field,
+    .app-wire-btn,
+    .app-wire-table,
+    .app-wire-row,
+    .app-wire-cell {
+      box-sizing: border-box;
+    }
+    .app-wire-public-header,
+    .app-wire-footer,
+    .app-wire-topbar {
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-size: 11px;
+      padding: 7px 8px;
+    }
+    .app-wire-footer {
+      margin-top: 8px;
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #64748b;
+    }
+    .app-wire-public-main,
+    .app-wire-app {
+      margin-top: 8px;
+    }
+    .app-wire-app {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 8px;
+      min-height: 238px;
+    }
+    .app-wire-sidebar {
+      border: 1px solid #0f766e;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #e0f2fe;
+      padding: 8px;
+      font-size: 10px;
+      line-height: 1.7;
+    }
+    .app-wire-main {
+      min-width: 0;
+    }
+    .app-wire-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .app-wire-card {
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+    .app-wire-card-title {
+      height: 12px;
+      width: 42%;
+      border-radius: 999px;
+      background: #93c5fd;
+      margin-bottom: 8px;
+    }
+    .app-wire-kpi {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .app-wire-field {
+      height: 28px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #f8fafc;
+      margin-bottom: 7px;
+    }
+    .app-wire-actions,
+    .app-wire-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .app-wire-btn {
+      min-width: 54px;
+      height: 24px;
+      border-radius: 999px;
+      background: #1d4ed8;
+      color: #ffffff;
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+    }
+    .app-wire-btn.secondary {
+      border: 1px solid #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .app-wire-table {
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .app-wire-row {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      min-height: 28px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .app-wire-row:last-child {
+      border-bottom: 0;
+    }
+    .app-wire-cell {
+      padding: 6px;
+      background: #ffffff;
+      font-size: 10px;
+      color: #475569;
+    }
+    .app-wire-row:first-child .app-wire-cell {
+      background: #e0f2fe;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .app-wire-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+    .app-wire-day {
+      min-height: 28px;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      background: #ffffff;
+      font-size: 9px;
+      color: #64748b;
+      padding: 3px;
+    }
+    .app-wire-slot-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    .app-wire-slot {
+      height: 24px;
+      border: 1px solid #93c5fd;
+      border-radius: 7px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 900px) {
+      .app-wire-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -246,7 +451,165 @@
             <div class="fill-label">Webアプリ画面 ワイヤーフレーム <span class="required">必須</span></div>
             <div class="fill-hint">主要な画面（ログイン・一覧・登録・詳細・編集）のワイヤーフレーム</div>
             <div class="fill-content">
-              <p>（ここにWebアプリ画面のワイヤーフレーム画像を配置）</p>
+              <p class="app-wire-note">バックエンドの Thymeleaf テンプレートから、実装済み画面の構造をワイヤーフレーム化する。公開側ログイン画面はヘッダー・フォーム・フッター構成、ログイン後画面は共通サイドバー・トップバー・カード型コンテンツ構成を基準にする。</p>
+              <div class="app-wire-source">
+                生成元 HTML：`auth/login.html` / `dashboard/index.html` / `pets/list.html` / `pets/form.html` / `pets/detail.html` / `health/list.html` / `health/form.html` / `appointments/index.html` / `calendar/index.html` / `admin/users/list.html` / `appointments/slot-management.html`
+              </div>
+
+              <div class="app-wire-grid">
+                <div class="app-wire-screen">
+                  <div class="app-wire-caption">ログイン画面（auth/login.html）</div>
+                  <div class="app-wire-frame">
+                    <div class="app-wire-public-header">ブランド / グローバルナビ / お問い合わせ</div>
+                    <div class="app-wire-public-main">
+                      <div class="app-wire-card" style="max-width:320px;margin:0 auto;">
+                        <div class="app-wire-card-title"></div>
+                        <div class="app-wire-field"></div>
+                        <div class="app-wire-field"></div>
+                        <div class="app-wire-actions">
+                          <span class="app-wire-btn">ログイン</span>
+                          <span class="app-wire-btn secondary">トップへ戻る</span>
+                        </div>
+                        <div style="height:12px;width:60%;background:#dbeafe;border-radius:999px;margin:12px auto 0;"></div>
+                      </div>
+                    </div>
+                    <div class="app-wire-footer">トップ / 総合案内 / 導入事例と実績 / 規約</div>
+                  </div>
+                </div>
+
+                <div class="app-wire-screen">
+                  <div class="app-wire-caption">ダッシュボード（dashboard/index.html）</div>
+                  <div class="app-wire-frame">
+                    <div class="app-wire-app">
+                      <div class="app-wire-sidebar">🐾 Pet Life Plus<br>📊 ダッシュボード<br>🔔 通知<br>🐶 ペット管理<br>📅 カレンダー<br>📋 診療予約</div>
+                      <div class="app-wire-main">
+                        <div class="app-wire-topbar"><span>ダッシュボード</span><span>ユーザー挨拶</span></div>
+                        <div class="app-wire-kpi">
+                          <div class="app-wire-card"><div class="app-wire-card-title"></div><div style="height:28px;background:#dbeafe;border-radius:8px;"></div></div>
+                          <div class="app-wire-card"><div class="app-wire-card-title"></div><div style="height:28px;background:#dbeafe;border-radius:8px;"></div></div>
+                          <div class="app-wire-card"><div class="app-wire-card-title"></div><div style="height:28px;background:#dbeafe;border-radius:8px;"></div></div>
+                        </div>
+                        <div class="app-wire-card"><div class="app-wire-card-title"></div><div class="app-wire-actions"><span class="app-wire-btn secondary">ペット一覧</span><span class="app-wire-btn">ペット登録</span><span class="app-wire-btn secondary">健康記録</span></div></div>
+                        <div class="app-wire-card"><div class="app-wire-card-title"></div><div class="app-wire-actions"><span class="app-wire-btn">バックアップ</span><span class="app-wire-btn secondary">管理画面</span></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="app-wire-screen">
+                  <div class="app-wire-caption">一覧画面：ペット管理（pets/list.html）</div>
+                  <div class="app-wire-frame">
+                    <div class="app-wire-app">
+                      <div class="app-wire-sidebar">共通サイドバー<br>ペット・健康<br>🐶 ペット管理</div>
+                      <div class="app-wire-main">
+                        <div class="app-wire-topbar"><span>ペット管理</span></div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-actions" style="justify-content:space-between;">
+                            <span class="app-wire-card-title" style="margin:0;"></span>
+                            <span class="app-wire-actions"><span class="app-wire-btn secondary">List</span><span class="app-wire-btn secondary">Grid</span><span class="app-wire-btn secondary">Table</span><span class="app-wire-btn">＋登録</span></span>
+                          </div>
+                        </div>
+                        <div class="app-wire-table">
+                          <div class="app-wire-row"><div class="app-wire-cell">名前</div><div class="app-wire-cell">種別</div><div class="app-wire-cell">操作</div></div>
+                          <div class="app-wire-row"><div class="app-wire-cell">ポチ / 画像</div><div class="app-wire-cell">犬・柴犬</div><div class="app-wire-cell">詳細 / 健康記録</div></div>
+                          <div class="app-wire-row"><div class="app-wire-cell">ミケ / 画像なし</div><div class="app-wire-cell">猫</div><div class="app-wire-cell">編集 / 削除</div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="app-wire-screen">
+                  <div class="app-wire-caption">登録・編集・詳細画面（pets/form.html / pets/detail.html）</div>
+                  <div class="app-wire-frame">
+                    <div class="app-wire-app">
+                      <div class="app-wire-sidebar">共通サイドバー<br>🐶 ペット管理<br>📝 健康記録</div>
+                      <div class="app-wire-main">
+                        <div class="app-wire-topbar"><span>ペット登録・編集</span></div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-card-title"></div>
+                          <div class="app-wire-field"></div>
+                          <div class="app-wire-field"></div>
+                          <div class="app-wire-field"></div>
+                          <div class="app-wire-actions"><span class="app-wire-btn">保存</span><span class="app-wire-btn secondary">戻る</span></div>
+                        </div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-card-title"></div>
+                          <div class="app-wire-table">
+                            <div class="app-wire-row"><div class="app-wire-cell">基本情報</div><div class="app-wire-cell">健康記録</div><div class="app-wire-cell">AI症状チェック</div></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="app-wire-screen">
+                  <div class="app-wire-caption">健康記録画面（health/list.html / health/form.html）</div>
+                  <div class="app-wire-frame">
+                    <div class="app-wire-app">
+                      <div class="app-wire-sidebar">共通サイドバー<br>🐶 ペット管理<br>📁 健康記録</div>
+                      <div class="app-wire-main">
+                        <div class="app-wire-topbar"><span>健康記録</span></div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-actions" style="justify-content:space-between;"><span class="app-wire-card-title" style="margin:0;"></span><span class="app-wire-btn">＋記録追加</span></div>
+                        </div>
+                        <div class="app-wire-table">
+                          <div class="app-wire-row"><div class="app-wire-cell">記録日</div><div class="app-wire-cell">体重・体温</div><div class="app-wire-cell">操作</div></div>
+                          <div class="app-wire-row"><div class="app-wire-cell">2026/06/02</div><div class="app-wire-cell">スコア・メモ</div><div class="app-wire-cell">編集 / 印刷</div></div>
+                        </div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-field"></div><div class="app-wire-field"></div><div class="app-wire-actions"><span class="app-wire-btn secondary">食欲</span><span class="app-wire-btn secondary">運動</span><span class="app-wire-btn secondary">睡眠</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="app-wire-screen">
+                  <div class="app-wire-caption">診療予約・カレンダー画面（appointments/index.html / calendar/index.html）</div>
+                  <div class="app-wire-frame">
+                    <div class="app-wire-app">
+                      <div class="app-wire-sidebar">共通サイドバー<br>📅 カレンダー<br>📋 診療予約<br>💬 相談</div>
+                      <div class="app-wire-main">
+                        <div class="app-wire-topbar"><span>診療予約 / カレンダー</span><span>解説</span></div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-actions"><span class="app-wire-btn secondary">前日</span><span class="app-wire-field" style="width:96px;margin:0;"></span><span class="app-wire-btn secondary">翌日</span></div>
+                          <div class="app-wire-actions" style="margin:8px 0;"><span class="app-wire-btn secondary">来院</span><span class="app-wire-btn secondary">オンライン</span></div>
+                          <div class="app-wire-slot-grid"><span class="app-wire-slot">10:00</span><span class="app-wire-slot">10:30</span><span class="app-wire-slot">11:00</span><span class="app-wire-slot">11:30</span></div>
+                        </div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-chips"><span class="app-wire-btn secondary">対象ペット</span><span class="app-wire-btn secondary">💉</span><span class="app-wire-btn secondary">🩺</span><span class="app-wire-btn secondary">🗑️</span></div>
+                          <div class="app-wire-calendar" style="margin-top:8px;">
+                            <div class="app-wire-day">日</div><div class="app-wire-day">月</div><div class="app-wire-day">火</div><div class="app-wire-day">水</div><div class="app-wire-day">木</div><div class="app-wire-day">金</div><div class="app-wire-day">土</div>
+                            <div class="app-wire-day">1</div><div class="app-wire-day">2 📁</div><div class="app-wire-day">3</div><div class="app-wire-day">4 10:00</div><div class="app-wire-day">5</div><div class="app-wire-day">6 💉</div><div class="app-wire-day">7</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="app-wire-screen">
+                  <div class="app-wire-caption">管理系画面（admin/users/list.html / slot-management.html）</div>
+                  <div class="app-wire-frame">
+                    <div class="app-wire-app">
+                      <div class="app-wire-sidebar">共通サイドバー<br>👥 ユーザ管理<br>📢 お知らせ<br>💳 請求<br>🗓️ 予約枠</div>
+                      <div class="app-wire-main">
+                        <div class="app-wire-topbar"><span>管理画面</span></div>
+                        <div class="app-wire-card">
+                          <div class="app-wire-actions" style="justify-content:space-between;"><span class="app-wire-card-title" style="margin:0;"></span><span class="app-wire-btn">新規作成</span></div>
+                        </div>
+                        <div class="app-wire-table">
+                          <div class="app-wire-row"><div class="app-wire-cell">対象</div><div class="app-wire-cell">状態</div><div class="app-wire-cell">操作</div></div>
+                          <div class="app-wire-row"><div class="app-wire-cell">ユーザー / 予約枠</div><div class="app-wire-cell">ACTIVE / 空き</div><div class="app-wire-cell">編集 / 無効化</div></div>
+                          <div class="app-wire-row"><div class="app-wire-cell">請求 / 通知</div><div class="app-wire-cell">未払い / 配信</div><div class="app-wire-cell">詳細 / 送信</div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

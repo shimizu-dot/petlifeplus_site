@@ -36,6 +36,13 @@ public interface UserMapper {
         """)
     UserEntity findByEmail(@Param("email") String email);
 
+    @Select("""
+        SELECT id, role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, last_login_at, deleted_at, created_at, updated_at
+        FROM users WHERE line_user_id = #{lineUserId} AND deleted_at IS NULL
+        LIMIT 1
+        """)
+    UserEntity findByLineUserId(@Param("lineUserId") String lineUserId);
+
     @Select("SELECT COUNT(*) FROM users WHERE email = #{email} AND deleted_at IS NULL")
     int existsByEmail(@Param("email") String email);
 
@@ -171,6 +178,14 @@ public interface UserMapper {
         WHERE id = #{userId} AND deleted_at IS NULL
         """)
     int saveLineUserId(@Param("userId") Long userId, @Param("lineUserId") String lineUserId);
+
+    @Update("""
+        UPDATE users
+        SET line_user_id = #{lineUserId}, updated_at = CURRENT_TIMESTAMP
+        WHERE email = #{email}
+          AND deleted_at IS NULL
+        """)
+    int saveLineUserIdByEmail(@Param("email") String email, @Param("lineUserId") String lineUserId);
 
     /** 支払期限超過によるアカウント停止（status を SUSPENDED に変更） */
     @Update("""

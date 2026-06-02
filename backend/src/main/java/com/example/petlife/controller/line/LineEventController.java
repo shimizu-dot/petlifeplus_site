@@ -3,6 +3,7 @@ package com.example.petlife.controller.line;
 import com.example.petlife.service.AnnouncementService;
 import com.example.petlife.service.line.LineBotService;
 import com.example.petlife.service.line.LineRequestVerifier;
+import com.example.petlife.service.line.LineUserLinkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,16 +32,19 @@ public class LineEventController {
     private final LineBotService lineBotService;
     private final LineRequestVerifier lineRequestVerifier;
     private final AnnouncementService announcementService;
+    private final LineUserLinkService lineUserLinkService;
     private final Set<String> adminLineUserIds;
     private final JsonParser jsonParser = JsonParserFactory.getJsonParser();
 
     public LineEventController(LineBotService lineBotService,
                                LineRequestVerifier lineRequestVerifier,
                                AnnouncementService announcementService,
+                               LineUserLinkService lineUserLinkService,
                                @Value("${admin.line-user-ids:}") String adminLineUserIdsCsv) {
         this.lineBotService = lineBotService;
         this.lineRequestVerifier = lineRequestVerifier;
         this.announcementService = announcementService;
+        this.lineUserLinkService = lineUserLinkService;
         this.adminLineUserIds = Arrays.stream(adminLineUserIdsCsv.split(","))
                 .map(String::strip)
                 .filter(s -> !s.isBlank())
@@ -99,6 +103,22 @@ public class LineEventController {
             String text       = (String) message.get("text");
 
             if (replyToken == null || text == null) continue;
+
+            // 一般ユーザー向け: 「連携 メールアドレス」で users.line_user_id を更新
+            LineUserLinkService.LinkResult linkResult = lineUserLinkService.linkByMessage(senderId, text);
+            if (linkResult != LineUserLinkService.LinkResult.NO_ACTION) {
+                if (linkResult == LineUserLinkService.LinkResult.LINKED) {
+                    lineBotService.replyMessage(replyToken, "✅ LINE連携が完了しました。");
+                    auditLog.info("action=line_user_linked lineUserId={}", senderId);
+                } else if (linkResult == LineUserLinkService.LinkResult.INVALID_FORMAT) {
+                    lineBotService.replyMessage(replyToken, "連携コマンドの形式が不正です。\n「連携 メールアドレス」で送信してください。");
+                } else if (linkResult == LineUserLinkService.LinkResult.USER_NOT_FOUND) {
+                    lineBotService.replyMessage(replyToken, "指定メールアドレスのユーザーが見つかりませんでした。");
+                } else if (linkResult == LineUserLinkService.LinkResult.ALREADY_LINKED_TO_OTHER) {
+                    lineBotService.replyMessage(replyToken, "このLINEアカウントは別ユーザーに連携済みです。");
+                }
+                continue;
+            }
 
             // 管理者からのメッセージ → お知らせ登録を試みる
             if (!adminLineUserIds.isEmpty() && adminLineUserIds.contains(senderId)) {

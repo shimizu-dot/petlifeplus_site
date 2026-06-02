@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## [2026-06-02]
+
+### ドキュメント更新
+
+#### D-01 — ワイヤーフレーム: Webアプリ画面を実HTML構成から生成
+- **ファイル:**
+  - `docs/05-wireframe.html`
+  - `docs/wireframe_document.xlsx`
+- **変更内容:**
+  - 第4章「Webアプリケーション画面」に、Thymeleaf テンプレートの実装構造に基づくワイヤーフレームを追加
+  - ログイン、ダッシュボード、ペット一覧、登録・編集・詳細、健康記録、診療予約・カレンダー、管理系画面をカード型ワイヤーとして整理
+  - 生成元テンプレート一覧を明記
+  - Excel資料に「Webアプリ画面」「Webアプリ導線」シートを追加し、実HTML由来の画面構成・遷移情報を反映
+
+## [2026-06-01]
+
+### 機能追加
+
+#### F-18 — LINE Webhook からユーザーID取得し、ユーザー管理DBへ自動反映
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/line/LineEventController.java`
+  - `backend/src/main/java/com/example/petlife/service/line/LineUserLinkService.java`（新規）
+  - `backend/src/main/java/com/example/petlife/mapper/UserMapper.java`
+- **変更内容:**
+  - Webhook メッセージ受信時に `events[].source.userId` を使った連携処理を追加
+  - LINE で `連携 メールアドレス` を送信すると `users.line_user_id` を更新する `LineUserLinkService` を実装
+  - 連携コマンドの形式不正・対象ユーザー未存在・他ユーザーへ既連携の分岐を追加
+  - `UserMapper` に `findByLineUserId` / `saveLineUserIdByEmail` を追加し、重複連携を抑止
+
 ## [2026-05-31]
 
 ### バグ修正
