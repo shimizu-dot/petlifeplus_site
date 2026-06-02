@@ -111,11 +111,13 @@ public class LineEventController {
                     lineBotService.replyMessage(replyToken, "✅ LINE連携が完了しました。");
                     auditLog.info("action=line_user_linked lineUserId={}", senderId);
                 } else if (linkResult == LineUserLinkService.LinkResult.INVALID_FORMAT) {
-                    lineBotService.replyMessage(replyToken, "連携コマンドの形式が不正です。\n「連携 メールアドレス」で送信してください。");
+                    lineBotService.replyMessage(replyToken,
+                            "連携コマンドの形式が不正です。\nアプリの「LINE連携」ページで6桁のコードを取得し、「連携 123456」の形式で送信してください。");
+                } else if (linkResult == LineUserLinkService.LinkResult.TOKEN_INVALID) {
+                    lineBotService.replyMessage(replyToken,
+                            "コードが無効または期限切れです（有効期限: 10分）。\nアプリの「LINE連携」ページで新しいコードを取得してください。");
                 } else if (linkResult == LineUserLinkService.LinkResult.USER_NOT_FOUND) {
-                    lineBotService.replyMessage(replyToken, "指定メールアドレスのユーザーが見つかりませんでした。");
-                } else if (linkResult == LineUserLinkService.LinkResult.ALREADY_LINKED_TO_OTHER) {
-                    lineBotService.replyMessage(replyToken, "このLINEアカウントは別ユーザーに連携済みです。");
+                    lineBotService.replyMessage(replyToken, "ユーザーが見つかりませんでした。");
                 }
                 continue;
             }

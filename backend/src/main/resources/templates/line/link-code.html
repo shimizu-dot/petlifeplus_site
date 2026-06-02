@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LINE連携 | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+  <div th:replace="~{fragments/nav :: sidebar}"></div>
+
+  <div class="main">
+    <div class="topbar"><span class="topbar-title">LINE連携</span></div>
+    <div class="content">
+
+      <div class="card" style="max-width:480px;">
+        <h2 style="margin-top:0;">LINE アカウント連携</h2>
+
+        <p>下記の手順でペットライフプラスの LINE Bot とアカウントを連携できます。</p>
+
+        <ol style="line-height:2;">
+          <li>ペットライフプラスの LINE 公式アカウントを友達追加</li>
+          <li>LINE で以下のコードを含むメッセージを送信</li>
+        </ol>
+
+        <div style="text-align:center; margin:24px 0;">
+          <p style="margin:0 0 8px; font-size:13px; color:#6b7280;">LINEに送るメッセージ（コピーして送信）</p>
+          <div style="display:inline-block; background:#f0fdf4; border:2px solid #22c55e;
+                      border-radius:12px; padding:16px 32px; font-size:24px; font-weight:700;
+                      letter-spacing:6px; color:#15803d; font-family:monospace;">
+            連携 <span th:text="${token}">123456</span>
+          </div>
+        </div>
+
+        <div style="background:#fef9c3; border-radius:8px; padding:12px 16px; font-size:13px; color:#854d0e; margin-bottom:20px;">
+          ⚠️ このコードの有効期限は <strong>10分</strong> です。期限切れの場合は「コードを再発行」してください。<br>
+          コードは他人に教えないでください。
+        </div>
+
+        <form th:action="@{/app/line/link-code/refresh}" method="post" style="margin:0;">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <button type="submit" class="btn btn-secondary">🔄 コードを再発行</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

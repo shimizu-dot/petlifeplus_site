@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
 @Service
 public class DatabaseBackupService {
 
-    @Value("${spring.datasource.url:jdbc:postgresql://localhost:5432/petlifeplus}")
+    @Value("${spring.datasource.url}")
     private String jdbcUrl;
 
-    @Value("${spring.datasource.username:postgres}")
+    @Value("${spring.datasource.username}")
     private String dbUsername;
 
-    @Value("${spring.datasource.password:hs0512}")
+    @Value("${spring.datasource.password}")
     private String dbPassword;
 
     private final DatabaseBackupProperties backupProps;

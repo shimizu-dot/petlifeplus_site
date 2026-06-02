@@ -47,5 +47,16 @@ public class SchemaCompatibilityInitializer implements CommandLineRunner {
             ON subscriptions(user_id)
             WHERE deleted_at IS NULL AND status = 'ACTIVE'
             """);
+
+        jdbcTemplate.execute("""
+            CREATE TABLE IF NOT EXISTS line_link_tokens (
+                id         BIGSERIAL    PRIMARY KEY,
+                user_id    BIGINT       NOT NULL REFERENCES users(id),
+                token      VARCHAR(6)   NOT NULL UNIQUE,
+                expires_at TIMESTAMP    NOT NULL,
+                used_at    TIMESTAMP,
+                created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+            """);
     }
 }

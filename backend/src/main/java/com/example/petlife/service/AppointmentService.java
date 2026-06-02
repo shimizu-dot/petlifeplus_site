@@ -9,6 +9,7 @@ import com.example.petlife.dto.common.PageResponse;
 import com.example.petlife.entity.AppointmentEntity;
 import com.example.petlife.entity.NotificationEntity;
 import com.example.petlife.exception.BadRequestException;
+import com.example.petlife.exception.ForbiddenException;
 import com.example.petlife.exception.NotFoundException;
 import com.example.petlife.mapper.AppointmentMapper;
 import com.example.petlife.mapper.AppointmentSlotMapper;
@@ -79,7 +80,18 @@ public class AppointmentService {
         return toResponse(row);
     }
 
-    public AppointmentResponse create(AppointmentCreateRequest req) {
+    public AppointmentResponse create(AppointmentCreateRequest req, LoginUser currentUser) {
+        // スタッフ以外はプランチェック（LIGHT プランは予約不可）
+        if (!currentUser.hasStaffAccess() && !planAccessService.canUseAppointments(currentUser)) {
+            throw new BadRequestException("この機能はスタンダード以上で利用できます");
+        }
+        // スタッフ以外は petId が自分所有かを確認（他ユーザーのペットIDを指定させない）
+        if (!currentUser.hasStaffAccess()) {
+            var pet = petMapper.findByIdAndOwnerUserId(req.petId(), currentUser.id());
+            if (pet == null) {
+                throw new ForbiddenException("指定されたペットへのアクセス権がありません");
+            }
+        }
         validateBusinessHours(req.scheduledAt());
         ensureNoDuplicate(req.staffUserId(), req.scheduledAt(), null);
         AppointmentEntity row = new AppointmentEntity(null, req.petId(), req.ownerUserId(), req.staffUserId(),

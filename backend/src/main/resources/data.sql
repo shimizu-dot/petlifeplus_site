@@ -18,9 +18,8 @@ ON CONFLICT (id) DO UPDATE
         role_name = EXCLUDED.role_name;
 
 -- ─── Users ───────────────────────────────────────────────────────────────────
--- BCrypt ハッシュ (rounds=10) で保存。DataInitializer も同じユーザーを upsert するが、
--- ここで先に作成することで pets/subscriptions の JOIN が成功する。
--- ON CONFLICT DO NOTHING: 既存ユーザーのパスワードは上書きしない。
+-- BCrypt ハッシュ (rounds=10) で保存。ON CONFLICT DO NOTHING: 既存ユーザーのパスワードは上書きしない。
+-- 本番環境では SQL_INIT_MODE=never を設定してシードを無効化すること。
 
 INSERT INTO users (role_id, name, email, password_hash, phone, status) VALUES
 -- SUPER: super123
@@ -51,18 +50,6 @@ INSERT INTO users (role_id, name, email, password_hash, phone, status) VALUES
 (3, 'プレミアム会員', 'owner3@petlife.local',
     '$2b$10$QzvJ9Z/cZr7wxqa4QFo69.rXFXQmgw6ys.nHZP1.TjJ7U864xIpQy',
     '090-6666-0003', 'ACTIVE')
-ON CONFLICT (email) DO NOTHING;
-
--- Developer account (h4mizoo@gmail.com / hs1015 / SUPER)
-INSERT INTO users (role_id, name, email, password_hash, phone, line_user_id, status)
-SELECT r.id,
-       '開発者',
-       'h4mizoo@gmail.com',
-       '$2a$10$0nDUs6dnw0HXsF0BdTLxfuj2gocg.3QznPuWxhYJgW59RX9zY4XfW',
-       '090-1455-3927',
-       'nz-1015',
-       'ACTIVE'
-FROM roles r WHERE r.role_code = 'SUPER'
 ON CONFLICT (email) DO NOTHING;
 
 -- ─── Plans ───────────────────────────────────────────────────────────────────

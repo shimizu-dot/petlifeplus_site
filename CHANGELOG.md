@@ -2,6 +2,119 @@
 
 ## [2026-06-02]
 
+### 機能追加（Low — フロント問い合わせフォームの実送信化）
+
+#### F-L1 — お問い合わせフォームをデモ送信からメール送信 API に変更
+- **新規ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/ContactController.java`
+  - `backend/src/main/java/com/example/petlife/dto/contact/ContactRequest.java`
+  - `backend/src/main/java/com/example/petlife/service/ContactService.java`
+- **変更ファイル:**
+  - `frontend/public/assets/js/main.js`
+  - `backend/src/main/resources/static/assets/js/main.js`
+  - `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+  - `backend/src/main/resources/application.properties`
+- **問題:** フロントの問い合わせフォームが submit を止めて「送信内容を受け付けました（デモ）。」と表示するだけで、実際の問い合わせ受付が未実装だった
+- **変更内容:** `POST /api/contact` を追加し、SendGrid SMTP 設定を使って問い合わせ内容を `CONTACT_TO_EMAIL` 宛にメール送信するよう実装。フロントは入力検証後に JSON で API 送信し、送信中・成功・失敗メッセージを表示するよう変更
+- **設定:** `contact.to-email=${CONTACT_TO_EMAIL:${SENDGRID_FROM_EMAIL:noreply@petlife.local}}` を追加。`SENDGRID_API_KEY` 未設定時は成功扱いにせず、送信設定不足のエラーを返す
+
+### セキュリティ修正（Low — 通知本文リンク化の href 属性エスケープ）
+
+#### S-L1 — 通知本文 URL 自動リンク化で href 属性をエスケープ
+- **ファイル:** `backend/src/main/resources/templates/notifications/index.html`
+- **再検証:** 通知本文は `textContent` から取得し、HTML 化前に `&`・`<`・`>` をエスケープしていたため本文テキスト部分の HTML 注入は抑制されていた。一方で URL 検出後の `href` 属性は直接文字列連結しており、URL に `"` や `'` が含まれると属性境界を壊せる余地があった
+- **変更内容:** `escapeAttr()` を追加し、生成する `<a href="...">` の `href` 値に `&`・`"`・`'`・`<`・`>` の属性エスケープを適用
+
+### セキュリティ修正（Medium — 本番環境への危険なデフォルト除去）
+
+#### S-M6 — DataInitializer.java を削除・data.sql から個人アカウントを削除
+- **削除ファイル:** `backend/src/main/java/com/example/petlife/config/DataInitializer.java`
+- **変更ファイル:** `backend/src/main/resources/data.sql`
+- **問題（DataInitializer）:** `CommandLineRunner` として起動時に必ず実行され、`SQL_INIT_MODE=never` を設定した本番環境でも `super@petlife.local / super123`・`admin@petlife.local / admin123` 等の開発アカウントを挿入していた。`data.sql` が正式な初期化ルートとなった現在、セーフティネットとしての役割は終わっており、本番リスクのみが残っていた
+- **問題（data.sql 個人アカウント）:** 開発者の実メールアドレス `h4mizoo@gmail.com`（パスワード `hs1015`・SUPER ロール）が平文パスワードのコメント付きでコードに埋め込まれていた。`ON CONFLICT DO NOTHING` により既存ユーザーは上書きしないが、未設定環境では毎起動 SUPER 権限の個人アカウントが作成された
+- **変更内容:**
+  1. `DataInitializer.java` を完全削除（`data.sql` が全ユーザーのシードを担う）
+  2. `data.sql` から `h4mizoo@gmail.com` の INSERT ブロックを削除
+  3. `data.sql` のコメントを更新（`DataInitializer` への言及を削除、本番注意書きを追加）
+- **残存する開発アカウント（`*.local` ドメイン）:** `super@petlife.local` 等は `SQL_INIT_MODE=never` 設定で抑制可能なため存続。本番では `docker-compose.yml` の `SQL_INIT_MODE` を `never` に変更すること
+
+### バグ修正（Medium — DB パスワードのフォールバック矛盾）
+
+#### B-M3 — DatabaseBackupService の独自フォールバックを削除して application.properties に一本化
+- **ファイル:** `backend/src/main/java/com/example/petlife/service/DatabaseBackupService.java`
+- **問題:** `@Value("${spring.datasource.password:hs0512}")` が旧パスワード（`hs0512`）をフォールバックとして持っており、`application.properties` の `spring.datasource.password=${DB_PASSWORD:postgres}` と不一致だった。`application.properties` が読み込まれない特殊な起動パターンや、将来プロパティキーが変更された場合に、バックアップ/リストアだけ誤ったパスワードで実行されて認証失敗する。また S-02 で変更した後も `DatabaseBackupService` だけ旧パスワードが残存していた
+- **変更内容:** `jdbcUrl`・`dbUsername`・`dbPassword` の 3 つの `@Value` アノテーションからフォールバック値（`:...`）を削除。`spring.datasource.*` のデフォルト値は `application.properties` が一元管理する。プロパティが未設定の場合は起動時に `IllegalArgumentException` で即座にエラーになるため、サイレントな認証失敗より安全
+
+### セキュリティ修正（Medium 対応 — 不要な CSRF 除外を削除）
+
+#### S-M5 — /api/appointments/** の不要な CSRF 除外を削除
+- **ファイル:** `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+- **経緯:** S-04（/api/appointments 認証追加）の際に「REST API は JavaScript から呼ばれる」という前提で CSRF 除外を追加したが、実際には予約フォームは `/app/appointments`（Thymeleaf ページコントローラー）に POST しており、`/api/appointments` を呼ぶ JavaScript はどこにも存在しなかった
+- **リスク評価（除外前の状況）:**
+  - HTML フォーム CSRF → 不可（フォームは `application/x-www-form-urlencoded`、API は `@RequestBody` で JSON 必須）
+  - 他ドメインからの `fetch()` CSRF → 不可（CORS 未設定のため Preflight 失敗）
+  - 不要な除外が存在することで、将来 JavaScript から API を呼ぶ実装を追加した際にデフォルトで無防備になるリスクがあった
+- **変更内容:** CSRF ignoringRequestMatchers から `/api/appointments` と `/api/appointments/**` を削除。将来 JavaScript から同 API を呼ぶ場合は CSRF トークンをリクエストヘッダー（`X-CSRF-TOKEN`）で送信すること
+
+### セキュリティ修正（High 対応 — 予約 REST API の制御不備）
+
+#### S-H3 — 予約 REST API がプラン制限と petId 所有権チェックを欠いていた
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentController.java`
+- **問題1（プラン迂回）:** `AppointmentService.create()` にはプランチェックがなく、LIGHT プランユーザーが UI の `ensureAccessible()` を迂回して `POST /api/appointments` 経由で予約を作成できた。プランチェックは `createGeneralCare()` にしか存在しなかった
+- **問題2（petId IDOR）:** 一般ユーザーの `ownerUserId` は `currentUser.id()` に固定されるが、`petId` はリクエストの値をそのまま使用しており、他ユーザーのペット ID を指定した不整合予約を作成できた
+- **変更内容:**
+  - `AppointmentService.create()` に `LoginUser currentUser` 引数を追加
+  - スタッフ以外のプランチェック: `!canUseAppointments(currentUser)` → `BadRequestException`
+  - スタッフ以外の petId 所有権チェック: `petMapper.findByIdAndOwnerUserId(req.petId(), currentUser.id())` が null → `ForbiddenException`
+  - `AppointmentController.create()` から `currentUser` を渡すよう変更
+  - スタッフ（VET/STAFF/ADMIN/SUPER）は従来通り任意の petId で予約可能
+
+### セキュリティ修正（High 対応 — STAFF による権限昇格防止）
+
+#### S-H2 — STAFF が上位権限ユーザーを作成・改変できる問題を修正
+- **ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/UserService.java`
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+- **問題1（作成）:** `UserService.create()` が `req.roleId()` をそのまま使っており、STAFF が `roleId=1`（ADMIN）や `roleId=2`（SUPER）を指定してユーザーを作成できた
+- **問題2（更新）:** `UserService.update()` で roleId の変更は修正済みだったが、既存の ADMIN/SUPER ユーザーの email・password・status を STAFF が変更できた（アカウント乗っ取りリスク）
+- **変更内容:**
+  1. `UserService.create()` に `LoginUser caller` 引数を追加。`caller.isAdmin()` でなく、かつ `roleId` が 1（ADMIN）か 2（SUPER）の場合は `ForbiddenException` をスロー
+  2. `UserService.update()` の先頭で、ターゲットユーザーの `existing.roleId()` が 1 か 2 の場合に `caller.isAdmin()` でなければ `ForbiddenException` をスロー
+  3. `UserController.create()` から `currentUser` を `userService.create()` に渡すよう変更
+
+| 操作 | ADMIN | STAFF |
+|---|---|---|
+| USER ロールのユーザー作成 | ○ | ○ |
+| ADMIN/SUPER ロールのユーザー作成 | ○ | ✗（新規追加） |
+| USER ロールのユーザー編集 | ○ | ○ |
+| ADMIN/SUPER ロールのユーザー編集 | ○ | ✗（新規追加） |
+| 任意ユーザーのロール変更 | ○ | ✗（前回修正済み） |
+
+### セキュリティ修正（High 対応 — LINE連携乗っ取り防止）
+
+#### S-H1 — LINE 連携をメールアドレス方式からワンタイムトークン方式に変更
+- **問題:** `LineUserLinkService.linkByMessage()` が「連携 {メールアドレス}」コマンドでユーザーを検索し、メールアドレスを知っているだけで第三者の LINE ID を任意のアカウントに紐付けられた
+- **新規ファイル:**
+  - `entity/LineLinkTokenEntity.java` — 6桁トークン Entity
+  - `mapper/LineLinkTokenMapper.java` — insert / findValidByToken / markUsed / invalidateByUserId
+  - `controller/LineLinkController.java` — `GET /app/line/link-code`（トークン生成・表示）、`POST /app/line/link-code/refresh`（再発行）
+  - `templates/line/link-code.html` — コード表示テンプレート（有効期限・使い方ガイド付き）
+- **変更ファイル:**
+  - `schema.sql` — `line_link_tokens` テーブル追加（user_id・token UNIQUE・expires_at・used_at）
+  - `SchemaCompatibilityInitializer.java` — 既存 DB への `CREATE TABLE IF NOT EXISTS` 追加
+  - `service/line/LineUserLinkService.java` — 全面書き換え
+    - `generateToken(Long userId)` 追加（SecureRandom 6桁・10分有効・既存トークンを無効化してから発行）
+    - `linkByMessage()` を「連携 {6桁コード}」形式に変更。コードで `line_link_tokens` を検索し、対応ユーザーに LINE ID を紐付け後トークンを使用済みにする
+  - `controller/line/LineEventController.java` — LinkResult の `ALREADY_LINKED_TO_OTHER` → `TOKEN_INVALID` に対応するメッセージを変更
+  - `templates/fragments/nav.html` — 全ロール共通メニューに「🔗 LINE連携」リンク追加
+- **新フロー:**
+  1. ユーザーが `/app/line/link-code` にアクセス → 6桁コードを取得（10分有効）
+  2. LINE Bot に「連携 {6桁コード}」と送信
+  3. Bot がコードを DB で検索・検証し、該当ユーザーの `line_user_id` を更新
+  4. メールアドレスは連携フローで一切使用しない
+
 ### セキュリティ修正（Low 対応）
 
 #### S-L1 — line-qr.html の QR コード生成を外部 API からクライアントサイドへ変更

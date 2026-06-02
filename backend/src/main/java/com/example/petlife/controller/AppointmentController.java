@@ -63,7 +63,7 @@ public class AppointmentController {
                         request.appointmentType(), request.channel(),
                         request.scheduledAt(), "REQUESTED", request.note());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(appointmentService.create(safeRequest));
+                .body(appointmentService.create(safeRequest, currentUser));
     }
 
     /** 更新: 自分の予約、または VET/STAFF/ADMIN のみ */

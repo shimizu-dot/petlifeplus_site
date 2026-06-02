@@ -63,7 +63,7 @@ public class UserController {
             return "admin/users/form";
         }
         try {
-            userService.create(form.toCreateRequest());
+            userService.create(form.toCreateRequest(), currentUser);
             ra.addFlashAttribute("success", "ユーザーを登録しました");
             return "redirect:/app/admin/users";
         } catch (BadRequestException ex) {

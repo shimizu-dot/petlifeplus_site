@@ -45,11 +45,15 @@ public class UserService {
         return toResponse(row);
     }
 
-    public UserResponse create(UserCreateRequest req) {
+    public UserResponse create(UserCreateRequest req, com.example.petlife.config.LoginUser caller) {
         if (userMapper.existsByEmail(req.email()) > 0) {
             throw new BadRequestException("Email already exists");
         }
         Long roleId = req.roleId() != null ? req.roleId() : 3L;
+        // ADMIN/SUPER ロールのユーザー作成は ADMIN のみ許可
+        if (!caller.isAdmin() && (roleId == 1L || roleId == 2L)) {
+            throw new com.example.petlife.exception.ForbiddenException("管理者ロールのユーザー作成は管理者のみ実行できます");
+        }
         UserEntity row = new UserEntity(
                 null, roleId, req.name(), req.email(),
                 passwordEncoder.encode(req.password()),
@@ -65,6 +69,10 @@ public class UserService {
     public UserResponse update(Long id, UserUpdateRequest req, com.example.petlife.config.LoginUser caller) {
         UserEntity existing = userMapper.findById(id);
         if (existing == null) throw new NotFoundException("User not found: " + id);
+        // ADMIN/SUPER ユーザーの編集は ADMIN のみ許可（STAFF による上位権限アカウントの改ざん防止）
+        if (!caller.isAdmin() && (existing.roleId() == 1L || existing.roleId() == 2L)) {
+            throw new com.example.petlife.exception.ForbiddenException("管理者ロールのユーザー編集は管理者のみ実行できます");
+        }
         if (userMapper.existsByEmailExcludingId(req.email(), id) > 0) {
             throw new BadRequestException("Email already exists");
         }

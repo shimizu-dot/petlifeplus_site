@@ -22,6 +22,10 @@
          th:classappend="${requestURI.contains('/password-resets') ? 'active' : ''}">
         🔑 パスワード変更
       </a>
+      <a th:href="@{/app/line/link-code}"
+         th:classappend="${requestURI.contains('/line/link-code') ? 'active' : ''}">
+        🔗 LINE連携
+      </a>
     </nav>
 
     <!-- ── 一般ユーザー（USER ロール）向け ──────────────── -->
