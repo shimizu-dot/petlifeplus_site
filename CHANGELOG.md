@@ -2,6 +2,20 @@
 
 ## [2026-06-03]
 
+### ドキュメント追加（Low — ご利用マニュアルを新規作成）
+
+#### D-L6 — manual.html を新規作成し Spring Boot から配信できるよう設定
+- **新規ファイル:** `frontend/public/manual.html`
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+  - `backend/src/main/java/com/example/petlife/config/WebResourceConfig.java`
+- **変更内容:**
+  1. ご利用マニュアルページを新規作成。構成: ①ログイン・パスワード管理 ②ペット登録・健康記録 ③診療予約 ④LINE アカウント連携 ⑤通知センター ⑥プラン機能比較表
+  2. LINE 連携手順は「友達追加 → 連携コード取得 → LINE で送信」の3ステップで説明。有効期限・再発行・セキュリティ注意事項を明記。連携後に届く通知の種類を一覧化
+  3. `SecurityConfig` の `permitAll()` に `/manual.html` を追加（未認証でも閲覧可）
+  4. `WebResourceConfig` のリソースハンドラーに `/manual.html` を追加（Spring Boot から `frontend/public/` を配信）
+  5. フッターの全ページに「ご利用マニュアル」リンクを追加
+
 ### ビルド修正（Critical — Docker イメージビルドがコンパイルエラーで失敗）
 
 #### Build-Fix1 — AppointmentController に ForbiddenException の import を追加
