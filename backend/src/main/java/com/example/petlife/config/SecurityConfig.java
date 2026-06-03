@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/", "/index.html", "/webapp.html",
                     "/f_contact.html", "/f_flow.html", "/f_info.html", "/f_service.html",
+                    "/manual.html",
                     "/css/**", "/js/**", "/assets/**", "/images/**"
                 ).permitAll()
                 .requestMatchers("/api/contact").permitAll()

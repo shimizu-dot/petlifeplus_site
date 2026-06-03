@@ -19,7 +19,8 @@ public class WebResourceConfig implements WebMvcConfigurer {
                         "/f_contact.html",
                         "/f_flow.html",
                         "/f_info.html",
-                        "/f_service.html"
+                        "/f_service.html",
+                        "/manual.html"
                 )
                 .addResourceLocations(
                         "file:frontend/public/",

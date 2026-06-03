@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ご利用マニュアル | ペットライフプラス</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .manual-toc { list-style: none; padding: 0; margin: 0; }
+    .manual-toc li { border-bottom: 1px solid var(--line); }
+    .manual-toc li:last-child { border-bottom: none; }
+    .manual-toc a { display: block; padding: 10px 4px; color: var(--accent); font-weight: 600; text-decoration: none; }
+    .manual-toc a:hover { text-decoration: underline; }
+    .step-block { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
+    .step-num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+                background: var(--primary); color: #fff; font-weight: 700;
+                display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .step-body { flex: 1; }
+    .step-body strong { display: block; margin-bottom: 4px; font-size: 15px; }
+    .step-body p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.7; }
+    .code-box { display: inline-block; background: #f0fdf4; border: 2px solid #22c55e;
+                border-radius: 10px; padding: 12px 28px; font-size: 22px; font-weight: 700;
+                letter-spacing: 5px; color: #15803d; font-family: monospace; margin: 12px 0; }
+    .warn-box { background: #fef9c3; border-left: 4px solid #f59e0b; border-radius: 6px;
+                padding: 10px 14px; font-size: 13px; color: #854d0e; line-height: 1.7; margin-top: 12px; }
+    .info-box { background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 6px;
+                padding: 10px 14px; font-size: 13px; color: #1e40af; line-height: 1.7; margin-top: 12px; }
+    .manual-section { margin-bottom: 48px; }
+    .manual-section h2 { border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 20px; }
+    .manual-section h3 { font-size: 16px; margin: 24px 0 10px; color: var(--text); }
+    .feature-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .feature-table th, .feature-table td { padding: 8px 12px; border: 1px solid var(--line); text-align: left; }
+    .feature-table th { background: #f8f9fa; font-weight: 700; }
+    .badge-light    { background: #e5e7eb; color: #374151; border-radius: 4px; padding: 2px 7px; font-size: 12px; }
+    .badge-standard { background: #dbeafe; color: #1d4ed8; border-radius: 4px; padding: 2px 7px; font-size: 12px; }
+    .badge-premium  { background: #fde68a; color: #92400e; border-radius: 4px; padding: 2px 7px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html">ペットライフプラス</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="global-nav" aria-label="メニューを開く">☰</button>
+      <nav id="global-nav" class="global-nav" aria-label="グローバルナビゲーション">
+        <a href="index.html">トップ</a>
+        <a href="f_service.html">総合案内</a>
+        <a href="f_flow.html">導入事例と実績</a>
+        <a href="/app/login">ログイン</a>
+        <a href="f_contact.html" class="btn btn-primary">お問い合わせ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="section">
+    <div class="container">
+      <h1>ご利用マニュアル</h1>
+      <p>ペットライフプラスの主な機能と操作手順をまとめています。</p>
+
+      <!-- 目次 -->
+      <article class="card" style="max-width:520px; margin-bottom: 40px;">
+        <h2 style="margin-top:0; font-size:16px;">目次</h2>
+        <ol class="manual-toc">
+          <li><a href="#login">ログイン・パスワード管理</a></li>
+          <li><a href="#pet">ペット登録・健康記録</a></li>
+          <li><a href="#appointment">診療予約</a></li>
+          <li><a href="#line">LINE アカウント連携</a></li>
+          <li><a href="#notification">通知センター</a></li>
+          <li><a href="#plan">プラン・サブスクリプション</a></li>
+        </ol>
+      </article>
+
+      <!-- 1. ログイン -->
+      <section class="manual-section" id="login">
+        <h2>1. ログイン・パスワード管理</h2>
+
+        <div class="card">
+          <h3>ログイン</h3>
+          <div class="step-block">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>ログインページを開く</strong>
+              <p>ナビゲーションの「ログイン」または <code>/app/login</code> にアクセスします。</p>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>メールアドレスとパスワードを入力</strong>
+              <p>登録済みのメールアドレスとパスワードを入力して「ログイン」ボタンを押します。</p>
+            </div>
+          </div>
+
+          <h3>パスワードを忘れた場合</h3>
+          <div class="step-block">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>「パスワードをお忘れの方」をクリック</strong>
+              <p>ログインページ下部のリンクから <code>/app/forgot-password</code> へ進みます。</p>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>メールアドレスを入力して送信</strong>
+              <p>登録メールアドレス宛にリセット用リンクが送られます（有効期限あり）。</p>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>メール内のリンクから新しいパスワードを設定</strong>
+              <p>リンクをクリックし、新しいパスワードを2回入力して確定します。</p>
+            </div>
+          </div>
+          <div class="info-box">再送制限: 同一メールアドレスへのリセット要求は 15 分に 1 回です。</div>
+        </div>
+      </section>
+
+      <!-- 2. ペット登録 -->
+      <section class="manual-section" id="pet">
+        <h2>2. ペット登録・健康記録</h2>
+        <div class="card">
+          <h3>ペットを登録する</h3>
+          <div class="step-block">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>ダッシュボードの「ペット一覧」を開く</strong>
+              <p>サイドメニュー →「ペット」→「ペット一覧」(<code>/app/pets</code>)</p>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>「新規登録」ボタンをクリック</strong>
+              <p>名前・犬種・生年月日・基準体重などを入力して保存します。</p>
+            </div>
+          </div>
+
+          <h3>健康記録を追加する</h3>
+          <div class="step-block">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>ペット詳細から「健康記録」を開く</strong>
+              <p>ペット一覧 → 対象ペットの「詳細」→「健康記録一覧」</p>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>「新規記録」で体重・食事・運動スコアなどを入力</strong>
+              <p>画像のアップロード（jpeg/png/webp/gif）も可能です。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 診療予約 -->
+      <section class="manual-section" id="appointment">
+        <h2>3. 診療予約</h2>
+        <div class="card">
+          <div class="info-box" style="margin-top:0; margin-bottom:16px;">
+            診療予約は <span class="badge-standard">スタンダード</span> / <span class="badge-premium">プレミアム</span> プランでご利用いただけます。
+          </div>
+          <div class="step-block">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>「診療予約」メニューを開く</strong>
+              <p>サイドメニュー → 「診療予約」(<code>/app/appointments</code>)</p>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>「新規予約」ボタンから日時・ペット・来院種別を選択</strong>
+              <p>予約可能な時間帯（9:30〜17:00）から希望スロットを選択します。</p>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>スタッフによる承認を待つ</strong>
+              <p>承認されると「CONFIRMED」に変わり、通知センターとLINE（連携済みの場合）にお知らせが届きます。</p>
+            </div>
+          </div>
+          <div class="warn-box">申請中（REQUESTED）の予約をキャンセルしたい場合は「キャンセル」ボタンを使ってください。削除は承認後6か月以上経過した予約のみ可能です。</div>
+        </div>
+      </section>
+
+      <!-- 4. LINE連携 -->
+      <section class="manual-section" id="line">
+        <h2>4. LINE アカウント連携</h2>
+        <div class="card">
+          <p>ペットライフプラスのアカウントと LINE を連携すると、請求通知・予約承認などをLINEでも受け取れます。</p>
+
+          <div class="info-box" style="margin-top:0; margin-bottom:20px;">
+            LINE 連携は <span class="badge-standard">スタンダード</span> / <span class="badge-premium">プレミアム</span> プランでご利用いただけます（Bot メッセージ受信自体は全プラン可）。
+          </div>
+
+          <h3>連携手順</h3>
+
+          <div class="step-block">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>LINE 公式アカウントを友達追加する</strong>
+              <p>
+                <a href="line-qr.html" style="color:var(--accent); font-weight:600;">LINE 友達登録 QR ページ</a>
+                を開き、スマートフォンで QR コードを読み取って友達追加してください。
+              </p>
+            </div>
+          </div>
+
+          <div class="step-block">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>連携コードを取得する</strong>
+              <p>ログイン後、サイドメニューの「🔗 LINE連携」を開きます（<code>/app/line/link-code</code>）。<br>
+              画面に <strong>6桁の連携コード</strong>が表示されます。</p>
+            </div>
+          </div>
+
+          <div class="step-block">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>LINE でコードを送信する</strong>
+              <p>ペットライフプラスの LINE Bot トーク画面に、以下の形式でメッセージを送ります。</p>
+              <div class="code-box">連携 123456</div>
+              <p style="margin-top:6px;">Bot から「連携が完了しました」と返信されれば完了です。</p>
+            </div>
+          </div>
+
+          <div class="warn-box">
+            ⚠️ <strong>コードの有効期限は 10 分</strong>です。期限切れの場合はページの「コードを再発行」ボタンで新しいコードを取得してください。<br>
+            再発行すると前のコードはすぐに無効になります。<br>
+            <strong>コードは他人に教えないでください。</strong>第三者があなたの LINE アカウントを連携できてしまいます。
+          </div>
+
+          <h3>連携後に届く通知の例</h3>
+          <table class="feature-table" style="margin-top:8px;">
+            <thead>
+              <tr><th>タイミング</th><th>通知内容</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>請求書発行時</td><td>💳 お支払いのご案内（振込先・PayPay 情報を含む）</td></tr>
+              <tr><td>入金確認時</td><td>✅ お支払い確認・有効期限延長のご連絡</td></tr>
+              <tr><td>予約承認時</td><td>診療予約が承認されました（Zoom リンクを含む場合あり）</td></tr>
+              <tr><td>予約却下時</td><td>診療予約が却下されました</td></tr>
+              <tr><td>管理者配信</td><td>クリニックからのお知らせ・一斉配信メッセージ</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. 通知 -->
+      <section class="manual-section" id="notification">
+        <h2>5. 通知センター</h2>
+        <div class="card">
+          <p>すべての通知はアプリ内通知センター（<code>/app/notifications</code>）でも確認できます。LINE / メールが未設定でも通知は必ず届きます。</p>
+          <h3>スケジュールリマインダー</h3>
+          <p style="font-size:14px;">ワクチン接種・診療予約・サブスクリプション更新が 30 日以内に迫ると、ダッシュボードにリマインダーが表示されます。確認済みのリマインダーは「×」ボタンで非表示にできます（再ログイン後も表示されません）。</p>
+        </div>
+      </section>
+
+      <!-- 6. プラン -->
+      <section class="manual-section" id="plan">
+        <h2>6. プラン・サブスクリプション</h2>
+        <div class="card">
+          <table class="feature-table">
+            <thead>
+              <tr>
+                <th>機能</th>
+                <th><span class="badge-light">ライト</span></th>
+                <th><span class="badge-standard">スタンダード</span></th>
+                <th><span class="badge-premium">プレミアム</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ペット・健康記録管理</td><td>✓</td><td>✓</td><td>✓</td></tr>
+              <tr><td>通知センター / リマインダー</td><td>✓</td><td>✓</td><td>✓</td></tr>
+              <tr><td>チャットボット相談</td><td>✓</td><td>✓</td><td>✓</td></tr>
+              <tr><td>診療予約</td><td>—</td><td>✓</td><td>✓</td></tr>
+              <tr><td>AI 症状チェック</td><td>—</td><td>✓</td><td>✓</td></tr>
+              <tr><td>LINE Bot 連携</td><td>—</td><td>✓</td><td>✓</td></tr>
+              <tr><td>Zoom オンライン診療</td><td>—</td><td>—</td><td>✓</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:16px; font-size:13px; color:var(--muted);">プランの確認・更新申請は <code>/app/subscriptions</code> から行えます。請求書は <code>/app/invoices/{id}</code> で確認・印刷できます。</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid footer-grid-single">
+      <a href="index.html">トップ</a>
+      <a href="f_service.html">総合案内</a>
+      <a href="manual.html" aria-current="page">ご利用マニュアル</a>
+      <a href="f_info.html">運営情報・規約</a>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
