@@ -2,6 +2,13 @@
 
 ## [2026-06-03]
 
+### ビルド修正（Critical — Docker イメージビルドがコンパイルエラーで失敗）
+
+#### Build-Fix1 — AppointmentController に ForbiddenException の import を追加
+- **変更ファイル:** `backend/src/main/java/com/example/petlife/controller/AppointmentController.java`
+- **問題:** `GET /{id}` と `PUT /{id}` で `ForbiddenException` を throw しているが、import 文が欠落していたためコンパイルエラーになり、Render 上の Docker ビルドが `cannot find symbol: class ForbiddenException` で失敗していた
+- **変更内容:** `import com.example.petlife.exception.ForbiddenException;` を追加。`./mvnw -B -DskipTests package` でビルド成功を確認
+
 ### テスト修正（Medium — AppointmentServiceTest の所有権テストが誤例外で失敗）
 
 #### T-Fix1 — `ownedBy()` ヘルパーを追加し、delete ルールテスト 2 件の失敗を修正

@@ -5,6 +5,7 @@ import com.example.petlife.dto.appointment.AppointmentCreateRequest;
 import com.example.petlife.dto.appointment.AppointmentResponse;
 import com.example.petlife.dto.appointment.AppointmentUpdateRequest;
 import com.example.petlife.dto.common.PageResponse;
+import com.example.petlife.exception.ForbiddenException;
 import com.example.petlife.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
