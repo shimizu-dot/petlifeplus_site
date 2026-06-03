@@ -803,7 +803,7 @@ erDiagram
                   <tr><td>id</td><td>BIGINT</td><td>NO</td><td>IDENTITY</td><td>PK</td><td>ペットID</td></tr>
                   <tr><td>owner_user_id</td><td>BIGINT</td><td>NO</td><td></td><td>FK → users.id</td><td>飼い主ユーザーID</td></tr>
                   <tr><td>name</td><td>VARCHAR(40)</td><td>NO</td><td></td><td></td><td>ペット名</td></tr>
-                  <tr><td>species</td><td>VARCHAR(30)</td><td>NO</td><td></td><td></td><td>種別（DOG/CAT 等）</td></tr>
+                  <tr><td>species</td><td>VARCHAR(30)</td><td>NO</td><td></td><td></td><td>種別（将来は DOG/CAT 等を想定。現行実装は DOG のみ入力可）</td></tr>
                   <tr><td>breed</td><td>VARCHAR(100)</td><td>YES</td><td>NULL</td><td></td><td>品種</td></tr>
                   <tr><td>sex</td><td>VARCHAR(10)</td><td>YES</td><td>NULL</td><td></td><td>性別（MALE/FEMALE 等）</td></tr>
                   <tr><td>birth_date</td><td>DATE</td><td>YES</td><td>NULL</td><td></td><td>生年月日</td></tr>

@@ -63,7 +63,9 @@ public class UserStatusCheckFilter extends OncePerRequestFilter {
                 || path.equals("/app/login")
                 || path.equals("/app/logout")
                 || path.startsWith("/app/forgot-password")
-                || path.startsWith("/app/reset-password")
-                || path.startsWith("/api/");
+                || path.startsWith("/app/reset-password");
+        // /api/** は除外しない:
+        //   - 外部Webhook (/api/slack/events 等) は permitAll でセッションなし → auth が LoginUser にならないため素通り
+        //   - /api/appointments は認証必須なので SUSPENDED チェックを適用すべき
     }
 }

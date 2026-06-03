@@ -1,5 +1,113 @@
 # CHANGELOG
 
+## [2026-06-03]
+
+### テスト修正（Medium — AppointmentServiceTest の所有権テストが誤例外で失敗）
+
+#### T-Fix1 — `ownedBy()` ヘルパーを追加し、delete ルールテスト 2 件の失敗を修正
+- **変更ファイル:** `backend/src/test/java/com/example/petlife/service/AppointmentServiceTest.java`
+- **問題:** `ownerShouldNotDeleteRequestedAppointment` / `ownerShouldNotDeleteRecentConfirmedAppointment` の 2 テストが `BadRequestException` を期待していたが、実際には `ForbiddenException` が投げられて失敗していた。原因は `existingWith()` ヘルパーが `ownerUserId=1L` 固定のエンティティを返していたのに対し、テストユーザー `OWNER` の `id=3L` と不一致だったため、ステータスチェックに到達する前に「自分の予約のみ削除できます」の所有権チェックが `ForbiddenException` を先行スローしていた
+- **変更内容:** `ownedBy(LoginUser owner, String status)` ヘルパーを追加（`ownerUserId` を `owner.id()` に合わせたエンティティを生成）。2 つの失敗テストを `existingWith()` から `ownedBy(OWNER, ...)` に切り替え、所有権チェックを通過したうえで status バリデーションが正しく検証されるよう修正
+- **実行結果:** `Tests run: 44, Failures: 0, Errors: 0, Skipped: 0 — BUILD SUCCESS`
+
+### バグ修正（High — 保守モード時のログイン導線ループ）
+
+#### B-H4 — `webapp.html` を保守モード時のみ画面表示するよう修正
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/AuthController.java`
+  - `frontend/public/webapp.html`
+- **問題:** `app.login-maintenance-mode=true` のとき `/app/login` が `/webapp.html` へリダイレクトする一方、`webapp.html` 自体が常に `/app/login` へ即時転送していたため、`/app/login -> /webapp.html -> /app/login` の無限リダイレクトになっていた
+- **変更内容:**
+  1. 保守モード時は `/webapp.html?maintenance=1` へ遷移するよう変更
+  2. `webapp.html` は `maintenance` クエリがない通常アクセス時のみ `/app/login` へ転送し、保守モード時は画面をそのまま表示するよう変更
+
+### セキュリティ修正（High — 停止済みユーザーの既存セッションで API 継続利用可能）
+
+#### S-H5 — `UserStatusCheckFilter` で `/api/**` も状態確認対象に変更
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/UserStatusCheckFilter.java`
+- **問題:** `shouldNotFilter()` が `/api/**` を丸ごと除外していたため、`users.status` が `SUSPENDED` に変わっても既存セッションのまま `/api/appointments/**` を呼び続けられた
+- **変更内容:** `/api/**` の除外を削除。認証済み API リクエストでも毎回 `users.status` を再確認し、停止済みなら即時セッション無効化して `/app/login?suspended=true` へリダイレクトするよう修正
+
+### バグ修正（High — 予約削除ルールを現行仕様に整合）
+
+#### B-H3 — 本人削除・管理者削除・申請中キャンセルの条件を整理
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentController.java`
+  - `backend/src/test/java/com/example/petlife/service/AppointmentServiceTest.java`
+- **変更内容:**
+  1. 申請者本人は `REQUESTED` の予約を削除できず、既存のキャンセル導線を使うよう制御
+  2. 承認済み予約は申請者本人では削除不可とし、`ADMIN/SUPER` のみ停止・削除可能に整理
+  3. 予約日から6か月以上経過した予約のみ、申請者本人でも削除可能に変更
+  4. 一括削除も同じ判定ロジックを使うよう統一し、関連ユニットテストを追加
+
+### ドキュメント修正（Low — ペット種別の現行制約を仕様書へ明記）
+
+#### D-L5 — 犬専用の現行実装と将来拡張方針の注意書きを追加
+- **変更ファイル:**
+  - `docs/07-specification.html`
+  - `docs/08-db-design.html`
+- **変更内容:**
+  1. `species` 項目に「現行実装は DOG のみ対応」であることを追記
+  2. `CAT`・その他は将来対応予定であることを明記
+  3. 文書上の将来仕様と現行実装のズレがレビュー時に誤解されないよう整合性を補強
+
+### バグ修正（High — ログイン保守モードの遷移先不整合）
+
+#### B-H2 — 保守モード時のリダイレクト先を実在ページへ修正
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/AuthController.java`
+- **問題:** `app.login-maintenance-mode=true` のとき `/app/login` が `/maintenance.html` へリダイレクトしていたが、そのファイルは存在せず 404 になっていた。実際に存在する静的ページは `frontend/public/webapp.html`
+- **変更内容:** 保守モード時の遷移先を `/maintenance.html` から `/webapp.html` に変更
+
+### ドキュメント修正（Low — 本番運用チェックリストのバックアップ手順を現行スクリプトへ整合）
+
+#### D-L4 — `production-checklist.md` の `.sh` 前提を PowerShell 実装へ修正
+- **変更ファイル:**
+  - `docs/production-checklist.md`
+- **変更内容:**
+  1. 存在しない `scripts/db_backup.sh` / `scripts/db_restore.sh` への参照を削除
+  2. 実在する `scripts/db_backup.ps1` と `scripts/backup_all_databases.ps1` を前提に手順を修正
+  3. 復元は `db_backup.ps1` 内の `RESTORE` コメントに沿う運用であることを明記
+
+### ドキュメント更新（Low — テストマトリックスを Excel 報告書へ反映）
+
+#### D-L3 — `test_report_document.xlsx` にテストマトリックスシートを追加
+- **変更ファイル:**
+  - `docs/test_report_document.xlsx`
+- **参照元:**
+  - `docs/test-matrix.md`
+- **変更内容:**
+  1. `テストマトリックス` シートを新規追加
+  2. 機能 × ロール、機能 × 品質観点、機能 × 実行環境、ロール別重点確認観点を表形式で反映
+  3. 未実施になりやすい観点、実施順の推奨、補足を追記し、Excel 単体でも計画資料として使えるよう整理
+
+### ドキュメント追加（Low — テスト観点を横断確認できるマトリックスを整備）
+
+#### D-L2 — テストマトリックスを新規作成
+- **新規ファイル:**
+  - `docs/test-matrix.md`
+- **参照元:**
+  - `docs/09-test-report.html`
+  - `docs/test-checklist.md`
+- **変更内容:**
+  1. 機能 × ロール、機能 × 品質観点、機能 × 実行環境の 3 軸でテスト観点を一覧化
+  2. ロール別の重点確認観点と、未実施になりやすい外部連携項目を整理
+  3. 実施順の推奨を追加し、チェックリスト実行前の計画資料として使える形にした
+
+### ドキュメント追加（Low — 手動試験で使える実施チェックリストを整備）
+
+#### D-L1 — テスト報告書をもとに実施用チェックリストを新規作成
+- **新規ファイル:**
+  - `docs/test-checklist.md`
+- **参照元:**
+  - `docs/09-test-report.html`
+- **変更内容:**
+  1. テスト報告書にある 67 件のテストケースを、実施担当者がそのまま記入できるチェックリスト形式へ再構成
+  2. 事前準備、判定ルール、機能別確認項目、ブラウザ確認、集計欄、バグ管理欄を追加
+  3. 外部連携の未実施理由やフォールバック試験を残せるよう備考欄を付与
+
 ## [2026-06-02]
 
 ### 機能追加（Low — フロント問い合わせフォームの実送信化）
@@ -45,6 +153,45 @@
 - **問題:** `@Value("${spring.datasource.password:hs0512}")` が旧パスワード（`hs0512`）をフォールバックとして持っており、`application.properties` の `spring.datasource.password=${DB_PASSWORD:postgres}` と不一致だった。`application.properties` が読み込まれない特殊な起動パターンや、将来プロパティキーが変更された場合に、バックアップ/リストアだけ誤ったパスワードで実行されて認証失敗する。また S-02 で変更した後も `DatabaseBackupService` だけ旧パスワードが残存していた
 - **変更内容:** `jdbcUrl`・`dbUsername`・`dbPassword` の 3 つの `@Value` アノテーションからフォールバック値（`:...`）を削除。`spring.datasource.*` のデフォルト値は `application.properties` が一元管理する。プロパティが未設定の場合は起動時に `IllegalArgumentException` で即座にエラーになるため、サイレントな認証失敗より安全
 
+### バグ修正（Medium — DB パスワード既定値の不一致）
+
+#### B-M4 — application.properties のフォールバックパスワードを docker-compose.yml に統一
+- **ファイル:** `backend/src/main/resources/application.properties`
+- **問題:** `spring.datasource.password` のデフォルト値が `postgres` だったが、`docker-compose.yml`（line 19: DB コンテナ、line 52: app コンテナ）は `hs0512` を既定値としており、`docs/production-checklist.md` も「本番では `hs0512` から変更する」前提で記述されていた。`DB_PASSWORD` 環境変数を未設定のまま Maven 直接起動すると `postgres` で接続しようとするためローカル DB（パスワード `hs0512`）への認証が失敗し、起動方法によって接続可否が変わる障害原因になっていた
+- **変更内容:** `${DB_PASSWORD:postgres}` → `${DB_PASSWORD:hs0512}` に変更。Docker 起動・Maven 直接起動どちらでも `DB_PASSWORD` 未設定時に同じフォールバックが使われるよう統一
+- **注意:** 本番環境では `DB_PASSWORD` を必ず環境変数で明示設定し、`hs0512` から変更すること（`production-checklist.md` 参照）
+
+### セキュリティ修正（High 対応 — 停止済みユーザーが予約 API を使い続けられる問題）
+
+#### S-H5 — UserStatusCheckFilter の /api/** 除外を削除（SUSPENDED チェックを API にも適用）
+- **ファイル:** `backend/src/main/java/com/example/petlife/config/UserStatusCheckFilter.java`
+- **問題:** `shouldNotFilter()` が `path.startsWith("/api/")` を丸ごと除外していたため、`OverdueInvoiceScheduler` が `users.status='SUSPENDED'` に更新した後も、既存セッションを持つユーザーが `/api/appointments/**`（予約一覧・作成・更新・削除）を呼び続けられた。`/app/**` 画面への遷移は即時ログアウトされるが、API を直接叩かれると停止が機能しない状態だった
+- **なぜ /api/ を除外していたか:** `/api/slack/events` `/api/line/events` などの外部 Webhook は認証なしで呼ばれるが、これらは `permitAll()` のため `auth.getPrincipal() instanceof LoginUser` を満たさず、除外しなくてもフィルター内の `if` ブロックを素通りして `chain.doFilter()` に到達する。除外は不要だった
+- **変更内容:** `shouldNotFilter()` から `|| path.startsWith("/api/")` を削除。コメントで意図を明記。外部 Webhook への影響なし。`/api/appointments/**` に対して SUSPENDED チェックが有効になり、停止後は `302 /app/login?suspended=true` でセッションが無効化される
+
+### テスト整備（Medium — @SpringBootTest 除去 + ユニットテスト追加）
+
+#### T-M1 — DB 不要でテストスイートが通るよう修正し、ビジネスロジックのユニットテストを追加
+- **変更ファイル:** `backend/src/test/java/com/example/petlife/PetlifeApplicationTests.java`
+- **新規ファイル:**
+  - `backend/src/test/java/com/example/petlife/config/LoginUserTest.java`
+  - `backend/src/test/java/com/example/petlife/service/AppointmentServiceTest.java`
+  - `backend/src/test/java/com/example/petlife/service/PlanAccessServiceTest.java`
+- **問題:** `PetlifeApplicationTests` の `@SpringBootTest` がアプリ全体コンテキストを起動しようとするため、PostgreSQL なしの環境では `Failed to determine a suitable driver class` で失敗していた。`./mvnw test` が常に失敗する状態では品質ゲートとして機能しない
+- **変更内容:**
+  1. `PetlifeApplicationTests` から `@SpringBootTest` を除去してプレースホルダーテストに変更。フルコンテキストは Docker スタック起動後の統合テストで担保する
+  2. `LoginUserTest` — `LoginUser` の全ロールメソッド（`isAdmin/isVet/isStaff/canManageClinical/hasStaffAccess/canManageOperations/getAuthorities`）を DB 依存なしで検証（10ケース）
+  3. `AppointmentServiceTest` — Mockito で全依存をモックし、`validateBusinessHours`（営業時間境界値・違反）・`validateStatusTransition`（許可遷移・禁止遷移）・`generateAvailableSlots`（スロット数・予約済みマーク・ブロック除外・追加枠）を検証（12ケース）
+  4. `PlanAccessServiceTest` — プランティア解決（PREMIUM/STANDARD/LIGHT）・スタッフの全フィーチャー付与・一般ユーザーのフィーチャー制御・`resolveIntegrationStatus` を検証（11ケース）
+- **実行結果:** `Tests run: 39, Failures: 0, Errors: 0, Skipped: 0` — `./mvnw test` が DB なしで BUILD SUCCESS
+
+### バグ修正（Medium — アップロード配信設定の二重定義）
+
+#### B-M5 — WebResourceConfig の /uploads/** ハンドラーを削除して WebMvcConfig に一本化
+- **変更ファイル:** `backend/src/main/java/com/example/petlife/config/WebResourceConfig.java`
+- **問題:** `WebMvcConfig.addResourceHandlers()` と `WebResourceConfig.addResourceHandlers()` の両方が `/uploads/**` を登録しており二重定義になっていた。`WebMvcConfig` は `${app.upload.dir}` プロパティを参照して正しく `UPLOAD_DIR` 環境変数に従うが、`WebResourceConfig` は `file:uploads/` と `file:backend/uploads/` を CWD 相対でハードコードしていた。Docker 起動時は `UPLOAD_DIR=/app/uploads` が期待値だが `WebResourceConfig` 側は絶対パスに解決されないため、仮に後発ハンドラーが有効になるとアップロード画像が 404 になる。Spring MVC は同一パターンに対して最初に登録されたハンドラーを使用するため実質 `WebMvcConfig` が有効だったが、`WebResourceConfig` の定義が設定の誤解を招いていた。`application.properties` line 45 のコメントも `WebMvcConfig` を正式な担当として明示していた
+- **変更内容:** `WebResourceConfig` から `/uploads/**` ハンドラー（`file:uploads/` / `file:backend/uploads/`）のブロックを削除。`/uploads/**` の配信は `WebMvcConfig`（`${app.upload.dir:uploads}` 参照）に一本化
+
 ### セキュリティ修正（Medium 対応 — 不要な CSRF 除外を削除）
 
 #### S-M5 — /api/appointments/** の不要な CSRF 除外を削除
@@ -55,6 +202,17 @@
   - 他ドメインからの `fetch()` CSRF → 不可（CORS 未設定のため Preflight 失敗）
   - 不要な除外が存在することで、将来 JavaScript から API を呼ぶ実装を追加した際にデフォルトで無防備になるリスクがあった
 - **変更内容:** CSRF ignoringRequestMatchers から `/api/appointments` と `/api/appointments/**` を削除。将来 JavaScript から同 API を呼ぶ場合は CSRF トークンをリクエストヘッダー（`X-CSRF-TOKEN`）で送信すること
+
+### セキュリティ修正（High 対応 — アップロード画像の未認証アクセス）
+
+#### S-H4 — /uploads/** を認証必須に変更（健康記録・ペット画像の未認証参照を閉塞）
+- **ファイル:** `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+- **問題:** `/uploads/**` が `permitAll()` に含まれており、`/uploads/health-records/{uuid}.png` および `/uploads/pets/{uuid}.png` がログイン不要で直接参照できた。ファイル名は UUID のため推測は困難だが、一度 URL が流出すると（ブラウザ履歴・ログ・スクリーンショット等）認証なしでペットの健康記録画像・写真に到達できる状態だった。なお `/uploads/**` を単純に `permitAll()` から削除しても末尾の `.anyRequest().permitAll()` に落ちて依然公開されるため、明示的に `.authenticated()` を追加する必要がある
+- **変更内容:**
+  1. `permitAll()` ブロックから `/uploads/**` を削除
+  2. `.requestMatchers("/app/**").authenticated()` の直後に `.requestMatchers("/uploads/**").authenticated()` を追加
+- **影響範囲:** ログイン済みユーザーが健康記録一覧・ペット詳細を閲覧する際の `<img>` 表示は認証セッションがあるため引き続き正常に動作する
+- **残存リスク（低）:** 認証済みであれば他ユーザーの UUID URL に直接アクセスすることは技術的に可能。完全なオーナー分離にはコントローラー経由の配信が必要だが、UUID の推測困難性と認証ゲートの組み合わせで実用上のリスクは許容範囲
 
 ### セキュリティ修正（High 対応 — 予約 REST API の制御不備）
 

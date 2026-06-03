@@ -18,7 +18,7 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage() {
         if (loginMaintenanceMode) {
-            return "redirect:/maintenance.html";
+            return "redirect:/webapp.html?maintenance=1";
         }
         return "auth/login";
     }

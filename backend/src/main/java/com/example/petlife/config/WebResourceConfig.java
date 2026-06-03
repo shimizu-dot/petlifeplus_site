@@ -12,12 +12,6 @@ public class WebResourceConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(
-                        "file:uploads/",
-                        "file:backend/uploads/"
-                )
-                .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic());
         registry.addResourceHandler(
                         "/webapp.html",
                         "/maintenance.html",

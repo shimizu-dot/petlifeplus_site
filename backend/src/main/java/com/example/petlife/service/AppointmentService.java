@@ -35,6 +35,7 @@ public class AppointmentService {
     private static final Logger log = LoggerFactory.getLogger(AppointmentService.class);
     private static final LocalTime SLOT_OPEN  = LocalTime.of(9, 30);
     private static final LocalTime SLOT_CLOSE = LocalTime.of(17, 0);
+    private static final int OWNER_DELETE_AFTER_MONTHS = 6;
 
     private final AppointmentMapper appointmentMapper;
     private final AppointmentSlotMapper appointmentSlotMapper;
@@ -301,7 +302,10 @@ public class AppointmentService {
         return get(id);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, LoginUser currentUser) {
+        AppointmentEntity existing = appointmentMapper.findById(id);
+        if (existing == null) throw new NotFoundException("Appointment not found: " + id);
+        validateDeletePermission(existing, currentUser, LocalDateTime.now());
         if (appointmentMapper.softDelete(id, LocalDateTime.now()) == 0)
             throw new NotFoundException("Appointment not found: " + id);
     }
@@ -314,15 +318,36 @@ public class AppointmentService {
         List<AppointmentEntity> entities = appointmentMapper.findByIds(uniqueIds);
         LocalDateTime now = LocalDateTime.now();
         for (AppointmentEntity e : entities) {
-            if (!currentUser.canManageClinical() && !e.ownerUserId().equals(currentUser.id())) {
-                throw new BadRequestException("自分の予約のみ削除できます");
-            }
-            if (e.scheduledAt() != null && e.scheduledAt().isAfter(now)) {
-                throw new BadRequestException("未来の予約は削除できません");
-            }
+            validateDeletePermission(e, currentUser, now);
         }
         List<Long> ids = entities.stream().map(AppointmentEntity::id).toList();
         return appointmentMapper.softDeleteByIds(ids, now);
+    }
+
+    private void validateDeletePermission(AppointmentEntity appointment, LoginUser currentUser, LocalDateTime now) {
+        if (currentUser == null) {
+            throw new ForbiddenException("この予約を削除する権限がありません");
+        }
+        if (currentUser.isAdmin()) {
+            return;
+        }
+        if (currentUser.hasStaffAccess()) {
+            throw new ForbiddenException("承認済み予約の停止・削除は管理者のみ実行できます");
+        }
+        if (!appointment.ownerUserId().equals(currentUser.id())) {
+            throw new ForbiddenException("自分の予約のみ削除できます");
+        }
+        if ("REQUESTED".equals(appointment.status())) {
+            throw new BadRequestException("申請中の予約は削除ではなくキャンセルしてください");
+        }
+        LocalDateTime deleteThreshold = now.minusMonths(OWNER_DELETE_AFTER_MONTHS);
+        if (appointment.scheduledAt() != null && !appointment.scheduledAt().isAfter(deleteThreshold)) {
+            return;
+        }
+        if ("CONFIRMED".equals(appointment.status())) {
+            throw new BadRequestException("承認済みの予約は申請者本人では削除できません");
+        }
+        throw new BadRequestException("予約日から6か月以上経過した予約のみ削除できます");
     }
 
     private void validateStatusTransition(String current, String next) {

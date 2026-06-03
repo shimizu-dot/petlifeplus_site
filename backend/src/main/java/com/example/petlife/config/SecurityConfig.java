@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/", "/index.html", "/webapp.html",
                     "/f_contact.html", "/f_flow.html", "/f_info.html", "/f_service.html",
-                    "/css/**", "/js/**", "/assets/**", "/images/**", "/uploads/**"
+                    "/css/**", "/js/**", "/assets/**", "/images/**"
                 ).permitAll()
                 .requestMatchers("/api/contact").permitAll()
                 .requestMatchers("/api/slack/events", "/api/line/events").permitAll()
@@ -57,6 +57,7 @@ public class SecurityConfig {
                 .requestMatchers("/app/calendar", "/app/calendar/**")
                     .hasAnyRole("SUPER", "VET", "STAFF", "USER")
                 .requestMatchers("/app/**").authenticated()
+                .requestMatchers("/uploads/**").authenticated()
                 .anyRequest().permitAll()
             )
             .formLogin(form -> form

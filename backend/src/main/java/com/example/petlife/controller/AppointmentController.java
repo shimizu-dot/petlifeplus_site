@@ -5,7 +5,6 @@ import com.example.petlife.dto.appointment.AppointmentCreateRequest;
 import com.example.petlife.dto.appointment.AppointmentResponse;
 import com.example.petlife.dto.appointment.AppointmentUpdateRequest;
 import com.example.petlife.dto.common.PageResponse;
-import com.example.petlife.exception.ForbiddenException;
 import com.example.petlife.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -79,16 +78,12 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.update(id, request));
     }
 
-    /** 削除: 自分の予約、または ADMIN のみ */
+    /** 削除: 申請者本人の6か月超過予約、または ADMIN/SUPER のみ */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
             @AuthenticationPrincipal LoginUser currentUser) {
-        AppointmentResponse existing = appointmentService.get(id);
-        if (!currentUser.isAdmin() && !existing.ownerUserId().equals(currentUser.id())) {
-            throw new ForbiddenException("この予約を削除する権限がありません");
-        }
-        appointmentService.delete(id);
+        appointmentService.delete(id, currentUser);
         return ResponseEntity.noContent().build();
     }
 }

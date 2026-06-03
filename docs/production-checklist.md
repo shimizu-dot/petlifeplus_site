@@ -35,7 +35,7 @@
 - ログの時刻同期（NTP）とタイムゾーン統一（運用基準）
 
 ## 5. DB・データ保護
-- 日次バックアップジョブ（`scripts/db_backup.sh`）をcron/systemdで運用
+- 日次バックアップジョブ（`scripts/db_backup.ps1`）を Windows タスクスケジューラ等で運用
 - バックアップ保存先を本体サーバ外へ複製（オブジェクトストレージ等）
 - バックアップファイル暗号化・アクセス制御
 - スキーマ変更時のマイグレーション手順を標準化
@@ -44,8 +44,11 @@
 ## 6. バックアップ復元訓練（必須）
 - 月次で復元訓練を実施し記録
 - 手順:
-  - バックアップ取得: `./scripts/db_backup.sh`
-  - 検証環境へ復元: `./scripts/db_restore.sh backups/YYYYMMDD_backup.sql`
+  - バックアップ取得: `powershell -ExecutionPolicy Bypass -File .\scripts\db_backup.ps1`
+  - 検証環境へ復元:
+    - `scripts/db_backup.ps1` の `RESTORE` コメントにある手順で DB を再作成
+    - `psql.exe -U postgres -d petlifeplus -f backups\<yyyyMMdd_HHmmss>_backup.sql` で復元
+  - 全 DB（ロール・グローバル設定含む）を退避する場合は `powershell -ExecutionPolicy Bypass -File .\scripts\backup_all_databases.ps1` を使用
   - アプリ起動・ログイン・主要機能（AI症状/Slack/Zoom/健康記録）を確認
 - RTO/RPOを測定し、目標内か評価
 - 復元訓練結果を運用台帳に残す（日時/担当/所要時間/課題）
