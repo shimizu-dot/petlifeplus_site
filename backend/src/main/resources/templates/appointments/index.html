@@ -134,6 +134,7 @@
     <div class="topbar"><span class="topbar-title">診療予約</span></div>
     <div class="content">
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+      <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
       <!-- Booking form -->
       <div class="card" style="max-width:780px;">

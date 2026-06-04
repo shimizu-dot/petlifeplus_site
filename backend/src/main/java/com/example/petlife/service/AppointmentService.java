@@ -83,7 +83,7 @@ public class AppointmentService {
     }
 
     public AppointmentResponse create(AppointmentCreateRequest req, LoginUser currentUser) {
-        if (currentUser == null || currentUser.isAdmin() || currentUser.isSuper()) {
+        if (currentUser == null || (currentUser.isAdmin() && !currentUser.isSuper())) {
             throw new ForbiddenException("この予約を登録する権限がありません");
         }
         // スタッフ以外はプランチェック（LIGHT プランは予約不可）
@@ -96,6 +96,7 @@ public class AppointmentService {
         if (pet == null) {
             throw new ForbiddenException("指定されたペットへのアクセス権がありません");
         }
+        ensureOnlineChannelAllowedForPetOwner(req.channel(), pet.ownerUserId(), currentUser.canOperateAppointments());
         validateBusinessHours(req.scheduledAt());
         Long assignedStaffUserId = currentUser.canOperateAppointments() ? currentUser.id() : req.staffUserId();
         ensureNoDuplicate(assignedStaffUserId, req.scheduledAt(), null);
@@ -223,7 +224,7 @@ public class AppointmentService {
     public record SlotInfo(LocalDateTime slotTime, boolean available) {}
 
     public AppointmentResponse createGeneralCare(Long petId, LocalDateTime scheduledAt, String note, String requestedChannel, LoginUser currentUser) {
-        if (currentUser == null || currentUser.isAdmin() || currentUser.isSuper()) {
+        if (currentUser == null || (currentUser.isAdmin() && !currentUser.isSuper())) {
             throw new ForbiddenException("この予約を登録する権限がありません");
         }
         if (!currentUser.canOperateAppointments() && !planAccessService.canUseAppointments(currentUser)) {
@@ -242,6 +243,7 @@ public class AppointmentService {
                 : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
         if (pet == null) throw new NotFoundException("Pet not found: " + petId);
         if (pet.deceasedAt() != null) throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
+        ensureOnlineChannelAllowedForPetOwner(requestedChannel, pet.ownerUserId(), currentUser.canOperateAppointments());
 
         String channel = "VISIT";
         if (!currentUser.canOperateAppointments()) {
@@ -395,6 +397,19 @@ public class AppointmentService {
         if (staffUserId == null) return;
         if (appointmentMapper.countDuplicatedSlot(staffUserId, scheduledAt, excludeId) > 0) {
             throw new BadRequestException("Duplicated appointment slot for staff");
+        }
+    }
+
+    private void ensureOnlineChannelAllowedForPetOwner(String requestedChannel, Long ownerUserId, boolean staffBooking) {
+        if (!"ONLINE".equals(requestedChannel) || ownerUserId == null) {
+            return;
+        }
+        PlanAccessService.PlanTier ownerTier = planAccessService.resolvePlanTierByUserId(ownerUserId);
+        if (ownerTier == PlanAccessService.PlanTier.PREMIUM) {
+            return;
+        }
+        if (staffBooking) {
+            throw new BadRequestException("このペットは" + planAccessService.planLabelByUserId(ownerUserId) + "会員のため、この予約はできません。");
         }
     }
 

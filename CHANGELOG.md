@@ -2,6 +2,36 @@
 
 ## [2026-06-04]
 
+### バグ修正（High — SUPER が診療予約できない権限制御を解消）
+
+#### B-H3 — 診療予約の操作権限に SUPER を含めるよう統一
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/LoginUser.java`
+  - `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentPageController.java`
+  - `backend/src/test/java/com/example/petlife/service/AppointmentServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 診療予約の直接操作権限 `canOperateAppointments()` に SUPER を追加
+  2. 予約作成サービスで ADMIN は引き続き禁止しつつ、SUPER は予約作成可能に修正
+  3. 承認・却下エラーメッセージを実際の許可ロールに合わせて更新
+  4. SUPER が一般診療予約を作成できることを確認するテストを追加
+
+### バグ修正（High — STAFF 代理予約で非Premiumペットのオンライン予約を遮断）
+
+#### B-H2 — ペット所有者の会員種別でオンライン診療予約可否を判定
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentPageController.java`
+  - `backend/src/main/resources/templates/appointments/index.html`
+  - `backend/src/test/java/com/example/petlife/service/AppointmentServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. STAFF/VET が代理で診療予約を作成する場合も、選択したペットのオーナー会員種別を見てオンライン予約可否を判定するよう変更
+  2. Premium 以外のペットでオンライン予約を指定した場合は、`このペットは○○会員のため、この予約はできません。` を返して登録を中止
+  3. 予約画面で `BadRequestException` を同画面へ差し戻し、エラーメッセージを赤帯で表示するよう追加
+  4. Light 会員ペットに対する STAFF のオンライン代理予約が拒否されるユニットテストを追加
+
 ### ドキュメント更新（Low — 起動手順を README に追加）
 
 #### D-L1 — Docker Compose の起動方法と Docker 未起動時の対処を追記

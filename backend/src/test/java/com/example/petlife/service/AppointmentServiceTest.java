@@ -47,6 +47,7 @@ class AppointmentServiceTest {
     // validateBusinessHours に直接到達できる
     private static final LoginUser VET = new LoginUser(10L, 4L, "獣医", "vet@petlife.local", "hash", true);
     private static final LoginUser ADMIN = new LoginUser(1L, 1L, "管理者", "admin@petlife.local", "hash", true);
+    private static final LoginUser SUPER = new LoginUser(2L, 2L, "SUPER", "super@petlife.local", "hash", true);
     private static final LoginUser OWNER = new LoginUser(3L, 3L, "申請者", "owner@petlife.local", "hash", true);
 
     // ── validateBusinessHours ────────────────────────────────────────────────
@@ -247,6 +248,40 @@ class AppointmentServiceTest {
 
         assertDoesNotThrow(() -> svc.delete(1L, ADMIN));
         verify(appointmentMapper).softDelete(anyLong(), any());
+    }
+
+    @Test
+    void staffShouldNotCreateOnlineAppointmentForLightPlanPet() {
+        LocalDateTime scheduledAt = LocalDate.now().plusDays(1).atTime(10, 0);
+        when(petMapper.findById(1L)).thenReturn(new com.example.petlife.entity.PetEntity(
+                1L, OWNER.id(), "ポチ", "DOG", "Shiba", "MALE", null, null, null,
+                null, null, null, null));
+        when(planAccessService.resolvePlanTierByUserId(OWNER.id())).thenReturn(PlanAccessService.PlanTier.LIGHT);
+        when(planAccessService.planLabelByUserId(OWNER.id())).thenReturn("ライト");
+
+        BadRequestException ex = assertThrows(BadRequestException.class,
+                () -> svc.createGeneralCare(1L, scheduledAt, "オンライン希望", "ONLINE", VET));
+
+        assertEquals("このペットはライト会員のため、この予約はできません。", ex.getMessage());
+    }
+
+    @Test
+    void superShouldBeAllowedToCreateGeneralCareAppointment() {
+        LocalDateTime scheduledAt = LocalDate.now().plusDays(1).atTime(10, 0);
+        when(appointmentMapper.countByScheduledAt(scheduledAt)).thenReturn(0);
+        when(petMapper.findById(1L)).thenReturn(new com.example.petlife.entity.PetEntity(
+                1L, OWNER.id(), "ポチ", "DOG", "Shiba", "MALE", null, null, null,
+                null, null, null, null));
+        when(planAccessService.resolvePlanTierByUserId(OWNER.id())).thenReturn(PlanAccessService.PlanTier.PREMIUM);
+        when(appointmentMapper.insert(any())).thenReturn(null);
+
+        assertDoesNotThrow(() -> {
+            try {
+                svc.createGeneralCare(1L, scheduledAt, "通常予約", "VISIT", SUPER);
+            } catch (com.example.petlife.exception.NotFoundException ignored) {
+                // insert() 後の get(null) による到達は許容し、権限制御だけ確認する
+            }
+        });
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────

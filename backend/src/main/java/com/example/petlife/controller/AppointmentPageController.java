@@ -74,22 +74,16 @@ public class AppointmentPageController {
                          RedirectAttributes ra) {
         ensureAccessible(currentUser);
         if (result.hasErrors()) {
-            LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
-            model.addAttribute("isAdminView", currentUser.canOperateAppointments());
-            model.addAttribute("canChooseOnline",
-                    currentUser.canOperateAppointments() ||
-                    planAccessService.resolvePlanTier(currentUser) == PlanAccessService.PlanTier.PREMIUM);
-            model.addAttribute("businessHours", appointmentService.getBusinessHours());
-            model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
-                    .filter(p -> p.deceasedAt() == null)
-                    .toList());
-            model.addAttribute("selectedDate", slotDate);
-            model.addAttribute("availableSlots", appointmentService.generateAvailableSlots(slotDate));
-            model.addAttribute("sortBy", "scheduledAt");
-            model.addAttribute("page", appointmentService.listForApp(1, 10, currentUser, "scheduledAt"));
+            populatePageModel(form, currentUser, model);
             return "appointments/index";
         }
-        appointmentService.createGeneralCare(form.getPetId(), form.getScheduledAt(), form.getNote(), form.getChannel(), currentUser);
+        try {
+            appointmentService.createGeneralCare(form.getPetId(), form.getScheduledAt(), form.getNote(), form.getChannel(), currentUser);
+        } catch (BadRequestException e) {
+            model.addAttribute("error", e.getMessage());
+            populatePageModel(form, currentUser, model);
+            return "appointments/index";
+        }
         ra.addFlashAttribute("success", "診療予約を登録しました");
         return "redirect:/app/appointments";
     }
@@ -98,7 +92,7 @@ public class AppointmentPageController {
     public String approve(@PathVariable Long id,
                           @AuthenticationPrincipal LoginUser currentUser,
                           RedirectAttributes ra) {
-        if (!currentUser.canOperateAppointments()) throw new BadRequestException("獣医師・スタッフのみ承認できます");
+        if (!currentUser.canOperateAppointments()) throw new BadRequestException("SUPER・獣医師・スタッフのみ承認できます");
         appointmentService.approve(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を承認しました");
         return "redirect:/app/appointments";
@@ -108,7 +102,7 @@ public class AppointmentPageController {
     public String reject(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.canOperateAppointments()) throw new BadRequestException("獣医師・スタッフのみ却下できます");
+        if (!currentUser.canOperateAppointments()) throw new BadRequestException("SUPER・獣医師・スタッフのみ却下できます");
         appointmentService.reject(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を却下しました");
         return "redirect:/app/appointments";
@@ -140,5 +134,21 @@ public class AppointmentPageController {
         if (!currentUser.canOperateAppointments() && !planAccessService.canUseAppointments(currentUser)) {
             throw new BadRequestException("この機能はスタンダード以上で利用できます");
         }
+    }
+
+    private void populatePageModel(GeneralAppointmentForm form, LoginUser currentUser, Model model) {
+        LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
+        model.addAttribute("isAdminView", currentUser.canOperateAppointments());
+        model.addAttribute("canChooseOnline",
+                currentUser.canOperateAppointments() ||
+                planAccessService.resolvePlanTier(currentUser) == PlanAccessService.PlanTier.PREMIUM);
+        model.addAttribute("businessHours", appointmentService.getBusinessHours());
+        model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
+                .filter(p -> p.deceasedAt() == null)
+                .toList());
+        model.addAttribute("selectedDate", slotDate);
+        model.addAttribute("availableSlots", appointmentService.generateAvailableSlots(slotDate));
+        model.addAttribute("sortBy", "scheduledAt");
+        model.addAttribute("page", appointmentService.listForApp(1, 10, currentUser, "scheduledAt"));
     }
 }
