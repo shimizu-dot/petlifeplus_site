@@ -42,9 +42,15 @@ public record LoginUser(
     /** 診療記録・診療予約・カレンダーを操作できるロール（VET・STAFF・SUPER）。 */
     public boolean canManageClinical() { return isVet() || isStaff() || isSuper(); }
 
+    /** 予約を直接作成・承認・却下できるロール（VET・STAFF）。 */
+    public boolean canOperateAppointments() { return isVet() || isStaff(); }
+
     /** ユーザ管理画面を閲覧できるロール（全スタッフ系）。 */
     public boolean hasStaffAccess() { return isAdmin() || isVet() || isStaff(); }
 
     /** 予約枠・お知らせを管理できるロール（ADMIN + STAFF）。 */
     public boolean canManageOperations() { return isAdmin() || isStaff(); }
+
+    /** 基本営業時間を設定できるロール（ADMIN + SUPER）。 */
+    public boolean canConfigureBusinessHours() { return isAdmin(); }
 }

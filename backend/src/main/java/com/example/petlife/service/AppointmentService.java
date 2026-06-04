@@ -33,13 +33,12 @@ import java.util.Set;
 @Service
 public class AppointmentService {
     private static final Logger log = LoggerFactory.getLogger(AppointmentService.class);
-    private static final LocalTime SLOT_OPEN  = LocalTime.of(9, 30);
-    private static final LocalTime SLOT_CLOSE = LocalTime.of(17, 0);
     private static final int OWNER_DELETE_AFTER_MONTHS = 6;
 
     private final AppointmentMapper appointmentMapper;
     private final AppointmentSlotMapper appointmentSlotMapper;
     private final PlanAccessService planAccessService;
+    private final AppointmentBusinessHoursService businessHoursService;
     private final ZoomLinkService zoomLinkService;
     private final PetMapper petMapper;
     private final NotificationMapper notificationMapper;
@@ -48,6 +47,7 @@ public class AppointmentService {
     public AppointmentService(AppointmentMapper appointmentMapper,
                               AppointmentSlotMapper appointmentSlotMapper,
                               PlanAccessService planAccessService,
+                              AppointmentBusinessHoursService businessHoursService,
                               ZoomLinkService zoomLinkService,
                               PetMapper petMapper,
                               NotificationMapper notificationMapper,
@@ -55,6 +55,7 @@ public class AppointmentService {
         this.appointmentMapper = appointmentMapper;
         this.appointmentSlotMapper = appointmentSlotMapper;
         this.planAccessService = planAccessService;
+        this.businessHoursService = businessHoursService;
         this.zoomLinkService = zoomLinkService;
         this.petMapper = petMapper;
         this.notificationMapper = notificationMapper;
@@ -65,7 +66,7 @@ public class AppointmentService {
         int safePage = Math.max(page, 1);
         int safeSize = Math.min(Math.max(size, 1), 100);
         int offset = (safePage - 1) * safeSize;
-        if (currentUser.canManageClinical()) {
+        if (currentUser.canOperateAppointments()) {
             return new PageResponse<>(
                     appointmentMapper.findAll(safeSize, offset).stream().map(this::toResponse).toList(),
                     safePage, safeSize, appointmentMapper.countAll());
@@ -82,24 +83,37 @@ public class AppointmentService {
     }
 
     public AppointmentResponse create(AppointmentCreateRequest req, LoginUser currentUser) {
+        if (currentUser == null || currentUser.isAdmin() || currentUser.isSuper()) {
+            throw new ForbiddenException("この予約を登録する権限がありません");
+        }
         // スタッフ以外はプランチェック（LIGHT プランは予約不可）
-        if (!currentUser.hasStaffAccess() && !planAccessService.canUseAppointments(currentUser)) {
+        if (!currentUser.canOperateAppointments() && !planAccessService.canUseAppointments(currentUser)) {
             throw new BadRequestException("この機能はスタンダード以上で利用できます");
         }
-        // スタッフ以外は petId が自分所有かを確認（他ユーザーのペットIDを指定させない）
-        if (!currentUser.hasStaffAccess()) {
-            var pet = petMapper.findByIdAndOwnerUserId(req.petId(), currentUser.id());
-            if (pet == null) {
-                throw new ForbiddenException("指定されたペットへのアクセス権がありません");
-            }
+        var pet = currentUser.canOperateAppointments()
+                ? petMapper.findById(req.petId())
+                : petMapper.findByIdAndOwnerUserId(req.petId(), currentUser.id());
+        if (pet == null) {
+            throw new ForbiddenException("指定されたペットへのアクセス権がありません");
         }
         validateBusinessHours(req.scheduledAt());
-        ensureNoDuplicate(req.staffUserId(), req.scheduledAt(), null);
-        AppointmentEntity row = new AppointmentEntity(null, req.petId(), req.ownerUserId(), req.staffUserId(),
-                req.appointmentType(), req.channel(), req.scheduledAt(), req.status(), null, req.note(),
+        Long assignedStaffUserId = currentUser.canOperateAppointments() ? currentUser.id() : req.staffUserId();
+        ensureNoDuplicate(assignedStaffUserId, req.scheduledAt(), null);
+        String nextStatus = currentUser.canOperateAppointments() ? "CONFIRMED" : "REQUESTED";
+        String zoomJoinUrl = null;
+        if (currentUser.canOperateAppointments() && "ONLINE".equals(req.channel())) {
+            zoomJoinUrl = zoomLinkService.createMeetingOrFallback(
+                    req.scheduledAt(), "Pet Life Plus Staff Scheduled Appointment").joinUrl();
+        }
+        AppointmentEntity row = new AppointmentEntity(null, req.petId(), pet.ownerUserId(), assignedStaffUserId,
+                req.appointmentType(), req.channel(), req.scheduledAt(), nextStatus, zoomJoinUrl, req.note(),
                 null, null, null, null);
         Long createdId = appointmentMapper.insert(row);
-        return get(createdId);
+        AppointmentResponse created = get(createdId);
+        if (currentUser.canOperateAppointments()) {
+            notifyOwnerStaffScheduled(created, currentUser.id());
+        }
+        return created;
     }
 
     public PageResponse<AppointmentListRow> listForApp(int page, int size, LoginUser currentUser, String sortBy) {
@@ -107,7 +121,7 @@ public class AppointmentService {
         int safeSize = Math.min(Math.max(size, 1), 100);
         int offset = (safePage - 1) * safeSize;
         boolean sortByPet = "pet".equalsIgnoreCase(sortBy);
-        if (currentUser.canManageClinical()) {
+        if (currentUser.canOperateAppointments()) {
             List<AppointmentListRow> items = sortByPet
                     ? appointmentMapper.findAllRowsOrderByPet(safeSize, offset)
                     : appointmentMapper.findAllRows(safeSize, offset);
@@ -117,6 +131,10 @@ public class AppointmentService {
                 ? appointmentMapper.findRowsByOwnerUserIdOrderByPet(currentUser.id(), safeSize, offset)
                 : appointmentMapper.findRowsByOwnerUserId(currentUser.id(), safeSize, offset);
         return new PageResponse<>(items, safePage, safeSize, appointmentMapper.countByOwnerUserId(currentUser.id()));
+    }
+
+    public com.example.petlife.entity.AppointmentBusinessHoursEntity getBusinessHours() {
+        return businessHoursService.getCurrent();
     }
 
     public AppointmentResponse update(Long id, AppointmentUpdateRequest req) {
@@ -141,10 +159,7 @@ public class AppointmentService {
         if (scheduledAt == null || !scheduledAt.isAfter(LocalDateTime.now())) {
             throw new BadRequestException("予約日時は未来日時を指定してください");
         }
-        LocalTime t = scheduledAt.toLocalTime();
-        if (t.isBefore(BUSINESS_START) || t.isAfter(BUSINESS_END.minusMinutes(1))) {
-            throw new BadRequestException("診療受付時間外です（9:30〜17:00）");
-        }
+        validateBusinessHours(scheduledAt);
         if (appointmentMapper.countByScheduledAt(scheduledAt) > 0) {
             throw new BadRequestException("その時間帯はすでに予約済みです");
         }
@@ -161,21 +176,18 @@ public class AppointmentService {
         return new PremiumOnlineCareResult(created, false, null);
     }
 
-    private static final LocalTime BUSINESS_START = LocalTime.of(9, 30);
-    private static final LocalTime BUSINESS_END   = LocalTime.of(17, 0);
-    private static final int SLOT_MINUTES = 30;
-
     /**
      * 指定日の予約可能スロット一覧を返す。
      *
      * 算出ロジック:
-     *   1. 9:30〜17:00 を 30 分刻みで自動生成（ベース）
+     *   1. 基本営業時間を一定間隔で自動生成（ベース）
      *   2. appointment_slots(is_blocked=true) に一致する時刻をベースから除外
      *   3. appointment_slots(is_blocked=false) の追加枠をマージ（重複は1つに集約）
      *   4. すでに予約済みの時刻は available=false としてマーク（表示はするが選択不可）
      *   5. 過去の時刻は結果から除外
      */
     public List<SlotInfo> generateAvailableSlots(LocalDate date) {
+        var hours = businessHoursService.getCurrent();
         Set<LocalDateTime> booked  = new HashSet<>(appointmentMapper.findBookedTimesOnDate(date));
         Set<LocalDateTime> blocked = appointmentSlotMapper.findBlockedOnDate(date).stream()
                 .map(s -> s.slotDatetime()).collect(java.util.stream.Collectors.toSet());
@@ -184,13 +196,13 @@ public class AppointmentService {
 
         // ベース自動生成 - ブロック枠
         Set<LocalDateTime> baseTimes = new java.util.LinkedHashSet<>();
-        LocalTime t = BUSINESS_START;
-        while (!t.isAfter(BUSINESS_END.minusMinutes(1))) {
+        LocalTime t = hours.businessStart();
+        while (!t.isAfter(hours.businessEnd().minusMinutes(hours.slotMinutes()))) {
             LocalDateTime dt = LocalDateTime.of(date, t);
             if (!blocked.contains(dt)) {
                 baseTimes.add(dt);
             }
-            t = t.plusMinutes(SLOT_MINUTES);
+            t = t.plusMinutes(hours.slotMinutes());
         }
 
         // + 追加枠（ブロック対象でないもの）
@@ -211,28 +223,28 @@ public class AppointmentService {
     public record SlotInfo(LocalDateTime slotTime, boolean available) {}
 
     public AppointmentResponse createGeneralCare(Long petId, LocalDateTime scheduledAt, String note, String requestedChannel, LoginUser currentUser) {
-        if (!currentUser.isAdmin() && !planAccessService.canUseAppointments(currentUser)) {
+        if (currentUser == null || currentUser.isAdmin() || currentUser.isSuper()) {
+            throw new ForbiddenException("この予約を登録する権限がありません");
+        }
+        if (!currentUser.canOperateAppointments() && !planAccessService.canUseAppointments(currentUser)) {
             throw new BadRequestException("この機能はスタンダード以上で利用できます");
         }
         if (scheduledAt == null || !scheduledAt.isAfter(LocalDateTime.now())) {
             throw new BadRequestException("予約日時は未来日時を指定してください");
         }
-        LocalTime t = scheduledAt.toLocalTime();
-        if (t.isBefore(BUSINESS_START) || t.isAfter(BUSINESS_END.minusMinutes(1))) {
-            throw new BadRequestException("診療受付時間外です（9:30〜17:00）");
-        }
+        validateBusinessHours(scheduledAt);
         if (appointmentMapper.countByScheduledAt(scheduledAt) > 0) {
             throw new BadRequestException("その時間帯はすでに予約済みです");
         }
 
-        var pet = currentUser.hasStaffAccess()
+        var pet = currentUser.canOperateAppointments()
                 ? petMapper.findById(petId)
                 : petMapper.findByIdAndOwnerUserId(petId, currentUser.id());
         if (pet == null) throw new NotFoundException("Pet not found: " + petId);
         if (pet.deceasedAt() != null) throw new BadRequestException("永眠登録済みのペットはこの操作を利用できません");
 
         String channel = "VISIT";
-        if (!currentUser.isAdmin()) {
+        if (!currentUser.canOperateAppointments()) {
             PlanAccessService.PlanTier tier = planAccessService.resolvePlanTier(currentUser);
             if (tier == PlanAccessService.PlanTier.STANDARD && "ONLINE".equals(requestedChannel)) {
                 throw new BadRequestException("スタンダードプランは来院予約のみ利用できます");
@@ -244,12 +256,22 @@ public class AppointmentService {
             channel = "ONLINE";
         }
 
+        String nextStatus = currentUser.canOperateAppointments() ? "CONFIRMED" : "REQUESTED";
+        String zoomJoinUrl = null;
+        if (currentUser.canOperateAppointments() && "ONLINE".equals(channel)) {
+            zoomJoinUrl = zoomLinkService.createMeetingOrFallback(
+                    scheduledAt, "Pet Life Plus Staff Scheduled Appointment").joinUrl();
+        }
         AppointmentEntity row = new AppointmentEntity(
-                null, petId, currentUser.id(), null, "MEDICAL", channel,
-                scheduledAt, "REQUESTED", null, note,
+                null, petId, pet.ownerUserId(), currentUser.canOperateAppointments() ? currentUser.id() : null, "MEDICAL", channel,
+                scheduledAt, nextStatus, zoomJoinUrl, note,
                 null, null, null, null);
         Long createdId = appointmentMapper.insert(row);
-        return get(createdId);
+        AppointmentResponse created = get(createdId);
+        if (currentUser.canOperateAppointments()) {
+            notifyOwnerStaffScheduled(created, currentUser.id());
+        }
+        return created;
     }
 
     public AppointmentResponse approve(Long id, Long actorUserId) {
@@ -359,9 +381,13 @@ public class AppointmentService {
     }
 
     private void validateBusinessHours(LocalDateTime scheduledAt) {
+        var hours = businessHoursService.getCurrent();
         LocalTime time = scheduledAt.toLocalTime();
-        if (time.isBefore(SLOT_OPEN) || time.isAfter(SLOT_CLOSE)) {
-            throw new BadRequestException("予約時間は 09:30〜17:00 の範囲で指定してください");
+        if (time.isBefore(hours.businessStart()) || time.isAfter(hours.businessEnd())) {
+            throw new BadRequestException("予約時間は " + formatBusinessHours(hours.businessStart(), hours.businessEnd()) + " の範囲で指定してください");
+        }
+        if ((time.toSecondOfDay() - hours.businessStart().toSecondOfDay()) % (hours.slotMinutes() * 60) != 0) {
+            throw new BadRequestException("予約時間は " + hours.slotMinutes() + "分刻みで指定してください");
         }
     }
 
@@ -375,6 +401,10 @@ public class AppointmentService {
     private AppointmentResponse toResponse(AppointmentEntity row) {
         return new AppointmentResponse(row.id(), row.petId(), row.ownerUserId(), row.staffUserId(),
                 row.appointmentType(), row.channel(), row.scheduledAt(), row.status(), row.zoomJoinUrl(), row.note());
+    }
+
+    private String formatBusinessHours(LocalTime start, LocalTime end) {
+        return start.toString() + "〜" + end.toString();
     }
 
     private void notifyOwnerStatusChanged(AppointmentEntity appointment, boolean approved, Long actorUserId) {
@@ -403,6 +433,37 @@ public class AppointmentService {
         );
         Long notificationId = notificationMapper.insertReturningId(notification);
         if (notificationId == null) { log.warn("Failed to insert status-change notification for appointment {}", appointment.id()); return; }
+        notificationMapper.insertRecipient(notificationId, appointment.ownerUserId());
+        notificationMapper.updateRecipientStatus(notificationId, appointment.ownerUserId(), "SENT");
+    }
+
+    private void notifyOwnerStaffScheduled(AppointmentResponse appointment, Long actorUserId) {
+        if (appointment.ownerUserId() == null || actorUserId == null) return;
+
+        String petName = "ペット";
+        var pet = petMapper.findById(appointment.petId());
+        if (pet != null && pet.name() != null && !pet.name().isBlank()) {
+            petName = pet.name();
+        }
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        String channelLabel = "ONLINE".equals(appointment.channel()) ? "Zoom診療" : "診療予約";
+        StringBuilder body = new StringBuilder(petName + " の" + channelLabel + "が "
+                + fmt.format(appointment.scheduledAt()) + " で確定しました。");
+        if ("ONLINE".equals(appointment.channel()) && appointment.zoomJoinUrl() != null && !appointment.zoomJoinUrl().isBlank()) {
+            body.append(" Zoom参加リンク: ").append(appointment.zoomJoinUrl());
+        }
+
+        NotificationEntity notification = new NotificationEntity(
+                null, "INFO", "診療予約が登録されました", body.toString(),
+                null, LocalDateTime.now(), "SENT",
+                actorUserId, null, null, null
+        );
+        Long notificationId = notificationMapper.insertReturningId(notification);
+        if (notificationId == null) {
+            log.warn("Failed to insert staff-scheduled notification for appointment {}", appointment.id());
+            return;
+        }
         notificationMapper.insertRecipient(notificationId, appointment.ownerUserId());
         notificationMapper.updateRecipientStatus(notificationId, appointment.ownerUserId(), "SENT");
     }

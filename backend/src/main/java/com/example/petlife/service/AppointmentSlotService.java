@@ -23,18 +23,16 @@ import java.util.Set;
 
 @Service
 public class AppointmentSlotService {
-
-    private static final LocalTime BUSINESS_START = LocalTime.of(9, 30);
-    private static final LocalTime BUSINESS_END   = LocalTime.of(17, 0);
-    private static final int SLOT_MINUTES = 30;
-
     private final AppointmentSlotMapper slotMapper;
     private final AppointmentMapper appointmentMapper;
+    private final AppointmentBusinessHoursService businessHoursService;
 
     public AppointmentSlotService(AppointmentSlotMapper slotMapper,
-                                  AppointmentMapper appointmentMapper) {
+                                  AppointmentMapper appointmentMapper,
+                                  AppointmentBusinessHoursService businessHoursService) {
         this.slotMapper = slotMapper;
         this.appointmentMapper = appointmentMapper;
+        this.businessHoursService = businessHoursService;
     }
 
     public List<AppointmentSlotEntity> list(LoginUser currentUser) {
@@ -44,9 +42,10 @@ public class AppointmentSlotService {
 
     /**
      * 指定日の全スロット状態一覧を返す（予約枠管理画面用）。
-     * 自動生成スロット（9:30-17:00）と追加枠・ブロック枠を統合し、各行の状態を付与する。
+     * 自動生成スロット（基本営業時間 + 一定間隔）と追加枠・ブロック枠を統合し、各行の状態を付与する。
      */
     public List<DaySlotRow> getDaySlotsWithStatus(LocalDate date) {
+        var hours = businessHoursService.getCurrent();
         // 承認済み/申請中の時刻を分離（管理画面表示用）
         Set<LocalDateTime> requested = new HashSet<>(appointmentMapper.findRequestedTimesOnDate(date));
         Set<LocalDateTime> booked = new HashSet<>(appointmentMapper.findBookedTimesOnDate(date));
@@ -60,10 +59,10 @@ public class AppointmentSlotService {
 
         // 全表示対象時刻 = 自動生成ベース + 追加枠
         Set<LocalDateTime> allTimes = new LinkedHashSet<>();
-        LocalTime t = BUSINESS_START;
-        while (!t.isAfter(BUSINESS_END.minusMinutes(1))) {
+        LocalTime t = hours.businessStart();
+        while (!t.isAfter(hours.businessEnd().minusMinutes(hours.slotMinutes()))) {
             allTimes.add(LocalDateTime.of(date, t));
-            t = t.plusMinutes(SLOT_MINUTES);
+            t = t.plusMinutes(hours.slotMinutes());
         }
         for (AppointmentSlotEntity s : registeredMap.values()) {
             if (!Boolean.TRUE.equals(s.isBlocked())) {

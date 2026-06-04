@@ -33,9 +33,9 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers("/api/contact").permitAll()
                 .requestMatchers("/api/slack/events", "/api/line/events").permitAll()
-                // 予約 REST API: ページ版と同じロール制限（ADMIN はアクセス不可）
+                // 予約 REST API: VET/STAFF と申請者のみ
                 .requestMatchers("/api/appointments", "/api/appointments/**")
-                    .hasAnyRole("SUPER", "VET", "STAFF", "USER")
+                    .hasAnyRole("VET", "STAFF", "USER")
                 .requestMatchers("/app/login").permitAll()
                 .requestMatchers("/app/forgot-password", "/app/forgot-password/**").permitAll()
                 .requestMatchers("/app/reset-password", "/app/reset-password/**").permitAll()
@@ -52,11 +52,11 @@ public class SecurityConfig {
                 // 診療記録: VET・STAFF のみ（ADMIN は閲覧不可）
                 .requestMatchers("/app/consultations", "/app/consultations/**")
                     .hasAnyRole("SUPER", "VET", "STAFF")
-                // 診療予約・カレンダー: USER(一般)・VET・STAFF のみ（ADMIN は閲覧不可）
+                // 診療予約・カレンダー: USER(一般)・VET・STAFF のみ
                 .requestMatchers("/app/appointments", "/app/appointments/**")
-                    .hasAnyRole("SUPER", "VET", "STAFF", "USER")
+                    .hasAnyRole("VET", "STAFF", "USER")
                 .requestMatchers("/app/calendar", "/app/calendar/**")
-                    .hasAnyRole("SUPER", "VET", "STAFF", "USER")
+                    .hasAnyRole("VET", "STAFF", "USER")
                 .requestMatchers("/app/**").authenticated()
                 .requestMatchers("/uploads/**").authenticated()
                 .anyRequest().permitAll()

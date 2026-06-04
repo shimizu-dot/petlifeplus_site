@@ -24,6 +24,24 @@ public class SchemaCompatibilityInitializer implements CommandLineRunner {
         jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS slack_user_id VARCHAR(100)");
         jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS line_user_id VARCHAR(100)");
         jdbcTemplate.execute("ALTER TABLE appointment_slots ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN NOT NULL DEFAULT FALSE");
+        jdbcTemplate.execute("""
+            CREATE TABLE IF NOT EXISTS appointment_business_hours (
+                id                 BIGINT PRIMARY KEY,
+                business_start     TIME      NOT NULL,
+                business_end       TIME      NOT NULL,
+                slot_minutes       INTEGER   NOT NULL,
+                updated_by_user_id BIGINT    REFERENCES users(id),
+                created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+            """);
+        jdbcTemplate.execute("""
+            INSERT INTO appointment_business_hours (id, business_start, business_end, slot_minutes)
+            VALUES (1, TIME '09:30', TIME '17:00', 30)
+            ON CONFLICT (id) DO NOTHING
+            """);
+        jdbcTemplate.execute("DROP INDEX IF EXISTS idx_subscriptions_pet_status");
+        jdbcTemplate.execute("ALTER TABLE subscriptions DROP COLUMN IF EXISTS pet_id");
 
         // Subscription is owner-based: keep only one ACTIVE row per user (latest id).
         jdbcTemplate.execute("""

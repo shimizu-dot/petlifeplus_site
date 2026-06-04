@@ -2,6 +2,7 @@ package com.example.petlife.service;
 
 import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.common.PageResponse;
+import com.example.petlife.dto.pet.PetCareContextRow;
 import com.example.petlife.dto.pet.PetCreateRequest;
 import com.example.petlife.dto.pet.PetResponse;
 import com.example.petlife.dto.pet.PetUpdateRequest;
@@ -62,6 +63,19 @@ public class PetService {
 
     public List<PetResponse> listByOwnerUserIdForAdmin(Long ownerUserId) {
         return petMapper.findActiveByOwnerUserId(ownerUserId).stream().map(this::toResponse).toList();
+    }
+
+    public PetCareContextRow findCareContextByPetId(Long petId) {
+        PetCareContextRow row = petMapper.findCareContextByPetId(petId);
+        if (row == null) throw new NotFoundException("Pet not found: " + petId);
+        return row;
+    }
+
+    public List<String> findSiblingNamesByPetId(Long petId) {
+        if (petMapper.findById(petId) == null) {
+            throw new NotFoundException("Pet not found: " + petId);
+        }
+        return petMapper.findSiblingNamesByPetId(petId);
     }
 
     public boolean canDeletePet(Long petId, LoginUser currentUser) {

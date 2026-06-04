@@ -135,8 +135,8 @@
     <div class="content">
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-      <!-- Booking form — user only -->
-      <div class="card" th:if="${!isAdminView}" style="max-width:780px;">
+      <!-- Booking form -->
+      <div class="card" style="max-width:780px;">
         <!-- Date navigation (GET) -->
         <form method="get" th:action="@{/app/appointments}" class="date-nav">
           <a th:href="@{/app/appointments(date=${selectedDate.minusDays(1)})}">&lt; 前日</a>
@@ -198,6 +198,10 @@
 
           <div class="form-group">
             <label class="form-label">予約時間<span class="required">*</span></label>
+            <div class="slot-section-label"
+                 th:text="${'基本受付時間: ' + #temporals.format(businessHours.businessStart, 'HH:mm') + '〜' + #temporals.format(businessHours.businessEnd, 'HH:mm') + ' / ' + businessHours.slotMinutes + '分刻み'}">
+              基本受付時間: 09:30〜17:00 / 30分刻み
+            </div>
             <div th:if="${availableSlots.isEmpty()}" class="slot-empty">
               この日の受付時間内に予約枠がありません。別の日を選んでください。
             </div>

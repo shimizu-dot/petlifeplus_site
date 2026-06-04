@@ -23,7 +23,7 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    /** 一覧: 管理者は全件、一般ユーザーは自分の予約のみ */
+    /** 一覧: VET/STAFF は全件、一般ユーザーは自分の予約のみ */
     @GetMapping
     public ResponseEntity<PageResponse<AppointmentResponse>> list(
             @RequestParam(defaultValue = "1") int page,
@@ -32,13 +32,13 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.list(page, size, currentUser));
     }
 
-    /** 詳細: 自分の予約、または VET/STAFF/ADMIN のみアクセス可 */
+    /** 詳細: 自分の予約、または VET/STAFF のみアクセス可 */
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponse> get(
             @PathVariable Long id,
             @AuthenticationPrincipal LoginUser currentUser) {
         AppointmentResponse resp = appointmentService.get(id);
-        if (!currentUser.hasStaffAccess() && !resp.ownerUserId().equals(currentUser.id())) {
+        if (!currentUser.canOperateAppointments() && !resp.ownerUserId().equals(currentUser.id())) {
             throw new ForbiddenException("この予約にアクセスする権限がありません");
         }
         return ResponseEntity.ok(resp);
@@ -46,14 +46,14 @@ public class AppointmentController {
 
     /**
      * 新規作成: ownerUserId はログインユーザーから設定。
-     * VET/STAFF/ADMIN はリクエスト本文の ownerUserId をそのまま使用可。
+     * VET/STAFF は対象ペットのオーナーに強制補正する。
      */
     @PostMapping
     public ResponseEntity<AppointmentResponse> create(
             @Valid @RequestBody AppointmentCreateRequest request,
             @AuthenticationPrincipal LoginUser currentUser) {
         // status は常に REQUESTED で開始（スタッフも含め外部から任意のステータスを注入させない）
-        AppointmentCreateRequest safeRequest = currentUser.hasStaffAccess()
+        AppointmentCreateRequest safeRequest = currentUser.canOperateAppointments()
                 ? new AppointmentCreateRequest(
                         request.petId(), request.ownerUserId(), request.staffUserId(),
                         request.appointmentType(), request.channel(),
@@ -66,14 +66,14 @@ public class AppointmentController {
                 .body(appointmentService.create(safeRequest, currentUser));
     }
 
-    /** 更新: 自分の予約、または VET/STAFF/ADMIN のみ */
+    /** 更新: 自分の予約、または VET/STAFF のみ */
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody AppointmentUpdateRequest request,
             @AuthenticationPrincipal LoginUser currentUser) {
         AppointmentResponse existing = appointmentService.get(id);
-        if (!currentUser.hasStaffAccess() && !existing.ownerUserId().equals(currentUser.id())) {
+        if (!currentUser.canOperateAppointments() && !existing.ownerUserId().equals(currentUser.id())) {
             throw new ForbiddenException("この予約を更新する権限がありません");
         }
         return ResponseEntity.ok(appointmentService.update(id, request));

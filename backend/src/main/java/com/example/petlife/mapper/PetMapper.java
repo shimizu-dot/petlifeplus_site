@@ -1,5 +1,6 @@
 package com.example.petlife.mapper;
 
+import com.example.petlife.dto.pet.PetCareContextRow;
 import com.example.petlife.entity.PetEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -93,10 +94,46 @@ public interface PetMapper {
           (CASE WHEN EXISTS (SELECT 1 FROM pet_care_records c WHERE c.pet_id = #{petId} AND c.deleted_at IS NULL) THEN 1 ELSE 0 END) +
           (CASE WHEN EXISTS (SELECT 1 FROM symptom_checks s WHERE s.pet_id = #{petId}) THEN 1 ELSE 0 END) +
           (CASE WHEN EXISTS (SELECT 1 FROM appointments a WHERE a.pet_id = #{petId} AND a.deleted_at IS NULL) THEN 1 ELSE 0 END) +
-          (CASE WHEN EXISTS (SELECT 1 FROM medical_histories m WHERE m.pet_id = #{petId} AND m.deleted_at IS NULL) THEN 1 ELSE 0 END) +
-          (CASE WHEN EXISTS (SELECT 1 FROM subscriptions sub WHERE sub.pet_id = #{petId} AND sub.deleted_at IS NULL) THEN 1 ELSE 0 END)
+          (CASE WHEN EXISTS (SELECT 1 FROM medical_histories m WHERE m.pet_id = #{petId} AND m.deleted_at IS NULL) THEN 1 ELSE 0 END)
         """)
     int countLinkedDataFlags(@Param("petId") Long petId);
+
+    @Select("""
+        SELECT p.id AS "petId",
+               p.owner_user_id AS "ownerUserId",
+               u.name AS "ownerName",
+               UPPER(pl.name) AS "planName"
+        FROM pets p
+        JOIN users u ON u.id = p.owner_user_id
+        LEFT JOIN subscriptions s
+               ON s.user_id = p.owner_user_id
+              AND s.deleted_at IS NULL
+              AND s.status = 'ACTIVE'
+              AND s.start_date <= CURRENT_DATE
+              AND (s.end_date IS NULL OR s.end_date >= CURRENT_DATE)
+        LEFT JOIN plans pl
+               ON pl.id = s.plan_id
+              AND pl.deleted_at IS NULL
+              AND pl.is_active = TRUE
+        WHERE p.id = #{petId}
+          AND p.deleted_at IS NULL
+        ORDER BY s.start_date DESC NULLS LAST, s.id DESC NULLS LAST
+        LIMIT 1
+        """)
+    PetCareContextRow findCareContextByPetId(@Param("petId") Long petId);
+
+    @Select("""
+        SELECT sibling.name
+        FROM pets base
+        JOIN pets sibling
+          ON sibling.owner_user_id = base.owner_user_id
+         AND sibling.deleted_at IS NULL
+         AND sibling.id <> base.id
+        WHERE base.id = #{petId}
+          AND base.deleted_at IS NULL
+        ORDER BY sibling.id
+        """)
+    List<String> findSiblingNamesByPetId(@Param("petId") Long petId);
 
     @Update("""
         UPDATE pets

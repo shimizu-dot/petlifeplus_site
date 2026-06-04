@@ -49,11 +49,13 @@ public class AppointmentPageController {
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new GeneralAppointmentForm());
         }
+        var businessHours = appointmentService.getBusinessHours();
         LocalDate slotDate = (date != null) ? date : LocalDate.now();
-        model.addAttribute("isAdminView", currentUser.canManageClinical());
+        model.addAttribute("isAdminView", currentUser.canOperateAppointments());
         model.addAttribute("canChooseOnline",
-                currentUser.hasStaffAccess() ||
+                currentUser.canOperateAppointments() ||
                 planAccessService.resolvePlanTier(currentUser) == PlanAccessService.PlanTier.PREMIUM);
+        model.addAttribute("businessHours", businessHours);
         model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                 .filter(p -> p.deceasedAt() == null)
                 .toList());
@@ -73,10 +75,11 @@ public class AppointmentPageController {
         ensureAccessible(currentUser);
         if (result.hasErrors()) {
             LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
-            model.addAttribute("isAdminView", false);
+            model.addAttribute("isAdminView", currentUser.canOperateAppointments());
             model.addAttribute("canChooseOnline",
-                    currentUser.hasStaffAccess() ||
+                    currentUser.canOperateAppointments() ||
                     planAccessService.resolvePlanTier(currentUser) == PlanAccessService.PlanTier.PREMIUM);
+            model.addAttribute("businessHours", appointmentService.getBusinessHours());
             model.addAttribute("pets", petService.list(1, 100, currentUser).items().stream()
                     .filter(p -> p.deceasedAt() == null)
                     .toList());
@@ -95,7 +98,7 @@ public class AppointmentPageController {
     public String approve(@PathVariable Long id,
                           @AuthenticationPrincipal LoginUser currentUser,
                           RedirectAttributes ra) {
-        if (!currentUser.hasStaffAccess()) throw new BadRequestException("管理者・獣医師・スタッフのみ承認できます");
+        if (!currentUser.canOperateAppointments()) throw new BadRequestException("獣医師・スタッフのみ承認できます");
         appointmentService.approve(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を承認しました");
         return "redirect:/app/appointments";
@@ -105,7 +108,7 @@ public class AppointmentPageController {
     public String reject(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.hasStaffAccess()) throw new BadRequestException("管理者・獣医師・スタッフのみ却下できます");
+        if (!currentUser.canOperateAppointments()) throw new BadRequestException("獣医師・スタッフのみ却下できます");
         appointmentService.reject(id, currentUser.id());
         ra.addFlashAttribute("success", "予約を却下しました");
         return "redirect:/app/appointments";
@@ -134,7 +137,7 @@ public class AppointmentPageController {
     }
 
     private void ensureAccessible(LoginUser currentUser) {
-        if (!currentUser.canManageClinical() && !planAccessService.canUseAppointments(currentUser)) {
+        if (!currentUser.canOperateAppointments() && !planAccessService.canUseAppointments(currentUser)) {
             throw new BadRequestException("この機能はスタンダード以上で利用できます");
         }
     }

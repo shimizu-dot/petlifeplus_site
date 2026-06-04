@@ -62,9 +62,34 @@
       <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
       <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
 
+      <div class="card" th:if="${canConfigureBusinessHours}" style="max-width:560px;">
+        <div class="card-title">基本営業時間設定</div>
+        <form th:action="@{/app/admin/appointment-slots/business-hours}" method="post">
+          <div class="form-group">
+            <label class="form-label" for="businessStart">開始時刻</label>
+            <input id="businessStart" type="time" name="businessStart" class="form-control"
+                   th:value="${#temporals.format(businessHours.businessStart, 'HH:mm')}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="businessEnd">終了時刻</label>
+            <input id="businessEnd" type="time" name="businessEnd" class="form-control"
+                   th:value="${#temporals.format(businessHours.businessEnd, 'HH:mm')}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="slotMinutes">枠の間隔（分）</label>
+            <input id="slotMinutes" type="number" name="slotMinutes" class="form-control"
+                   min="5" max="120" step="5" th:value="${businessHours.slotMinutes}" required>
+          </div>
+          <button type="submit" class="btn btn-primary">営業時間を更新</button>
+        </form>
+      </div>
+
       <!-- ── 仕組み説明 ───────────────────────────────────────────────── -->
       <div style="background:#f8fbff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#1e40af;line-height:1.8;">
-        基本枠は <strong>9:30〜17:00（30分刻み）を自動生成</strong>します。<br>
+        基本枠は
+        <strong th:text="${#temporals.format(businessHours.businessStart, 'HH:mm') + '〜' + #temporals.format(businessHours.businessEnd, 'HH:mm') + '（' + businessHours.slotMinutes + '分刻み）を自動生成'}">
+          09:30〜17:00（30分刻み）を自動生成
+        </strong>します。<br>
         <span style="background:#d1fae5;border-radius:999px;padding:1px 8px;font-weight:700;color:#065f46;">自動生成</span> 枠をブロックするか、
         <span style="background:#dbeafe;border-radius:999px;padding:1px 8px;font-weight:700;color:#1e3a8a;">追加枠</span> を登録して時間帯を調整できます。
       </div>
@@ -185,7 +210,7 @@
           <div class="form-group">
             <label class="form-label" for="extraDatetime">日時<span class="required">*</span></label>
             <input id="extraDatetime" type="datetime-local" name="slotDatetime" class="form-control"
-                   th:value="${#temporals.format(targetDate, 'yyyy-MM-dd') + 'T09:30'}" required>
+                   th:value="${#temporals.format(targetDate, 'yyyy-MM-dd') + 'T' + #temporals.format(businessHours.businessStart, 'HH:mm')}" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="extraNote">メモ</label>

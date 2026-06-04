@@ -1,5 +1,63 @@
 # CHANGELOG
 
+## [2026-06-04]
+
+### ドキュメント更新（Low — 起動手順を README に追加）
+
+#### D-L1 — Docker Compose の起動方法と Docker 未起動時の対処を追記
+- **新規ファイル:** `README.md`
+- **変更ファイル:**
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. ルートに `README.md` を新規追加し、`docker compose up --build` / `up -d` / `down` / `down -v` の使い分けを記載
+  2. ローカル起動後のアクセス先として `http://localhost:8080` と `localhost:5432` を明記
+  3. `Cannot connect to the Docker daemon` 発生時は Docker Desktop 起動後に `docker info` を確認する手順を追加
+
+### 予約運用修正（High — スタッフ代理登録と営業時間設定を実運用へ整合）
+
+#### B-H1 — スタッフ代理予約は即時確定・オーナー通知、営業時間はDB設定へ統一
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/LoginUser.java`
+  - `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+  - `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+  - `backend/src/main/java/com/example/petlife/service/AppointmentSlotService.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentPageController.java`
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentSlotController.java`
+  - `backend/src/main/java/com/example/petlife/mapper/AppointmentBusinessHoursMapper.java`
+  - `backend/src/main/java/com/example/petlife/service/AppointmentBusinessHoursService.java`
+  - `backend/src/main/java/com/example/petlife/entity/AppointmentBusinessHoursEntity.java`
+  - `backend/src/main/resources/templates/appointments/index.html`
+  - `backend/src/main/resources/templates/appointments/slot-management.html`
+  - `backend/src/main/resources/schema.sql`
+  - `backend/src/main/resources/data.sql`
+  - `backend/src/main/java/com/example/petlife/config/SchemaCompatibilityInitializer.java`
+- **変更内容:**
+  1. VET/STAFF が電話相談などで代理登録した予約は `CONFIRMED` で即時登録し、対象ユーザーへ通知するよう変更
+  2. 代理登録時の `owner_user_id` は入力値を使わず、必ず `pet_id` に紐づく実オーナーから決定するよう統一
+  3. 予約を直接操作できるロールを VET/STAFF と申請者に限定し、SUPER/ADMIN は予約画面・API から除外
+  4. 基本営業時間・枠間隔を `appointment_business_hours` テーブルで一元管理し、SUPER/ADMIN が画面から更新できるよう追加
+  5. 予約枠生成・入力バリデーション・予約枠管理画面の表示文言を同一設定参照へ統一し、時間矛盾を解消
+
+### 設計整合（Medium — サブスクリプションをユーザー単位へ明確化）
+
+#### D-M1 — `subscriptions.pet_id` 依存を除去し、ペットからはオーナー経由で契約種別を逆引きする構成へ整理
+- **変更ファイル:**
+  - `backend/src/main/resources/schema.sql`
+  - `backend/src/main/resources/data.sql`
+  - `backend/src/main/java/com/example/petlife/config/SchemaCompatibilityInitializer.java`
+  - `backend/src/main/java/com/example/petlife/mapper/SubscriptionMapper.java`
+  - `backend/src/main/java/com/example/petlife/mapper/PetMapper.java`
+  - `backend/src/main/java/com/example/petlife/service/PetService.java`
+  - `backend/src/main/java/com/example/petlife/dto/pet/PetCareContextRow.java`
+  - `backend/docs/db-design.md`
+- **変更内容:**
+  1. `subscriptions` から `pet_id` を外し、契約主体を `user_id` に一本化
+  2. 既存DB 向けに `SchemaCompatibilityInitializer` で `idx_subscriptions_pet_status` と `subscriptions.pet_id` を自動除去
+  3. サブスクリプション一覧系 SQL は、契約ユーザー配下の代表ペット名を `LATERAL` で取得する形へ変更
+  4. ペット削除可否判定からサブスクリプション直結チェックを除去
+  5. `pet_id` から `owner_user_id`・有効プラン種別・兄弟犬一覧を引ける参照SQLを `PetMapper` / `PetService` に追加
+  6. DB設計書を「契約はユーザー単位、ペットはオーナー経由で逆引き」の前提に更新
+
 ## [2026-06-03]
 
 ### ドキュメント追加（Low — ご利用マニュアルを新規作成）

@@ -162,31 +162,28 @@ FROM users u WHERE u.email = 'owner1@petlife.local'
 -- ─── Subscriptions ───────────────────────────────────────────────────────────
 -- サブスクリプションはオーナー単位（ACTIVE は 1 件）
 
--- owner1 → LIGHT（ピーコ）
-INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
-SELECT u.id, p.id, 1, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
+-- owner1 → LIGHT
+INSERT INTO subscriptions (user_id, plan_id, start_date, status, auto_renew)
+SELECT u.id, 1, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
 FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ピーコ' AND p.deleted_at IS NULL
 WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (
       SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
   );
 
--- owner2 → STANDARD（カレン）
-INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
-SELECT u.id, p.id, 2, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
+-- owner2 → STANDARD
+INSERT INTO subscriptions (user_id, plan_id, start_date, status, auto_renew)
+SELECT u.id, 2, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
 FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = 'カレン' AND p.deleted_at IS NULL
 WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (
       SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
   );
 
--- owner3 → PREMIUM（ボス）
-INSERT INTO subscriptions (user_id, pet_id, plan_id, start_date, status, auto_renew)
-SELECT u.id, p.id, 3, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
+-- owner3 → PREMIUM
+INSERT INTO subscriptions (user_id, plan_id, start_date, status, auto_renew)
+SELECT u.id, 3, CURRENT_DATE - INTERVAL '30 days', 'ACTIVE', true
 FROM users u
-JOIN pets p ON p.owner_user_id = u.id AND p.name = 'ボス' AND p.deleted_at IS NULL
 WHERE u.email = 'owner3@petlife.local'
   AND NOT EXISTS (
       SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.status = 'ACTIVE' AND s.deleted_at IS NULL
@@ -202,3 +199,7 @@ SELECT setval(pg_get_serial_sequence('pets',             'id'), COALESCE((SELECT
 SELECT setval(pg_get_serial_sequence('health_records',   'id'), COALESCE((SELECT MAX(id) FROM health_records),   1), true);
 SELECT setval(pg_get_serial_sequence('pet_care_records', 'id'), COALESCE((SELECT MAX(id) FROM pet_care_records), 1), true);
 SELECT setval(pg_get_serial_sequence('subscriptions',    'id'), COALESCE((SELECT MAX(id) FROM subscriptions),    1), true);
+
+INSERT INTO appointment_business_hours (id, business_start, business_end, slot_minutes)
+VALUES (1, '09:30', '17:00', 30)
+ON CONFLICT (id) DO NOTHING;
