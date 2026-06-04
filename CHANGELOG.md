@@ -2,6 +2,18 @@
 
 ## [2026-06-04]
 
+### テスト環境修正（Medium — Mockito 初期化を環境非依存に修正）
+
+#### T-M1 — テスト用 MockMaker を subclass に固定
+- **変更ファイル:**
+  - `backend/pom.xml`
+  - `backend/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. テスト実行時の Mockito MockMaker を `mock-maker-subclass` に固定
+  2. Maven Surefire に `byte-buddy-agent` の `-javaagent` を追加し、自己アタッチ不要で Mockito を初期化するよう変更
+  3. JDK / 実行環境の attach 可否に依存せず、既存の Mockito ベース単体テストが動くよう調整
+
 ### バグ修正（Medium — 健康記録の評価画像が画面に出ない問題を修正）
 
 #### B-M1 — 総合評価の犬アイコンを一覧・印刷に表示

@@ -3,6 +3,7 @@ package com.example.petlife.service;
 import com.example.petlife.config.LoginUser;
 import com.example.petlife.dto.appointment.AppointmentCreateRequest;
 import com.example.petlife.dto.appointment.AppointmentUpdateRequest;
+import com.example.petlife.entity.AppointmentBusinessHoursEntity;
 import com.example.petlife.entity.AppointmentEntity;
 import com.example.petlife.entity.AppointmentSlotEntity;
 import com.example.petlife.exception.BadRequestException;
@@ -12,6 +13,7 @@ import com.example.petlife.mapper.AppointmentSlotMapper;
 import com.example.petlife.mapper.NotificationMapper;
 import com.example.petlife.mapper.PetMapper;
 import com.example.petlife.mapper.UserMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,6 +38,7 @@ class AppointmentServiceTest {
     @Mock AppointmentMapper appointmentMapper;
     @Mock AppointmentSlotMapper appointmentSlotMapper;
     @Mock PlanAccessService planAccessService;
+    @Mock AppointmentBusinessHoursService businessHoursService;
     @Mock ZoomLinkService zoomLinkService;
     @Mock PetMapper petMapper;
     @Mock NotificationMapper notificationMapper;
@@ -49,6 +52,12 @@ class AppointmentServiceTest {
     private static final LoginUser ADMIN = new LoginUser(1L, 1L, "管理者", "admin@petlife.local", "hash", true);
     private static final LoginUser SUPER = new LoginUser(2L, 2L, "SUPER", "super@petlife.local", "hash", true);
     private static final LoginUser OWNER = new LoginUser(3L, 3L, "申請者", "owner@petlife.local", "hash", true);
+
+    @BeforeEach
+    void setUp() {
+        org.mockito.Mockito.lenient().when(businessHoursService.getCurrent()).thenReturn(defaultBusinessHours());
+        org.mockito.Mockito.lenient().when(petMapper.findById(1L)).thenReturn(defaultPet());
+    }
 
     // ── validateBusinessHours ────────────────────────────────────────────────
 
@@ -272,7 +281,6 @@ class AppointmentServiceTest {
         when(petMapper.findById(1L)).thenReturn(new com.example.petlife.entity.PetEntity(
                 1L, OWNER.id(), "ポチ", "DOG", "Shiba", "MALE", null, null, null,
                 null, null, null, null));
-        when(planAccessService.resolvePlanTierByUserId(OWNER.id())).thenReturn(PlanAccessService.PlanTier.PREMIUM);
         when(appointmentMapper.insert(any())).thenReturn(null);
 
         assertDoesNotThrow(() -> {
@@ -310,5 +318,24 @@ class AppointmentServiceTest {
         return new AppointmentEntity(1L, 1L, owner.id(), null, "MEDICAL", "VISIT",
                 LocalDate.now().plusDays(1).atTime(10, 0), status,
                 null, null, null, null, null, null);
+    }
+
+    private static AppointmentBusinessHoursEntity defaultBusinessHours() {
+        return new AppointmentBusinessHoursEntity(
+                1L,
+                LocalTime.of(9, 30),
+                LocalTime.of(17, 0),
+                30,
+                1L,
+                null,
+                null
+        );
+    }
+
+    private static com.example.petlife.entity.PetEntity defaultPet() {
+        return new com.example.petlife.entity.PetEntity(
+                1L, OWNER.id(), "ポチ", "DOG", "Shiba", "MALE", null, null, null,
+                null, null, null, null
+        );
     }
 }
