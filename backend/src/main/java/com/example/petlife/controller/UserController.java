@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping
-    public String create(@Valid @ModelAttribute UserForm form,
+    public String create(@Valid @ModelAttribute("form") UserForm form,
                          BindingResult result,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
@@ -125,7 +125,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute UserForm form,
+                         @Valid @ModelAttribute("form") UserForm form,
                          BindingResult result,
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,

@@ -195,7 +195,7 @@
             <td th:text="${rec.moodScore != null ? rec.moodScore : '—'}">5</td>
             <td>
               <div th:if="${rec.overallScore != null}" class="score-image">
-                <img th:src="@{'/assets/img/dog-0' + ${rec.overallScore} + '.png'}" alt="overall-score-image">
+                <img th:src="${'/assets/img/dog-0' + rec.overallScore + '.png'}" alt="overall-score-image">
                 <span th:text="${rec.overallScore}">5</span>
               </div>
               <span th:if="${rec.overallScore == null}">—</span>

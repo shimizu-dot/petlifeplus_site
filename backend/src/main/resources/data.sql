@@ -91,56 +91,69 @@ ON CONFLICT DO NOTHING;
 -- ─── Pets ────────────────────────────────────────────────────────────────────
 -- owner1@petlife.local (Light プラン)
 
-INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 1, u.id, 'ポチ', 'DOG', '雑種', 'MALE', '2021-03-01', 8.50
+INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path)
+SELECT 1, u.id, 'ポチ', 'DOG', '雑種', 'MALE', '2021-03-01', 8.50, '/assets/img/dog-01.png'
 FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 1);
 
-INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 2, u.id, 'タロウ', 'DOG', '柴犬', 'FEMALE', '2022-07-12', 3.80
+INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path)
+SELECT 2, u.id, 'タロウ', 'DOG', '柴犬', 'FEMALE', '2022-07-12', 3.80, '/assets/img/dog-02.png'
 FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 2);
 
 -- owner2@petlife.local (Standard プラン)
 
-INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 3, u.id, 'レオン', 'DOG', 'ノーフォークテリア', 'MALE', '2020-11-23', 5.20
+INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path)
+SELECT 3, u.id, 'レオン', 'DOG', 'ノーフォークテリア', 'MALE', '2020-11-23', 5.20, '/assets/img/dog-03.png'
 FROM users u WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets WHERE id = 3);
 
 -- プラン別テストアカウント用ペット
 
-INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 101, u.id, 'ピーコ', 'DOG', 'チワワ', 'FEMALE', '2022-01-01', 7.40
+INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path)
+SELECT 101, u.id, 'ピーコ', 'DOG', 'チワワ', 'FEMALE', '2022-01-01', 7.40, '/assets/img/dog-04.png'
 FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 101 OR (p.owner_user_id = u.id AND p.name = 'ピーコ'));
 
-INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 102, u.id, 'カレン', 'DOG', 'ポメプー', 'FEMALE', '2021-06-10', 4.10
+INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path)
+SELECT 102, u.id, 'カレン', 'DOG', 'ポメプー', 'FEMALE', '2021-06-10', 4.10, '/assets/img/dog-05.png'
 FROM users u WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 102 OR (p.owner_user_id = u.id AND p.name = 'カレン'));
 
-INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg)
-SELECT 103, u.id, 'ボス', 'DOG', 'パグ', 'MALE', '2020-04-20', 5.60
+INSERT INTO pets (id, owner_user_id, name, species, breed, sex, birth_date, weight_baseline_kg, image_path)
+SELECT 103, u.id, 'ボス', 'DOG', 'パグ', 'MALE', '2020-04-20', 5.60, '/assets/img/dog-01.png'
 FROM users u WHERE u.email = 'owner3@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM pets p WHERE p.id = 103 OR (p.owner_user_id = u.id AND p.name = 'ボス'));
 
+-- 既存レコードへのペット画像パス反映（idempotent）
+UPDATE pets SET image_path = '/assets/img/dog-01.png' WHERE id = 1   AND image_path IS NULL;
+UPDATE pets SET image_path = '/assets/img/dog-02.png' WHERE id = 2   AND image_path IS NULL;
+UPDATE pets SET image_path = '/assets/img/dog-03.png' WHERE id = 3   AND image_path IS NULL;
+UPDATE pets SET image_path = '/assets/img/dog-04.png' WHERE id = 101 AND image_path IS NULL;
+UPDATE pets SET image_path = '/assets/img/dog-05.png' WHERE id = 102 AND image_path IS NULL;
+UPDATE pets SET image_path = '/assets/img/dog-01.png' WHERE id = 103 AND image_path IS NULL;
+
 -- ─── Health records ──────────────────────────────────────────────────────────
 
-INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, note)
-SELECT 1, 1, u.id, '2026-05-10', 8.60, '食欲良好', 30, '特記事項なし'
+INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, note)
+SELECT 1, 1, u.id, '2026-05-10', 8.60, '食欲良好', 30, 5, 4, 5, 5, 5, '特記事項なし'
 FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM health_records WHERE id = 1);
 
-INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, note)
-SELECT 2, 2, u.id, '2026-05-10', 3.75, '少し食欲低下', 15, '様子見'
+INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, note)
+SELECT 2, 2, u.id, '2026-05-10', 3.75, '少し食欲低下', 15, 3, 2, 4, 3, 3, '様子見'
 FROM users u WHERE u.email = 'owner1@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM health_records WHERE id = 2);
 
-INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, note)
-SELECT 3, 3, u.id, '2026-05-11', 5.25, '通常', 25, '元気'
+INSERT INTO health_records (id, pet_id, recorded_by_user_id, record_date, weight_kg, meal_memo, exercise_minutes, meal_score, exercise_score, sleep_score, mood_score, overall_score, note)
+SELECT 3, 3, u.id, '2026-05-11', 5.25, '通常', 25, 4, 4, 4, 4, 4, '元気'
 FROM users u WHERE u.email = 'owner2@petlife.local'
   AND NOT EXISTS (SELECT 1 FROM health_records WHERE id = 3);
+
+-- 既存レコードへのスコア反映（idempotent）
+UPDATE health_records SET meal_score=5, exercise_score=4, sleep_score=5, mood_score=5, overall_score=5 WHERE id=1 AND overall_score IS NULL;
+UPDATE health_records SET meal_score=3, exercise_score=2, sleep_score=4, mood_score=3, overall_score=3 WHERE id=2 AND overall_score IS NULL;
+UPDATE health_records SET meal_score=4, exercise_score=4, sleep_score=4, mood_score=4, overall_score=4 WHERE id=3 AND overall_score IS NULL;
 
 -- ─── Pet care records ────────────────────────────────────────────────────────
 
