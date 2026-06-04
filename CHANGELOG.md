@@ -2,6 +2,17 @@
 
 ## [2026-06-04]
 
+### バグ修正（High — SUPER が診療予約管理画面へ到達できない認可漏れを修正）
+
+#### B-H4 — SecurityConfig の予約ルート許可ロールに SUPER を追加
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/SecurityConfig.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `/app/appointments` と `/app/appointments/**` の許可ロールに SUPER を追加
+  2. `/api/appointments` と `/api/appointments/**` の許可ロールにも SUPER を追加
+  3. サービス層で許可済みだった SUPER 権限と、Spring Security の URL 認可設定を一致させた
+
 ### バグ修正（High — SUPER が診療予約できない権限制御を解消）
 
 #### B-H3 — 診療予約の操作権限に SUPER を含めるよう統一
