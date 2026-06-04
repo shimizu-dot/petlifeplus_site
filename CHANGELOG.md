@@ -2,6 +2,18 @@
 
 ## [2026-06-04]
 
+### バグ修正（Medium — 健康記録の評価画像が画面に出ない問題を修正）
+
+#### B-M1 — 総合評価の犬アイコンを一覧・印刷に表示
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/health/list.html`
+  - `backend/src/main/resources/templates/health/print.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 健康記録一覧の「総合」を「総合評価」に変更し、数値だけでなく犬アイコン画像も表示するよう修正
+  2. 診療情報の印刷画面にも健康記録テーブルを追加し、総合評価の犬アイコンを表示
+  3. 総合評価が未入力のレコードは従来どおり `—` 表示を維持
+
 ### バグ修正（High — SUPER が診療予約管理画面へ到達できない認可漏れを修正）
 
 #### B-H4 — SecurityConfig の予約ルート許可ロールに SUPER を追加

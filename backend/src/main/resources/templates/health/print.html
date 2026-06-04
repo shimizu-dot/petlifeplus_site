@@ -70,6 +70,19 @@
       white-space: normal;
       word-break: break-word;
     }
+    .score-image {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-image img {
+      width: 32px;
+      height: 32px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      background: #fff;
+    }
     .empty {
       color: #64748B;
       padding: 8px 0;
@@ -144,6 +157,51 @@
             <td th:text="${r.administeredOn}">2026-05-01</td>
             <td th:text="${r.nextDueOn ?: '—'}">2027-05-01</td>
             <td th:text="${r.memo ?: '—'}">異常なし</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>健康記録</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>記録日</th>
+            <th>体重 (kg)</th>
+            <th>運動 (分)</th>
+            <th>食事</th>
+            <th>運動</th>
+            <th>睡眠</th>
+            <th>機嫌</th>
+            <th>総合評価</th>
+            <th>食事メモ</th>
+            <th>メモ</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${#lists.isEmpty(healthRecords)}">
+            <td colspan="10" class="empty">記録はありません</td>
+          </tr>
+          <tr th:each="rec : ${healthRecords}">
+            <td th:text="${rec.recordDate}">2026-05-10</td>
+            <td th:text="${rec.weightKg != null ? rec.weightKg : '—'}">8.60</td>
+            <td th:text="${rec.exerciseMinutes != null ? rec.exerciseMinutes : '—'}">30</td>
+            <td th:text="${rec.mealScore != null ? rec.mealScore : '—'}">5</td>
+            <td th:text="${rec.exerciseScore != null ? rec.exerciseScore : '—'}">5</td>
+            <td th:text="${rec.sleepScore != null ? rec.sleepScore : '—'}">5</td>
+            <td th:text="${rec.moodScore != null ? rec.moodScore : '—'}">5</td>
+            <td>
+              <div th:if="${rec.overallScore != null}" class="score-image">
+                <img th:src="@{'/assets/img/dog-0' + ${rec.overallScore} + '.png'}" alt="overall-score-image">
+                <span th:text="${rec.overallScore}">5</span>
+              </div>
+              <span th:if="${rec.overallScore == null}">—</span>
+            </td>
+            <td th:text="${rec.mealMemo ?: '—'}">食欲良好</td>
+            <td th:text="${rec.note ?: '—'}">特記事項なし</td>
           </tr>
           </tbody>
         </table>
