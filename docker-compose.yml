@@ -60,8 +60,15 @@ services:
       CHATBOT_API_KEY:   ${CHATBOT_API_KEY:-}
       CHATBOT_MODEL:     ${CHATBOT_MODEL:-llama-3.1-8b-instant}
 
-      # メール（未設定時はスキップ）
-      SENDGRID_API_KEY:   ${SENDGRID_API_KEY:-}
+      # メール（SMTP）
+      SMTP_HOST:      ${SMTP_HOST:-localhost}
+      SMTP_PORT:      ${SMTP_PORT:-1025}
+      SMTP_USERNAME:  ${SMTP_USERNAME:-}
+      SMTP_PASSWORD:  ${SMTP_PASSWORD:-}
+      SMTP_AUTH:      ${SMTP_AUTH:-false}
+      SMTP_STARTTLS:  ${SMTP_STARTTLS:-false}
+      MAIL_FROM_EMAIL: ${MAIL_FROM_EMAIL:-noreply@petlife.local}
+      MAIL_FROM_NAME:  ${MAIL_FROM_NAME:-ペットライフプラス}
       SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL:-noreply@petlife.local}
 
       # Slack Bot（未設定時は無効）

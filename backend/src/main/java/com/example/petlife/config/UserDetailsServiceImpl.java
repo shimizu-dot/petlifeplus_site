@@ -24,10 +24,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         boolean statusActive = "ACTIVE".equalsIgnoreCase(user.status());
-        boolean subscriptionActive = user.roleId() != null && user.roleId() == 3L
-                ? authMapper.countEffectiveSubscriptions(user.id()) > 0
-                : true;
-        boolean enabled = statusActive && subscriptionActive;
+        // 一般ユーザーは契約情報の有無で機能を制御する。
+        // ログイン自体は status で判定し、契約未設定でも Light 扱いで入れるようにする。
+        boolean enabled = statusActive;
 
         return new LoginUser(
                 user.id(),

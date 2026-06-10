@@ -7,6 +7,7 @@ import com.example.petlife.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,13 +30,10 @@ public class PasswordResetService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
-    @Value("${sendgrid.api-key:}")
-    private String sendgridApiKey;
-
-    @Value("${sendgrid.from-email:noreply@petlifeplus.local}")
+    @Value("${mail.from-email:noreply@petlifeplus.local}")
     private String fromEmail;
 
-    @Value("${sendgrid.from-name:ペットライフプラス}")
+    @Value("${mail.from-name:ペットライフプラス}")
     private String fromName;
 
     @Value("${app.base-url:http://localhost:8080}")
@@ -101,11 +99,6 @@ public class PasswordResetService {
     }
 
     private void sendResetEmail(UserEntity user, String token) {
-        if (sendgridApiKey == null || sendgridApiKey.isBlank()) {
-            log.warn("SENDGRID_API_KEY not configured. Password reset email not sent for user id={}", user.id());
-            return;
-        }
-
         String resetUrl = baseUrl + "/app/reset-password?token=" + token;
         String subject = "【ペットライフプラス】パスワード再設定のご案内";
         String html = buildEmailHtml(user.name(), resetUrl);
@@ -119,8 +112,8 @@ public class PasswordResetService {
             helper.setText(html, true);
             mailSender.send(message);
             log.info("Password reset email sent to user id={}", user.id());
-        } catch (MessagingException | java.io.UnsupportedEncodingException e) {
-            log.error("Failed to send password reset email to user id={}", user.id(), e);
+        } catch (MessagingException | java.io.UnsupportedEncodingException | MailException e) {
+            log.error("Failed to send password reset email to user id={} resetUrl={}", user.id(), resetUrl, e);
         }
     }
 

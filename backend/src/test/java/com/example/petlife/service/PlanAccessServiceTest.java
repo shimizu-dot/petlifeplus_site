@@ -90,6 +90,13 @@ class PlanAccessServiceTest {
     }
 
     @Test
+    void nullFeatureSetIsTreatedAsNoFeatures() {
+        when(planFeatureMapper.findActiveFeatureCodesByUserId(1L)).thenReturn(null);
+        assertFalse(svc.canUseAiSymptom(normalUser()));
+        assertFalse(svc.canUsePrioritySupport(normalUser()));
+    }
+
+    @Test
     void standardPlanUserCanUseAppointments() {
         when(planFeatureMapper.findActiveFeatureCodesByUserId(1L))
                 .thenReturn(Set.of(UserIntegrationStatus.FEATURE_APPOINTMENT));

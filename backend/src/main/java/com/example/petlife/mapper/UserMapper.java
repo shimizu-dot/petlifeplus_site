@@ -88,6 +88,16 @@ public interface UserMapper {
     int updateActiveSubscriptionPlanByUserId(@Param("userId") Long userId, @Param("planId") Long planId);
 
     @Insert("""
+        INSERT INTO subscriptions(user_id, plan_id, start_date, status, auto_renew, created_at, updated_at)
+        VALUES(#{userId}, #{planId}, CURRENT_DATE, 'ACTIVE', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        RETURNING id
+        """)
+    Long insertActiveSubscription(
+            @Param("userId") Long userId,
+            @Param("planId") Long planId
+    );
+
+    @Insert("""
         INSERT INTO users(role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, created_at, updated_at)
         VALUES(#{roleId}, #{name}, #{email}, #{passwordHash}, #{phone}, #{slackUserId}, #{lineUserId}, #{status}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """)

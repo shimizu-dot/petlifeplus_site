@@ -17,10 +17,10 @@ public class UserForm {
     @Size(max = 100)                              private String slackUserId;
     @Size(max = 100)                              private String lineUserId;
     private String status = "ACTIVE";
-    private String planTier = "PREMIUM";
+    private String planTier = "LIGHT";
 
     public UserCreateRequest toCreateRequest() {
-        return new UserCreateRequest(roleId, name, email, password, phone, slackUserId, lineUserId);
+        return new UserCreateRequest(roleId, name, email, password, phone, slackUserId, lineUserId, planTier);
     }
 
     public UserUpdateRequest toUpdateRequest() {

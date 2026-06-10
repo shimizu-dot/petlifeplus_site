@@ -109,9 +109,9 @@ public class UserController {
         form.setStatus(entity.status());
         if (entity.roleId() != null && entity.roleId() == 3L) {
             String plan = userService.findActivePlanNameByUserId(entity.id());
-            form.setPlanTier(plan != null ? plan : "PREMIUM");
+            form.setPlanTier(plan != null ? plan : "LIGHT");
         } else {
-            form.setPlanTier("PREMIUM");
+            form.setPlanTier("LIGHT");
         }
         model.addAttribute("linkedPets", petService.listByOwnerUserIdForAdmin(entity.id()));
         model.addAttribute("integrationStatus",

@@ -62,6 +62,14 @@ public class UserService {
         );
         userMapper.insertUser(row);
         Long newId = userMapper.findByEmail(req.email()).id();
+        if (roleId == 3L) {
+            String desiredPlan = req.planTier() == null || req.planTier().isBlank() ? "LIGHT" : req.planTier().toUpperCase();
+            Long planId = userMapper.findPlanIdByName(desiredPlan);
+            if (planId == null) {
+                throw new BadRequestException("Unknown plan: " + desiredPlan);
+            }
+            userMapper.insertActiveSubscription(newId, planId);
+        }
         auditLog.info("action=user_create userId={} email={} roleId={}", newId, req.email(), roleId);
         return get(newId);
     }
@@ -100,7 +108,8 @@ public class UserService {
             }
             int updated = userMapper.updateActiveSubscriptionPlanByUserId(id, planId);
             if (updated == 0) {
-                auditLog.warn("action=user_plan_update_skipped userId={} reason=no_active_subscription desiredPlan={}", id, desiredPlan);
+                userMapper.insertActiveSubscription(id, planId);
+                auditLog.info("action=user_plan_create userId={} plan={}", id, desiredPlan);
             } else {
                 auditLog.info("action=user_plan_update userId={} plan={}", id, desiredPlan);
             }

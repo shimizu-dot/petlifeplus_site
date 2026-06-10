@@ -94,20 +94,15 @@
       "defaultValue": "https://api.groq.com/openai/v1"
     },
     {
-      "name": "sendgrid.api-key",
+      "name": "mail.from-email",
       "type": "java.lang.String",
-      "description": "SendGrid API key used as the SMTP password. When empty, password reset emails are skipped and a warning is logged."
-    },
-    {
-      "name": "sendgrid.from-email",
-      "type": "java.lang.String",
-      "description": "Sender email address for SendGrid transactional emails.",
+      "description": "Sender email address for password reset emails.",
       "defaultValue": "noreply@petlifeplus.local"
     },
     {
-      "name": "sendgrid.from-name",
+      "name": "mail.from-name",
       "type": "java.lang.String",
-      "description": "Sender display name for SendGrid transactional emails.",
+      "description": "Sender display name for password reset emails.",
       "defaultValue": "ペットライフプラス"
     },
     {

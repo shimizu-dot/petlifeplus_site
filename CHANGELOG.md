@@ -1,5 +1,78 @@
 # CHANGELOG
 
+## [2026-06-09]
+
+### バグ修正（High — アクセス拒否ページで初回ログイン時に 500 になる問題を修正）
+
+#### B-H5 — プラン機能一覧が null のときに空集合として扱うよう修正
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PlanAccessService.java`
+  - `backend/src/test/java/com/example/petlife/service/PlanAccessServiceTest.java`
+  - `backend/src/test/java/com/example/petlife/controller/AccessDeniedPageControllerTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `PlanFeatureMapper` が未登録ユーザーで `null` を返しても、`Set.of()` に正規化して `contains()` で落ちないよう修正
+  2. `resolveIntegrationStatusForUser()` でも同じ null 保護を追加し、統合ステータス解決時の 500 を防止
+  3. 空結果を前提にした回帰テストを追加し、アクセス拒否ページの Thymeleaf 描画が成立することを確認
+
+#### B-H6 — テスト報告書のバグ採番を BUG-001 に統一
+- **変更ファイル:**
+  - `docs/09-test-report.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. バグ一覧の実績行を `BUG-001` に統一
+  2. テンプレート用のプレースホルダー行を削除し、発見されたバグと対応状況を実データのみで表示するよう修正
+
+#### B-H7 — ユーザー管理の一般ユーザープラン登録と編集初期値を修正
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+  - `backend/src/main/java/com/example/petlife/dto/user/UserCreateRequest.java`
+  - `backend/src/main/java/com/example/petlife/dto/user/UserForm.java`
+  - `backend/src/main/java/com/example/petlife/mapper/UserMapper.java`
+  - `backend/src/main/java/com/example/petlife/service/UserService.java`
+  - `backend/src/main/resources/templates/admin/users/form.html`
+  - `backend/src/test/java/com/example/petlife/controller/UserControllerTest.java`
+  - `backend/src/test/java/com/example/petlife/service/UserServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 一般ユーザーの新規登録時に `planTier` を選べるようにし、`subscriptions` へ active 契約を作成するよう修正
+  2. 一般ユーザーの編集で、契約未設定時の既定値を `Premium` ではなく `Light` に修正
+  3. 契約が未作成の既存一般ユーザーを更新した場合も、選択したプランの active 契約を作成するよう修正
+  4. 編集画面でプラン未設定の一般ユーザーが `Light` 表示になること、新規登録時に契約が作成されることの回帰テストを追加
+
+#### B-H8 — 一般ユーザーのログイン可否を契約有無から切り離し
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/config/UserDetailsServiceImpl.java`
+  - `backend/src/test/java/com/example/petlife/config/UserDetailsServiceImplTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 一般ユーザーのログイン判定を `status` ベースに変更し、契約未設定でもログインできるよう修正
+  2. 契約有無は機能利用時のプラン判定に任せ、ログイン失敗の原因にならないように整理
+  3. `ACTIVE` と `SUSPENDED` の回帰テストを追加し、ログイン可否を固定
+
+#### B-H9 — パスワード再設定フォームの送信ボタンを実装
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/auth/forgot-password.html`
+  - `backend/src/test/java/com/example/petlife/controller/ForgotPasswordControllerTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定フォームに CSRF トークンを追加し、送信ボタンの POST が Spring Security で拒否されないよう修正
+  2. `ForgotPasswordController` の送信後遷移を回帰テストで固定し、`/app/forgot-password/sent` へ正しく遷移することを確認
+
+#### B-H10 — パスワード再設定メールを SendGrid 依存から SMTP へ変更
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `backend/src/main/resources/application.properties`
+  - `backend/src/main/resources/META-INF/additional-spring-configuration-metadata.json`
+  - `.env.example`
+  - `docker-compose.yml`
+  - `backend/src/test/java/com/example/petlife/service/PasswordResetServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの送信条件を SendGrid API キーから外し、一般的な SMTP 設定で送るよう変更
+  2. 送信元設定を `mail.from-email` / `mail.from-name` に整理し、SMTP サーバー未設定時もアプリが継続動作するようにした
+  3. `PasswordResetService` の送信フローを回帰テストで固定し、トークン作成とメール送信呼び出しが行われることを確認
+
 ## [2026-06-04]
 
 ### テスト環境修正（Medium — Mockito 初期化を環境非依存に修正）

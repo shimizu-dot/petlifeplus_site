@@ -82,7 +82,8 @@ public class PlanAccessService {
         if (user == null || user.hasStaffAccess()) {
             return ALL_FEATURES;
         }
-        return planFeatureMapper.findActiveFeatureCodesByUserId(user.id());
+        Set<String> features = planFeatureMapper.findActiveFeatureCodesByUserId(user.id());
+        return features == null ? Set.of() : features;
     }
 
     public boolean canUseAiSymptom(LoginUser user) {
@@ -137,6 +138,9 @@ public class PlanAccessService {
             Long userId, Long roleId, String slackUserId, String lineUserId) {
         boolean isStaffRole = roleId != null && roleId != 3L;
         Set<String> features = isStaffRole ? ALL_FEATURES : planFeatureMapper.findActiveFeatureCodesByUserId(userId);
+        if (features == null) {
+            features = Set.of();
+        }
         return new UserIntegrationStatus(
                 features.contains(UserIntegrationStatus.FEATURE_SLACK_BOT),
                 slackUserId != null && !slackUserId.isBlank(),
