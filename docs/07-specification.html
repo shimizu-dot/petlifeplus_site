@@ -563,7 +563,7 @@
                 <tr class="template-row">
                   <td>F-003</td>
                   <td>ユーザー管理（CRUD）</td>
-                  <td>ユーザー情報の登録/参照/更新/削除</td>
+                  <td>ユーザー情報の登録/参照/更新/削除（VET は閲覧のみ、STAFF は USER のみ登録/更新可）</td>
                   <td>ユーザー管理画面</td>
                   <td><span class="badge badge-must">Must</span></td>
                 </tr>
@@ -873,7 +873,7 @@
                 <div class="fill-label">機能概要 <span class="required">必須</span></div>
                 <div class="fill-hint">機能ID：F-003</div>
                 <div class="fill-content">
-                  <p>ユーザー情報の一覧表示、登録、詳細表示、編集、削除を行う（SUPER/ADMIN/STAFF が操作可能。削除は ADMIN/SUPER のみ）。一覧・編集画面では LINE / Slack / Zoom の連携ステータスアイコンを表示し、Slack User ID / LINE User ID の登録も行う。</p>
+                  <p>ユーザー情報の一覧表示、登録、詳細表示、編集、削除を行う（SUPER/ADMIN は全操作可。VET は閲覧のみ。STAFF は USER のみ登録・編集可、削除不可）。削除はアカウントに紐づくデータが存在しない場合に限って実行でき、その場合は status を無効/停止へ更新する。紐づくデータがある場合は削除不可のエラーを表示する。一覧・編集画面では LINE / Slack / Zoom の連携ステータスアイコンを表示し、Slack User ID / LINE User ID の登録も行う。</p>
                 </div>
               </div>
               <div class="fill-block">

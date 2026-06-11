@@ -34,15 +34,17 @@ public class UserController {
     @GetMapping
     public String list(@RequestParam(defaultValue = "1") int page,
                        @RequestParam(defaultValue = "10") int size,
-                       Model model) {
+                       Model model,
+                       @AuthenticationPrincipal LoginUser currentUser) {
         model.addAttribute("page", userService.list(page, size));
+        model.addAttribute("canManageUsers", currentUser != null && (currentUser.isAdmin() || currentUser.isStaff()));
         return "admin/users/list";
     }
 
     @GetMapping("/new")
     public String newForm(Model model, @AuthenticationPrincipal LoginUser currentUser) {
-        ensureWriteAccess(currentUser);
-        model.addAttribute("form", new UserForm());
+        ensureCreateAccess(currentUser);
+        model.addAttribute("form", buildUserFormForCurrentUser(new UserForm(), currentUser));
         model.addAttribute("editMode", false);
         return "admin/users/form";
     }
@@ -53,12 +55,14 @@ public class UserController {
                          Model model,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        ensureWriteAccess(currentUser);
+        ensureCreateAccess(currentUser);
+        normalizeRoleForCurrentUser(form, currentUser);
         String password = form.getPassword() == null ? "" : form.getPassword().trim();
         if (password.length() < 8 || password.length() > 64) {
             result.rejectValue("password", "Size.form.password", "パスワードは8〜64文字で入力してください");
         }
         if (result.hasErrors()) {
+            model.addAttribute("form", buildUserFormForCurrentUser(form, currentUser));
             model.addAttribute("editMode", false);
             return "admin/users/form";
         }
@@ -97,8 +101,9 @@ public class UserController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model,
                            @AuthenticationPrincipal LoginUser currentUser) {
-        ensureWriteAccess(currentUser);
+        ensureEditViewAccess(currentUser);
         UserEntity entity = userService.findEntity(id);
+        ensureStaffTargetAccess(currentUser, entity.roleId());
         UserForm form = new UserForm();
         form.setRoleId(entity.roleId());
         form.setName(entity.name());
@@ -113,6 +118,7 @@ public class UserController {
         } else {
             form.setPlanTier("LIGHT");
         }
+        form = buildUserFormForCurrentUser(form, currentUser);
         model.addAttribute("linkedPets", petService.listByOwnerUserIdForAdmin(entity.id()));
         model.addAttribute("integrationStatus",
                 planAccessService.resolveIntegrationStatusForUser(
@@ -120,6 +126,7 @@ public class UserController {
         model.addAttribute("form",     form);
         model.addAttribute("userId",   id);
         model.addAttribute("editMode", true);
+        model.addAttribute("readOnlyMode", currentUser != null && currentUser.isVet());
         return "admin/users/form";
     }
 
@@ -131,9 +138,17 @@ public class UserController {
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
         ensureWriteAccess(currentUser);
+        UserEntity existing = userService.findEntity(id);
+        ensureStaffTargetAccess(currentUser, existing.roleId());
+        normalizeRoleForCurrentUser(form, currentUser);
         if (result.hasErrors()) {
+            model.addAttribute("form", buildUserFormForCurrentUser(form, currentUser));
             model.addAttribute("userId",   id);
             model.addAttribute("editMode", true);
+            model.addAttribute("linkedPets", petService.listByOwnerUserIdForAdmin(existing.id()));
+            model.addAttribute("integrationStatus",
+                    planAccessService.resolveIntegrationStatusForUser(
+                            existing.id(), existing.roleId(), existing.slackUserId(), existing.lineUserId()));
             return "admin/users/form";
         }
         userService.update(id, form.toUpdateRequest(), currentUser);
@@ -145,17 +160,45 @@ public class UserController {
     public String delete(@PathVariable Long id,
                          @AuthenticationPrincipal LoginUser currentUser,
                          RedirectAttributes ra) {
-        if (!currentUser.isAdmin()) throw new BadRequestException("削除は管理者のみ実行できます");
-        userService.delete(id);
+        userService.delete(id, currentUser);
         ra.addFlashAttribute("success", "ユーザーを削除しました");
         return "redirect:/app/admin/users";
     }
 
     /** ADMIN + STAFF のみ書き込み可。VET は一覧閲覧のみ。 */
+    private void ensureCreateAccess(LoginUser currentUser) {
+        if (currentUser == null || (!currentUser.isAdmin() && !currentUser.isStaff())) {
+            throw new BadRequestException("ユーザー登録は管理者・スタッフのみ実行できます");
+        }
+    }
+
     private void ensureWriteAccess(LoginUser currentUser) {
-        if (!currentUser.canManageOperations()) {
+        if (currentUser == null || (!currentUser.isAdmin() && !currentUser.isStaff())) {
             throw new BadRequestException("ユーザー編集は管理者・スタッフのみ実行できます");
         }
+    }
+
+    private void ensureEditViewAccess(LoginUser currentUser) {
+        if (currentUser == null || (!currentUser.isAdmin() && !currentUser.isStaff() && !currentUser.isVet())) {
+            throw new BadRequestException("ユーザー編集は管理者・スタッフ・獣医師のみ表示できます");
+        }
+    }
+
+    private void ensureStaffTargetAccess(LoginUser currentUser, Long targetRoleId) {
+        if (currentUser.isStaff() && (targetRoleId == null || targetRoleId != 3L)) {
+            throw new BadRequestException("スタッフは一般ユーザーのみ編集できます");
+        }
+    }
+
+    private void normalizeRoleForCurrentUser(UserForm form, LoginUser currentUser) {
+        if (currentUser != null && currentUser.isStaff()) {
+            form.setRoleId(3L);
+        }
+    }
+
+    private UserForm buildUserFormForCurrentUser(UserForm form, LoginUser currentUser) {
+        normalizeRoleForCurrentUser(form, currentUser);
+        return form;
     }
 
     private void setCreateError(Model model, String code, String message) {

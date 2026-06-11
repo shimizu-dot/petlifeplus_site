@@ -119,10 +119,36 @@ public interface UserMapper {
 
     @Update("""
         UPDATE users
-        SET deleted_at = #{deletedAt}, updated_at = CURRENT_TIMESTAMP
+        SET status = 'INACTIVE',
+            deleted_at = #{deletedAt},
+            updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id} AND deleted_at IS NULL
         """)
     int softDelete(@Param("id") Long id, @Param("deletedAt") LocalDateTime deletedAt);
+
+    @Select("""
+        SELECT
+          (CASE WHEN EXISTS (SELECT 1 FROM pets WHERE owner_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM health_records WHERE recorded_by_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM pet_care_records WHERE recorded_by_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM symptom_checks WHERE requested_by_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM subscriptions WHERE user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM appointments WHERE owner_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM appointments WHERE staff_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM medical_histories WHERE handled_by_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM consult_chat_messages WHERE user_id = #{userId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM notifications WHERE created_by_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM notification_recipients WHERE user_id = #{userId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM email_messages WHERE recipient_user_id = #{userId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM line_link_tokens WHERE user_id = #{userId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM pet_calendar_marks WHERE created_by_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM dismissed_reminders WHERE user_id = #{userId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM announcements WHERE created_by_user_id = #{userId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM password_reset_tokens WHERE user_id = #{userId}) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM appointment_slots WHERE created_by_user_id = #{userId} AND deleted_at IS NULL) THEN 1 ELSE 0 END) +
+          (CASE WHEN EXISTS (SELECT 1 FROM appointment_business_hours WHERE updated_by_user_id = #{userId}) THEN 1 ELSE 0 END)
+        """)
+    int countLinkedDataFlags(@Param("userId") Long userId);
 
     @Update("""
         UPDATE users

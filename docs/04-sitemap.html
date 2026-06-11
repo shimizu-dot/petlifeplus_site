@@ -263,6 +263,9 @@
 
 全スタッフ系（VET/STAFF/ADMIN/SUPERロール）
 └── ユーザー管理（/app/admin/users）
+    ├── 閲覧のみ（VET）
+    ├── USER のみ登録・編集（STAFF）
+    └── 全操作可（ADMIN/SUPER）
 
 ADMIN・スタッフ（ADMIN/STAFF/SUPERロール）
 ├── お知らせ管理（/app/admin/announcements）
@@ -453,7 +456,7 @@ ADMIN/SUPER 共通（/app/admin/** ルール適用）
                   <td>16</td>
                   <td>ユーザー管理画面</td>
                   <td>利用者アカウントを管理する</td>
-                  <td>一覧・詳細閲覧（VET）、登録・編集（STAFF/ADMIN/SUPER）、削除（ADMIN/SUPER）</td>
+                  <td>一覧・詳細閲覧（VET）、登録・編集（STAFF は USER のみ）、削除（ADMIN/SUPER、紐づくデータがない場合のみ）</td>
                 </tr>
                 <tr>
                   <td>17</td>

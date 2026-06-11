@@ -1,5 +1,112 @@
 # CHANGELOG
 
+## [2026-06-11]
+
+### UI修正（Low — VET のユーザー編集画面を閲覧専用に変更）
+
+#### B-L3 — VET は編集画面を開けるが更新できないように変更
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+  - `backend/src/main/resources/templates/admin/users/list.html`
+  - `backend/src/main/resources/templates/admin/users/form.html`
+  - `backend/src/test/java/com/example/petlife/controller/UserControllerTest.java`
+  - `docs/test-checklist.md`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. VET アカウントでもユーザー一覧の編集ボタンから編集画面を開けるように変更
+  2. 編集画面では入力欄と更新ボタンを無効化し、ペット情報の確認だけできる閲覧専用モードを追加
+  3. VET が更新 API を叩いた場合は引き続き拒否し、回帰テストを追加
+
+### バグ修正（Medium — ユーザー管理の権限制御を仕様へ統一）
+
+#### B-M2 — VET/STAFF/ADMIN/SUPER のユーザー管理権限を画面・サービス・仕様書で揃えた
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+  - `backend/src/main/java/com/example/petlife/service/UserService.java`
+  - `backend/src/main/java/com/example/petlife/mapper/UserMapper.java`
+  - `backend/src/main/resources/templates/admin/users/list.html`
+  - `backend/src/main/resources/templates/admin/users/form.html`
+  - `backend/src/test/java/com/example/petlife/controller/UserControllerTest.java`
+  - `backend/src/test/java/com/example/petlife/service/UserServiceTest.java`
+  - `docs/07-specification.html`
+  - `docs/04-sitemap.html`
+  - `docs/sitemap-to-url-design.html`
+  - `docs/test-checklist.md`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. VET はユーザー管理を閲覧のみとし、編集・削除・新規登録ボタンを無効化
+  2. STAFF は一般ユーザーのみ登録・編集可能とし、削除は不可に変更
+  3. ADMIN/SUPER の削除は紐づくデータがない場合のみ許可し、削除時は status を INACTIVE に更新するよう修正
+  4. ユーザー管理の仕様書、サイトマップ、テストチェックリストを実装に合わせて更新
+  5. 回帰テストを追加し、VET/STAFF の権限制御と削除の整合性を固定
+
+### UI修正（Low — ユーザー登録画面の権限エラーメッセージを分離）
+
+#### B-L2 — `UserController.newForm()` のエラー文言を「ユーザー登録」に修正
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+  - `backend/src/test/java/com/example/petlife/controller/UserControllerTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. VET などが `/app/admin/users/new` を開いた際のメッセージを「ユーザー編集」ではなく「ユーザー登録」に変更
+  2. 回帰テストを追加し、VET で `BadRequestException` の文言が登録向けになることを固定
+
+### ドキュメント更新（Low — テスト報告書のバグ一覧へ反映）
+
+#### D-L3 — ユーザー管理の削除ボタン誤活性化を `docs/09-test-report.html` に追記
+- **変更ファイル:**
+  - `docs/09-test-report.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `BUG-002` として、VET アカウントで削除ボタンが有効化していた不具合を 4 章のバグ一覧に追加
+
+### データ反映（Low — Premium 会員の初期データを実DBへ反映）
+
+#### D-L2 — `owner3@petlife.local` を active の Premium 会員として復帰
+- **変更ファイル:**
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 実データベース上で `owner3@petlife.local` を `ACTIVE` に戻し、`PREMIUM` 契約が見える状態へ反映
+
+### UI修正（Low — VET のユーザー管理で削除・編集操作を無効化）
+
+#### B-L1 — ユーザー一覧の操作ボタンを管理者限定に変更
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/UserController.java`
+  - `backend/src/main/resources/templates/admin/users/list.html`
+  - `backend/src/main/resources/static/css/app.css`
+  - `backend/src/test/java/com/example/petlife/controller/UserControllerTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. VET などの閲覧権限ユーザーでは、ユーザー一覧の編集リンクと削除ボタンを非活性化
+  2. 非活性時はグレーアウト表示にし、削除確認ダイアログも出ないよう修正
+  3. VET で `canManageUsers=false` になる回帰テストを追加
+
+### 依存関係更新（Low — Spring Boot の新しい公開版へ更新）
+
+#### D-L1 — Spring Boot parent を `4.1.0` に更新
+- **変更ファイル:**
+  - `backend/pom.xml`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. Spring Boot parent を `4.1.0` に更新し、IDE の新旧バージョン警告を解消
+
+### テスト整備（Low — 未使用 import の整理）
+
+#### T-L2 — `PasswordResetServiceTest` の未使用 `assertEquals` import を削除
+- **変更ファイル:**
+  - `backend/src/test/java/com/example/petlife/service/PasswordResetServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `PasswordResetServiceTest` から未使用の `assertEquals` import を削除
+
+#### T-L1 — `UserServiceTest` の未使用 `assertEquals` import を削除
+- **変更ファイル:**
+  - `backend/src/test/java/com/example/petlife/service/UserServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `UserServiceTest` から未使用の `assertEquals` import を削除
+
 ## [2026-06-09]
 
 ### バグ修正（High — アクセス拒否ページで初回ログイン時に 500 になる問題を修正）

@@ -31,6 +31,10 @@
             判別目安: USR-001=メール重複 / USR-002=ロール整合性 / USR-003=その他
           </div>
         </div>
+        <div th:if="${readOnlyMode}"
+             style="margin-bottom:12px;padding:10px 12px;border-radius:10px;border:1px solid #dbeafe;background:#eff6ff;color:#1d4ed8;">
+          獣医師はユーザー情報を閲覧のみできます。ペット情報の確認は可能ですが、更新はできません。
+        </div>
 
         <form th:action="${editMode ? '/app/admin/users/' + userId : '/app/admin/users'}"
               method="post" th:object="${form}">
@@ -40,28 +44,32 @@
             <div class="form-group">
               <label class="form-label" for="name">氏名<span class="required">*</span></label>
               <input id="name" type="text" th:field="*{name}" class="form-control"
-                     th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" maxlength="100">
+                     th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" maxlength="100"
+                     th:readonly="${readOnlyMode}">
               <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
             <div class="form-group">
               <label class="form-label" for="roleId">ロール<span class="required">*</span></label>
               <select id="roleId" th:field="*{roleId}" class="form-control"
-                      th:classappend="${#fields.hasErrors('roleId')} ? 'is-invalid'">
+                      th:classappend="${#fields.hasErrors('roleId')} ? 'is-invalid'"
+                      th:disabled="${readOnlyMode}">
                 <option value="">選択してください</option>
-                <option value="1">管理者</option>
-                <option value="2">開発者</option>
+                <option th:if="${currentUser != null and currentUser.isAdmin()}" value="1">管理者</option>
+                <option th:if="${currentUser != null and currentUser.isAdmin()}" value="2">開発者</option>
                 <option value="3">一般ユーザー</option>
-                <option value="4">獣医師</option>
-                <option value="5">スタッフ</option>
+                <option th:if="${currentUser != null and currentUser.isAdmin()}" value="4">獣医師</option>
+                <option th:if="${currentUser != null and currentUser.isAdmin()}" value="5">スタッフ</option>
               </select>
               <div class="invalid-feedback" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}"></div>
+              <div class="form-hint" th:if="${currentUser != null and currentUser.isStaff()}">スタッフは一般ユーザーのみ登録・編集できます。</div>
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="email">メールアドレス<span class="required">*</span></label>
             <input id="email" type="email" th:field="*{email}" class="form-control"
-                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" maxlength="255">
+                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" maxlength="255"
+                   th:readonly="${readOnlyMode}">
             <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
           </div>
 
@@ -72,13 +80,15 @@
               </label>
               <input id="password" type="password" th:field="*{password}" class="form-control"
                      th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
-                     th:placeholder="${editMode ? '変更する場合のみ入力' : '8文字以上64文字以内'}">
+                     th:placeholder="${editMode ? '変更する場合のみ入力' : '8文字以上64文字以内'}"
+                     th:readonly="${readOnlyMode}">
               <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
             </div>
             <div class="form-group">
               <label class="form-label" for="phone">電話番号</label>
               <input id="phone" type="tel" th:field="*{phone}" class="form-control"
-                     placeholder="例：090-1234-5678">
+                     placeholder="例：090-1234-5678"
+                     th:readonly="${readOnlyMode}">
             </div>
           </div>
 
@@ -87,14 +97,16 @@
               <label class="form-label" for="slackUserId">Slack ユーザーID</label>
               <input id="slackUserId" type="text" th:field="*{slackUserId}" class="form-control"
                      th:classappend="${#fields.hasErrors('slackUserId')} ? 'is-invalid'"
-                     placeholder="例：U012AB3CD" maxlength="100">
+                     placeholder="例：U012AB3CD" maxlength="100"
+                     th:readonly="${readOnlyMode}">
               <div class="invalid-feedback" th:if="${#fields.hasErrors('slackUserId')}" th:errors="*{slackUserId}"></div>
             </div>
             <div class="form-group">
               <label class="form-label" for="lineUserId">LINE ユーザーID</label>
               <input id="lineUserId" type="text" th:field="*{lineUserId}" class="form-control"
                      th:classappend="${#fields.hasErrors('lineUserId')} ? 'is-invalid'"
-                     placeholder="例：Uxxxxxxxxxxxxxxxxxxxx" maxlength="100">
+                     placeholder="例：Uxxxxxxxxxxxxxxxxxxxx" maxlength="100"
+                     th:readonly="${readOnlyMode}">
               <div class="invalid-feedback" th:if="${#fields.hasErrors('lineUserId')}" th:errors="*{lineUserId}"></div>
             </div>
           </div>
@@ -116,7 +128,7 @@
 
           <div class="form-group" th:if="${editMode}">
             <label class="form-label" for="status">ステータス</label>
-            <select id="status" th:field="*{status}" class="form-control">
+            <select id="status" th:field="*{status}" class="form-control" th:disabled="${readOnlyMode}">
               <option value="ACTIVE">有効</option>
               <option value="INACTIVE">無効</option>
               <option value="SUSPENDED">停止</option>
@@ -125,7 +137,7 @@
 
           <div class="form-group" id="planTierGroup" style="display:none;">
             <label class="form-label" for="planTier">一般ユーザープラン</label>
-            <select id="planTier" th:field="*{planTier}" class="form-control">
+            <select id="planTier" th:field="*{planTier}" class="form-control" th:disabled="${readOnlyMode}">
               <option value="LIGHT">Light</option>
               <option value="STANDARD">Standard</option>
               <option value="PREMIUM">Premium</option>
@@ -134,7 +146,8 @@
           </div>
 
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary" th:text="${editMode ? '更新する' : '登録する'}">登録する</button>
+            <button type="submit" class="btn btn-primary" th:text="${editMode ? '更新する' : '登録する'}"
+                    th:disabled="${readOnlyMode}">登録する</button>
             <a th:href="@{/app/admin/users}" class="btn btn-secondary">キャンセル</a>
           </div>
         </form>

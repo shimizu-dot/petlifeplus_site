@@ -24,7 +24,8 @@
             <button type="button" class="view-switch-btn" data-view-mode="grid">Grid</button>
             <button type="button" class="view-switch-btn" data-view-mode="table">Table</button>
           </div>
-          <a th:href="@{/app/admin/users/new}" class="btn btn-primary">＋ ユーザー登録</a>
+          <a th:if="${canManageUsers}" th:href="@{/app/admin/users/new}" class="btn btn-primary">＋ ユーザー登録</a>
+          <span th:unless="${canManageUsers}" class="btn btn-primary is-disabled" aria-disabled="true">＋ ユーザー登録</span>
         </div>
       </div>
 
@@ -58,13 +59,16 @@
                 <span th:class="${user.integrationStatus.zoomEnabled()} ? 'int-chip int-chip-zoom' : 'int-chip int-chip-off'"
                       th:title="${user.integrationStatus.zoomEnabled() ? 'Zoom: 利用可能' : 'Zoom: プラン対象外'}">Zoom</span>
               </div>
-              <div class="table-actions">
-                <a th:href="@{/app/admin/users/{id}/edit(id=${user.id})}" class="btn btn-secondary btn-sm">編集</a>
+              <div class="table-actions" th:with="canEditUser=${currentUser != null and (currentUser.isAdmin() or currentUser.isVet() or (currentUser.isStaff() and user.roleId == 3L))},
+                                                   canDeleteUser=${currentUser != null and currentUser.isAdmin()}">
+                <a th:if="${canEditUser}" th:href="@{/app/admin/users/{id}/edit(id=${user.id})}" class="btn btn-secondary btn-sm">編集</a>
+                <span th:unless="${canEditUser}" class="btn btn-secondary btn-sm is-disabled" aria-disabled="true">編集</span>
                 <form th:action="@{/app/admin/users/{id}(id=${user.id})}" method="post"
-                      style="display:inline;"
-                      onsubmit="return confirm('削除しますか？')">
+                      style="display:inline;">
                   <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                  <button type="submit" class="btn btn-danger btn-sm"
+                          th:disabled="${!canDeleteUser}"
+                          th:onclick="${canDeleteUser} ? 'return confirm(\'削除しますか？\')' : 'return false;'">削除</button>
                 </form>
               </div>
             </div>
@@ -94,13 +98,16 @@
               <span th:class="${user.integrationStatus.zoomEnabled()} ? 'int-chip int-chip-zoom' : 'int-chip int-chip-off'"
                     th:title="${user.integrationStatus.zoomEnabled() ? 'Zoom: 利用可能' : 'Zoom: プラン対象外'}">Zoom</span>
             </div>
-            <div class="table-actions">
-              <a th:href="@{/app/admin/users/{id}/edit(id=${user.id})}" class="btn btn-secondary btn-sm">編集</a>
+            <div class="table-actions" th:with="canEditUser=${currentUser != null and (currentUser.isAdmin() or currentUser.isVet() or (currentUser.isStaff() and user.roleId == 3L))},
+                                                 canDeleteUser=${currentUser != null and currentUser.isAdmin()}">
+              <a th:if="${canEditUser}" th:href="@{/app/admin/users/{id}/edit(id=${user.id})}" class="btn btn-secondary btn-sm">編集</a>
+              <span th:unless="${canEditUser}" class="btn btn-secondary btn-sm is-disabled" aria-disabled="true">編集</span>
               <form th:action="@{/app/admin/users/{id}(id=${user.id})}" method="post"
-                    style="display:inline;"
-                    onsubmit="return confirm('削除しますか？')">
+                    style="display:inline;">
                 <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                <button type="submit" class="btn btn-danger btn-sm"
+                        th:disabled="${!canDeleteUser}"
+                        th:onclick="${canDeleteUser} ? 'return confirm(\'削除しますか？\')' : 'return false;'">削除</button>
               </form>
             </div>
           </div>
@@ -149,14 +156,17 @@
                         th:text="${user.status == 'ACTIVE' ? '有効' : '無効'}">有効</span>
                 </td>
                 <td>
-                  <div class="table-actions">
-                    <a th:href="@{/app/admin/users/{id}/edit(id=${user.id})}"
+                  <div class="table-actions" th:with="canEditUser=${currentUser != null and (currentUser.isAdmin() or currentUser.isVet() or (currentUser.isStaff() and user.roleId == 3L))},
+                                                       canDeleteUser=${currentUser != null and currentUser.isAdmin()}">
+                    <a th:if="${canEditUser}" th:href="@{/app/admin/users/{id}/edit(id=${user.id})}"
                        class="btn btn-secondary btn-sm">編集</a>
+                    <span th:unless="${canEditUser}" class="btn btn-secondary btn-sm is-disabled" aria-disabled="true">編集</span>
                     <form th:action="@{/app/admin/users/{id}(id=${user.id})}" method="post"
-                          style="display:inline;"
-                          onsubmit="return confirm('削除しますか？')">
+                          style="display:inline;">
                       <input type="hidden" name="_method" value="DELETE">
-                      <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                      <button type="submit" class="btn btn-danger btn-sm"
+                              th:disabled="${!canDeleteUser}"
+                              th:onclick="${canDeleteUser} ? 'return confirm(\'削除しますか？\')' : 'return false;'">削除</button>
                     </form>
                   </div>
                 </td>

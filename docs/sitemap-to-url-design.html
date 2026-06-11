@@ -382,13 +382,14 @@
         </div>
         </div>
         <div class="app-section">
-          <h3>管理系（VET/STAFF/ADMINロール）</h3>
+          <h3>管理系（VET/STAFF/ADMIN/SUPERロール）</h3>
           <div class="app-row">
             <div class="app-panel">
             <pre>全スタッフ系（VET/STAFF/ADMINロール）
 └── ユーザー管理（/app/admin/users）
     ├── 閲覧のみ（VET）
-    └── 登録・編集・削除（STAFF/ADMIN）
+    ├── USER のみ登録・編集（STAFF）
+    └── 全操作可（ADMIN/SUPER）
 
 ADMIN・スタッフ（ADMIN/STAFFロール）
 ├── お知らせ管理（/app/admin/announcements）
@@ -449,7 +450,7 @@ ADMINのみ
       <tr><td>11</td><td>サブスクリプション管理画面</td><td>契約中のプラン情報を確認する</td><td>現在のプラン表示、契約期間・状態確認（USER）</td></tr>
       <tr><td>12</td><td>Zoom診療画面</td><td>Zoomによるオンライン診療リンクを取得する</td><td>Zoomリンク生成・表示（USER・Premiumプランのみ）</td></tr>
       <tr><td>13</td><td>診療記録管理画面</td><td>診療/相談内容を記録し継続対応に活用する</td><td>記録一覧、詳細表示、新規記録・編集・削除（VET/STAFF）</td></tr>
-      <tr><td>14</td><td>ユーザー管理画面</td><td>利用者アカウントを管理する</td><td>一覧・詳細閲覧（VET）、登録・編集（STAFF/ADMIN）、削除（ADMIN）</td></tr>
+      <tr><td>14</td><td>ユーザー管理画面</td><td>利用者アカウントを管理する</td><td>一覧・詳細閲覧（VET）、登録・編集（STAFF は USER のみ、ADMIN/SUPER は全ロール）、削除（ADMIN/SUPER、紐づくデータがない場合のみ）</td></tr>
       <tr><td>15</td><td>お知らせ管理画面</td><td>全ユーザー向けお知らせを作成・管理する</td><td>一覧表示、新規作成、編集、削除（ADMIN/STAFF）</td></tr>
       <tr><td>16</td><td>予約枠管理画面</td><td>診療予約受付用の枠を設定・管理する</td><td>予約枠一覧、枠の追加・削除（ADMIN/STAFF）</td></tr>
       <tr><td>17</td><td>サービス統計画面</td><td>サービス全体のKPIを集計・表示する</td><td>ユーザー数・ペット数・予約数・サブスク数の集計表示（ADMIN）</td></tr>
@@ -571,11 +572,11 @@ ADMINのみ
       <tr><td>/app/consultations/{id}/edit</td><td>GET</td><td>診療記録編集フォーム</td><td>診療記録編集フォーム表示（SUPER/VET/STAFF）</td></tr>
       <tr><td>/app/consultations/{id}</td><td>PATCH / DELETE</td><td>診療記録更新 / 削除</td><td>診療記録の修正・論理削除（SUPER/VET/STAFF）</td></tr>
       <tr><td>/app/admin/users</td><td>GET</td><td>ユーザー一覧</td><td>ユーザー一覧閲覧（VET/STAFF/ADMIN/SUPER）</td></tr>
-      <tr><td>/app/admin/users/new</td><td>GET</td><td>ユーザー登録フォーム</td><td>ユーザー登録フォーム表示（STAFF/ADMIN/SUPER）</td></tr>
-      <tr><td>/app/admin/users</td><td>POST</td><td>ユーザー登録</td><td>新規ユーザー登録（STAFF/ADMIN/SUPER）</td></tr>
-      <tr><td>/app/admin/users/{id}/edit</td><td>GET</td><td>ユーザー編集フォーム</td><td>ユーザー編集フォーム表示（STAFF/ADMIN/SUPER）</td></tr>
-      <tr><td>/app/admin/users/{id}</td><td>PATCH</td><td>ユーザー更新</td><td>ユーザー情報更新（STAFF/ADMIN/SUPER）</td></tr>
-      <tr><td>/app/admin/users/{id}</td><td>DELETE</td><td>ユーザー削除</td><td>ユーザー論理削除（ADMIN/SUPER のみ）</td></tr>
+      <tr><td>/app/admin/users/new</td><td>GET</td><td>ユーザー登録フォーム</td><td>ユーザー登録フォーム表示（STAFF は USER のみ、ADMIN/SUPER は全ロール）</td></tr>
+      <tr><td>/app/admin/users</td><td>POST</td><td>ユーザー登録</td><td>新規ユーザー登録（STAFF は USER のみ、ADMIN/SUPER は全ロール）</td></tr>
+      <tr><td>/app/admin/users/{id}/edit</td><td>GET</td><td>ユーザー編集フォーム</td><td>ユーザー編集フォーム表示（STAFF は USER のみ、ADMIN/SUPER は全ロール）</td></tr>
+      <tr><td>/app/admin/users/{id}</td><td>PATCH</td><td>ユーザー更新</td><td>ユーザー情報更新（STAFF は USER のみ、ADMIN/SUPER は全ロール）</td></tr>
+      <tr><td>/app/admin/users/{id}</td><td>DELETE</td><td>ユーザー削除</td><td>アカウントに紐づくデータがない場合のみ論理削除し status を INACTIVE に更新（ADMIN/SUPER のみ）</td></tr>
       <tr><td>/app/admin/announcements</td><td>GET / POST</td><td>お知らせ一覧 / 作成</td><td>お知らせ管理（ADMIN/STAFF/SUPER）</td></tr>
       <tr><td>/app/admin/announcements/{id}/toggle</td><td>POST</td><td>公開切替</td><td>お知らせの公開・非公開を切り替える（ADMIN/STAFF/SUPER）</td></tr>
       <tr><td>/app/admin/announcements/{id}/delete</td><td>POST</td><td>お知らせ削除</td><td>お知らせを削除する（ADMIN/STAFF/SUPER）</td></tr>

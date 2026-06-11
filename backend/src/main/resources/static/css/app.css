@@ -373,6 +373,13 @@ body {
 .btn-danger { background: #fff; color: var(--danger); border-color: var(--danger); }
 .btn-danger:hover { background: var(--error-bg); }
 
+.btn:disabled,
+.btn.is-disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .btn-sm { padding: 5px 14px; font-size: 13px; }
 
 .btn-link {
