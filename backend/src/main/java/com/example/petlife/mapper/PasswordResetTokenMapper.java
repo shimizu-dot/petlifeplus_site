@@ -42,6 +42,7 @@ public interface PasswordResetTokenMapper {
             SELECT COUNT(*) FROM password_reset_tokens
             WHERE user_id = #{userId}
               AND created_at >= #{since}
+              AND used_at IS NULL
             """)
     long countRecentByUserId(@Param("userId") Long userId, @Param("since") java.time.LocalDateTime since);
 }

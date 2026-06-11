@@ -25,8 +25,10 @@ import java.util.UUID;
 public class PasswordResetService {
 
     private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
-    private static final int EXPIRE_MINUTES     = 30;
-    private static final int RATE_LIMIT_MINUTES = 15;
+    private static final int EXPIRE_MINUTES = 30;
+
+    @Value("${password-reset.rate-limit-minutes:15}")
+    private int rateLimitMinutes;
 
     private final UserMapper userMapper;
     private final PasswordResetTokenMapper tokenMapper;
@@ -61,9 +63,9 @@ public class PasswordResetService {
         }
 
         long recentCount = tokenMapper.countRecentByUserId(
-                user.id(), LocalDateTime.now().minusMinutes(RATE_LIMIT_MINUTES));
+                user.id(), LocalDateTime.now().minusMinutes(rateLimitMinutes));
         if (recentCount > 0) {
-            log.info("Password reset rate limited for user id={} (within {} min)", user.id(), RATE_LIMIT_MINUTES);
+            log.info("Password reset rate limited for user id={} (within {} min)", user.id(), rateLimitMinutes);
             return;
         }
 
