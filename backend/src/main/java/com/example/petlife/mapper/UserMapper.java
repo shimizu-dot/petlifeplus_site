@@ -108,6 +108,7 @@ public interface UserMapper {
         SET role_id = #{roleId},
             name = #{name},
             email = #{email},
+            password_hash = #{passwordHash},
             phone = #{phone},
             slack_user_id = #{slackUserId},
             line_user_id = #{lineUserId},

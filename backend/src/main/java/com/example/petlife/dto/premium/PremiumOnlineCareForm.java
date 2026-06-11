@@ -4,20 +4,22 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public class PremiumOnlineCareForm {
 
-    @NotNull
+    @NotNull(message = "対象ペットを選択してください")
     private Long petId;
 
-    @NotNull
-    @Future
+    @NotNull(message = "予約時間を選択してください")
+    @Future(message = "予約時間は未来の日時を選択してください")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime scheduledAt;
 
-    @Size(max = 500)
+    @NotBlank(message = "相談内容を入力してください")
+    @Size(max = 500, message = "相談内容は500文字以内で入力してください")
     private String note;
 
     public Long getPetId() {

@@ -20,9 +20,6 @@ public class ContactService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${sendgrid.api-key:}")
-    private String sendgridApiKey;
-
     @Value("${sendgrid.from-email:noreply@petlife.local}")
     private String fromEmail;
 
@@ -37,11 +34,6 @@ public class ContactService {
     }
 
     public void send(ContactRequest request) {
-        if (sendgridApiKey == null || sendgridApiKey.isBlank()) {
-            log.warn("SENDGRID_API_KEY not configured. Contact mail not sent from={}", request.email());
-            throw new BadRequestException("お問い合わせ送信設定が未完了です。しばらくしてから再度お試しください。");
-        }
-
         String to = (contactToEmail == null || contactToEmail.isBlank()) ? fromEmail : contactToEmail;
         if (to == null || to.isBlank()) {
             throw new BadRequestException("お問い合わせ送信先が設定されていません。");

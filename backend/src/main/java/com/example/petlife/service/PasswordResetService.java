@@ -2,6 +2,7 @@ package com.example.petlife.service;
 
 import com.example.petlife.entity.PasswordResetTokenEntity;
 import com.example.petlife.entity.UserEntity;
+import com.example.petlife.exception.BadRequestException;
 import com.example.petlife.mapper.PasswordResetTokenMapper;
 import com.example.petlife.mapper.UserMapper;
 import org.slf4j.Logger;
@@ -13,8 +14,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.Address;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.InternetAddress;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -30,11 +33,8 @@ public class PasswordResetService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
-    @Value("${mail.from-email:noreply@petlifeplus.local}")
-    private String fromEmail;
-
-    @Value("${mail.from-name:ペットライフプラス}")
-    private String fromName;
+    @Value("${mail.password-reset-to:}")
+    private String passwordResetTo;
 
     @Value("${app.base-url:http://localhost:8080}")
     private String baseUrl;
@@ -101,23 +101,30 @@ public class PasswordResetService {
     private void sendResetEmail(UserEntity user, String token) {
         String resetUrl = baseUrl + "/app/reset-password?token=" + token;
         String subject = "【ペットライフプラス】パスワード再設定のご案内";
-        String html = buildEmailHtml(user.name(), resetUrl);
+        String toEmail = (passwordResetTo == null || passwordResetTo.isBlank()) ? user.email() : passwordResetTo;
+        String html = buildEmailHtml(user.name(), user.email(), resetUrl);
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-            helper.setFrom(fromEmail, fromName);
-            helper.setTo(user.email());
+            helper.setFrom("support@h4mizoo.shop", "ペットライフプラス");
+            helper.setTo(toEmail);
             helper.setSubject(subject);
             helper.setText(html, true);
+            Address[] replyTo = {
+                    new InternetAddress(user.email(), user.name(), "UTF-8"),
+                    new InternetAddress("support@h4mizoo.shop", "ペットライフプラス", "UTF-8")
+            };
+            message.setReplyTo(replyTo);
             mailSender.send(message);
-            log.info("Password reset email sent to user id={}", user.id());
+            log.info("Password reset email sent to user id={} to={}", user.id(), toEmail);
         } catch (MessagingException | java.io.UnsupportedEncodingException | MailException e) {
             log.error("Failed to send password reset email to user id={} resetUrl={}", user.id(), resetUrl, e);
+            throw new BadRequestException("パスワード再設定メールの送信に失敗しました。SMTP設定を確認してください。");
         }
     }
 
-    private String buildEmailHtml(String name, String resetUrl) {
+    private String buildEmailHtml(String name, String targetEmail, String resetUrl) {
         return """
                 <!DOCTYPE html>
                 <html lang="ja">
@@ -125,6 +132,7 @@ public class PasswordResetService {
                   <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:14px;padding:40px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
                     <div style="font-size:22px;font-weight:700;color:#1D4ED8;margin-bottom:24px;">ペットライフプラス</div>
                     <p style="color:#374151;">%s 様</p>
+                    <p style="color:#374151;">対象アカウント: %s</p>
                     <p style="color:#374151;">パスワード再設定のご依頼を受け付けました。<br>
                     下記のボタンから新しいパスワードを設定してください。</p>
                     <div style="text-align:center;margin:32px 0;">
@@ -143,6 +151,6 @@ public class PasswordResetService {
                   </div>
                 </body>
                 </html>
-                """.formatted(name, resetUrl, EXPIRE_MINUTES);
+                """.formatted(name, targetEmail, resetUrl, EXPIRE_MINUTES);
     }
 }

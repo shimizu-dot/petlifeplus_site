@@ -149,7 +149,7 @@
         </form>
 
         <!-- POST booking form -->
-        <form th:action="@{/app/appointments}" method="post" th:object="${form}">
+        <form id="appointmentForm" th:action="@{/app/appointments}" method="post" th:object="${form}">
           <!-- scheduledAt is set by JS when a slot radio is clicked -->
           <input type="hidden" id="scheduledAt" th:field="*{scheduledAt}">
 
@@ -237,13 +237,13 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="note">相談内容</label>
+            <label class="form-label" for="note">相談内容<span class="required">*</span></label>
             <textarea id="note" th:field="*{note}" rows="4" maxlength="500" class="form-control"
                       placeholder="症状、経過、受診時に相談したいこと"></textarea>
             <div class="invalid-feedback" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
           </div>
 
-          <button type="submit" class="btn btn-primary">予約する</button>
+          <button type="submit" id="submitAppointmentBtn" class="btn btn-primary" disabled>予約する</button>
         </form>
       </div>
 
@@ -410,9 +410,81 @@
 </div>
 <script>
   (() => {
+    const appointmentForm = document.getElementById('appointmentForm');
+    const submitButton = document.getElementById('submitAppointmentBtn');
+    const petSelect = document.getElementById('petId');
+    const noteInput = document.getElementById('note');
+    const channelInputs = Array.from(document.querySelectorAll('input[name="channel"]'));
+    const scheduledAtInput = document.getElementById('scheduledAt');
+    const slotRadios = Array.from(document.querySelectorAll('input[name="slotChoice"]'));
+    const dateNavInput = document.querySelector('.date-nav input[type="date"]');
     const sortForm = document.getElementById('sortForm');
     const sortBy = document.getElementById('sortBy');
     const scrollKey = 'appointments_scroll_y';
+    const formStateKey = 'appointments_form_state';
+
+    const getCurrentDate = () => dateNavInput ? dateNavInput.value : '';
+
+    const saveFormState = () => {
+      if (!window.sessionStorage) return;
+      const channel = channelInputs.find(input => input.checked)?.value || '';
+      const state = {
+        date: getCurrentDate(),
+        petId: petSelect ? petSelect.value : '',
+        note: noteInput ? noteInput.value : '',
+        channel,
+        scheduledAt: scheduledAtInput ? scheduledAtInput.value : ''
+      };
+      sessionStorage.setItem(formStateKey, JSON.stringify(state));
+    };
+
+    const restoreFormState = () => {
+      if (!window.sessionStorage) return;
+      const raw = sessionStorage.getItem(formStateKey);
+      if (!raw) return;
+      try {
+        const state = JSON.parse(raw);
+        const currentDate = getCurrentDate();
+        const sameDate = state && state.date === currentDate;
+        if (petSelect && state.petId) petSelect.value = state.petId;
+        if (noteInput && typeof state.note === 'string') noteInput.value = state.note;
+        if (channelInputs.length && state.channel) {
+          const target = channelInputs.find(input => input.value === state.channel);
+          if (target) target.checked = true;
+        }
+        if (sameDate && scheduledAtInput && state.scheduledAt) {
+          scheduledAtInput.value = state.scheduledAt;
+          const matched = slotRadios.find(input => input.value === state.scheduledAt);
+          if (matched) matched.checked = true;
+        } else if (scheduledAtInput) {
+          scheduledAtInput.value = '';
+        }
+      } catch (err) {
+        sessionStorage.removeItem(formStateKey);
+      }
+    };
+
+    const updateSubmitState = () => {
+      if (!submitButton || !petSelect || !noteInput || !scheduledAtInput) return;
+      const hasPet = petSelect.value.trim() !== '';
+      const hasNote = noteInput.value.trim() !== '';
+      const hasSchedule = scheduledAtInput.value.trim() !== '';
+      submitButton.disabled = !(hasPet && hasNote && hasSchedule);
+    };
+
+    if (appointmentForm && submitButton) {
+      [petSelect, noteInput, scheduledAtInput, ...slotRadios, ...channelInputs].forEach(el => {
+        if (el) el.addEventListener('input', updateSubmitState);
+        if (el) el.addEventListener('change', updateSubmitState);
+      });
+      [petSelect, noteInput, scheduledAtInput, ...slotRadios, ...channelInputs].forEach(el => {
+        if (el) el.addEventListener('input', saveFormState);
+        if (el) el.addEventListener('change', saveFormState);
+      });
+      restoreFormState();
+      updateSubmitState();
+    }
+
     if (sortBy && sortForm) {
       sortBy.addEventListener('change', () => {
         sessionStorage.setItem(scrollKey, String(window.scrollY));

@@ -137,6 +137,7 @@ public class AppointmentPageController {
     }
 
     private void populatePageModel(GeneralAppointmentForm form, LoginUser currentUser, Model model) {
+        model.addAttribute("form", form);
         LocalDate slotDate = form.getScheduledAt() != null ? form.getScheduledAt().toLocalDate() : LocalDate.now();
         model.addAttribute("isAdminView", currentUser.canOperateAppointments());
         model.addAttribute("canChooseOnline",

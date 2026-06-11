@@ -2,6 +2,381 @@
 
 ## [2026-06-11]
 
+### メール送信修正（Low — contact と password reset の local 動作を調整）
+
+#### B-C15 — SMTP だけでお問い合わせメールを送れるように修正
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/ContactService.java`
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. お問い合わせメール送信時の `SENDGRID_API_KEY` 必須チェックを削除した
+  2. local 設定のパスワード再設定メール宛先を固定値から解除した
+  3. 既定ではパスワード再設定メールがユーザー自身に届くように戻した
+
+## [2026-06-11]
+
+### 設定修正（Low — password reset mail の送信先を support に復帰）
+
+#### B-C14 — support@h4mizoo.shop 宛の受信状態へ戻す
+- **変更ファイル:**
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの送信先を `support@h4mizoo.shop` に戻した
+  2. 返信先はユーザー入力メールを残す既存実装のまま維持した
+
+## [2026-06-11]
+
+### ドキュメント修正（Low — APP_BASE_URL の運用設定を明記）
+
+#### D-L7 — パスワード再設定メールの base URL は環境変数で切り替えると追記
+- **変更ファイル:**
+  - `README.md`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールのリンク先が `APP_BASE_URL` で決まることを明記した
+  2. 運用環境では公開URLを `APP_BASE_URL` に設定する必要があると追記した
+  3. 未設定時は `http://localhost:8080` が入ることを案内した
+
+## [2026-06-11]
+
+### 不具合修正（Low — reset-password 画面の Thymeleaf 例外を修正）
+
+#### B-C13 — `invalid` が null のときにフォームが落ちないようにする
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/auth/reset-password.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定画面のフォーム表示条件を `!invalid` から安全な比較へ変更した
+  2. `invalid` 未設定時でもテンプレートが 500 にならないようにした
+
+## [2026-06-11]
+
+### 不具合修正（Low — password reset の Reply-To にユーザーのメールを残す）
+
+#### B-C12 — support 宛メールの返信先へユーザー指定アドレスを追加
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの `Reply-To` にユーザー入力メールアドレスを明示的に残した
+  2. `support@h4mizoo.shop` の自動応答が元のユーザーに返しやすいようにした
+
+## [2026-06-11]
+
+### 不具合切り分け（Low — password reset の送信先固定を解除）
+
+#### B-C11 — application-local.properties で reset mail の宛先上書きを外す
+- **変更ファイル:**
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの宛先固定をやめ、ユーザー本人宛に送る既定の経路へ戻した
+  2. 外部 SMTP のホスト・認証設定はそのまま維持した
+
+## [2026-06-11]
+
+### 設定修正（Low — SMTP で通る送信元に戻して検証）
+
+#### B-C10 — password reset mail の From を support に固定して再試行
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの送信元を `support@h4mizoo.shop` に戻した
+  2. 返信先はユーザー入力メールのまま維持した
+  3. SMTP 側で弾かれにくい構成で再試行できるようにした
+
+## [2026-06-11]
+
+### 設定修正（Low — パスワード再設定メールの送信元をユーザー入力アドレスへ変更）
+
+#### B-C9 — From をユーザー、To を support@h4mizoo.shop にする
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの送信元をユーザーが指定したメールアドレスに変更した
+  2. 送信先は `support@h4mizoo.shop` のまま維持した
+  3. 返信先もユーザーのメールアドレスに合わせた
+
+## [2026-06-11]
+
+### 設定修正（Low — support 宛メールの返信先をユーザー入力アドレスに設定）
+
+#### B-C8 — 自動応答がユーザーへ返せるよう Reply-To を設定
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. support 宛に送るパスワード再設定メールへ、ユーザー入力メールを `Reply-To` として付けた
+  2. support 側の自動応答や返信時にユーザーへ返しやすくした
+
+## [2026-06-11]
+
+### 設定修正（Low — パスワード再設定メールの宛先を support に固定）
+
+#### B-C7 — ユーザー入力メールを support@h4mizoo.shop へ転送する
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの宛先を local 設定で `support@h4mizoo.shop` にできるようにした
+  2. メール本文には入力されたユーザーのメールアドレスを残して、support 側で判別できるようにした
+  3. 宛先未設定時は従来どおりユーザー本人宛に送るようにした
+
+## [2026-06-11]
+
+### 設定修正（Low — パスワード再設定メールの宛先をユーザー本人に戻す）
+
+#### B-C6 — support 宛の固定送信をやめ、入力ユーザー宛に送る
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの送信先をユーザー本人の登録メールアドレスに戻した
+  2. local 設定の固定送信先を削除した
+  3. 送信元は既存どおり SMTP 側の許可済みアドレスを使う前提を維持した
+
+## [2026-06-11]
+
+### 設定修正（Low — パスワード再設定メールの送信先を support に固定）
+
+#### B-C5 — password reset mail を support@h4mizoo.shop 宛に送れるようにする
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの宛先を local 設定で `support@h4mizoo.shop` にできるようにした
+  2. メール本文に対象アカウントのメールアドレスを入れて、support 宛受信でも判別できるようにした
+  3. 宛先を設定しない環境では従来どおりユーザー本人宛に送るようにした
+
+## [2026-06-11]
+
+### 設定修正（Low — 外部SMTPの送信元をSMTPアカウントに合わせる）
+
+#### B-C4 — application-local.properties の送信元メールを support@h4mizoo.shop に変更
+- **変更ファイル:**
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 外部SMTP利用時の送信元を `support@h4mizoo.shop` に合わせた
+  2. SMTP認証アカウントと送信元がずれて送信拒否される可能性を下げた
+
+## [2026-06-11]
+
+### 設定修正（Low — local 設定ファイルをローカル専用で復元）
+
+#### B-C3 — application-local.properties をローカル設定として戻す
+- **変更ファイル:**
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `application-local.properties` を `src/main/resources` に戻し、ローカル設定が有効になるようにした
+  2. Git には載せず、各自のマシンでだけ使う前提を維持した
+
+## [2026-06-11]
+
+### 設定修正（Low — local プロファイル雛形の Git 追跡を取り消し）
+
+#### B-C2 — application-local.properties を Git 管理外に戻す
+- **変更ファイル:**
+  - `.gitignore`
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `backend/src/main/resources/application-local.properties` を Git に載せない設定へ戻した
+  2. local 用の秘密値や個別設定をリポジトリから外す方針に戻した
+
+## [2026-06-11]
+
+### 設定追加（Low — local プロファイルの雛形を Git で追えるように変更）
+
+#### B-C1 — application-local.properties のテンプレートを追加
+- **変更ファイル:**
+  - `.gitignore`
+  - `backend/src/main/resources/application-local.properties`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `backend/src/main/resources/application-local.properties` を Git 管理下で雛形として置けるようにした
+  2. `spring.mail.*` と送信元・ベース URL の local 向けデフォルトを明示した
+  3. 生成物の `backend/target/classes/application-local.properties` はビルド時にこの雛形から作られるようにした
+
+## [2026-06-11]
+
+### 不具合修正（Medium — パスワード再設定メールの送信失敗を画面表示）
+
+#### B-B2 — SMTP未設定時に無反応にならないようエラーを見せる
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `backend/src/main/java/com/example/petlife/controller/ForgotPasswordController.java`
+  - `backend/src/main/resources/templates/auth/forgot-password.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード再設定メールの送信失敗時に例外を握りつぶさず、画面に見えるエラーへ切り替えるようにした
+  2. `SMTP_HOST` などのメール送信設定が未完了の環境でも、無反応ではなく再試行を促すようにした
+  3. メールアドレス未存在時は従来どおり列挙防止のため同じ案内へ流すようにした
+
+## [2026-06-11]
+
+### UI修正（Low — ユーザー一覧の停止ステータス表示を修正）
+
+#### B-L13 — 編集画面の停止状態を一覧でも「停止」と表示する
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/admin/users/list.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `SUSPENDED` を一覧で「無効」ではなく「停止」と表示するようにした
+  2. `ACTIVE / INACTIVE / SUSPENDED` を一覧の表示文言とバッジ色で分けた
+
+## [2026-06-11]
+
+### 不具合修正（High — ユーザー編集のパスワード更新が保存されない問題を修正）
+
+#### B-B1 — 管理画面のユーザー編集で password_hash を更新する
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/mapper/UserMapper.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. ユーザー編集時に新しいパスワードのハッシュを `password_hash` へ保存するようにした
+  2. これまで編集画面でパスワードを変えても DB に反映されない不具合を修正した
+
+## [2026-06-11]
+
+### UI修正（Low — ユーザー管理編集のパスワード欄に表示切り替えを追加）
+
+#### B-L12 — ユーザー編集のパスワードも目アイコンで表示できるようにする
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/admin/users/form.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. ユーザー管理の編集画面にあるパスワード欄へ表示切り替えを追加した
+  2. 目アイコンを押すと伏字と平文を切り替えられるようにした
+
+## [2026-06-11]
+
+### UI修正（Low — パスワード欄の表示切り替えを追加）
+
+#### B-L11 — ログインとパスワード変更で目アイコンから平文表示できるようにする
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/auth/login.html`
+  - `backend/src/main/resources/templates/auth/password-change.html`
+  - `backend/src/main/resources/templates/auth/reset-password.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. パスワード入力欄の目アイコンを押すと、伏字ではなく平文表示に切り替えるようにした
+  2. もう一度押すと伏字に戻るようにした
+  3. ログイン、パスワード変更、再設定の3画面で同じ操作に揃えた
+
+## [2026-06-11]
+
+### UI修正（Low — 予約フォームの入力保持を追加）
+
+#### B-L10 — 日付変更後も対象ペットと相談内容を保持する
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/appointments/index.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 日付を切り替えても、対象ペット・相談内容・予約方法の入力を保持するようにした
+  2. 予約日が変わった場合は予約時間だけ再選択にして、既存入力は残すようにした
+  3. 画面再読み込み後も入力値を復元できるよう、ブラウザ内の一時保存を追加した
+
+## [2026-06-11]
+
+### UI修正（Low — 予約フォームの空送信を防止）
+
+#### B-L9 — 必須項目未入力時は予約ボタンを無効化し、エラー時の白画面を防止
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/AppointmentPageController.java`
+  - `backend/src/main/resources/templates/appointments/index.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 必須項目が揃うまで「予約する」ボタンを無効化するようにした
+  2. 予約日時、対象ペット、相談内容の入力状態に応じて送信可否を切り替えるようにした
+  3. バリデーション失敗時も `form` をモデルへ戻して白画面にならないようにした
+
+## [2026-06-11]
+
+### UI修正（Low — 予約フォームの必須ラベルを統一）
+
+#### B-L8 — 相談内容ラベルにも必須マークを追加
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/appointments/index.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 予約フォームの「相談内容」ラベルにも `*` を追加した
+
+## [2026-06-11]
+
+### UI修正（Low — 診療予約フォームの送信条件を厳密化）
+
+#### B-L7 — 必須入力と予約枠未選択時に予約ボタンを無効化
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/dto/premium/PremiumOnlineCareForm.java`
+  - `backend/src/main/resources/templates/premium/online-care.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 対象ペット、予約時間、相談内容をサーバ側バリデーションでも必須化した
+  2. 相談内容の未入力を画面上でエラー表示するようにした
+  3. 対象ペット、相談内容、予約可能な枠が揃うまで「Zoom診療を予約する」ボタンを無効化するようにした
+
+## [2026-06-11]
+
+### UI修正（Low — エラーメッセージ専用の画面レイアウトに変更）
+
+#### B-L6 — プレミアム限定の案内をメッセージ中心のエラー画面に変更
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/error/premium-access-denied.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. 画面本体のナビゲーションやトップバーを外し、エラーメッセージ専用のレイアウトに変更した
+  2. システム障害ではなく利用条件による案内であることを明示し、メッセージを中心に表示するようにした
+  3. プラン確認、ダッシュボード、前画面へ戻る導線は残して、操作の次手を分かりやすくした
+
+## [2026-06-11]
+
+### UI修正（Low — プレミアム限定ページの 400 エラーを画面表示に変更）
+
+#### B-L5 — `/app/premium/online-care` の権限エラーを見やすいエラーページへ誘導
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/controller/PremiumSupportController.java`
+  - `backend/src/main/resources/templates/error/premium-access-denied.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. プレミアム限定機能に未加入ユーザーがアクセスした場合、JSON ではなく HTML のエラーページを返すようにした
+  2. エラー画面にアクセス先、案内文、プラン確認ボタン、ダッシュボードへの戻り導線を追加した
+  3. 既存の API 向け JSON 例外処理には影響しないよう、`PremiumSupportController` 内だけで例外を受けるようにした
+
+## [2026-06-11]
+
+### ドキュメント修正（Low — Spring Boot 直起動時は PostgreSQL の事前起動が必要と追記）
+
+#### D-L6 — 直起動の前提条件を README に追加
+- **変更ファイル:**
+  - `README.md`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `spring-boot:run` で起動する場合は PostgreSQL を先に立ち上げる必要があると明記した
+  2. `docker compose up -d db` または `docker compose up --build` を案内に追加した
+
+## [2026-06-11]
+
+### ドキュメント修正（Low — Spring Boot 直接起動時の PowerShell 手順を追記）
+
+#### D-L5 — `mvnw.cmd` の実行例を README に追加
+- **変更ファイル:**
+  - `README.md`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `backend` 配下で Spring Boot を直接起動するための `mvnw.cmd` 実行例を追加した
+  2. PowerShell で `-Dspring-boot.run.profiles=local` を引用する必要がある点を明記した
+
+## [2026-06-11]
+
 ### UI修正（Low — カレンダーの自動マークにペット名を表示）
 
 #### B-L4 — 自動シールのホバーにペット名を出すよう変更

@@ -41,6 +41,11 @@
     .slot-empty {
       font-size: 0.9rem; color: #94A3B8; padding: 12px 0;
     }
+    .submit-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #64748B;
+    }
   </style>
 </head>
 <body th:class="${bodyClass}">
@@ -95,7 +100,7 @@
           <div class="form-group">
             <label class="form-label" for="petId">対象ペット<span class="required">*</span></label>
             <select id="petId" th:field="*{petId}" class="form-control"
-                    th:classappend="${#fields.hasErrors('petId')} ? 'is-invalid'">
+                    th:classappend="${#fields.hasErrors('petId')} ? 'is-invalid'" required>
               <option value="">選択してください</option>
               <option th:each="p : ${pets}" th:value="${p.id}" th:text="${p.name}"></option>
             </select>
@@ -103,17 +108,52 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="note">相談内容</label>
-            <textarea id="note" th:field="*{note}" class="form-control" rows="4" maxlength="500"
+            <label class="form-label" for="note">相談内容<span class="required">*</span></label>
+            <textarea id="note" th:field="*{note}" class="form-control" rows="4" maxlength="500" required
                       placeholder="症状、経過、相談したい内容を入力"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
           </div>
 
-          <button type="submit" class="btn btn-primary">Zoom診療を予約する</button>
+          <button type="submit" id="reserveButton" class="btn btn-primary" disabled>Zoom診療を予約する</button>
+          <div class="submit-hint" id="submitHint">対象ペット、相談内容、予約時間を入力すると予約できます。</div>
         </form>
       </div>
 
     </div>
   </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var petSelect = document.getElementById('petId');
+    var noteInput = document.getElementById('note');
+    var scheduledAtInput = document.getElementById('scheduledAt');
+    var reserveButton = document.getElementById('reserveButton');
+    var submitHint = document.getElementById('submitHint');
+
+    if (!petSelect || !noteInput || !scheduledAtInput || !reserveButton) return;
+
+    function updateSubmitState() {
+      var hasPet = petSelect.value.trim() !== '';
+      var hasNote = noteInput.value.trim().length > 0;
+      var hasSlot = scheduledAtInput.value.trim() !== '';
+      var canSubmit = hasPet && hasNote && hasSlot;
+
+      reserveButton.disabled = !canSubmit;
+      if (submitHint) {
+        submitHint.textContent = canSubmit
+          ? '入力内容を確認して予約を送信できます。'
+          : '対象ペット、相談内容、予約時間を入力すると予約できます。';
+      }
+    }
+
+    petSelect.addEventListener('change', updateSubmitState);
+    noteInput.addEventListener('input', updateSubmitState);
+    document.querySelectorAll('input[name="slotChoice"]').forEach(function (radio) {
+      radio.addEventListener('change', updateSubmitState);
+    });
+
+    updateSubmitState();
+  });
+</script>
 </body>
 </html>

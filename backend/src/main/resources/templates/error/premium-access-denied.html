@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>エラーメッセージ | Pet Life Plus</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    body.error-page {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top, rgba(29, 78, 216, .10), transparent 36%),
+        radial-gradient(circle at bottom right, rgba(14, 165, 164, .12), transparent 28%),
+        var(--bg);
+    }
+    .error-card {
+      width: min(760px, calc(100vw - 32px));
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid #DBEAFE;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, .10);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+    }
+    .error-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #FEE2E2;
+      color: #991B1B;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      margin-bottom: 18px;
+    }
+    .error-title {
+      margin: 0 0 12px;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+    .error-lead {
+      margin: 0 0 18px;
+      color: var(--text-sub);
+      font-size: 15px;
+    }
+    .error-message-box {
+      background: #fff;
+      border: 1px solid #CBD5E1;
+      border-left: 5px solid var(--danger);
+      border-radius: 16px;
+      padding: 18px 18px 18px 16px;
+      margin-bottom: 18px;
+    }
+    .error-message-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--danger);
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+    .error-message {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.7;
+      word-break: break-word;
+    }
+    .error-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      color: var(--text-sub);
+      font-size: 13px;
+    }
+    .error-meta span {
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+    }
+    .error-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .error-note {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #E2E8F0;
+      color: var(--text-sub);
+      font-size: 13px;
+    }
+    @media (max-width: 640px) {
+      .error-card {
+        padding: 20px;
+        border-radius: 18px;
+      }
+      .error-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body class="error-page">
+<main class="error-card" role="main" aria-labelledby="error-title">
+  <div class="error-kicker" th:text="${errorCode}">BAD_REQUEST</div>
+  <h1 id="error-title" class="error-title" th:text="${errorTitle}">アクセス条件を満たしていません</h1>
+  <p class="error-lead">この画面は、システム障害ではなく、利用条件や操作内容に応じて表示される案内です。</p>
+
+  <div class="error-message-box">
+    <span class="error-message-label">エラーメッセージ</span>
+    <p class="error-message" th:text="${errorMessage}">この機能はプレミアムプランで利用できます</p>
+  </div>
+
+  <div class="error-meta">
+    <span th:if="${requestPath != null}" th:text="|対象ページ: ${requestPath}|">対象ページ: /app/premium/online-care</span>
+  </div>
+
+  <div class="error-actions">
+    <a class="btn btn-primary" th:href="@{/app/subscriptions}">プランを確認する</a>
+    <a class="btn btn-secondary" th:href="@{/app/dashboard}">ダッシュボードへ戻る</a>
+    <button type="button" class="btn btn-secondary" onclick="history.back()">前のページへ戻る</button>
+  </div>
+
+  <div class="error-note">
+    プレミアム機能の利用可否に関する案内です。必要ならプラン変更後に再度お試しください。
+  </div>
+</main>
+</body>
+</html>

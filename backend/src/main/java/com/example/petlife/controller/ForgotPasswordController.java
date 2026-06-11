@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ForgotPasswordController {
@@ -24,10 +25,15 @@ public class ForgotPasswordController {
     }
 
     @PostMapping("/app/forgot-password")
-    public String forgotSubmit(@RequestParam String email) {
-        passwordResetService.initiateReset(email);
-        // メールアドレスの存在有無にかかわらず同じページへ（列挙攻撃防止）
-        return "redirect:/app/forgot-password/sent";
+    public String forgotSubmit(@RequestParam String email, RedirectAttributes ra) {
+        try {
+            passwordResetService.initiateReset(email);
+            // メールアドレスの存在有無にかかわらず同じページへ（列挙攻撃防止）
+            return "redirect:/app/forgot-password/sent";
+        } catch (com.example.petlife.exception.BadRequestException ex) {
+            ra.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/app/forgot-password";
+        }
     }
 
     @GetMapping("/app/forgot-password/sent")
