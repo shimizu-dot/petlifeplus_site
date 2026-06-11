@@ -50,7 +50,7 @@ INSERT INTO users (role_id, name, email, password_hash, phone, status) VALUES
 (3, 'プレミアム会員', 'owner3@petlife.local',
     '$2b$10$QzvJ9Z/cZr7wxqa4QFo69.rXFXQmgw6ys.nHZP1.TjJ7U864xIpQy',
     '090-6666-0003', 'ACTIVE')
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 -- ─── Plans ───────────────────────────────────────────────────────────────────
 

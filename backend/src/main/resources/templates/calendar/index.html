@@ -116,7 +116,7 @@
               <span th:each="m : ${d.marks()}"
                     th:class="${'calendar-mark ' + (!m.auto() ? 'manual-mark ' : '') + m.colorClass()}"
                     th:attr="data-mark-id=${m.id()},data-date=${d.date()},draggable=${!m.auto()}"
-                    th:title="${(m.type() == 'KARTE' ? 'カルテ' : m.type() == 'INJECTION' ? '予防接種' : m.type() == 'DOCTOR' ? '病院で診察' : m.type() == 'SCISSORS' ? 'トリミング' : m.type() == 'PARK' ? 'ドッグラン' : m.type() == 'CAPSULE' ? '薬を服用' : '誕生日') + (!m.auto() ? '（ゴミ箱へドラッグで削除）' : '（自動）')}">
+                    th:title="${(m.type() == 'KARTE' ? 'カルテ' : m.type() == 'INJECTION' ? '予防接種' : m.type() == 'DOCTOR' ? '病院で診察' : m.type() == 'SCISSORS' ? 'トリミング' : m.type() == 'PARK' ? 'ドッグラン' : m.type() == 'CAPSULE' ? '薬を服用' : '誕生日') + (m.petName() != null ? '：' + m.petName() : '') + (!m.auto() ? '（ゴミ箱へドラッグで削除）' : '（自動）')}">
                 <a th:if="${m.type() == 'KARTE' and m.petId() != null}"
                    class="karte-link"
                    draggable="false"

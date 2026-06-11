@@ -111,6 +111,9 @@ public class AppointmentService {
                 null, null, null, null);
         Long createdId = appointmentMapper.insert(row);
         AppointmentResponse created = get(createdId);
+        if ("REQUESTED".equals(nextStatus)) {
+            notifyStaffPendingApproval(created, currentUser.id());
+        }
         if (currentUser.canOperateAppointments()) {
             notifyOwnerStaffScheduled(created, currentUser.id());
         }
@@ -270,6 +273,9 @@ public class AppointmentService {
                 null, null, null, null);
         Long createdId = appointmentMapper.insert(row);
         AppointmentResponse created = get(createdId);
+        if ("REQUESTED".equals(nextStatus)) {
+            notifyStaffPendingApproval(created, currentUser.id());
+        }
         if (currentUser.canOperateAppointments()) {
             notifyOwnerStaffScheduled(created, currentUser.id());
         }
@@ -481,6 +487,42 @@ public class AppointmentService {
         }
         notificationMapper.insertRecipient(notificationId, appointment.ownerUserId());
         notificationMapper.updateRecipientStatus(notificationId, appointment.ownerUserId(), "SENT");
+    }
+
+    private void notifyStaffPendingApproval(AppointmentResponse appointment, Long requesterUserId) {
+        List<Long> vetIds = userMapper.findActiveUserIdsByRoleCode("VET");
+        List<Long> staffIds = userMapper.findActiveUserIdsByRoleCode("STAFF");
+        Set<Long> recipientIds = new LinkedHashSet<>();
+        recipientIds.addAll(vetIds);
+        recipientIds.addAll(staffIds);
+        if (recipientIds.isEmpty()) {
+            log.warn("No VET/STAFF recipients found for pending appointment notification appointmentId={}", appointment.id());
+            return;
+        }
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        NotificationEntity notification = new NotificationEntity(
+                null,
+                "ALERT",
+                "承認・却下が必要な診療予約申請があります",
+                "診療予約申請（" + fmt.format(appointment.scheduledAt()) + "）が届いています。通知一覧から承認・却下を確認してください。",
+                null,
+                LocalDateTime.now(),
+                "SENT",
+                requesterUserId,
+                null,
+                null,
+                null
+        );
+        Long notificationId = notificationMapper.insertReturningId(notification);
+        if (notificationId == null) {
+            log.warn("Failed to insert pending-approval notification for appointment {}", appointment.id());
+            return;
+        }
+        for (Long userId : recipientIds) {
+            notificationMapper.insertRecipient(notificationId, userId);
+            notificationMapper.updateRecipientStatus(notificationId, userId, "SENT");
+        }
     }
 
     private void notifyAdminsCanceledByOwner(AppointmentEntity appointment, Long actorUserId) {

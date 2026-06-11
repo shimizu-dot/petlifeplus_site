@@ -2,6 +2,46 @@
 
 ## [2026-06-11]
 
+### UI修正（Low — カレンダーの自動マークにペット名を表示）
+
+#### B-L4 — 自動シールのホバーにペット名を出すよう変更
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/CalendarService.java`
+  - `backend/src/main/resources/templates/calendar/index.html`
+  - `backend/src/test/java/com/example/petlife/service/CalendarServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. カレンダーの自動シールにペット名を保持させ、ホバー時に `カルテ：ペット名` などが分かるようにした
+  2. テンプレート側で auto mark の tooltip にペット名を出すよう修正した
+  3. 月表示の回帰テストを追加し、誕生日・カルテ・予防接種・診療履歴の自動マークにペット名が入ることを固定した
+
+### 機能追加（Low — USER の診療予約申請を VET/STAFF に通知）
+
+#### F-L1 — 申請中予約を承認・却下待ち通知として配信
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/AppointmentService.java`
+  - `backend/src/main/java/com/example/petlife/mapper/UserMapper.java`
+  - `backend/src/test/java/com/example/petlife/service/AppointmentServiceTest.java`
+  - `docs/07-specification.html`
+  - `docs/test-checklist.md`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. USER が診療予約を申請して `REQUESTED` になった時点で、VET/STAFF 宛の通知を作成するよう変更
+  2. 通知本文に「承認・却下が必要な申請」であることと予約日時を含めるようにした
+  3. 仕様書とテストチェックリストへ通知要件を反映し、VET と STAFF のアクティブユーザーへ個別に配信されることを回帰テストで固定
+
+### データ修正（Low — 論理削除済みユーザーのメールが再利用できない問題を修正）
+
+#### D-L4 — `users.email` の一意制約を論理削除対応へ変更
+- **変更ファイル:**
+  - `backend/src/main/resources/schema.sql`
+  - `backend/src/main/resources/data.sql`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `users.email` の一意制約を `deleted_at IS NULL` の行だけに限定する partial unique index に変更
+  2. seed の `ON CONFLICT` を部分ユニーク制約に依存しない形へ修正
+  3. 既存 DB 上の論理削除済みユーザー `202601_aw_shimizu@x-ide.sakura.ne.jp` の `status` を `INACTIVE` に補正
+
 ### UI修正（Low — VET のユーザー編集画面を閲覧専用に変更）
 
 #### B-L3 — VET は編集画面を開けるが更新できないように変更

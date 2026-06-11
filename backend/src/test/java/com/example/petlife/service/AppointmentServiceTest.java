@@ -292,6 +292,33 @@ class AppointmentServiceTest {
         });
     }
 
+    @Test
+    void userRequestedAppointmentShouldNotifyVetAndStaff() {
+        LocalDateTime scheduledAt = LocalDate.now().plusDays(1).atTime(10, 0);
+        AppointmentEntity inserted = new AppointmentEntity(
+                10L, 1L, OWNER.id(), null, "MEDICAL", "VISIT",
+                scheduledAt, "REQUESTED", null, "初診希望", null, null, null, null);
+        when(planAccessService.canUseAppointments(OWNER)).thenReturn(true);
+        when(appointmentMapper.countByScheduledAt(scheduledAt)).thenReturn(0);
+        when(petMapper.findByIdAndOwnerUserId(1L, OWNER.id())).thenReturn(new com.example.petlife.entity.PetEntity(
+                1L, OWNER.id(), "ポチ", "DOG", "Shiba", "MALE", null, null, null,
+                null, null, null, null));
+        when(appointmentMapper.insert(any())).thenReturn(10L);
+        when(appointmentMapper.findById(10L)).thenReturn(inserted);
+        when(userMapper.findActiveUserIdsByRoleCode("VET")).thenReturn(List.of(11L));
+        when(userMapper.findActiveUserIdsByRoleCode("STAFF")).thenReturn(List.of(12L, 13L));
+        when(notificationMapper.insertReturningId(any())).thenReturn(200L);
+
+        assertDoesNotThrow(() -> svc.createGeneralCare(1L, scheduledAt, "初診希望", "VISIT", OWNER));
+
+        verify(notificationMapper).insertRecipient(200L, 11L);
+        verify(notificationMapper).insertRecipient(200L, 12L);
+        verify(notificationMapper).insertRecipient(200L, 13L);
+        verify(notificationMapper).updateRecipientStatus(200L, 11L, "SENT");
+        verify(notificationMapper).updateRecipientStatus(200L, 12L, "SENT");
+        verify(notificationMapper).updateRecipientStatus(200L, 13L, "SENT");
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────────
 
     private static LocalDateTime tomorrow() {

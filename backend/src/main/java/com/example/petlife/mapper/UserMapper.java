@@ -198,6 +198,17 @@ public interface UserMapper {
     List<Long> findAdminUserIds();
 
     @Select("""
+        SELECT u.id
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE u.deleted_at IS NULL
+          AND u.status = 'ACTIVE'
+          AND r.role_code = #{roleCode}
+        ORDER BY u.id
+        """)
+    List<Long> findActiveUserIdsByRoleCode(@Param("roleCode") String roleCode);
+
+    @Select("""
         SELECT id, role_id, name, email, password_hash, phone, slack_user_id, line_user_id, status, last_login_at, deleted_at, created_at, updated_at
         FROM users
         WHERE line_user_id IS NOT NULL

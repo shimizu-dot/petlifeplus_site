@@ -65,8 +65,10 @@ public class CalendarService {
 
         List<PetEntity> pets = petService.listOwnedEntities(user);
         Map<Long, String> petColors = new HashMap<>();
+        Map<Long, String> petNames = new HashMap<>();
         for (PetEntity pet : pets) {
             petColors.put(pet.id(), colorClassForPet(pet.id()));
+            petNames.put(pet.id(), pet.name());
         }
 
         Map<LocalDate, List<DayMark>> marksByDate = new HashMap<>();
@@ -78,7 +80,8 @@ public class CalendarService {
                     toSticker(mark.markType()),
                     false,
                     mark.petId(),
-                    petColors.getOrDefault(mark.petId(), "")
+                    petColors.getOrDefault(mark.petId(), ""),
+                    petNames.get(mark.petId())
             ));
         }
 
@@ -89,7 +92,8 @@ public class CalendarService {
                     "KARTE",
                     true,
                     d.petId(),
-                    petColors.getOrDefault(d.petId(), "")
+                    petColors.getOrDefault(d.petId(), ""),
+                    petNames.get(d.petId())
             ));
         }
 
@@ -105,7 +109,8 @@ public class CalendarService {
                             "BIRTHDAY",
                             true,
                             pet.id(),
-                            petColors.getOrDefault(pet.id(), "")
+                            petColors.getOrDefault(pet.id(), ""),
+                            pet.name()
                     ));
                 }
             }
@@ -117,7 +122,8 @@ public class CalendarService {
         for (HealthRecordPetDateEntity d : vaccineDates) {
             addMark(marksByDate, d.recordDate(), new DayMark(
                     null, "INJECTION", true,
-                    d.petId(), petColors.getOrDefault(d.petId(), "")
+                    d.petId(), petColors.getOrDefault(d.petId(), ""),
+                    petNames.get(d.petId())
             ));
         }
 
@@ -127,7 +133,8 @@ public class CalendarService {
         for (HealthRecordPetDateEntity d : medicalDates) {
             addMark(marksByDate, d.recordDate(), new DayMark(
                     null, "DOCTOR", true,
-                    d.petId(), petColors.getOrDefault(d.petId(), "")
+                    d.petId(), petColors.getOrDefault(d.petId(), ""),
+                    petNames.get(d.petId())
             ));
         }
 
@@ -136,7 +143,7 @@ public class CalendarService {
             List<LocalDate> confirmedDates =
                     appointmentMapper.findConfirmedDatesByOwnerUserId(user.id(), start, finish);
             for (LocalDate date : confirmedDates) {
-                addMark(marksByDate, date, new DayMark(null, "DOCTOR", true, null, ""));
+                addMark(marksByDate, date, new DayMark(null, "DOCTOR", true, null, "", null));
             }
         }
 
@@ -287,7 +294,7 @@ public class CalendarService {
         return false;
     }
 
-    public record DayMark(Long id, String type, boolean auto, Long petId, String colorClass) {}
+    public record DayMark(Long id, String type, boolean auto, Long petId, String colorClass, String petName) {}
 
     public record DayCell(LocalDate date, boolean inCurrentMonth, boolean sunday, boolean holiday, List<DayMark> marks) {}
 
