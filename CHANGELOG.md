@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [2026-06-12]
+
+### テスト修正（Low — ForgotPasswordController の呼び出し引数を実装に合わせる）
+
+#### B-C16 — forgotSubmit に RedirectAttributes を渡すよう修正
+- **変更ファイル:**
+  - `backend/src/test/java/com/example/petlife/controller/ForgotPasswordControllerTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `ForgotPasswordController.forgotSubmit` の実装シグネチャに合わせてテスト呼び出しを修正した
+  2. `RedirectAttributesModelMap` を渡してリダイレクト時のフラッシュ属性処理に対応した
+
 ## [2026-06-11]
 
 ### メール送信修正（Low — contact と password reset の local 動作を調整）
