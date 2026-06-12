@@ -2,6 +2,37 @@
 
 ## [2026-06-12]
 
+### 不具合修正（Low — contact/メール送信の From 表示名を ASCII へ変更）
+
+#### B-C18 — `From` 表示名を `PetLife Plus` に統一
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/ContactService.java`
+  - `backend/src/main/java/com/example/petlife/service/BillingNotificationService.java`
+  - `backend/src/main/java/com/example/petlife/service/PasswordResetService.java`
+  - `backend/src/test/java/com/example/petlife/service/ContactServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. `ContactService` の送信元表示名を `PetLife Plus` に変更した
+  2. `BillingNotificationService` と `PasswordResetService` も同じ表示名に揃えた
+  3. `ContactServiceTest` で `From` ヘッダーの raw 値と表示名を検証するようにした
+
+## [2026-06-12]
+
+### 設定追加（Low — contact 送信の local 専用設定を分離）
+
+#### B-C17 — `application-local.properties` を読み込むようにして私用 SMTP 設定を分離
+- **変更ファイル:**
+  - `backend/src/main/resources/application.properties`
+  - `backend/src/main/resources/application.local.properties`
+  - `.gitignore`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. Spring Boot 起動時に `application-local.properties` を任意読み込みするようにした
+  2. ローカル専用の SMTP / 差出人 / 問い合わせ先設定を分離した
+  3. `application-local.properties` を Git 管理対象外に追加した
+
+## [2026-06-12]
+
 ### テスト修正（Low — ForgotPasswordController の呼び出し引数を実装に合わせる）
 
 #### B-C16 — forgotSubmit に RedirectAttributes を渡すよう修正

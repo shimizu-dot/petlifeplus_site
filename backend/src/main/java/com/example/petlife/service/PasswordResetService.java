@@ -109,13 +109,13 @@ public class PasswordResetService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-            helper.setFrom("support@h4mizoo.shop", "ペットライフプラス");
+            message.setFrom(new InternetAddress("support@h4mizoo.shop", "PetLife Plus", "UTF-8"));
             helper.setTo(toEmail);
             helper.setSubject(subject);
             helper.setText(html, true);
             Address[] replyTo = {
                     new InternetAddress(user.email(), user.name(), "UTF-8"),
-                    new InternetAddress("support@h4mizoo.shop", "ペットライフプラス", "UTF-8")
+                    new InternetAddress("support@h4mizoo.shop", "PetLife Plus", "UTF-8")
             };
             message.setReplyTo(replyTo);
             mailSender.send(message);

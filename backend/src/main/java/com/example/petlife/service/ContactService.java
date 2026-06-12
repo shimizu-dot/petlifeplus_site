@@ -4,6 +4,7 @@ import com.example.petlife.dto.contact.ContactRequest;
 import com.example.petlife.exception.BadRequestException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.InternetAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ public class ContactService {
     @Value("${sendgrid.from-email:noreply@petlife.local}")
     private String fromEmail;
 
-    @Value("${sendgrid.from-name:ペットライフプラス}")
+    @Value("${sendgrid.from-name:PetLife Plus}")
     private String fromName;
 
     @Value("${contact.to-email:}")
@@ -42,7 +43,7 @@ public class ContactService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-            helper.setFrom(fromEmail, fromName);
+            message.setFrom(new InternetAddress(fromEmail, fromName, "UTF-8"));
             helper.setTo(to);
             helper.setReplyTo(request.email(), request.name());
             helper.setSubject("【ペットライフプラス】お問い合わせ: " + request.name());

@@ -5,6 +5,7 @@ import com.example.petlife.entity.NotificationEntity;
 import com.example.petlife.mapper.NotificationMapper;
 import com.example.petlife.service.line.LineBotService;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.InternetAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,7 @@ public class BillingNotificationService {
     @Value("${sendgrid.from-email:noreply@petlife.local}")
     private String fromEmail;
 
-    @Value("${sendgrid.from-name:ペットライフプラス}")
+    @Value("${sendgrid.from-name:PetLife Plus}")
     private String fromName;
 
     @Value("${app.base-url:http://localhost:8080}")
@@ -124,7 +125,7 @@ public class BillingNotificationService {
         try {
             MimeMessage msg = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
-            helper.setFrom(fromEmail, fromName);
+            msg.setFrom(new InternetAddress(fromEmail, fromName, "UTF-8"));
             helper.setTo(toEmail);
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
