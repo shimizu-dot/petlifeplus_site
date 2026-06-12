@@ -86,7 +86,7 @@ public class LineEventController {
                     lineBotService.replyMessage(replyToken,
                             "ペットライフプラスの LINE Bot へようこそ！\n\n" +
                             "体調の変化や気になる症状をメッセージで送ると、受診の目安をお伝えします。\n" +
-                            "アプリでログイン後、マイページで LINE ID を登録するとより便利にご利用いただけます。");
+                            "アプリのマイページで連携コードを取得するか、登録済みメールアドレスを送ると LINE ID を自動で設定できます。");
                 }
                 auditLog.info("action=line_follow userId={}", senderId);
                 continue;
@@ -110,14 +110,21 @@ public class LineEventController {
                 if (linkResult == LineUserLinkService.LinkResult.LINKED) {
                     lineBotService.replyMessage(replyToken, "✅ LINE連携が完了しました。");
                     auditLog.info("action=line_user_linked lineUserId={}", senderId);
+                } else if (linkResult == LineUserLinkService.LinkResult.ALREADY_LINKED) {
+                    lineBotService.replyMessage(replyToken,
+                            "この LINE アカウントはすでに別のアカウントに連携されています。\n" +
+                            "別アカウントへ切り替える場合は管理者にご連絡ください。");
                 } else if (linkResult == LineUserLinkService.LinkResult.INVALID_FORMAT) {
                     lineBotService.replyMessage(replyToken,
-                            "連携コマンドの形式が不正です。\nアプリの「LINE連携」ページで6桁のコードを取得し、「連携 123456」の形式で送信してください。");
+                            "連携コマンドの形式が不正です。\n" +
+                            "アプリの「LINE連携」ページで6桁のコードを取得するか、登録済みメールアドレスを送信してください。");
                 } else if (linkResult == LineUserLinkService.LinkResult.TOKEN_INVALID) {
                     lineBotService.replyMessage(replyToken,
                             "コードが無効または期限切れです（有効期限: 10分）。\nアプリの「LINE連携」ページで新しいコードを取得してください。");
                 } else if (linkResult == LineUserLinkService.LinkResult.USER_NOT_FOUND) {
-                    lineBotService.replyMessage(replyToken, "ユーザーが見つかりませんでした。");
+                    lineBotService.replyMessage(replyToken,
+                            "登録済みのアカウントが見つかりませんでした。\n" +
+                            "メールアドレスまたは 6 桁の連携コードを確認してください。");
                 }
                 continue;
             }

@@ -45,15 +45,15 @@
       パスワードを再設定しました。新しいパスワードでログインしてください。
     </div>
 
-    <form th:action="@{/app/login}" method="post" class="contact-form" style="margin-top:12px;">
+    <form th:action="@{/app/login}" method="post" class="contact-form" style="margin-top:12px;" autocomplete="off">
       <div class="field">
         <label for="email">メールアドレス</label>
-        <input id="email" type="email" name="email" placeholder="example@petlifeplus.local" autocomplete="email" required>
+        <input id="email" type="email" name="email" placeholder="example@petlifeplus.local" autocomplete="off" required>
       </div>
       <div class="field">
         <label for="password">パスワード</label>
         <div style="display:flex;gap:8px;align-items:center;">
-          <input id="password" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required style="flex:1;min-width:0;">
+          <input id="password" type="password" name="password" placeholder="••••••••" autocomplete="off" required style="flex:1;min-width:0;">
           <button type="button" id="passwordToggle" aria-label="パスワードを表示する"
                   onclick="togglePasswordVisibility('password', this)"
                   style="border:1px solid #CBD5E1;background:#fff;border-radius:8px;padding:0 12px;height:42px;cursor:pointer;font-size:18px;line-height:1;">
@@ -84,6 +84,27 @@
       button.setAttribute('aria-label', visible ? 'パスワードを表示する' : 'パスワードを隠す');
     }
   }
+
+  function resetLoginFormState() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const passwordToggle = document.getElementById('passwordToggle');
+
+    if (emailInput) {
+      emailInput.value = '';
+    }
+    if (passwordInput) {
+      passwordInput.value = '';
+      passwordInput.type = 'password';
+    }
+    if (passwordToggle) {
+      passwordToggle.textContent = '👁';
+      passwordToggle.setAttribute('aria-label', 'パスワードを表示する');
+    }
+  }
+
+  window.addEventListener('pageshow', resetLoginFormState);
+  resetLoginFormState();
 </script>
 </body>
 </html>

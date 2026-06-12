@@ -2,6 +2,30 @@
 
 ## [2026-06-12]
 
+### 機能追加（Low — LINE から登録済みメールアドレスで自動連携できるように変更）
+
+#### B-C20 — `line_user_id` を LINE メッセージのメールアドレスから紐付け
+- **変更ファイル:**
+  - `backend/src/main/java/com/example/petlife/service/line/LineUserLinkService.java`
+  - `backend/src/main/java/com/example/petlife/controller/line/LineEventController.java`
+  - `backend/src/test/java/com/example/petlife/service/line/LineUserLinkServiceTest.java`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. LINE から登録済みメールアドレスを送るだけで `line_user_id` を保存できるようにした
+  2. 従来の 6 桁連携コードによる紐付けはそのまま維持した
+  3. すでに別アカウントに連携済みの LINE ID は上書きしないようにした
+
+### 不具合修正（Low — ログイン画面で更新後の入力値保持を防止）
+
+#### B-C19 — `/app/login` のフォームを更新時に初期化
+- **変更ファイル:**
+  - `backend/src/main/resources/templates/auth/login.html`
+  - `CHANGELOG.md`
+- **変更内容:**
+  1. ログインフォームに `autocomplete="off"` を追加した
+  2. `pageshow` 時にメールアドレス・パスワード・表示切り替え状態を初期化するようにした
+  3. ブラウザ更新後に前回入力した値やパスワード表示状態が残らないようにした
+
 ### 不具合修正（Low — contact/メール送信の From 表示名を ASCII へ変更）
 
 #### B-C18 — `From` 表示名を `PetLife Plus` に統一
